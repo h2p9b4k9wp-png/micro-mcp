@@ -22,8 +22,8 @@ export default function HomePage() {
   const [streamingLog, setStreamingLog] = useState('[MCP CORE] 시스템 대기 중...');
   const [isExecuting, setIsExecuting] = useState(false);
   const [activeTab, setActiveTab] = useState('workspace');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // 원래 있던 기본 4개 블록 + 사용자가 추가할 수 있는 동적 리스트 상태
   const [blocks, setBlocks] = useState<McpBlock[]>([
     { id: 'supabase', name: 'Supabase DB 블록', description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.', active: true, icon: '🗄️' },
     { id: 'search', name: 'Google Search 블록', description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.', active: false, icon: '🔍' },
@@ -31,6 +31,7 @@ export default function HomePage() {
     { id: 'customapi', name: 'Custom API 블록', description: '외부 사용자 정의 REST API 엔드포인트와 연동합니다.', active: false, icon: '⚡' },
   ]);
 
+  // 새로운 블록 추가 폼 상태
   const [newBlockName, setNewBlockName] = useState('');
   const [newBlockDesc, setNewBlockDesc] = useState('');
 
@@ -63,6 +64,7 @@ export default function HomePage() {
     initApp();
   }, [router, supabase]);
 
+  // 활성화된 블록 이름 추출
   const activeMcpNames = blocks
     .filter(b => b.active)
     .map(b => b.name)
@@ -123,152 +125,145 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+      <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         로딩 중...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans">
+    <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: '#f8fafc', display: 'flex', fontFamily: 'sans-serif' }}>
+      {/* Gemini AI 답변 콘솔창 전용 귀여운 폰트(Jua) 웹폰트 로드 */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
       `}</style>
 
-      {/* 모바일 상단 바 */}
-      <div className="md:hidden flex items-center justify-between bg-slate-900 border-b border-slate-800 p-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🚀</span>
-          <span className="font-bold text-lg">Micro-MCP</span>
+      {/* 사이드바 메뉴 */}
+      <div style={{ width: '260px', backgroundColor: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #334155' }}>
+          <span style={{ fontSize: '20px' }}>🚀</span>
+          <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Micro-MCP</span>
         </div>
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="text-slate-300 text-xl p-1 focus:outline-none"
-        >
-          {isMobileMenuOpen ? '✕' : '☰'}
-        </button>
-      </div>
-
-      {/* 사이드바 메뉴 (모바일 대응 토글 및 반응형 숨김) */}
-      <div className={`
-        ${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex 
-        w-full md:w-64 bg-slate-900 border-r border-slate-800 flex-col shrink-0
-        transition-all duration-200 z-50
-      `}>
-        <div className="hidden md:flex p-6 items-center gap-3 border-b border-slate-800">
-          <span className="text-xl">🚀</span>
-          <span className="text-lg font-bold">Micro-MCP</span>
-        </div>
-        <div className="p-4 flex flex-col gap-2 flex-1">
+        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
           <div 
-            onClick={() => { setActiveTab('workspace'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'workspace' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+            onClick={() => setActiveTab('workspace')}
+            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'workspace' ? '#0284c7' : 'transparent', color: activeTab === 'workspace' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             📊 워크스페이스
           </div>
           <div 
-            onClick={() => { setActiveTab('mcp'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'mcp' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+            onClick={() => setActiveTab('mcp')}
+            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'mcp' ? '#0284c7' : 'transparent', color: activeTab === 'mcp' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             🧩 MCP 블록 매니저
           </div>
           <div 
-            onClick={() => { setActiveTab('monitoring'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'monitoring' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+            onClick={() => setActiveTab('monitoring')}
+            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'monitoring' ? '#0284c7' : 'transparent', color: activeTab === 'monitoring' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             📈 모니터링 & 파일
           </div>
           <div 
-            onClick={() => { setActiveTab('logs'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'logs' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+            onClick={() => setActiveTab('logs')}
+            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'logs' ? '#0284c7' : 'transparent', color: activeTab === 'logs' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             📜 DB 연동 로그
           </div>
         </div>
-        <div className="p-4 border-t border-slate-800 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full ${dbStatus === 'connected' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+        <div style={{ padding: '16px', borderTop: '1px solid #334155', fontSize: '12px', color: '#64748b' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: dbStatus === 'connected' ? '#10b981' : '#ef4444', borderRadius: '50%' }}></span>
             <span>Gemini AI Connected</span>
           </div>
-          <div className="mt-1 truncate">연결된 MCP: {activeMcpNames}</div>
+          <div style={{ marginTop: '4px' }}>연결된 MCP: {activeMcpNames}</div>
         </div>
       </div>
 
       {/* 메인 콘텐츠 영역 */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        {/* PC 상단 네비게이션 바 */}
-        <div className="hidden md:flex h-[70px] border-b border-slate-800 items-center justify-end px-8 gap-4 bg-slate-950/50 backdrop-blur">
-          <div className="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
-            <span className="text-sm">👤</span>
-            <span className="text-xs text-slate-300 max-w-[200px] truncate">{user?.email}</span>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+        {/* 상단 네비게이션 바 */}
+        <div style={{ height: '70px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 32px', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#1e293b', padding: '6px 12px', borderRadius: '20px', border: '1px solid #334155' }}>
+            <span style={{ fontSize: '14px' }}>👤</span>
+            <span style={{ fontSize: '13px', color: '#cbd5e1' }}>{user?.email}</span>
           </div>
           <button
             onClick={async () => {
               await supabase.auth.signOut();
               router.push('/login');
             }}
-            className="px-3.5 py-1.5 rounded-md border border-rose-500/50 bg-transparent text-rose-400 hover:bg-rose-500/10 text-xs cursor-pointer transition-colors"
+            style={{ padding: '6px 14px', borderRadius: '6px', border: '1px solid #ef4444', backgroundColor: 'transparent', color: '#ef4444', fontSize: '13px', cursor: 'pointer' }}
           >
             로그아웃
           </button>
         </div>
 
-        {/* 본문 콘텐츠 래퍼 */}
-        <div className="p-4 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
+        {/* 본문 콘텐츠 */}
+        <div style={{ padding: '32px', maxWidth: '1000px', width: '100%', margin: '0 auto' }}>
           
           {activeTab === 'workspace' && (
             <>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   📊 Live Gemini AI Playground
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
                   활성화된 MCP 블록 맥락을 바탕으로 Google Gemini AI가 실제 답변을 도출합니다.
                 </p>
               </div>
 
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 sm:p-6 mb-6 shadow-sm">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                  <div className="text-sm font-semibold text-slate-200">
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', marginBottom: '32px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '600', color: '#f8fafc' }}>
                     <span>⚡ AI 프롬프트 전송</span>
                   </div>
-                  <div className="flex items-center gap-1.5 bg-slate-950 px-3 py-1 rounded-full border border-slate-800 text-xs text-slate-400 max-w-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
-                    <span className="truncate">{activeMcpNames}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#0f172a', padding: '4px 10px', borderRadius: '12px', border: '1px solid #334155', fontSize: '12px', color: '#94a3b8' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#a855f7' }}></span>
+                    {activeMcpNames}
                   </div>
                 </div>
 
-                <form onSubmit={handleExecute} className="flex flex-col sm:flex-row gap-3">
+                <form onSubmit={handleExecute} style={{ display: 'flex', gap: '12px' }}>
                   <input
                     type="text"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
                     placeholder="Gemini AI에게 프롬프트를 입력하세요..."
-                    className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-sky-500 transition-colors"
+                    style={{ flex: 1, backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '12px 16px', color: '#fff', fontSize: '14px', outline: 'none' }}
                   />
                   <button
                     type="submit"
                     disabled={isExecuting}
-                    className="bg-sky-600 hover:bg-sky-500 text-white border-none rounded-lg px-6 py-3 font-semibold text-sm cursor-pointer disabled:opacity-50 transition-colors whitespace-nowrap"
+                    style={{ backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', padding: '0 24px', fontWeight: '600', fontSize: '14px', cursor: isExecuting ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
                   >
                     {isExecuting ? '전송 중...' : '프롬프트 전송'}
                   </button>
                 </form>
               </div>
 
-              <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-lg">
-                <div className="bg-slate-900 px-4 py-3 flex items-center gap-2 border-b border-slate-800">
-                  <div className="flex gap-1.5">
-                    <span className="w-2.5 h-2.5 bg-rose-500 rounded-full inline-block"></span>
-                    <span className="w-2.5 h-2.5 bg-amber-500 rounded-full inline-block"></span>
-                    <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block"></span>
+              <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155', overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)' }}>
+                <div style={{ backgroundColor: '#1e293b', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #334155' }}>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <span style={{ width: '10px', height: '10px', backgroundColor: '#ef4444', borderRadius: '50%', display: 'inline-block' }}></span>
+                    <span style={{ width: '10px', height: '10px', backgroundColor: '#f59e0b', borderRadius: '50%', display: 'inline-block' }}></span>
+                    <span style={{ width: '10px', height: '10px', backgroundColor: '#10b981', borderRadius: '50%', display: 'inline-block' }}></span>
                   </div>
-                  <span className="text-xs font-bold text-slate-400 ml-2 tracking-wider">
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', marginLeft: '8px', letterSpacing: '1px' }}>
                     💻 GEMINI AI LIVE CONSOLE
                   </span>
                 </div>
 
-                <div className="p-4 sm:p-5 font-['Jua',sans-serif] text-base text-emerald-400 whitespace-pre-wrap leading-relaxed min-h-[150px] tracking-wide">
+                {/* Gemini 답변 콘솔창 전용 Jua 폰트 적용 */}
+                <div style={{ 
+                  padding: '20px', 
+                  fontFamily: "'Jua', sans-serif", 
+                  fontSize: '16px', 
+                  color: '#34d399', 
+                  whiteSpace: 'pre-wrap', 
+                  lineHeight: '1.6', 
+                  minHeight: '150px',
+                  letterSpacing: '0.5px'
+                }}>
                   {streamingLog}
                 </div>
               </div>
@@ -277,33 +272,31 @@ export default function HomePage() {
 
           {activeTab === 'mcp' && (
             <div>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   🧩 MCP 블록 매니저
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
                   연결할 MCP 블록을 활성화하고 관리하세요. 아래에서 새로운 블록을 추가할 수도 있습니다.
                 </p>
               </div>
 
-              {/* 블록 그리드 (반응형: 모바일 1열, 태블릿 이상 2열) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* MCP 블록 리스트 (격자 배치) */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '32px' }}>
                 {blocks.map((block) => (
-                  <div key={block.id} className="bg-slate-900 rounded-xl border border-slate-800 p-5 flex flex-col justify-between">
+                  <div key={block.id} style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-sm sm:text-base font-bold flex items-center gap-2 truncate">
-                          <span>{block.icon}</span> <span className="truncate">{block.name}</span>
-                        </span>
-                        <span className={`text-xs px-2 py-0.5 rounded shrink-0 ${block.active ? 'bg-emerald-950 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{block.icon} {block.name}</span>
+                        <span style={{ fontSize: '12px', backgroundColor: block.active ? '#065f46' : '#334155', color: block.active ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
                           {block.active ? '활성' : '비활성'}
                         </span>
                       </div>
-                      <p className="text-xs sm:text-sm text-slate-400 leading-normal">{block.description}</p>
+                      <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>{block.description}</p>
                     </div>
                     <button 
                       onClick={() => toggleBlock(block.id)}
-                      className={`mt-4 w-full sm:w-auto self-start border-none rounded-md px-3 py-2 text-xs sm:text-sm cursor-pointer transition-colors ${block.active ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-sky-600 text-white hover:bg-sky-500'}`}
+                      style={{ marginTop: '20px', backgroundColor: block.active ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
                     >
                       {block.active ? '설정 관리' : '블록 활성화'}
                     </button>
@@ -311,29 +304,29 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* 커스텀 블록 추가 폼 */}
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-5">
-                <h3 className="text-sm sm:text-base font-bold mb-2 text-white">➕ 새로운 MCP 블록 추가하기</h3>
-                <p className="text-xs text-slate-400 mb-4">커스텀 MCP 블록을 등록하면 아래 리스트에 바로 추가됩니다.</p>
+              {/* 새로운 MCP 블록 추가 폼 (아래로 추가되는 기능 완벽 탑재) */}
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', color: '#f8fafc' }}>➕ 새로운 MCP 블록 추가하기</h3>
+                <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>커스텀 MCP 블록을 등록하면 아래 리스트에 바로 추가됩니다.</p>
                 
-                <form onSubmit={handleAddBlock} className="flex flex-col gap-3">
+                <form onSubmit={handleAddBlock} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <input
                     type="text"
                     value={newBlockName}
                     onChange={(e) => setNewBlockName(e.target.value)}
                     placeholder="블록 이름 (예: Notion Sync 블록)"
-                    className="bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2.5 text-white text-sm outline-none focus:border-sky-500"
+                    style={{ backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '10px 14px', color: '#fff', fontSize: '14px', outline: 'none' }}
                   />
                   <input
                     type="text"
                     value={newBlockDesc}
                     onChange={(e) => setNewBlockDesc(e.target.value)}
                     placeholder="블록 설명 (예: 노선 데이터 및 문서를 실시간 동기화합니다.)"
-                    className="bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2.5 text-white text-sm outline-none focus:border-sky-500"
+                    style={{ backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '10px 14px', color: '#fff', fontSize: '14px', outline: 'none' }}
                   />
                   <button
                     type="submit"
-                    className="self-end bg-emerald-600 hover:bg-emerald-500 text-white border-none rounded-lg px-5 py-2.5 font-semibold text-sm cursor-pointer transition-colors w-full sm:w-auto"
+                    style={{ alignSelf: 'flex-end', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 20px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
                   >
                     블록 추가하기
                   </button>
@@ -344,29 +337,29 @@ export default function HomePage() {
 
           {activeTab === 'monitoring' && (
             <div>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   📈 모니터링 & 파일
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
                   시스템 상태 및 업로드된 파일 현황을 모니터링합니다.
                 </p>
               </div>
 
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-5">
-                <h3 className="text-sm sm:text-base font-bold mb-4">리소스 사용량</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                    <div className="text-xs text-slate-400">API 응답 속도</div>
-                    <div className="text-lg sm:text-xl font-bold text-emerald-400 mt-1">124ms</div>
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>리소스 사용량</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                  <div style={{ backgroundColor: '#0f172a', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
+                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>API 응답 속도</div>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#34d399', marginTop: '4px' }}>124ms</div>
                   </div>
-                  <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                    <div className="text-xs text-slate-400">활성 세션</div>
-                    <div className="text-lg sm:text-xl font-bold text-sky-400 mt-1">1개</div>
+                  <div style={{ backgroundColor: '#0f172a', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
+                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>활성 세션</div>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#38bdf8', marginTop: '4px' }}>1개</div>
                   </div>
-                  <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                    <div className="text-xs text-slate-400">메모리 사용률</div>
-                    <div className="text-lg sm:text-xl font-bold text-amber-400 mt-1">34.2%</div>
+                  <div style={{ backgroundColor: '#0f172a', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
+                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>메모리 사용률</div>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b', marginTop: '4px' }}>34.2%</div>
                   </div>
                 </div>
               </div>
@@ -375,16 +368,16 @@ export default function HomePage() {
 
           {activeTab === 'logs' && (
             <div>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   📜 DB 연동 로그
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
                   데이터베이스 실시간 연결 및 쿼리 이력을 확인합니다.
                 </p>
               </div>
 
-              <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs sm:text-sm text-emerald-400 leading-relaxed overflow-x-auto">
+              <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155', padding: '20px', fontFamily: 'monospace', fontSize: '13px', color: '#34d399', lineHeight: '1.6' }}>
                 <div>[INFO] System connected to Supabase successfully.</div>
                 <div>[AUTH] Active session verified for user: {user?.email}</div>
                 <div>[QUERY] Fetching workspace configurations... [Status: 200 OK]</div>
