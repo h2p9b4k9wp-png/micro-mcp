@@ -23,6 +23,7 @@ interface FileItem {
   id: string;
   name: string;
   size: string;
+  content?: string;
   date: string;
 }
 
@@ -37,22 +38,21 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('workspace');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // 자동 스크롤을 위한 Ref
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
   const [blocks, setBlocks] = useState<McpBlock[]>([
     { id: 'supabase', name: 'Supabase DB 블록', description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.', active: true, icon: '🗄️' },
     { id: 'search', name: 'Google Search 블록', description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.', active: false, icon: '🔍' },
-    { id: 'filesystem', name: 'File System 블록', description: '로컬 및 클라우드 파일 디렉토리를 탐색하고 읽어옵니다.', active: false, icon: '📁' },
+    { id: 'filesystem', name: 'File System 블록', description: '첨부된 파일 및 문서 내용을 AI 컨텍스트에 주입합니다.', active: true, icon: '📁' },
     { id: 'customapi', name: 'Custom API 블록', description: '외부 사용자 정의 REST API 엔드포인트와 연동합니다.', active: false, icon: '⚡' },
   ]);
 
   const [logs, setLogs] = useState<LogItem[]>([]);
   const [files, setFiles] = useState<FileItem[]>([
-    { id: '1', name: '2026_프로젝트_기획서.pdf', size: '2.4 MB', date: '2026-07-20' },
-    { id: '2', name: 'Database_Schema.sql', size: '15 KB', date: '2026-07-21' },
+    { id: '1', name: '2026_프로젝트_기획서.txt', size: '1.2 KB', content: '프로젝트 목표: 마이크로 MCP 기반 인공지능 에이전트 대시보드 구축 및 Supabase 연동.', date: '2026-07-20' },
   ]);
   const [newFileName, setNewFileName] = useState('');
+  const [newFileContent, setNewFileContent] = useState('');
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -85,7 +85,6 @@ export default function HomePage() {
     initApp();
   }, [router, supabase]);
 
-  // 로그 데이터 가져오기
   const fetchLogs = async (userId: string) => {
     const { data } = await supabase
       .from('logs')
@@ -118,8 +117,25 @@ export default function HomePage() {
     setIsExecuting(true);
     const currentCommand = command;
     setCommand('');
+
+    let dbContextData = '';
+    const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active;
+    if (isSupabaseActive) {
+      const { data: recentLogs } = await supabase
+        .from('logs')
+        .select('content')
+        .limit(3);
+      dbContextData = `\n[Supabase DB 최근 데이터 맥락]: ${JSON.stringify(recentLogs || [])}`;
+    }
+
+    let fileContextData = '';
+    const isFileActive = blocks.find(b => b.id === 'filesystem')?.active;
+    if (isFileActive && files.length > 0) {
+      const aggregatedFiles = files.map(f => `[파일 이름: ${f.name}]\n내용: ${f.content || '내용 없음'}`).join('\n\n');
+      fileContextData = `\n\n[첨부된 문서/파일 컨텍스트]:\n${aggregatedFiles}`;
+    }
     
-    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
+    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]${isSupabaseActive ? '\n[Supabase] 실제 DB 쿼리 연동 완료' : ''}${isFileActive ? '\n[File System] 첨부 파일 컨텍스트 로드 완료' : ''}`);
 
     let aiAnswer = '';
 
@@ -127,30 +143,31 @@ export default function HomePage() {
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
       if (!apiKey) {
-        aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다. .env.local에 NEXT_PUBLIC_GEMINI_API_KEY를 설정해 주세요.';
+        aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다.';
       } else {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
+        
+        // 요구하신 Gemini 3.5 Flash 모델 적용
+        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
 
-        const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]\n\n사용자 질문: ${currentCommand}`;
+        const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]${dbContextData}${fileContextData}\n\n사용자 질문: ${currentCommand}`;
 
         const result = await model.generateContent(promptWithContext);
         const response = await result.response;
         aiAnswer = response.text();
       }
     } catch (err: any) {
-      aiAnswer = `[ERROR] AI 요청 실패: ${err.message || err}`;
+      aiAnswer = `[ERROR] AI 요청 실패 (한도 초과 또는 네트워크 오류): ${err.message || err}`;
     }
 
     const finalLogText = `[MCP CORE] Query: "${currentCommand}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[Gemini AI 답변]\n${aiAnswer}`;
     setStreamingLog(finalLogText);
     setIsExecuting(false);
 
-    // Supabase logs 테이블에 실행 결과 저장
     try {
       const { data, error } = await supabase
         .from('logs')
-        .insert([{ user_id: user.id, content: `[Prompt] ${currentCommand} --> [AI 응답 완료]`, status: 'SUCCESS' }])
+        .insert([{ user_id: user.id, content: `[Prompt] ${currentCommand} (MCP 연동 완료)`, status: 'SUCCESS' }])
         .select()
         .single();
 
@@ -169,12 +186,14 @@ export default function HomePage() {
     const newFile: FileItem = {
       id: Date.now().toString(),
       name: newFileName,
-      size: '1.2 MB',
+      size: `${(newFileContent.length / 1024).toFixed(1)} KB`,
+      content: newFileContent || '내용이 입력되지 않은 문서입니다.',
       date: new Date().toISOString().split('T')[0]
     };
 
     setFiles([newFile, ...files]);
     setNewFileName('');
+    setNewFileContent('');
   };
 
   const handleDeleteFile = (id: string) => {
@@ -248,7 +267,7 @@ export default function HomePage() {
         <div className="p-4 border-t border-slate-800 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${dbStatus === 'connected' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-            <span>Gemini AI Connected</span>
+            <span>Gemini 3.5 Flash Connected</span>
           </div>
           <div className="mt-1 truncate">연결된 MCP: {activeMcpNames}</div>
         </div>
@@ -281,7 +300,7 @@ export default function HomePage() {
                   📊 Live Gemini AI Playground
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  활성화된 MCP 블록 맥락을 바탕으로 Google Gemini AI가 실제 답변을 도출합니다.
+                  활성화된 MCP 블록 맥락 및 첨부된 문서 내용을 바탕으로 AI가 실제 답변을 도출합니다.
                 </p>
               </div>
 
@@ -301,7 +320,7 @@ export default function HomePage() {
                     type="text"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
-                    placeholder="Gemini AI에게 프롬프트를 입력하세요..."
+                    placeholder="예: 첨부된 파일 내용을 바탕으로 요약해줘..."
                     className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-sky-500 transition-colors"
                   />
                   <button
@@ -341,7 +360,7 @@ export default function HomePage() {
                   🧩 MCP 블록 매니저
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  연결할 MCP 블록을 활성화하고 관리하세요.
+                  AI 파이프라인에 연결할 MCP 블록을 활성화하세요. 활성화된 블록만 실시간 데이터에 접근합니다.
                 </p>
               </div>
 
@@ -363,7 +382,7 @@ export default function HomePage() {
                       onClick={() => toggleBlock(block.id)}
                       className={`mt-4 w-full sm:w-auto self-start border-none rounded-md px-3 py-2 text-xs sm:text-sm cursor-pointer transition-colors ${block.active ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-sky-600 text-white hover:bg-sky-500'}`}
                     >
-                      {block.active ? '설정 관리' : '블록 활성화'}
+                      {block.active ? '블록 비활성화' : '블록 활성화'}
                     </button>
                   </div>
                 ))}
@@ -375,33 +394,44 @@ export default function HomePage() {
             <div>
               <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                  📈 모니터링 & 파일
+                  📈 모니터링 & 파일 (RAG 컨텍스트)
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  시스템 상태 및 AI 참조용 컨텍스트 문서를 관리합니다.
+                  AI가 참고할 수 있도록 문서 내용을 직접 등록하세요. (File System 블록 활성화 시 자동 반영)
                 </p>
               </div>
 
               <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 mb-6">
-                <h3 className="text-sm sm:text-base font-bold mb-4">📁 AI 참조용 문서 추가</h3>
-                <form onSubmit={handleAddFile} className="flex gap-2">
+                <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 텍스트 문서 추가</h3>
+                <form onSubmit={handleAddFile} className="flex flex-col gap-3">
                   <input
                     type="text"
-                    placeholder="파일 이름 입력 (예: 회의록.txt)"
+                    placeholder="문서 제목 (예: 회의록_요약.txt)"
                     value={newFileName}
                     onChange={(e) => setNewFileName(e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white outline-none"
+                    className="bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2.5 text-white text-sm outline-none"
                   />
-                  <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold">
-                    추가
+                  <textarea
+                    placeholder="AI가 읽을 문서 내용을 입력하세요..."
+                    value={newFileContent}
+                    onChange={(e) => setNewFileContent(e.target.value)}
+                    rows={3}
+                    className="bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2.5 text-white text-sm outline-none resize-none"
+                  />
+                  <button type="submit" className="self-end bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold">
+                    문서 업로드 및 인덱싱
                   </button>
                 </form>
 
-                <div className="mt-4 flex flex-col gap-2">
+                <div className="mt-6 flex flex-col gap-2">
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">등록된 컨텍스트 파일 목록</h4>
                   {files.map(file => (
-                    <div key={file.id} className="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800 text-sm">
-                      <span>📄 {file.name} ({file.size})</span>
-                      <button onClick={() => handleDeleteFile(file.id)} className="text-rose-400 hover:text-rose-300 text-xs">삭제</button>
+                    <div key={file.id} className="flex flex-col bg-slate-950 p-3.5 rounded-lg border border-slate-800 text-sm gap-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-sky-400">📄 {file.name} <span className="text-xs text-slate-500 font-normal">({file.size})</span></span>
+                        <button onClick={() => handleDeleteFile(file.id)} className="text-rose-400 hover:text-rose-300 text-xs">삭제</button>
+                      </div>
+                      <p className="text-xs text-slate-400 truncate">내용: {file.content}</p>
                     </div>
                   ))}
                 </div>
@@ -416,7 +446,7 @@ export default function HomePage() {
                   📜 DB 연동 로그
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  데이터베이스 실시간 연결 및 쿼리 이력을 확인합니다.
+                  Supabase 데이터베이스에 실시간 기록된 프롬프트 실행 이력입니다.
                 </p>
               </div>
 
