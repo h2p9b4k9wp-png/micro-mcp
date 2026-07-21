@@ -14,7 +14,14 @@ export default function HomePage() {
   const [streamingLog, setStreamingLog] = useState('[MCP CORE] 시스템 대기 중...');
   const [isExecuting, setIsExecuting] = useState(false);
   const [activeTab, setActiveTab] = useState('workspace');
-  const [mcpNames, setMcpNames] = useState<string>('활성화된 MCP 없음');
+
+  // 4개의 MCP 블록 활성화 상태 관리
+  const [mcpStates, setMcpStates] = useState({
+    supabase: true,
+    search: false,
+    filesystem: false,
+    customapi: false,
+  });
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -45,12 +52,28 @@ export default function HomePage() {
     initApp();
   }, [router, supabase]);
 
+  // 활성화된 MCP 이름들을 문자열로 추출
+  const activeMcpNames = Object.entries(mcpStates)
+    .filter(([_, isActive]) => isActive)
+    .map(([key]) => {
+      if (key === 'supabase') return 'Supabase DB';
+      if (key === 'search') return 'Google Search';
+      if (key === 'filesystem') return 'File System';
+      if (key === 'customapi') return 'Custom API';
+      return key;
+    })
+    .join(', ') || '활성화된 MCP 없음';
+
+  const toggleMcp = (key: keyof typeof mcpStates) => {
+    setMcpStates(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!command.trim()) return;
 
     setIsExecuting(true);
-    setStreamingLog(`[MCP CORE] Analyzing query: "${command}"...\n[MCP BRIDGE] Active Connectors: [${mcpNames}]`);
+    setStreamingLog(`[MCP CORE] Analyzing query: "${command}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
 
     let aiAnswer = '';
 
@@ -63,7 +86,7 @@ export default function HomePage() {
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
 
-        const promptWithContext = `[System Context: Active MCP Tools = ${mcpNames}]\n\n사용자 질문: ${command}`;
+        const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]\n\n사용자 질문: ${command}`;
 
         const result = await model.generateContent(promptWithContext);
         const response = await result.response;
@@ -73,7 +96,7 @@ export default function HomePage() {
       aiAnswer = `[ERROR] AI 요청 실패: ${err.message || err}`;
     }
 
-    setStreamingLog(`[MCP CORE] Query: "${command}"\n[CONNECTORS] [${mcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[Gemini AI 답변]\n${aiAnswer}`);
+    setStreamingLog(`[MCP CORE] Query: "${command}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[Gemini AI 답변]\n${aiAnswer}`);
     setIsExecuting(false);
   };
 
@@ -129,7 +152,7 @@ export default function HomePage() {
             <span style={{ width: '8px', height: '8px', backgroundColor: dbStatus === 'connected' ? '#10b981' : '#ef4444', borderRadius: '50%' }}></span>
             <span>Gemini AI Connected</span>
           </div>
-          <div style={{ marginTop: '4px' }}>연결된 MCP: 0개 활성</div>
+          <div style={{ marginTop: '4px' }}>연결된 MCP: {activeMcpNames}</div>
         </div>
       </div>
 
@@ -162,7 +185,7 @@ export default function HomePage() {
                   📊 Live Gemini AI Playground
                 </h1>
                 <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-                  활성화된 MCP 블록(0개) 맥락을 바탕으로 Google Gemini AI가 실제 답변을 도출합니다.
+                  활성화된 MCP 블록 맥락을 바탕으로 Google Gemini AI가 실제 답변을 도출합니다.
                 </p>
               </div>
 
@@ -173,7 +196,7 @@ export default function HomePage() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#0f172a', padding: '4px 10px', borderRadius: '12px', border: '1px solid #334155', fontSize: '12px', color: '#94a3b8' }}>
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#a855f7' }}></span>
-                    활성화된 MCP 없음
+                    {activeMcpNames}
                   </div>
                 </div>
 
@@ -182,7 +205,7 @@ export default function HomePage() {
                     type="text"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
-                    placeholder="Gemini AI에게 프롬프트를 입력하세요 (예: 노선 정리해줘, 오늘 할일 추천해줘)..."
+                    placeholder="Gemini AI에게 프롬프트를 입력하세요..."
                     style={{ flex: 1, backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '12px 16px', color: '#fff', fontSize: '14px', outline: 'none' }}
                   />
                   <button
@@ -207,6 +230,7 @@ export default function HomePage() {
                   </span>
                 </div>
 
+                {/* Gemini 답변 콘솔창에만 적용되는 귀여운 폰트('Jua') */}
                 <div style={{ 
                   padding: '20px', 
                   fontFamily: "'Jua', sans-serif", 
@@ -230,32 +254,89 @@ export default function HomePage() {
                   🧩 MCP 블록 매니저
                 </h1>
                 <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-                  연결할 MCP 블록을 활성화하고 관리하세요.
+                  연결할 4개의 MCP 블록을 활성화하고 관리하세요.
                 </p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+              {/* 4개의 MCP 블록 카드 격자 배치 */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                
+                {/* 1. Supabase DB 블록 */}
                 <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Supabase DB 블록</span>
-                      <span style={{ fontSize: '12px', backgroundColor: '#065f46', color: '#34d399', padding: '2px 8px', borderRadius: '4px' }}>활성</span>
+                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>🗄️ Supabase DB 블록</span>
+                      <span style={{ fontSize: '12px', backgroundColor: mcpStates.supabase ? '#065f46' : '#334155', color: mcpStates.supabase ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
+                        {mcpStates.supabase ? '활성' : '비활성'}
+                      </span>
                     </div>
                     <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.</p>
                   </div>
-                  <button style={{ marginTop: '20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}>설정 관리</button>
+                  <button 
+                    onClick={() => toggleMcp('supabase')}
+                    style={{ marginTop: '20px', backgroundColor: mcpStates.supabase ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    {mcpStates.supabase ? '설정 관리' : '블록 활성화'}
+                  </button>
                 </div>
 
+                {/* 2. Google Search 블록 */}
                 <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Google Search 블록</span>
-                      <span style={{ fontSize: '12px', backgroundColor: '#334155', color: '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>비활성</span>
+                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>🔍 Google Search 블록</span>
+                      <span style={{ fontSize: '12px', backgroundColor: mcpStates.search ? '#065f46' : '#334155', color: mcpStates.search ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
+                        {mcpStates.search ? '활성' : '비활성'}
+                      </span>
                     </div>
                     <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.</p>
                   </div>
-                  <button style={{ marginTop: '20px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}>블록 활성화</button>
+                  <button 
+                    onClick={() => toggleMcp('search')}
+                    style={{ marginTop: '20px', backgroundColor: mcpStates.search ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    {mcpStates.search ? '설정 관리' : '블록 활성화'}
+                  </button>
                 </div>
+
+                {/* 3. File System 블록 */}
+                <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>📁 File System 블록</span>
+                      <span style={{ fontSize: '12px', backgroundColor: mcpStates.filesystem ? '#065f46' : '#334155', color: mcpStates.filesystem ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
+                        {mcpStates.filesystem ? '활성' : '비활성'}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>로컬 및 클라우드 파일 디렉토리를 탐색하고 읽어옵니다.</p>
+                  </div>
+                  <button 
+                    onClick={() => toggleMcp('filesystem')}
+                    style={{ marginTop: '20px', backgroundColor: mcpStates.filesystem ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    {mcpStates.filesystem ? '설정 관리' : '블록 활성화'}
+                  </button>
+                </div>
+
+                {/* 4. Custom API 블록 */}
+                <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>⚡ Custom API 블록</span>
+                      <span style={{ fontSize: '12px', backgroundColor: mcpStates.customapi ? '#065f46' : '#334155', color: mcpStates.customapi ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
+                        {mcpStates.customapi ? '활성' : '비활성'}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>외부 사용자 정의 REST API 엔드포인트와 연동합니다.</p>
+                  </div>
+                  <button 
+                    onClick={() => toggleMcp('customapi')}
+                    style={{ marginTop: '20px', backgroundColor: mcpStates.customapi ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
+                  >
+                    {mcpStates.customapi ? '설정 관리' : '블록 활성화'}
+                  </button>
+                </div>
+
               </div>
             </div>
           )}
@@ -306,7 +387,7 @@ export default function HomePage() {
                 <div>[INFO] System connected to Supabase successfully.</div>
                 <div>[AUTH] Active session verified for user: {user?.email}</div>
                 <div>[QUERY] Fetching workspace configurations... [Status: 200 OK]</div>
-                <div>[MCP] Gemini 3.5 Flash pipeline ready.</div>
+                <div>[MCP] Active Blocks: [{activeMcpNames}] pipeline ready.</div>
               </div>
             </div>
           )}
