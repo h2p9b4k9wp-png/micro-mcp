@@ -10,18 +10,24 @@ export default function HomePage() {
   const [logs, setLogs] = useState<Array<{ id: string; prompt: string; result: string; time: string }>>([]);
   const [loading, setLoading] = useState(false);
 
-  // 더미 MCP 블록 목록 (복구)
+  // MCP 블록 상태
   const [mcpBlocks, setMcpBlocks] = useState([
     { id: 1, name: 'Notion Workspace', desc: '노션 데이터베이스 및 페이지 읽기/쓰기', active: true, category: 'Productivity' },
-    { id: 2, name: 'Slack Connector', desc: '슬랙 채널 메시지 전송 및 알림 수신', active: false, category: 'Communication' },
-    { id: 3, name: 'PostgreSQL DB', desc: '데이터베이스 쿼리 실행 및 결과 조회', active: false, category: 'Database' },
+    { id: 2, name: 'Slack Connector', desc: '슬랙 채널 메시지 전송 및 알림 수신', active: true, category: 'Communication' },
+    { id: 3, name: 'PostgreSQL DB', desc: '데이터베이스 쿼리 실행 및 결과 조회', active: true, category: 'Database' },
     { id: 4, name: 'GitHub Integration', desc: '리포지토리 커밋 및 PR 이슈 조회', active: false, category: 'Developer Tools' },
+  ]);
+
+  // 참조 파일 목록
+  const [files] = useState([
+    { name: '2026_프로젝트_기획서.pdf', size: '2.4 MB', date: '2026-07-20' },
+    { name: 'Database_Schema.sql', size: '15 KB', date: '2026-07-21' },
   ]);
 
   const activeMcpNames = mcpBlocks
     .filter((b) => b.active)
     .map((b) => b.name)
-    .join(', ') || 'No Active MCP';
+    .join(', ') || 'None';
 
   const toggleMcp = (id: number) => {
     setMcpBlocks((prev) =>
@@ -43,12 +49,11 @@ export default function HomePage() {
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
       if (!apiKey) {
-        aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다. (.env.local 설정 확인 필요)';
+        aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다. .env.local 또는 Vercel 환경 변수를 확인하세요.';
         isSuccess = false;
       } else {
         const genAI = new GoogleGenerativeAI(apiKey);
-        // 안정적 지원 모델인 gemini-2.0-flash 로 변경
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
         const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]\n\n사용자 질문: ${command}`;
 
@@ -78,7 +83,7 @@ export default function HomePage() {
 
   return (
     <div className="flex min-h-screen bg-[#070a12] text-white font-sans">
-      {/* 🚀 좌측 사이드바 */}
+      {/* 🚀 사이드바 */}
       <aside className="w-64 bg-[#0d121f] border-r border-[#1e293b] flex flex-col justify-between p-4 flex-shrink-0">
         <div>
           <div className="flex items-center gap-3 px-2 py-4 mb-6">
@@ -131,19 +136,20 @@ export default function HomePage() {
         </div>
 
         <div className="p-3 bg-[#070a12] rounded-lg border border-[#1e293b] text-xs text-gray-400 space-y-1">
-          <div className="flex items-center gap-2 text-emerald-400">
+          <div className="flex items-center gap-2 text-emerald-400 font-semibold">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             Gemini AI Connected
           </div>
-          <div>활성 MCP: {mcpBlocks.filter((b) => b.active).length}개</div>
+          <div>활성 MCP: {mcpBlocks.filter((b) => b.active).length}개 작동 중</div>
         </div>
       </aside>
 
-      {/* 💻 메인 영역 (탭 선택에 따른 분기) */}
+      {/* 💻 메인 영역 */}
       <main className="flex-1 p-8 space-y-6 overflow-y-auto">
+        
         {/* 1. 워크스페이스 탭 */}
         {activeTab === 'workspace' && (
-          <>
+          <div className="space-y-6">
             <div className="bg-[#0d121f] border border-[#1e293b] rounded-xl p-6 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold flex items-center gap-2">
@@ -206,16 +212,18 @@ export default function HomePage() {
                 )}
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* 2. MCP 블록 매니저 탭 */}
         {activeTab === 'manager' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">🧩 MCP 블록 매니저</h2>
-              <button className="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-4 py-2 rounded-lg transition-colors">
-                + 새 블록 추가
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <span>🧩</span> MCP 블록 매니저
+              </h2>
+              <button className="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-4 py-2 rounded-lg transition-colors font-medium">
+                + 새 연동 블록 추가
               </button>
             </div>
 
@@ -225,29 +233,29 @@ export default function HomePage() {
                   key={block.id}
                   className={`p-5 rounded-xl border transition-all ${
                     block.active
-                      ? 'bg-[#0d121f] border-cyan-500/50 shadow-lg shadow-cyan-950/30'
-                      : 'bg-[#0a0e17] border-[#1e293b] opacity-70'
+                      ? 'bg-[#0d121f] border-cyan-500/50 shadow-lg shadow-cyan-950/20'
+                      : 'bg-[#0a0e17] border-[#1e293b] opacity-60'
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start justify-between mb-3">
                     <div>
-                      <span className="text-[10px] text-cyan-400 uppercase tracking-wider bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800">
+                      <span className="text-[10px] text-cyan-400 uppercase tracking-wider bg-cyan-950 px-2.5 py-1 rounded border border-cyan-800/60 font-mono">
                         {block.category}
                       </span>
-                      <h3 className="font-bold text-base mt-2">{block.name}</h3>
+                      <h3 className="font-bold text-base mt-2.5 text-white">{block.name}</h3>
                     </div>
                     <button
                       onClick={() => toggleMcp(block.id)}
-                      className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                      className={`px-3.5 py-1 text-xs rounded-full border transition-all font-medium ${
                         block.active
-                          ? 'bg-cyan-500 text-black border-cyan-400 font-bold'
-                          : 'bg-[#1e293b] text-gray-400 border-gray-600'
+                          ? 'bg-cyan-500 text-black border-cyan-400 shadow-sm shadow-cyan-500/50'
+                          : 'bg-[#1e293b] text-gray-400 border-gray-600 hover:text-white'
                       }`}
                     >
-                      {block.active ? '활성화됨' : '비활성'}
+                      {block.active ? 'ON (활성화)' : 'OFF (비활성)'}
                     </button>
                   </div>
-                  <p className="text-xs text-gray-400">{block.desc}</p>
+                  <p className="text-xs text-gray-400 leading-relaxed">{block.desc}</p>
                 </div>
               ))}
             </div>
@@ -256,24 +264,53 @@ export default function HomePage() {
 
         {/* 3. 모니터링 & 파일 탭 */}
         {activeTab === 'monitoring' && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold">📈 모니터링 & 파일</h2>
-            <div className="bg-[#0d121f] border border-[#1e293b] rounded-xl p-6 text-sm text-gray-400">
-              <p>📁 등록된 AI 참조 컨텍스트 파일 목록 및 시스템 리소스 모니터링 화면입니다.</p>
+          <div className="space-y-6">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <span>📈</span> 모니터링 & AI 참조 컨텍스트 파일
+            </h2>
+
+            <div className="bg-[#0d121f] border border-[#1e293b] rounded-xl p-6 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+                <h3 className="font-semibold text-sm flex items-center gap-2">
+                  📁 등록된 AI 참조 컨텍스트 파일
+                </h3>
+                <button className="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3 py-1.5 rounded transition-colors">
+                  + 파일 추가
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {files.map((file, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-[#070a12] border border-[#1e293b] rounded-lg text-xs">
+                    <div className="flex items-center gap-3">
+                      <span>📄</span>
+                      <span className="font-medium text-gray-200">{file.name}</span>
+                    </div>
+                    <div className="text-gray-500 font-mono">
+                      {file.size} • {file.date}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* 4. DB 연동 로그 탭 */}
         {activeTab === 'db' && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold">🗄️ DB 연동 로그</h2>
-            <div className="bg-[#0d121f] border border-[#1e293b] rounded-xl p-6 text-sm text-gray-400 font-mono">
-              <p>[SYSTEM] Database connection pool initialized.</p>
-              <p>[INFO] PostgreSQL sync active.</p>
+          <div className="space-y-6">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <span>🗄️</span> PostgreSQL 및 연동 DB 로그
+            </h2>
+
+            <div className="bg-[#070a12] border border-[#1e293b] rounded-xl p-5 font-mono text-xs space-y-2 text-gray-400 shadow-2xl">
+              <div className="text-emerald-400">[2026-07-21 15:40:01] [DB_POOL] Connected to PostgreSQL instance.</div>
+              <div className="text-cyan-400">[2026-07-21 15:41:12] [NOTION_CONNECTOR] Syncing workspace blocks...</div>
+              <div className="text-gray-500">[2026-07-21 15:42:05] [MCP_BRIDGE] All connectors healthy. 0 errors.</div>
             </div>
           </div>
         )}
+
       </main>
     </div>
   );
