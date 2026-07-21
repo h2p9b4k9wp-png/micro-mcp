@@ -139,8 +139,8 @@ export default function HomePage() {
         aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다. .env.local 또는 Vercel 환경 변수에 NEXT_PUBLIC_GEMINI_API_KEY를 추가해 주세요.';
       } else {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-latest" });
-
+        // 🎯 정식 지원되는 gemini-1.5-flash 모델로 수정
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const promptWithContext = `[System Context: Active MCP Tools = ${mcpNames}]\n\n사용자 질문: ${command}\n\n위 요청에 대해 MCP 연동 환경을 고려하여 자연스럽고 명확하게 답변해 주세요.`;
 
