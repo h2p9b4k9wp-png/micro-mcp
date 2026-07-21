@@ -135,7 +135,7 @@ export default function HomePage() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
       
-      if (!apiKey) {
+      if (!apiKey) {  
         aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다. .env.local 또는 Vercel 환경 변수에 NEXT_PUBLIC_GEMINI_API_KEY를 추가해 주세요.';
       } else {
         const genAI = new GoogleGenerativeAI(apiKey);
