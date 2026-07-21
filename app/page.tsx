@@ -13,7 +13,7 @@ export default function HomePage() {
   const [command, setCommand] = useState('');
   const [streamingLog, setStreamingLog] = useState('[MCP CORE] 시스템 대기 중...');
   const [isExecuting, setIsExecuting] = useState(false);
-  const [activeTab, setActiveTab] = useState('workspace'); // 사이드바 탭 상태 유지
+  const [activeTab, setActiveTab] = useState('workspace');
   const [mcpNames, setMcpNames] = useState<string>('활성화된 MCP 없음');
 
   const supabase = createBrowserClient(
@@ -152,74 +152,111 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* 본문 콘텐츠 */}
+        {/* 본문 콘텐츠 (탭에 따라 전환) */}
         <div style={{ padding: '32px', maxWidth: '1000px', width: '100%', margin: '0 auto' }}>
-          <div style={{ marginBottom: '24px' }}>
-            <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              📊 Live Gemini AI Playground
-            </h1>
-            <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-              활성화된 MCP 블록(0개) 맥락을 바탕으로 Google Gemini AI가 실제 답변을 도출합니다.
-            </p>
-          </div>
-
-          {/* 프롬프트 전송 카드 */}
-          <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', marginBottom: '32px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '600', color: '#f8fafc' }}>
-                <span>⚡ AI 프롬프트 전송</span>
+          
+          {/* 1. 워크스페이스 탭 */}
+          {activeTab === 'workspace' && (
+            <>
+              <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  📊 Live Gemini AI Playground
+                </h1>
+                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
+                  활성화된 MCP 블록(0개) 맥락을 바탕으로 Google Gemini AI가 실제 답변을 도출합니다.
+                </p>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#0f172a', padding: '4px 10px', borderRadius: '12px', border: '1px solid #334155', fontSize: '12px', color: '#94a3b8' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#a855f7' }}></span>
-                활성화된 MCP 없음
+
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', marginBottom: '32px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '600', color: '#f8fafc' }}>
+                    <span>⚡ AI 프롬프트 전송</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#0f172a', padding: '4px 10px', borderRadius: '12px', border: '1px solid #334155', fontSize: '12px', color: '#94a3b8' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#a855f7' }}></span>
+                    활성화된 MCP 없음
+                  </div>
+                </div>
+
+                <form onSubmit={handleExecute} style={{ display: 'flex', gap: '12px' }}>
+                  <input
+                    type="text"
+                    value={command}
+                    onChange={(e) => setCommand(e.target.value)}
+                    placeholder="Gemini AI에게 프롬프트를 입력하세요 (예: 노선 정리해줘, 오늘 할일 추천해줘)..."
+                    style={{ flex: 1, backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '12px 16px', color: '#fff', fontSize: '14px', outline: 'none' }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isExecuting}
+                    style={{ backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', padding: '0 24px', fontWeight: '600', fontSize: '14px', cursor: isExecuting ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    {isExecuting ? '전송 중...' : '프롬프트 전송'}
+                  </button>
+                </form>
+              </div>
+
+              <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155', overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)' }}>
+                <div style={{ backgroundColor: '#1e293b', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #334155' }}>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <span style={{ width: '10px', height: '10px', backgroundColor: '#ef4444', borderRadius: '50%', display: 'inline-block' }}></span>
+                    <span style={{ width: '10px', height: '10px', backgroundColor: '#f59e0b', borderRadius: '50%', display: 'inline-block' }}></span>
+                    <span style={{ width: '10px', height: '10px', backgroundColor: '#10b981', borderRadius: '50%', display: 'inline-block' }}></span>
+                  </div>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', marginLeft: '8px', letterSpacing: '1px' }}>
+                    💻 GEMINI AI LIVE CONSOLE
+                  </span>
+                </div>
+
+                <div style={{ 
+                  padding: '20px', 
+                  fontFamily: "'Jua', sans-serif", 
+                  fontSize: '16px', 
+                  color: '#34d399', 
+                  whiteSpace: 'pre-wrap', 
+                  lineHeight: '1.6', 
+                  minHeight: '150px',
+                  letterSpacing: '0.5px'
+                }}>
+                  {streamingLog}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* 2. MCP 블록 매니저 탭 */}
+          {activeTab === 'mcp' && (
+            <div>
+              <h1 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '8px' }}>🧩 MCP 블록 매니저</h1>
+              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>연결할 MCP 블록을 활성화하고 관리하세요.</p>
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '32px', textAlign: 'center', color: '#94a3b8' }}>
+                등록된 MCP 블록이 없습니다. 새로운 블록을 연동해 보세요!
               </div>
             </div>
+          )}
 
-            <form onSubmit={handleExecute} style={{ display: 'flex', gap: '12px' }}>
-              <input
-                type="text"
-                value={command}
-                onChange={(e) => setCommand(e.target.value)}
-                placeholder="Gemini AI에게 프롬프트를 입력하세요 (예: 노선 정리해줘, 오늘 할일 추천해줘)..."
-                style={{ flex: 1, backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '12px 16px', color: '#fff', fontSize: '14px', outline: 'none' }}
-              />
-              <button
-                type="submit"
-                disabled={isExecuting}
-                style={{ backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', padding: '0 24px', fontWeight: '600', fontSize: '14px', cursor: isExecuting ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
-              >
-                {isExecuting ? '전송 중...' : '프롬프트 전송'}
-              </button>
-            </form>
-          </div>
-
-          {/* GEMINI AI LIVE CONSOLE (여기 답변 출력 영역에만 귀여운 폰트 적용!) */}
-          <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155', overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)' }}>
-            <div style={{ backgroundColor: '#1e293b', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #334155' }}>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <span style={{ width: '10px', height: '10px', backgroundColor: '#ef4444', borderRadius: '50%', display: 'inline-block' }}></span>
-                <span style={{ width: '10px', height: '10px', backgroundColor: '#f59e0b', borderRadius: '50%', display: 'inline-block' }}></span>
-                <span style={{ width: '10px', height: '10px', backgroundColor: '#10b981', borderRadius: '50%', display: 'inline-block' }}></span>
+          {/* 3. 모니터링 & 파일 탭 */}
+          {activeTab === 'monitoring' && (
+            <div>
+              <h1 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '8px' }}>📈 모니터링 & 파일</h1>
+              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>시스템 상태 및 업로드된 파일 목록을 모니터링합니다.</p>
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '32px', textAlign: 'center', color: '#94a3b8' }}>
+                현재 모니터링 중인 시스템 로그가 없습니다.
               </div>
-              <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', marginLeft: '8px', letterSpacing: '1px' }}>
-                💻 GEMINI AI LIVE CONSOLE
-              </span>
             </div>
+          )}
 
-            {/* 답변 출력 콘솔 박스: font-family에 'Jua' 적용 */}
-            <div style={{ 
-              padding: '20px', 
-              fontFamily: "'Jua', sans-serif", 
-              fontSize: '16px', 
-              color: '#34d399', 
-              whiteSpace: 'pre-wrap', 
-              lineHeight: '1.6', 
-              minHeight: '150px',
-              letterSpacing: '0.5px'
-            }}>
-              {streamingLog}
+          {/* 4. DB 연동 로그 탭 */}
+          {activeTab === 'logs' && (
+            <div>
+              <h1 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '8px' }}>📜 DB 연동 로그</h1>
+              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>데이터베이스 실시간 연결 및 쿼리 이력을 확인합니다.</p>
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '32px', textAlign: 'center', color: '#94a3b8' }}>
+                DB 연동 내역이 정상적으로 기록되고 있습니다. (상태: Connected)
+              </div>
             </div>
-          </div>
+          )}
+
         </div>
       </div>
     </div>
