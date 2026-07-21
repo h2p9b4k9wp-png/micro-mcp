@@ -1,19 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-// Supabase 클라이언트 설정 (환경 변수)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { createBrowserClient } from '@supabase/ssr';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'error' | 'success' } | null>(null);
+
+  // SSR 환경에 맞는 브라우저 Supabase 클라이언트 생성 (쿠키 자동 연동)
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   // 이메일 로그인 / 회원가입 처리
   const handleAuth = async (e: React.FormEvent) => {
@@ -35,8 +38,10 @@ export default function LoginPage() {
           password,
         });
         if (error) throw error;
-        // 로그인 성공 시 메인 대시보드로 이동
-        window.location.href = '/';
+        
+        // 로그인 성공 시 쿠키가 확실히 저장되도록 router.push 및 refresh 사용
+        router.push('/');
+        router.refresh();
       }
     } catch (err: any) {
       setMessage({ text: err.message || '인증 과정에서 오류가 발생했습니다.', type: 'error' });
