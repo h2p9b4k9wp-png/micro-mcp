@@ -130,7 +130,7 @@ export default function HomePage() {
         aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다. .env.local에 NEXT_PUBLIC_GEMINI_API_KEY를 설정해 주세요.';
       } else {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
 
         const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]\n\n사용자 질문: ${currentCommand}`;
 
