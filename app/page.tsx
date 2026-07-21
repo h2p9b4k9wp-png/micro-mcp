@@ -1,39 +1,62 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
-interface McpBlock {
+interface LogItem {
+  id: string;
+  content: string;
+  status: string;
+  created_at: string;
+}
+
+interface McpServer {
   id: string;
   name: string;
+  category: string;
   description: string;
-  active: boolean;
   icon: string;
+  is_active: boolean;
 }
+
+interface FileItem {
+  id: string;
+  name: string;
+  size: string;
+  type: string;
+  date: string;
+}
+
+const PRESET_MCP_SERVERS = [
+  { name: 'Notion Workspace', category: 'Document', description: '내 노션 페이지 및 문서를 AI 컨텍스트로 불러옵니다.', icon: '📝' },
+  { name: 'GitHub Repositories', category: 'Developer', description: '소스코드 검색, 이슈 생성 및 커밋 내역을 분석합니다.', icon: '🐙' },
+  { name: 'Google Calendar', category: 'Productivity', description: '일정 확인 및 새로운 스케줄 등록을 지원합니다.', icon: '📅' },
+  { name: 'Local File System', category: 'Storage', description: '지정한 내 컴퓨터 폴더 안의 파일들을 직접 읽습니다.', icon: '📁' },
+];
 
 export default function HomePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [dbStatus, setDbStatus] = useState('connecting');
-  const [command, setCommand] = useState('');
-  const [streamingLog, setStreamingLog] = useState('[MCP CORE] 시스템 대기 중...');
+  const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  
+  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'mcp' | 'database' | 'analytics'>('dashboard');
+  const [inputText, setInputText] = useState('');
+  const [logs, setLogs] = useState<LogItem[]>([]);
+  const [mcpServers, setMcpServers] = useState<McpServer[]>([]);
+  
+  // 3단계 AI 라이브 스트리밍 상태
   const [isExecuting, setIsExecuting] = useState(false);
-  const [activeTab, setActiveTab] = useState('workspace');
+  const [streamingLog, setStreamingLog] = useState<string | null>(null);
+  const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  // 원래 있던 기본 4개 블록 + 사용자가 추가할 수 있는 동적 리스트 상태
-  const [blocks, setBlocks] = useState<McpBlock[]>([
-    { id: 'supabase', name: 'Supabase DB 블록', description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.', active: true, icon: '🗄️' },
-    { id: 'search', name: 'Google Search 블록', description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.', active: false, icon: '🔍' },
-    { id: 'filesystem', name: 'File System 블록', description: '로컬 및 클라우드 파일 디렉토리를 탐색하고 읽어옵니다.', active: false, icon: '📁' },
-    { id: 'customapi', name: 'Custom API 블록', description: '외부 사용자 정의 REST API 엔드포인트와 연동합니다.', active: false, icon: '⚡' },
+  // 4단계 스토리지 파일 상태
+  const [files, setFiles] = useState<FileItem[]>([
+    { id: '1', name: '2026_프로젝트_기획서.pdf', size: '2.4 MB', type: 'PDF', date: '2026-07-20' },
+    { id: '2', name: 'Database_Schema.sql', size: '15 KB', type: 'Code', date: '2026-07-21' },
   ]);
-
-  // 새로운 블록 추가 폼 상태
-  const [newBlockName, setNewBlockName] = useState('');
-  const [newBlockDesc, setNewBlockDesc] = useState('');
+  const [newFileName, setNewFileName] = useState('');
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -42,352 +65,607 @@ export default function HomePage() {
 
   useEffect(() => {
     const initApp = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      const { data: { session }, error } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session || error) {
-        const { data: { session: retrySession } } = await supabase.auth.getSession();
-        if (!retrySession) {
-          router.push('/login');
-          return;
-        }
-        setUser(retrySession.user);
-      } else {
-        setUser(session.user);
+      if (!session) {
+        router.push('/login');
+        return;
       }
       
+      setUser(session.user);
       setLoading(false);
       setDbStatus('connected');
+
+      fetchLogs(session.user.id);
+      fetchMcpServers(session.user.id);
     };
 
     initApp();
   }, [router, supabase]);
 
-  // 활성화된 블록 이름 추출
-  const activeMcpNames = blocks
-    .filter(b => b.active)
-    .map(b => b.name)
-    .join(', ') || '활성화된 MCP 없음';
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [logs, streamingLog]);
 
-  const toggleBlock = (id: string) => {
-    setBlocks(prev => prev.map(b => b.id === id ? { ...b, active: !b.active } : b));
+  const fetchLogs = async (userId: string) => {
+    const { data } = await supabase
+      .from('logs')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (data) setLogs(data);
   };
 
-  const handleAddBlock = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newBlockName.trim()) return;
+  const fetchMcpServers = async (userId: string) => {
+    const { data } = await supabase
+      .from('mcp_servers')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true });
 
-    const newBlock: McpBlock = {
-      id: `custom-${Date.now()}`,
-      name: newBlockName,
-      description: newBlockDesc.trim() || '사용자가 직접 추가한 커스텀 MCP 블록입니다.',
-      active: true,
-      icon: '🧩'
-    };
-
-    setBlocks(prev => [...prev, newBlock]);
-    setNewBlockName('');
-    setNewBlockDesc('');
+    if (data) setMcpServers(data);
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  };
+
+  // 💡 제미나이 API 연동 실행 핸들러
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!command.trim()) return;
+    if (!inputText.trim() || isExecuting || !user) return;
 
     setIsExecuting(true);
-    setStreamingLog(`[MCP CORE] Analyzing query: "${command}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
+    const command = inputText;
+    setInputText('');
 
-    let aiAnswer = '';
+    const activeMcps = mcpServers.filter(s => s.is_active);
+    const mcpNames = activeMcps.length > 0 
+      ? activeMcps.map(m => m.name).join(', ') 
+      : 'No Active MCP';
 
-    try {
-      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    // 초기 터미널 애니메이션 단계 출력
+    const steps = [
+      `[MCP CORE] Analyzing query: "${command}"...`,
+      activeMcps.length > 0 
+        ? `[MCP BRIDGE] Routing request to connected tools: [${mcpNames}]`
+        : `[MCP BRIDGE] No external MCP tools enabled. Running default AI model.`,
+      `[PROCESSING] Generating context-aware payload...`
+    ];
 
-      if (!apiKey) {
-        aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다. .env.local 또는 Vercel 환경 변수에 NEXT_PUBLIC_GEMINI_API_KEY를 설정해 주세요.';
-      } else {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
-
-        const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]\n\n사용자 질문: ${command}`;
-
-        const result = await model.generateContent(promptWithContext);
-        const response = await result.response;
-        aiAnswer = response.text();
-      }
-    } catch (err: any) {
-      aiAnswer = `[ERROR] AI 요청 실패: ${err.message || err}`;
+    let currentText = '';
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(res => setTimeout(res, 300));
+      currentText += (i === 0 ? '' : '\n') + steps[i];
+      setStreamingLog(currentText);
     }
 
-    setStreamingLog(`[MCP CORE] Query: "${command}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[Gemini AI 답변]\n${aiAnswer}`);
-    setIsExecuting(false);
+    let aiResultText = '';
+
+    try {
+      // 실제 제미나이 API 라우트 호출 (예시: /api/gemini 백엔드 엔드포인트 연동)
+      const response = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: command, activeMcps: mcpNames })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        aiResultText = data.text || 'AI 응답이 완료되었습니다.';
+      } else {
+        aiResultText = 'AI 모델 응답을 가져오는 중 오류가 발생했습니다.';
+      }
+    } catch (err) {
+      console.error(err);
+      aiResultText = '네트워크 통신 오류가 발생했습니다.';
+    }
+
+    const finalStepLog = `\n[GEMINI AI RESULT]\n${aiResultText}`;
+    setStreamingLog(currentText + finalStepLog);
+
+    const fullContent = `[Prompt] ${command}  -->  [Response] ${aiResultText} (${mcpNames})`;
+
+    try {
+      const { data, error } = await supabase
+        .from('logs')
+        .insert([{ user_id: user.id, content: fullContent, status: 'SUCCESS' }])
+        .select()
+        .single();
+
+      if (!error && data) {
+        setLogs((prev) => [data, ...prev]);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setStreamingLog(null);
+      setIsExecuting(false);
+    }
+  };
+
+  const handleDeleteLog = async (id: string) => {
+    const { error } = await supabase.from('logs').delete().eq('id', id);
+    if (!error) setLogs((prev) => prev.filter((log) => log.id !== id));
+  };
+
+  const handleAddMcp = async (preset: typeof PRESET_MCP_SERVERS[0]) => {
+    if (!user) return;
+    if (mcpServers.some(s => s.name === preset.name)) {
+      alert('이미 등록된 MCP 블록입니다!');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('mcp_servers')
+      .insert([{
+        user_id: user.id,
+        name: preset.name,
+        category: preset.category,
+        description: preset.description,
+        icon: preset.icon,
+        is_active: true
+      }])
+      .select()
+      .single();
+
+    if (!error && data) setMcpServers((prev) => [...prev, data]);
+  };
+
+  const handleToggleMcp = async (id: string, currentStatus: boolean) => {
+    const { error } = await supabase
+      .from('mcp_servers')
+      .update({ is_active: !currentStatus })
+      .eq('id', id);
+
+    if (!error) {
+      setMcpServers((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, is_active: !currentStatus } : s))
+      );
+    }
+  };
+
+  const handleDeleteMcp = async (id: string) => {
+    const { error } = await supabase.from('mcp_servers').delete().eq('id', id);
+    if (!error) setMcpServers((prev) => prev.filter((s) => s.id !== id));
+  };
+
+  const handleAddFile = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newFileName.trim()) return;
+    
+    const newFile: FileItem = {
+      id: Date.now().toString(),
+      name: newFileName,
+      size: '1.2 MB',
+      type: 'DOC',
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    setFiles([newFile, ...files]);
+    setNewFileName('');
+  };
+
+  const handleDeleteFile = (id: string) => {
+    setFiles(files.filter(f => f.id !== id));
   };
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        로딩 중...
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#090d16', color: '#fff' }}>
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ display: 'inline-block', fontSize: '40px', animation: 'pulse 1.5s infinite' }}>🚀</span>
+          <p style={{ marginTop: '16px', fontSize: '16px', color: '#94a3b8' }}>Micro-MCP 데이터베이스 연결 중...</p>
+        </div>
       </div>
     );
   }
 
+  const activeMcpCount = mcpServers.filter(s => s.is_active).length;
+
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: '#f8fafc', display: 'flex', fontFamily: 'sans-serif' }}>
-      {/* Gemini AI 답변 콘솔창 전용 귀여운 폰트(Jua) 웹폰트 로드 */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
-      `}</style>
+    <div className="app-container">
+      {/* 사이드바 */}
+      <aside className="sidebar">
+        <div className="logo-area">
+          <span className="logo-icon">🚀</span>
+          <span className="logo-text">Micro-MCP</span>
+        </div>
 
-      {/* 사이드바 메뉴 */}
-      <div style={{ width: '260px', backgroundColor: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #334155' }}>
-          <span style={{ fontSize: '20px' }}>🚀</span>
-          <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Micro-MCP</span>
-        </div>
-        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-          <div 
-            onClick={() => setActiveTab('workspace')}
-            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'workspace' ? '#0284c7' : 'transparent', color: activeTab === 'workspace' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+        <nav className="nav-menu">
+          <button 
+            onClick={() => setActiveMenu('dashboard')}
+            className={`nav-item ${activeMenu === 'dashboard' ? 'active' : ''}`}
           >
-            📊 워크스페이스
-          </div>
-          <div 
-            onClick={() => setActiveTab('mcp')}
-            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'mcp' ? '#0284c7' : 'transparent', color: activeTab === 'mcp' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-          >
-            🧩 MCP 블록 매니저
-          </div>
-          <div 
-            onClick={() => setActiveTab('monitoring')}
-            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'monitoring' ? '#0284c7' : 'transparent', color: activeTab === 'monitoring' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-          >
-            📈 모니터링 & 파일
-          </div>
-          <div 
-            onClick={() => setActiveTab('logs')}
-            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'logs' ? '#0284c7' : 'transparent', color: activeTab === 'logs' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-          >
-            📜 DB 연동 로그
-          </div>
-        </div>
-        <div style={{ padding: '16px', borderTop: '1px solid #334155', fontSize: '12px', color: '#64748b' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ width: '8px', height: '8px', backgroundColor: dbStatus === 'connected' ? '#10b981' : '#ef4444', borderRadius: '50%' }}></span>
-            <span>Gemini AI Connected</span>
-          </div>
-          <div style={{ marginTop: '4px' }}>연결된 MCP: {activeMcpNames}</div>
-        </div>
-      </div>
-
-      {/* 메인 콘텐츠 영역 */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-        {/* 상단 네비게이션 바 */}
-        <div style={{ height: '70px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 32px', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#1e293b', padding: '6px 12px', borderRadius: '20px', border: '1px solid #334155' }}>
-            <span style={{ fontSize: '14px' }}>👤</span>
-            <span style={{ fontSize: '13px', color: '#cbd5e1' }}>{user?.email}</span>
-          </div>
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-              router.push('/login');
-            }}
-            style={{ padding: '6px 14px', borderRadius: '6px', border: '1px solid #ef4444', backgroundColor: 'transparent', color: '#ef4444', fontSize: '13px', cursor: 'pointer' }}
-          >
-            로그아웃
+            <span className="icon">📊</span> 워크스페이스
           </button>
-        </div>
+          <button 
+            onClick={() => setActiveMenu('mcp')}
+            className={`nav-item ${activeMenu === 'mcp' ? 'active' : ''}`}
+          >
+            <span className="icon">🧩</span> MCP 블록 매니저
+            {activeMcpCount > 0 && <span className="badge">{activeMcpCount}</span>}
+          </button>
+          <button 
+            onClick={() => setActiveMenu('analytics')}
+            className={`nav-item ${activeMenu === 'analytics' ? 'active' : ''}`}
+          >
+            <span className="icon">📈</span> 모니터링 & 파일
+          </button>
+          <button 
+            onClick={() => setActiveMenu('database')}
+            className={`nav-item ${activeMenu === 'database' ? 'active' : ''}`}
+          >
+            <span className="icon">🗄️</span> DB 연동 로그
+          </button>
+        </nav>
 
-        {/* 본문 콘텐츠 */}
-        <div style={{ padding: '32px', maxWidth: '1000px', width: '100%', margin: '0 auto' }}>
-          
-          {activeTab === 'workspace' && (
-            <>
-              <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  📊 Live Gemini AI Playground
-                </h1>
-                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-                  활성화된 MCP 블록 맥락을 바탕으로 Google Gemini AI가 실제 답변을 도출합니다.
+        <div className="status-card">
+          <div className="status-item">
+            <span className={`status-dot ${dbStatus === 'connected' ? 'online' : 'offline'}`}></span>
+            <span>DB Realtime: Active</span>
+          </div>
+          <div style={{ marginTop: '6px', color: '#38bdf8' }}>연결된 MCP: {activeMcpCount}개 활성</div>
+        </div>
+      </aside>
+
+      {/* 메인 콘텐츠 */}
+      <div className="main-content">
+        <header className="main-header">
+          <div className="user-profile">
+            <span className="user-avatar">👤</span>
+            <span className="user-email">{user?.email}</span>
+            <button onClick={handleSignOut} className="btn-logout">로그아웃</button>
+          </div>
+        </header>
+
+        <main className="content-body">
+          {activeMenu === 'dashboard' && (
+            <div className="fade-in">
+              <div className="page-title-area">
+                <h1 className="page-title">📊 Live Playground Console</h1>
+                <p className="page-desc">
+                  활성화된 MCP 블록({activeMcpCount}개)이 자동으로 연동되어 AI 프롬프트를 실시간 스트리밍 처리합니다.
                 </p>
               </div>
 
-              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', marginBottom: '32px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+              <div className="work-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '600', color: '#f8fafc' }}>
-                    <span>⚡ AI 프롬프트 전송</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#0f172a', padding: '4px 10px', borderRadius: '12px', border: '1px solid #334155', fontSize: '12px', color: '#94a3b8' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#a855f7' }}></span>
-                    {activeMcpNames}
+                  <h3 className="card-title" style={{ margin: 0 }}>⚡ AI 프롬프트 실행 및 MCP 테스트</h3>
+                  <div className="active-mcp-tag">
+                    {activeMcpCount > 0 ? `🟢 ${activeMcpCount}개 MCP 커넥터 작동 중` : '⚪ 활성화된 MCP 없음'}
                   </div>
                 </div>
-
-                <form onSubmit={handleExecute} style={{ display: 'flex', gap: '12px' }}>
-                  <input
-                    type="text"
-                    value={command}
-                    onChange={(e) => setCommand(e.target.value)}
-                    placeholder="Gemini AI에게 프롬프트를 입력하세요..."
-                    style={{ flex: 1, backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '12px 16px', color: '#fff', fontSize: '14px', outline: 'none' }}
-                  />
-                  <button
-                    type="submit"
+                <form onSubmit={handleExecute} className="input-group">
+                  <input 
+                    type="text" 
+                    placeholder={activeMcpCount > 0 ? "예: 노션 문서 정리해줘, 구글 달력에 오늘 일정 추가해줘..." : "명령어를 입력하세요..."}
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    className="console-input"
                     disabled={isExecuting}
-                    style={{ backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '8px', padding: '0 24px', fontWeight: '600', fontSize: '14px', cursor: isExecuting ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
-                  >
-                    {isExecuting ? '전송 중...' : '프롬프트 전송'}
+                  />
+                  <button type="submit" className="btn-execute" disabled={isExecuting}>
+                    {isExecuting ? 'AI 실행 중...' : '프롬프트 전송'}
                   </button>
                 </form>
               </div>
 
-              <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155', overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3)' }}>
-                <div style={{ backgroundColor: '#1e293b', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #334155' }}>
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <span style={{ width: '10px', height: '10px', backgroundColor: '#ef4444', borderRadius: '50%', display: 'inline-block' }}></span>
-                    <span style={{ width: '10px', height: '10px', backgroundColor: '#f59e0b', borderRadius: '50%', display: 'inline-block' }}></span>
-                    <span style={{ width: '10px', height: '10px', backgroundColor: '#10b981', borderRadius: '50%', display: 'inline-block' }}></span>
+              <div className="terminal-container">
+                <div className="terminal-header">
+                  <div className="terminal-dots">
+                    <span className="dot red"></span>
+                    <span className="dot yellow"></span>
+                    <span className="dot green"></span>
                   </div>
-                  <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#94a3b8', marginLeft: '8px', letterSpacing: '1px' }}>
-                    💻 GEMINI AI LIVE CONSOLE
-                  </span>
+                  <span className="terminal-title">📟 LIVE STREAMING CONSOLE</span>
                 </div>
-
-                {/* Gemini 답변 콘솔창 전용 Jua 폰트 적용 */}
-                <div style={{ 
-                  padding: '20px', 
-                  fontFamily: "'Jua', sans-serif", 
-                  fontSize: '16px', 
-                  color: '#34d399', 
-                  whiteSpace: 'pre-wrap', 
-                  lineHeight: '1.6', 
-                  minHeight: '150px',
-                  letterSpacing: '0.5px'
-                }}>
-                  {streamingLog}
-                </div>
-              </div>
-            </>
-          )}
-
-          {activeTab === 'mcp' && (
-            <div>
-              <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  🧩 MCP 블록 매니저
-                </h1>
-                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-                  연결할 MCP 블록을 활성화하고 관리하세요. 아래에서 새로운 블록을 추가할 수도 있습니다.
-                </p>
-              </div>
-
-              {/* MCP 블록 리스트 (격자 배치) */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '32px' }}>
-                {blocks.map((block) => (
-                  <div key={block.id} style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{block.icon} {block.name}</span>
-                        <span style={{ fontSize: '12px', backgroundColor: block.active ? '#065f46' : '#334155', color: block.active ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
-                          {block.active ? '활성' : '비활성'}
-                        </span>
-                      </div>
-                      <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>{block.description}</p>
+                <div className="terminal-body">
+                  {streamingLog && (
+                    <div className="streaming-box">
+                      <pre className="streaming-text">{streamingLog}</pre>
+                      <span className="blinking-cursor">▌</span>
                     </div>
-                    <button 
-                      onClick={() => toggleBlock(block.id)}
-                      style={{ marginTop: '20px', backgroundColor: block.active ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
-                    >
-                      {block.active ? '설정 관리' : '블록 활성화'}
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  )}
 
-              {/* 새로운 MCP 블록 추가 폼 (아래로 추가되는 기능 완벽 탑재) */}
-              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px' }}>
-                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', color: '#f8fafc' }}>➕ 새로운 MCP 블록 추가하기</h3>
-                <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>커스텀 MCP 블록을 등록하면 아래 리스트에 바로 추가됩니다.</p>
-                
-                <form onSubmit={handleAddBlock} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <input
-                    type="text"
-                    value={newBlockName}
-                    onChange={(e) => setNewBlockName(e.target.value)}
-                    placeholder="블록 이름 (예: Notion Sync 블록)"
-                    style={{ backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '10px 14px', color: '#fff', fontSize: '14px', outline: 'none' }}
-                  />
-                  <input
-                    type="text"
-                    value={newBlockDesc}
-                    onChange={(e) => setNewBlockDesc(e.target.value)}
-                    placeholder="블록 설명 (예: 노선 데이터 및 문서를 실시간 동기화합니다.)"
-                    style={{ backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '10px 14px', color: '#fff', fontSize: '14px', outline: 'none' }}
-                  />
-                  <button
-                    type="submit"
-                    style={{ alignSelf: 'flex-end', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 20px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
-                  >
-                    블록 추가하기
-                  </button>
-                </form>
+                  {logs.length === 0 && !streamingLog ? (
+                    <div className="empty-log">
+                      활성화된 MCP 블록을 사용하여 프롬프트를 전송해보세요. 실시간 실행 로그가 촤르륵 연출됩니다!
+                    </div>
+                  ) : (
+                    logs.map((log) => (
+                      <div key={log.id} className="log-line-item">
+                        <div className="log-content-box">
+                          <span className="log-time">[{new Date(log.created_at).toLocaleTimeString()}]</span>
+                          <span className="log-arrow">&gt;</span>
+                          <span className="log-text">{log.content}</span>
+                        </div>
+                        <button onClick={() => handleDeleteLog(log.id)} className="btn-delete-log">✕</button>
+                      </div>
+                    ))
+                  )}
+                  <div ref={terminalEndRef} />
+                </div>
               </div>
             </div>
           )}
 
-          {activeTab === 'monitoring' && (
-            <div>
-              <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  📈 모니터링 & 파일
-                </h1>
-                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-                  시스템 상태 및 업로드된 파일 현황을 모니터링합니다.
-                </p>
+          {/* MCP 블록 매니저 */}
+          {activeMenu === 'mcp' && (
+            <div className="fade-in">
+              <div className="page-title-area">
+                <h1 className="page-title">🧩 Visual MCP Block Builder</h1>
+                <p className="page-desc">원클릭으로 원하는 도구를 레고 블록처럼 연결하여 AI의 능력을 확장하세요.</p>
               </div>
 
-              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px' }}>
-                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>리소스 사용량</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                  <div style={{ backgroundColor: '#0f172a', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
-                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>API 응답 속도</div>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#34d399', marginTop: '4px' }}>124ms</div>
+              <div className="preset-section">
+                <h3 className="section-subtitle">⚡ 빠른 MCP 블록 추가하기</h3>
+                <div className="preset-grid">
+                  {PRESET_MCP_SERVERS.map((preset, idx) => (
+                    <div key={idx} className="preset-card">
+                      <div className="preset-header">
+                        <span className="preset-icon">{preset.icon}</span>
+                        <span className="preset-category">{preset.category}</span>
+                      </div>
+                      <div className="preset-name">{preset.name}</div>
+                      <div className="preset-desc">{preset.description}</div>
+                      <button onClick={() => handleAddMcp(preset)} className="btn-add-preset">+ 연결 추가</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="active-mcp-section">
+                <h3 className="section-subtitle">🔌 현재 내 계정에 연결된 MCP 블록 ({mcpServers.length})</h3>
+                {mcpServers.length === 0 ? (
+                  <div className="empty-block-box">
+                    위에서 원하는 연동 블록의 <strong>[+ 연결 추가]</strong> 버튼을 눌러보세요!
                   </div>
-                  <div style={{ backgroundColor: '#0f172a', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
-                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>활성 세션</div>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#38bdf8', marginTop: '4px' }}>1개</div>
+                ) : (
+                  <div className="mcp-list-grid">
+                    {mcpServers.map((server) => (
+                      <div key={server.id} className={`mcp-item-card ${server.is_active ? 'active' : 'disabled'}`}>
+                        <div className="mcp-card-top">
+                          <div className="mcp-title-group">
+                            <span className="mcp-item-icon">{server.icon}</span>
+                            <div>
+                              <div className="mcp-item-name">{server.name}</div>
+                              <span className="mcp-item-cat">{server.category}</span>
+                            </div>
+                          </div>
+                          <button onClick={() => handleDeleteMcp(server.id)} className="btn-delete-mcp">✕</button>
+                        </div>
+                        <p className="mcp-item-desc">{server.description}</p>
+                        <div className="mcp-card-bottom">
+                          <span className={`status-badge ${server.is_active ? 'on' : 'off'}`}>
+                            {server.is_active ? '● LIVE ACTIVE' : '○ DISABLED'}
+                          </span>
+                          <button 
+                            onClick={() => handleToggleMcp(server.id, server.is_active)}
+                            className={`btn-toggle ${server.is_active ? 'btn-off' : 'btn-on'}`}
+                          >
+                            {server.is_active ? '스위치 OFF' : '스위치 ON'}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div style={{ backgroundColor: '#0f172a', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
-                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>메모리 사용률</div>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b', marginTop: '4px' }}>34.2%</div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 트래픽 모니터링 & 스토리지 매니저 */}
+          {activeMenu === 'analytics' && (
+            <div className="fade-in">
+              <div className="page-title-area">
+                <h1 className="page-title">📈 트래픽 분석 & AI 데이터 스토리지</h1>
+                <p className="page-desc">MCP 트래픽 호출 현황을 분석하고 AI가 참조할 문서를 관리합니다.</p>
+              </div>
+
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-label">총 MCP 실행 횟수</div>
+                  <div className="stat-value">{logs.length}회</div>
+                  <div className="stat-sub text-success">↑ 100% 정상 처리됨</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">활성화된 커넥터</div>
+                  <div className="stat-value">{activeMcpCount}개</div>
+                  <div className="stat-sub">전체 {mcpServers.length}개 중</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">시스템 요청 성공률</div>
+                  <div className="stat-value">99.9%</div>
+                  <div className="stat-sub text-success">● Zero Error</div>
+                </div>
+              </div>
+
+              <div className="work-card">
+                <h3 className="card-title">📁 AI 참조용 컨텍스트 파일 등록</h3>
+                <form onSubmit={handleAddFile} className="input-group" style={{ marginBottom: '20px' }}>
+                  <input 
+                    type="text" 
+                    placeholder="등록할 문서/파일 제목을 입력하세요 (예: 2026_학회_일정표.pdf)" 
+                    value={newFileName}
+                    onChange={(e) => setNewFileName(e.target.value)}
+                    className="console-input"
+                  />
+                  <button type="submit" className="btn-execute">+ 파일 추가</button>
+                </form>
+
+                <div className="file-list">
+                  <div className="file-list">
+                  {files.map((file) => (
+                    <div key={file.id} className="file-item">
+                      <div className="file-info">
+                        <span className="file-icon">📄</span>
+                        <div>
+                          <div className="file-name">{file.name}</div>
+                          <div className="file-meta">{file.size} • {file.date}</div>
+                        </div>
+                      </div>
+                      <button onClick={() => handleDeleteFile(file.id)} className="btn-delete-log">✕</button>
+                    </div>
+                  ))}
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === 'logs' && (
-            <div>
-              <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  📜 DB 연동 로그
-                </h1>
-                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-                  데이터베이스 실시간 연결 및 쿼리 이력을 확인합니다.
-                </p>
+          {activeMenu === 'database' && (
+            <div className="fade-in">
+              <div className="page-title-area">
+                <h1 className="page-title">🗄️ Supabase 데이터베이스 상태</h1>
+                <p className="page-desc">백엔드 데이터베이스 코어와 실시간 테이블 연동 상태를 모니터링합니다.</p>
               </div>
-
-              <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155', padding: '20px', fontFamily: 'monospace', fontSize: '13px', color: '#34d399', lineHeight: '1.6' }}>
-                <div>[INFO] System connected to Supabase successfully.</div>
-                <div>[AUTH] Active session verified for user: {user?.email}</div>
-                <div>[QUERY] Fetching workspace configurations... [Status: 200 OK]</div>
-                <div>[MCP] Active Blocks: [{activeMcpNames}] pipeline ready.</div>
+              <div className="work-card">
+                <table className="status-table">
+                  <thead>
+                    <tr>
+                      <th>테이블 명</th>
+                      <th>연동 상태</th>
+                      <th>총 레코드 수</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>public.logs (명령어 로그)</td>
+                      <td className="text-success">● 정상 연동됨 (Active)</td>
+                      <td>{logs.length}개 건</td>
+                    </tr>
+                    <tr>
+                      <td>public.mcp_servers (MCP 서버)</td>
+                      <td className="text-success">● 정상 연동됨 (Active)</td>
+                      <td>{mcpServers.length}개 등록됨</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
-
-        </div>
+        </main>
       </div>
+
+      <style jsx global>{`
+        /* 💡 추천 폰트(JetBrains Mono 및 고품질 산세리프) 임포트 및 적용 */
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        body { 
+          margin: 0; 
+          padding: 0; 
+          background-color: #090d16; 
+          font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+
+        /* 코드 및 터미널 영역 전용 폰트 적용 */
+        .terminal-body, .terminal-title, .streaming-text, .console-input, pre, code {
+          font-family: 'JetBrains Mono', monospace !important;
+        }
+
+        .app-container { display: flex; min-height: 100vh; background: #090d16; color: #f1f5f9; }
+        .sidebar { width: 260px; background: #0f172a; border-right: 1px solid rgba(255, 255, 255, 0.04); display: flex; flex-direction: column; padding: 24px 16px; }
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; padding-left: 8px; }
+        .logo-icon { font-size: 24px; filter: drop-shadow(0 0 8px #38bdf8); }
+        .logo-text { font-size: 18px; font-weight: 800; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-menu { display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
+        .nav-item { width: 100%; padding: 12px 16px; background: transparent; color: #94a3b8; border: none; border-radius: 10px; text-align: left; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px; transition: all 0.2s ease; position: relative; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.03); color: #f1f5f9; }
+        .nav-item.active { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #0f172a; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25); }
+        .badge { background: #0f172a; color: #38bdf8; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 800; margin-left: auto; }
+        .status-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.03); padding: 14px; border-radius: 10px; font-size: 12px; color: #64748b; }
+        .status-item { display: flex; align-items: center; gap: 8px; }
+        .status-dot.online { width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
+
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; }
+        .main-header { height: 70px; background: rgba(15, 23, 42, 0.3); border-bottom: 1px solid rgba(255, 255, 255, 0.04); display: flex; align-items: center; justify-content: flex-end; padding: 0 40px; backdrop-filter: blur(8px); }
+        .user-profile { display: flex; align-items: center; gap: 14px; background: rgba(255, 255, 255, 0.03); padding: 6px 14px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .user-email { font-size: 13px; color: #cbd5e1; font-weight: 500; }
+        .btn-logout { padding: 6px 12px; background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: 700; }
+        .content-body { flex-grow: 1; padding: 40px; max-width: 1100px; width: 100%; margin: 0 auto; }
+        .page-title { font-size: 26px; font-weight: 800; color: #fff; margin: 0 0 6px 0; }
+        .page-desc { color: #64748b; font-size: 14px; margin: 0 0 24px 0; }
+        
+        .active-mcp-tag { font-size: 12px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .work-card { background: #0f172a; padding: 24px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.04); margin-bottom: 28px; }
+        .card-title { font-size: 15px; font-weight: 700; color: #94a3b8; margin-top: 0; }
+        .input-group { display: flex; gap: 12px; }
+        .console-input { flex-grow: 1; padding: 14px 18px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08); background: #070a12; color: #fff; font-size: 14px; outline: none; }
+        .btn-execute { padding: 0 28px; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #0f172a; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+
+        /* 터미널 스타일 */
+        .terminal-container { background: #05070f; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; overflow: hidden; }
+        .terminal-header { background: #0b0f19; padding: 14px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
+        .terminal-dots { display: flex; gap: 8px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.red { background: #ef4444; } .dot.yellow { background: #f59e0b; } .dot.green { background: #10b981; }
+        .terminal-title { margin-left: 20px; font-size: 11px; font-weight: 700; color: #38bdf8; }
+        .terminal-body { padding: 16px 24px; min-height: 260px; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .streaming-box { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: flex-end; }
+        .streaming-text { color: #38bdf8; margin: 0; font-size: 13px; white-space: pre-wrap; line-height: 1.6; }
+        .blinking-cursor { color: #38bdf8; animation: blink 1s infinite; margin-left: 4px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .empty-log { color: #475569; font-size: 13px; text-align: center; margin-top: 80px; }
+        .log-line-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.015); }
+        .log-content-box { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #cbd5e1; }
+        .log-time { color: #64748b; font-size: 11px; }
+        .log-arrow { color: #38bdf8; font-weight: bold; }
+        .log-text { color: #e2e8f0; }
+        .btn-delete-log { background: transparent; border: none; color: #64748b; cursor: pointer; font-size: 12px; }
+
+        /* 통계 및 파일 매니저 전용 스타일 */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .stat-card { background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 14px; }
+        .stat-label { font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
+        .stat-value { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+        .stat-sub { font-size: 11px; color: #94a3b8; }
+        .file-list { display: flex; flex-direction: column; gap: 10px; }
+        .file-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #070a12; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
+        .file-info { display: flex; align-items: center; gap: 12px; }
+        .file-icon { font-size: 20px; }
+        .file-name { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+        .file-meta { font-size: 11px; color: #64748b; }
+
+        /* MCP 프리셋 */
+        .section-subtitle { font-size: 16px; color: #cbd5e1; margin-bottom: 16px; font-weight: 700; }
+        .preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 36px; }
+        .preset-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.05); padding: 18px; border-radius: 14px; display: flex; flex-direction: column; justify-content: space-between; }
+        .preset-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .preset-icon { font-size: 22px; }
+        .preset-category { font-size: 11px; background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 2px 8px; border-radius: 6px; font-weight: 700; }
+        .preset-name { font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+        .preset-desc { font-size: 12px; color: #64748b; line-height: 1.4; margin-bottom: 16px; }
+        .btn-add-preset { width: 100%; padding: 8px; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .empty-block-box { background: #070a12; border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 40px; text-align: center; color: #64748b; font-size: 14px; }
+        .mcp-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .mcp-item-card { background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); padding: 20px; border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+        .mcp-item-card.disabled { border-color: rgba(255, 255, 255, 0.05); opacity: 0.6; }
+        .mcp-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .mcp-title-group { display: flex; gap: 12px; align-items: center; }
+        .mcp-item-icon { font-size: 24px; }
+        .mcp-item-name { font-size: 16px; font-weight: 700; color: #fff; }
+        .mcp-item-cat { font-size: 11px; color: #64748b; }
+        .btn-delete-mcp { background: transparent; border: none; color: #64748b; cursor: pointer; font-size: 14px; }
+        .mcp-item-desc { font-size: 12px; color: #94a3b8; margin-bottom: 20px; line-height: 1.4; }
+        .mcp-card-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+        .status-badge.on { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .status-badge.off { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        .btn-toggle { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; }
+        .btn-on { background: #10b981; color: #fff; }
+        .btn-off { background: rgba(255,255,255,0.08); color: #94a3b8; }
+        .status-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .status-table th { padding: 12px; color: #64748b; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .status-table td { padding: 16px 12px; font-size: 14px; color: #e2e8f0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .text-success { color: #34d399; font-weight: 600; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
     </div>
   );
 }
