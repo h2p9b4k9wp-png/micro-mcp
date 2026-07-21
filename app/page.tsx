@@ -5,6 +5,14 @@ import { createBrowserClient } from '@supabase/ssr';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { useRouter } from 'next/navigation';
 
+interface McpBlock {
+  id: string;
+  name: string;
+  description: string;
+  active: boolean;
+  icon: string;
+}
+
 export default function HomePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -15,13 +23,17 @@ export default function HomePage() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [activeTab, setActiveTab] = useState('workspace');
 
-  // 4개의 MCP 블록 활성화 상태 관리
-  const [mcpStates, setMcpStates] = useState({
-    supabase: true,
-    search: false,
-    filesystem: false,
-    customapi: false,
-  });
+  // 원래 있던 기본 4개 블록 + 사용자가 추가할 수 있는 동적 리스트 상태
+  const [blocks, setBlocks] = useState<McpBlock[]>([
+    { id: 'supabase', name: 'Supabase DB 블록', description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.', active: true, icon: '🗄️' },
+    { id: 'search', name: 'Google Search 블록', description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.', active: false, icon: '🔍' },
+    { id: 'filesystem', name: 'File System 블록', description: '로컬 및 클라우드 파일 디렉토리를 탐색하고 읽어옵니다.', active: false, icon: '📁' },
+    { id: 'customapi', name: 'Custom API 블록', description: '외부 사용자 정의 REST API 엔드포인트와 연동합니다.', active: false, icon: '⚡' },
+  ]);
+
+  // 새로운 블록 추가 폼 상태
+  const [newBlockName, setNewBlockName] = useState('');
+  const [newBlockDesc, setNewBlockDesc] = useState('');
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -52,20 +64,31 @@ export default function HomePage() {
     initApp();
   }, [router, supabase]);
 
-  // 활성화된 MCP 이름들을 문자열로 추출
-  const activeMcpNames = Object.entries(mcpStates)
-    .filter(([_, isActive]) => isActive)
-    .map(([key]) => {
-      if (key === 'supabase') return 'Supabase DB';
-      if (key === 'search') return 'Google Search';
-      if (key === 'filesystem') return 'File System';
-      if (key === 'customapi') return 'Custom API';
-      return key;
-    })
+  // 활성화된 블록 이름 추출
+  const activeMcpNames = blocks
+    .filter(b => b.active)
+    .map(b => b.name)
     .join(', ') || '활성화된 MCP 없음';
 
-  const toggleMcp = (key: keyof typeof mcpStates) => {
-    setMcpStates(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleBlock = (id: string) => {
+    setBlocks(prev => prev.map(b => b.id === id ? { ...b, active: !b.active } : b));
+  };
+
+  const handleAddBlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBlockName.trim()) return;
+
+    const newBlock: McpBlock = {
+      id: `custom-${Date.now()}`,
+      name: newBlockName,
+      description: newBlockDesc.trim() || '사용자가 직접 추가한 커스텀 MCP 블록입니다.',
+      active: true,
+      icon: '🧩'
+    };
+
+    setBlocks(prev => [...prev, newBlock]);
+    setNewBlockName('');
+    setNewBlockDesc('');
   };
 
   const handleExecute = async (e: React.FormEvent) => {
@@ -110,7 +133,7 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: '#f8fafc', display: 'flex', fontFamily: 'sans-serif' }}>
-      {/* 귀여운 폰트(Jua) 웹폰트 로드용 스타일 링크 주입 */}
+      {/* Gemini AI 답변 콘솔창 전용 귀여운 폰트(Jua) 웹폰트 로드 */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
       `}</style>
@@ -230,7 +253,7 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                {/* Gemini 답변 콘솔창에만 적용되는 귀여운 폰트('Jua') */}
+                {/* Gemini 답변 콘솔창 전용 Jua 폰트 적용 */}
                 <div style={{ 
                   padding: '20px', 
                   fontFamily: "'Jua', sans-serif", 
@@ -254,89 +277,60 @@ export default function HomePage() {
                   🧩 MCP 블록 매니저
                 </h1>
                 <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-                  연결할 4개의 MCP 블록을 활성화하고 관리하세요.
+                  연결할 MCP 블록을 활성화하고 관리하세요. 아래에서 새로운 블록을 추가할 수도 있습니다.
                 </p>
               </div>
 
-              {/* 4개의 MCP 블록 카드 격자 배치 */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+              {/* MCP 블록 리스트 (격자 배치) */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '32px' }}>
+                {blocks.map((block) => (
+                  <div key={block.id} style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{block.icon} {block.name}</span>
+                        <span style={{ fontSize: '12px', backgroundColor: block.active ? '#065f46' : '#334155', color: block.active ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
+                          {block.active ? '활성' : '비활성'}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>{block.description}</p>
+                    </div>
+                    <button 
+                      onClick={() => toggleBlock(block.id)}
+                      style={{ marginTop: '20px', backgroundColor: block.active ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
+                    >
+                      {block.active ? '설정 관리' : '블록 활성화'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* 새로운 MCP 블록 추가 폼 (아래로 추가되는 기능 완벽 탑재) */}
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px', color: '#f8fafc' }}>➕ 새로운 MCP 블록 추가하기</h3>
+                <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>커스텀 MCP 블록을 등록하면 아래 리스트에 바로 추가됩니다.</p>
                 
-                {/* 1. Supabase DB 블록 */}
-                <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>🗄️ Supabase DB 블록</span>
-                      <span style={{ fontSize: '12px', backgroundColor: mcpStates.supabase ? '#065f46' : '#334155', color: mcpStates.supabase ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
-                        {mcpStates.supabase ? '활성' : '비활성'}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.</p>
-                  </div>
-                  <button 
-                    onClick={() => toggleMcp('supabase')}
-                    style={{ marginTop: '20px', backgroundColor: mcpStates.supabase ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
+                <form onSubmit={handleAddBlock} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <input
+                    type="text"
+                    value={newBlockName}
+                    onChange={(e) => setNewBlockName(e.target.value)}
+                    placeholder="블록 이름 (예: Notion Sync 블록)"
+                    style={{ backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '10px 14px', color: '#fff', fontSize: '14px', outline: 'none' }}
+                  />
+                  <input
+                    type="text"
+                    value={newBlockDesc}
+                    onChange={(e) => setNewBlockDesc(e.target.value)}
+                    placeholder="블록 설명 (예: 노선 데이터 및 문서를 실시간 동기화합니다.)"
+                    style={{ backgroundColor: '#0f172a', border: '1px solid #475569', borderRadius: '8px', padding: '10px 14px', color: '#fff', fontSize: '14px', outline: 'none' }}
+                  />
+                  <button
+                    type="submit"
+                    style={{ alignSelf: 'flex-end', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 20px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
                   >
-                    {mcpStates.supabase ? '설정 관리' : '블록 활성화'}
+                    블록 추가하기
                   </button>
-                </div>
-
-                {/* 2. Google Search 블록 */}
-                <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>🔍 Google Search 블록</span>
-                      <span style={{ fontSize: '12px', backgroundColor: mcpStates.search ? '#065f46' : '#334155', color: mcpStates.search ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
-                        {mcpStates.search ? '활성' : '비활성'}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.</p>
-                  </div>
-                  <button 
-                    onClick={() => toggleMcp('search')}
-                    style={{ marginTop: '20px', backgroundColor: mcpStates.search ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
-                  >
-                    {mcpStates.search ? '설정 관리' : '블록 활성화'}
-                  </button>
-                </div>
-
-                {/* 3. File System 블록 */}
-                <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>📁 File System 블록</span>
-                      <span style={{ fontSize: '12px', backgroundColor: mcpStates.filesystem ? '#065f46' : '#334155', color: mcpStates.filesystem ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
-                        {mcpStates.filesystem ? '활성' : '비활성'}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>로컬 및 클라우드 파일 디렉토리를 탐색하고 읽어옵니다.</p>
-                  </div>
-                  <button 
-                    onClick={() => toggleMcp('filesystem')}
-                    style={{ marginTop: '20px', backgroundColor: mcpStates.filesystem ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
-                  >
-                    {mcpStates.filesystem ? '설정 관리' : '블록 활성화'}
-                  </button>
-                </div>
-
-                {/* 4. Custom API 블록 */}
-                <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>⚡ Custom API 블록</span>
-                      <span style={{ fontSize: '12px', backgroundColor: mcpStates.customapi ? '#065f46' : '#334155', color: mcpStates.customapi ? '#34d399' : '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>
-                        {mcpStates.customapi ? '활성' : '비활성'}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>외부 사용자 정의 REST API 엔드포인트와 연동합니다.</p>
-                  </div>
-                  <button 
-                    onClick={() => toggleMcp('customapi')}
-                    style={{ marginTop: '20px', backgroundColor: mcpStates.customapi ? '#334155' : '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}
-                  >
-                    {mcpStates.customapi ? '설정 관리' : '블록 활성화'}
-                  </button>
-                </div>
-
+                </form>
               </div>
             </div>
           )}
