@@ -13,6 +13,7 @@ export default function HomePage() {
   const [command, setCommand] = useState('');
   const [streamingLog, setStreamingLog] = useState('[MCP CORE] 시스템 대기 중...');
   const [isExecuting, setIsExecuting] = useState(false);
+  const [activeTab, setActiveTab] = useState('workspace'); // 사이드바 탭 상태 유지
   const [mcpNames, setMcpNames] = useState<string>('활성화된 MCP 없음');
 
   const supabase = createBrowserClient(
@@ -98,16 +99,28 @@ export default function HomePage() {
           <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Micro-MCP</span>
         </div>
         <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-          <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: '#0284c7', color: '#fff', fontWeight: '500', cursor: 'pointer' }}>
+          <div 
+            onClick={() => setActiveTab('workspace')}
+            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'workspace' ? '#0284c7' : 'transparent', color: activeTab === 'workspace' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer' }}
+          >
             📊 워크스페이스
           </div>
-          <div style={{ padding: '12px', borderRadius: '8px', color: '#94a3b8', cursor: 'pointer' }}>
+          <div 
+            onClick={() => setActiveTab('mcp')}
+            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'mcp' ? '#0284c7' : 'transparent', color: activeTab === 'mcp' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer' }}
+          >
             🧩 MCP 블록 매니저
           </div>
-          <div style={{ padding: '12px', borderRadius: '8px', color: '#94a3b8', cursor: 'pointer' }}>
+          <div 
+            onClick={() => setActiveTab('monitoring')}
+            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'monitoring' ? '#0284c7' : 'transparent', color: activeTab === 'monitoring' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer' }}
+          >
             📈 모니터링 & 파일
           </div>
-          <div style={{ padding: '12px', borderRadius: '8px', color: '#94a3b8', cursor: 'pointer' }}>
+          <div 
+            onClick={() => setActiveTab('logs')}
+            style={{ padding: '12px', borderRadius: '8px', backgroundColor: activeTab === 'logs' ? '#0284c7' : 'transparent', color: activeTab === 'logs' ? '#fff' : '#94a3b8', fontWeight: '500', cursor: 'pointer' }}
+          >
             📜 DB 연동 로그
           </div>
         </div>
