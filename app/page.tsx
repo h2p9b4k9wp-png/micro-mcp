@@ -152,7 +152,7 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* 본문 콘텐츠 (각 탭별 완벽 복원) */}
+        {/* 본문 콘텐츠 */}
         <div style={{ padding: '32px', maxWidth: '1000px', width: '100%', margin: '0 auto' }}>
           
           {activeTab === 'workspace' && (
@@ -207,7 +207,6 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                {/* 여기에만 귀여운 폰트 적용 */}
                 <div style={{ 
                   padding: '20px', 
                   fontFamily: "'Jua', sans-serif", 
@@ -226,26 +225,36 @@ export default function HomePage() {
 
           {activeTab === 'mcp' && (
             <div>
-              <h1 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '8px' }}>🧩 MCP 블록 매니저</h1>
-              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>시스템에 연동할 MCP 블록들을 관리하고 활성화 상태를 제어합니다.</p>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
-                <div style={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#f8fafc' }}>Supabase DB Connector</h3>
-                    <span style={{ fontSize: '12px', backgroundColor: '#065f46', color: '#34d399', padding: '2px 8px', borderRadius: '4px' }}>활성</span>
+              <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  🧩 MCP 블록 매니저
+                </h1>
+                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
+                  연결할 MCP 블록을 활성화하고 관리하세요.
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Supabase DB 블록</span>
+                      <span style={{ fontSize: '12px', backgroundColor: '#065f46', color: '#34d399', padding: '2px 8px', borderRadius: '4px' }}>활성</span>
+                    </div>
+                    <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.</p>
                   </div>
-                  <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>사용자 데이터 및 로그를 안전하게 읽고 쓰는 핵심 커넥터 블록입니다.</p>
-                  <button style={{ width: '100%', padding: '8px', backgroundColor: '#334155', color: '#f8fafc', border: 'none', borderRadius: '6px', fontSize: '13px', cursor: 'pointer' }}>설정 관리</button>
+                  <button style={{ marginTop: '20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}>설정 관리</button>
                 </div>
 
-                <div style={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#f8fafc' }}>Google Search Tool</h3>
-                    <span style={{ fontSize: '12px', backgroundColor: '#334155', color: '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>비활성</span>
+                <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Google Search 블록</span>
+                      <span style={{ fontSize: '12px', backgroundColor: '#334155', color: '#94a3b8', padding: '2px 8px', borderRadius: '4px' }}>비활성</span>
+                    </div>
+                    <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.</p>
                   </div>
-                  <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>실시간 웹 검색 결과를 제미나이 컨텍스트에 주입합니다.</p>
-                  <button style={{ width: '100%', padding: '8px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', cursor: 'pointer' }}>블록 활성화</button>
+                  <button style={{ marginTop: '20px', backgroundColor: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '13px', cursor: 'pointer' }}>블록 활성화</button>
                 </div>
               </div>
             </div>
@@ -253,11 +262,17 @@ export default function HomePage() {
 
           {activeTab === 'monitoring' && (
             <div>
-              <h1 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '8px' }}>📈 모니터링 & 파일</h1>
-              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>실시간 시스템 리소스 사용량 및 업로드된 파일 현황을 확인합니다.</p>
-              
-              <div style={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '24px', marginBottom: '20px' }}>
-                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>시스템 상태 요약</h3>
+              <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  📈 모니터링 & 파일
+                </h1>
+                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
+                  시스템 상태 및 업로드된 파일 현황을 모니터링합니다.
+                </p>
+              </div>
+
+              <div style={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid #334155', padding: '24px' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>리소스 사용량</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                   <div style={{ backgroundColor: '#0f172a', padding: '16px', borderRadius: '8px', border: '1px solid #334155' }}>
                     <div style={{ fontSize: '12px', color: '#94a3b8' }}>API 응답 속도</div>
@@ -278,14 +293,20 @@ export default function HomePage() {
 
           {activeTab === 'logs' && (
             <div>
-              <h1 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '8px' }}>📜 DB 연동 로그</h1>
-              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>데이터베이스와 상호작용했던 실시간 쿼리 및 인증 로그 내역입니다.</p>
-              
-              <div style={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '20px', fontFamily: 'monospace', fontSize: '13px', color: '#34d399', lineHeight: '1.5' }}>
-                <div>[INFO] 2026-06-07 15:00:12 - Supabase Client Initialized successfully.</div>
-                <div>[AUTH] 2026-06-07 15:00:15 - User session verified: kcw022@naver.com</div>
-                <div>[DB_QUERY] 2026-06-07 15:01:00 - SELECT * FROM workspace_logs WHERE status = 'active'; (Status: 200 OK)</div>
-                <div>[MCP] 2026-06-07 15:02:40 - Gemini 3.5 Flash Model pipeline connected.</div>
+              <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  📜 DB 연동 로그
+                </h1>
+                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
+                  데이터베이스 실시간 연결 및 쿼리 이력을 확인합니다.
+                </p>
+              </div>
+
+              <div style={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155', padding: '20px', fontFamily: 'monospace', fontSize: '13px', color: '#34d399', lineHeight: '1.6' }}>
+                <div>[INFO] System connected to Supabase successfully.</div>
+                <div>[AUTH] Active session verified for user: {user?.email}</div>
+                <div>[QUERY] Fetching workspace configurations... [Status: 200 OK]</div>
+                <div>[MCP] Gemini 3.5 Flash pipeline ready.</div>
               </div>
             </div>
           )}
