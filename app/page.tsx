@@ -1,5 +1,6 @@
 'use client';
 
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -46,12 +47,12 @@ export default function HomePage() {
   const [logs, setLogs] = useState<LogItem[]>([]);
   const [mcpServers, setMcpServers] = useState<McpServer[]>([]);
   
-  // 3단계 AI 라이브 스트리밍 상태
+  // AI 실행 상태
   const [isExecuting, setIsExecuting] = useState(false);
   const [streamingLog, setStreamingLog] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  // 4단계 스토리지 파일 상태
+  // 스토리지 파일 상태
   const [files, setFiles] = useState<FileItem[]>([
     { id: '1', name: '2026_프로젝트_기획서.pdf', size: '2.4 MB', type: 'PDF', date: '2026-07-20' },
     { id: '2', name: 'Database_Schema.sql', size: '15 KB', type: 'Code', date: '2026-07-21' },
@@ -113,6 +114,7 @@ export default function HomePage() {
     router.refresh();
   };
 
+  // 🔥 진짜 Gemini AI 연동 핸들러
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim() || isExecuting || !user) return;
@@ -124,40 +126,45 @@ export default function HomePage() {
     const activeMcps = mcpServers.filter(s => s.is_active);
     const mcpNames = activeMcps.length > 0 
       ? activeMcps.map(m => m.name).join(', ') 
-      : 'No Active MCP';
+      : 'None';
 
-    const steps = [
-      `[MCP CORE] Analyzing query: "${command}"...`,
-      activeMcps.length > 0 
-        ? `[MCP BRIDGE] Routing request to connected tools: [${mcpNames}]`
-        : `[MCP BRIDGE] No external MCP tools enabled. Running default AI model.`,
-      `[PROCESSING] Generating context-aware payload...`,
-      `[SUCCESS] Task completed. Response payload delivered.`
-    ];
+    setStreamingLog(`[MCP CORE] Analyzing query: "${command}"...\n[MCP BRIDGE] Active Connectors: [${mcpNames}]\n[AI MODEL] Requesting Google Gemini API...`);
 
-    let currentText = '';
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise(res => setTimeout(res, 400));
-      currentText += (i === 0 ? '' : '\n') + steps[i];
-      setStreamingLog(currentText);
-    }
-
-    const fullContent = `[Prompt] ${command}  -->  [Execution] ${steps[steps.length - 1]} (${mcpNames})`;
+    let aiAnswer = '';
 
     try {
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다. .env.local 또는 Vercel 환경 변수에 NEXT_PUBLIC_GEMINI_API_KEY를 추가해 주세요.';
+      } else {
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+        const promptWithContext = `[System Context: Active MCP Tools = ${mcpNames}]\n\n사용자 질문: ${command}\n\n위 요청에 대해 MCP 연동 환경을 고려하여 자연스럽고 명확하게 답변해 주세요.`;
+
+        const result = await model.generateContent(promptWithContext);
+        const response = await result.response;
+        aiAnswer = response.text();
+      }
+
+      setStreamingLog(`[MCP CORE] Query: "${command}"\n[CONNECTORS] [${mcpNames}]\n[SUCCESS] Response generated:\n\n${aiAnswer}`);
+
+      const fullLogContent = `[Prompt] ${command}  -->  [Gemini AI] ${aiAnswer}`;
+
       const { data, error } = await supabase
         .from('logs')
-        .insert([{ user_id: user.id, content: fullContent, status: 'SUCCESS' }])
+        .insert([{ user_id: user.id, content: fullLogContent, status: 'SUCCESS' }])
         .select()
         .single();
 
       if (!error && data) {
         setLogs((prev) => [data, ...prev]);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setStreamingLog(`[ERROR] AI 요청 실패: ${err?.message || '오류가 발생했습니다.'}`);
     } finally {
-      setStreamingLog(null);
       setIsExecuting(false);
     }
   };
@@ -208,7 +215,6 @@ export default function HomePage() {
     if (!error) setMcpServers((prev) => prev.filter((s) => s.id !== id));
   };
 
-  // 파일 등록
   const handleAddFile = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFileName.trim()) return;
@@ -233,7 +239,7 @@ export default function HomePage() {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#090d16', color: '#fff' }}>
         <div style={{ textAlign: 'center' }}>
-          <span style={{ display: 'inline-block', fontSize: '40px', animation: 'pulse 1.5s infinite' }}>🚀</span>
+          <span style={{ display: 'inline-block', fontSize: '40px' }}>🚀</span>
           <p style={{ marginTop: '16px', fontSize: '16px', color: '#94a3b8' }}>Micro-MCP 데이터베이스 연결 중...</p>
         </div>
       </div>
@@ -282,7 +288,7 @@ export default function HomePage() {
         <div className="status-card">
           <div className="status-item">
             <span className={`status-dot ${dbStatus === 'connected' ? 'online' : 'offline'}`}></span>
-            <span>DB Realtime: Active</span>
+            <span>Gemini AI Connected</span>
           </div>
           <div style={{ marginTop: '6px', color: '#38bdf8' }}>연결된 MCP: {activeMcpCount}개 활성</div>
         </div>
@@ -302,15 +308,15 @@ export default function HomePage() {
           {activeMenu === 'dashboard' && (
             <div className="fade-in">
               <div className="page-title-area">
-                <h1 className="page-title">📊 Live Playground Console</h1>
+                <h1 className="page-title">📊 Live Gemini AI Playground</h1>
                 <p className="page-desc">
-                  활성화된 MCP 블록({activeMcpCount}개)이 자동으로 연동되어 AI 프롬프트를 실시간 스트리밍 처리합니다.
+                  활성화된 MCP 블록({activeMcpCount}개) 맥락을 바탕으로 Google Gemini AI가 실제 답변을 도출합니다.
                 </p>
               </div>
 
               <div className="work-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 className="card-title" style={{ margin: 0 }}>⚡ AI 프롬프트 실행 및 MCP 테스트</h3>
+                  <h3 className="card-title" style={{ margin: 0 }}>⚡ AI 프롬프트 전송</h3>
                   <div className="active-mcp-tag">
                     {activeMcpCount > 0 ? `🟢 ${activeMcpCount}개 MCP 커넥터 작동 중` : '⚪ 활성화된 MCP 없음'}
                   </div>
@@ -318,14 +324,14 @@ export default function HomePage() {
                 <form onSubmit={handleExecute} className="input-group">
                   <input 
                     type="text" 
-                    placeholder={activeMcpCount > 0 ? "예: 노션 문서 정리해줘, 구글 달력에 오늘 일정 추가해줘..." : "명령어를 입력하세요..."}
+                    placeholder="Gemini AI에게 프롬프트를 입력하세요 (예: 노션 정리해줘, 오늘 할일 추천해줘)..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     className="console-input"
                     disabled={isExecuting}
                   />
                   <button type="submit" className="btn-execute" disabled={isExecuting}>
-                    {isExecuting ? 'AI 실행 중...' : '프롬프트 전송'}
+                    {isExecuting ? 'Gemini 생각 중...' : '프롬프트 전송'}
                   </button>
                 </form>
               </div>
@@ -337,19 +343,18 @@ export default function HomePage() {
                     <span className="dot yellow"></span>
                     <span className="dot green"></span>
                   </div>
-                  <span className="terminal-title">📟 LIVE STREAMING CONSOLE</span>
+                  <span className="terminal-title">📟 GEMINI AI LIVE CONSOLE</span>
                 </div>
                 <div className="terminal-body">
                   {streamingLog && (
                     <div className="streaming-box">
                       <pre className="streaming-text">{streamingLog}</pre>
-                      <span className="blinking-cursor">▌</span>
                     </div>
                   )}
 
                   {logs.length === 0 && !streamingLog ? (
                     <div className="empty-log">
-                      활성화된 MCP 블록을 사용하여 프롬프트를 전송해보세요. 실시간 실행 로그가 촤르륵 연출됩니다!
+                      프롬프트를 입력해보세요. 실제 Google Gemini AI가 도출한 답변이 터미널 콘솔에 출력됩니다!
                     </div>
                   ) : (
                     logs.map((log) => (
@@ -369,7 +374,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* MCP 블록 매니저 */}
           {activeMenu === 'mcp' && (
             <div className="fade-in">
               <div className="page-title-area">
@@ -434,7 +438,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* 4단계: 트래픽 모니터링 & 스토리지 매니저 */}
           {activeMenu === 'analytics' && (
             <div className="fade-in">
               <div className="page-title-area">
@@ -442,7 +445,6 @@ export default function HomePage() {
                 <p className="page-desc">MCP 트래픽 호출 현황을 분석하고 AI가 참조할 문서를 관리합니다.</p>
               </div>
 
-              {/* 통계 위젯 3종 */}
               <div className="stats-grid">
                 <div className="stat-card">
                   <div className="stat-label">총 MCP 실행 횟수</div>
@@ -455,13 +457,12 @@ export default function HomePage() {
                   <div className="stat-sub">전체 {mcpServers.length}개 중</div>
                 </div>
                 <div className="stat-card">
-                  <div className="stat-label">시스템 요청 성공률</div>
-                  <div className="stat-value">99.9%</div>
-                  <div className="stat-sub text-success">● Zero Error</div>
+                  <div className="stat-label">AI Engine</div>
+                  <div className="stat-value">Gemini 1.5</div>
+                  <div className="stat-sub text-success">● API Live Connected</div>
                 </div>
               </div>
 
-              {/* 스토리지 매니저 */}
               <div className="work-card">
                 <h3 className="card-title">📁 AI 참조용 컨텍스트 파일 등록</h3>
                 <form onSubmit={handleAddFile} className="input-group" style={{ marginBottom: '20px' }}>
@@ -559,7 +560,6 @@ export default function HomePage() {
         .console-input { flex-grow: 1; padding: 14px 18px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08); background: #070a12; color: #fff; font-size: 14px; outline: none; }
         .btn-execute { padding: 0 28px; background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #0f172a; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 
-        /* 터미널 스타일 */
         .terminal-container { background: #05070f; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; overflow: hidden; }
         .terminal-header { background: #0b0f19; padding: 14px 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
         .terminal-dots { display: flex; gap: 8px; }
@@ -567,10 +567,8 @@ export default function HomePage() {
         .dot.red { background: #ef4444; } .dot.yellow { background: #f59e0b; } .dot.green { background: #10b981; }
         .terminal-title { margin-left: 20px; font-family: monospace; font-size: 11px; font-weight: 700; color: #38bdf8; }
         .terminal-body { padding: 16px 24px; font-family: monospace; min-height: 260px; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .streaming-box { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: flex-end; }
+        .streaming-box { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); padding: 12px 16px; border-radius: 10px; margin-bottom: 10px; }
         .streaming-text { color: #38bdf8; margin: 0; font-size: 13px; font-family: monospace; white-space: pre-wrap; line-height: 1.6; }
-        .blinking-cursor { color: #38bdf8; animation: blink 1s infinite; margin-left: 4px; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         .empty-log { color: #475569; font-size: 13px; text-align: center; margin-top: 80px; }
         .log-line-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.015); }
@@ -580,7 +578,6 @@ export default function HomePage() {
         .log-text { color: #e2e8f0; }
         .btn-delete-log { background: transparent; border: none; color: #64748b; cursor: pointer; font-size: 12px; }
 
-        /* 통계 및 파일 매니저 전용 스타일 */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
         .stat-card { background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 14px; }
         .stat-label { font-size: 12px; color: #64748b; margin-bottom: 8px; font-weight: 600; }
@@ -593,7 +590,6 @@ export default function HomePage() {
         .file-name { font-size: 14px; font-weight: 600; color: #e2e8f0; }
         .file-meta { font-size: 11px; color: #64748b; }
 
-        /* MCP 프리셋 */
         .section-subtitle { font-size: 16px; color: #cbd5e1; margin-bottom: 16px; font-weight: 700; }
         .preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 36px; }
         .preset-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.05); padding: 18px; border-radius: 14px; display: flex; flex-direction: column; justify-content: space-between; }
