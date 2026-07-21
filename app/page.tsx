@@ -148,7 +148,7 @@ export default function HomePage() {
         const genAI = new GoogleGenerativeAI(apiKey);
         
         // 요구하신 Gemini 3.5 Flash 모델 적용
-        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
 
         const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]${dbContextData}${fileContextData}\n\n사용자 질문: ${currentCommand}`;
 
