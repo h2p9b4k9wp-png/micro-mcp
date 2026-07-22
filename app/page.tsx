@@ -24,7 +24,7 @@ interface FileItem {
   name: string;
   size: string;
   content?: string;
-  mimeType?: string; // 💡 파일 타입 정보 추가
+  mimeType?: string;
   date: string;
 }
 
@@ -50,9 +50,11 @@ export default function HomePage() {
   ]);
 
   const [logs, setLogs] = useState<LogItem[]>([]);
-  const [files, setFiles] = useState<FileItem[]>([
-    { id: '1', name: '2026_프로젝트_기획서.txt', size: '1.2 KB', content: '프로젝트 목표: 마이크로 MCP 기반 인공지능 에이전트 대시보드 구축 및 Supabase 연동.', mimeType: 'text/plain', date: '2026-07-20' },
-  ]);
+  
+  // 💡 [수정] 하드코딩된 '2026_프로젝트_기획서'를 없애고, 브라우저 로컬 스토리지에서 안전하게 불러오도록 수정
+  const [files, setFiles] = useState<FileItem[]>([]);
+  const [isFilesLoaded, setIsFilesLoaded] = useState(false);
+
   const [newFileName, setNewFileName] = useState('');
   const [newFileContent, setNewFileContent] = useState('');
 
@@ -60,6 +62,26 @@ export default function HomePage() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
+
+  // 💡 [추가] 브라우저 로컬 스토리지에서 저장된 파일 불러오기
+  useEffect(() => {
+    const savedFiles = localStorage.getItem('mcp_uploaded_files');
+    if (savedFiles) {
+      try {
+        setFiles(JSON.parse(savedFiles));
+      } catch (e) {
+        console.error('저장된 파일 로딩 실패:', e);
+      }
+    }
+    setIsFilesLoaded(true);
+  }, []);
+
+  // 💡 [추가] 파일이 추가되거나 삭제될 때마다 로컬 스토리지에 자동 저장하여 새로고침해도 유지
+  useEffect(() => {
+    if (isFilesLoaded) {
+      localStorage.setItem('mcp_uploaded_files', JSON.stringify(files));
+    }
+  }, [files, isFilesLoaded]);
 
   useEffect(() => {
     const initApp = async () => {
@@ -202,7 +224,6 @@ export default function HomePage() {
     setFiles(files.filter(f => f.id !== id));
   };
 
-  // 💡 [업데이트] 이미지, PDF 등 어떤 파일이든 Base64 데이터로 완벽하게 읽어오는 함수
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -210,7 +231,6 @@ export default function HomePage() {
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
-      // result는 "data:image/jpeg;base64,xxxx..." 형태이므로 순수 base64 데이터와 타입 분리
       const commaIndex = result.indexOf(',');
       const base64Content = commaIndex !== -1 ? result.substring(commaIndex + 1) : result;
 
