@@ -15,6 +15,7 @@ interface McpBlock {
 interface LogItem {
   id: string;
   content: string;
+  response?: string; // 💡 AI 답변 저장용 필드 추가
   created_at: string;
 }
 
@@ -36,6 +37,9 @@ export default function HomePage() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [activeTab, setActiveTab] = useState('workspace');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 💡 로그별 답변 펼침/접힘 상태 관리용 state
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
 
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
@@ -117,34 +121,29 @@ export default function HomePage() {
     const currentCommand = command;
     setCommand('');
 
-    let dbContextData = '';
-    const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active;
-    if (isSupabaseActive) {
-      const { data: recentLogs } = await supabase
-        .from('logs')
-        .select('content')
-        .limit(3);
-      dbContextData = `\n[Supabase DB 최근 데이터 맥락]: ${JSON.stringify(recentLogs || [])}`;
-    }
+    const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active || false;
+    const isFileActive = blocks.find(b => b.id === 'filesystem')?.active || false;
+    const isSearchActive = blocks.find(b => b.id === 'search')?.active || false;
 
-    let fileContextData = '';
-    const isFileActive = blocks.find(b => b.id === 'filesystem')?.active;
-    if (isFileActive && files.length > 0) {
-      const aggregatedFiles = files.map(f => `[파일 이름: ${f.name}]\n내용: ${f.content || '내용 없음'}`).join('\n\n');
-      fileContextData = `\n\n[첨부된 문서/파일 컨텍스트]:\n${aggregatedFiles}`;
-    }
-    
-    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]${isSupabaseActive ? '\n[Supabase] 실제 DB 쿼리 연동 완료' : ''}${isFileActive ? '\n[File System] 첨부 파일 컨텍스트 로드 완료' : ''}`);
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
+    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
 
     let aiAnswer = '';
 
     try {
-      const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]${dbContextData}${fileContextData}\n\n사용자 질문: ${currentCommand}`;
-
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptWithContext }),
+        body: JSON.stringify({ 
+          prompt: currentCommand,
+          isSearchActive,
+          isSupabaseActive,
+          isFileActive,
+          files: isFileActive ? files : [],
+          token
+        }),
       });
 
       const data = await res.json();
@@ -162,10 +161,16 @@ export default function HomePage() {
     setStreamingLog(finalLogText);
     setIsExecuting(false);
 
+    // 💡 Supabase DB에 프롬프트와 AI 답변(response)을 함께 저장
     try {
       const { data, error } = await supabase
         .from('logs')
-        .insert([{ user_id: user.id, content: `[Prompt] ${currentCommand} (MCP 연동 완료)`, status: 'SUCCESS' }])
+        .insert([{ 
+          user_id: user.id, 
+          content: `[Prompt] ${currentCommand}`, 
+          response: aiAnswer, // AI 답변 저장
+          status: 'SUCCESS' 
+        }])
         .select()
         .single();
 
@@ -198,7 +203,6 @@ export default function HomePage() {
     setFiles(files.filter(f => f.id !== id));
   };
 
-  // 💡 실제 컴퓨터 파일을 읽어오는 함수 추가됨
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -416,14 +420,13 @@ export default function HomePage() {
                   📈 모니터링 & 파일 (RAG 컨텍스트)
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  AI가 참고할 수 있도록 문서 내용을 직접 등록하거나 실제 파일을 첨부하세요. (File System 블록 활성화 시 자동 반영)
+                  AI가 참고할 수 있도록 문서 내용을 직접 등록하거나 실제 파일을 첨부하세요.
                 </p>
               </div>
 
               <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 mb-6">
                 <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 문서 추가</h3>
                 
-                {/* 💡 실제 파일 첨부 버튼 UI */}
                 <div className="mb-5">
                   <label className="inline-flex bg-sky-600 hover:bg-sky-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
                     <span>📁 내 컴퓨터에서 텍스트 파일(.txt, .md, .csv) 첨부하기</span>
@@ -485,21 +488,48 @@ export default function HomePage() {
             <div>
               <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                  📜 DB 연동 로그
+                  📜 DB 연동 로그 & AI 답변 조회
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  Supabase 데이터베이스에 실시간 기록된 프롬프트 실행 이력입니다.
+                  Supabase 데이터베이스에 기록된 프롬프트 이력과 당시 AI의 답변을 확인할 수 있습니다.
                 </p>
               </div>
 
-              <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs sm:text-sm text-emerald-400 leading-relaxed overflow-x-auto flex flex-col gap-2">
-                <div>[INFO] System connected to Supabase successfully.</div>
-                <div>[AUTH] Active session verified for user: {user?.email}</div>
-                {logs.map((log) => (
-                  <div key={log.id} className="text-sky-300">
-                    [{new Date(log.created_at).toLocaleTimeString()}] {log.content}
+              <div className="flex flex-col gap-3">
+                {logs.length === 0 && (
+                  <div className="text-sm text-slate-500 text-center py-8 bg-slate-900 rounded-xl border border-slate-800">
+                    저장된 로그가 없습니다. 워크스페이스에서 프롬프트를 전송해 보세요!
                   </div>
-                ))}
+                )}
+                {logs.map((log) => {
+                  const isExpanded = expandedLogId === log.id;
+                  return (
+                    <div key={log.id} className="bg-slate-900 rounded-xl border border-slate-800 p-4 flex flex-col gap-3">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div className="flex items-center gap-2 font-mono text-xs text-sky-300">
+                          <span className="text-slate-500">[{new Date(log.created_at).toLocaleTimeString()}]</span>
+                          <span className="font-semibold text-white">{log.content}</span>
+                        </div>
+                        {log.response && (
+                          <button
+                            onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
+                            className="bg-sky-600/20 hover:bg-sky-600/30 text-sky-400 border border-sky-500/30 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer self-end sm:self-auto"
+                          >
+                            {isExpanded ? '▲ 답변 접기' : '▼ AI 답변 보기'}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* 💡 답변 보기 버튼을 눌렀을 때만 나타나는 토글 박스 */}
+                      {isExpanded && log.response && (
+                        <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 text-sm text-emerald-400 font-['Jua',sans-serif] leading-relaxed whitespace-pre-wrap mt-1">
+                          <div className="text-xs text-slate-500 font-mono mb-2 font-sans">[AI 응답 결과 기록]</div>
+                          {log.response}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
