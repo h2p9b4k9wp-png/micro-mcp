@@ -4,12 +4,15 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: Request) {
   try {
+    // 💡 환경 변수 안전 장치 추가
     const apiKey = process.env.GEMINI_API_KEY;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!apiKey) {
-      return NextResponse.json({ error: "[ERROR] API 키가 없습니다." }, { status: 500 });
+      return NextResponse.json({ 
+        error: "[ERROR] GEMINI_API_KEY가 설정되지 않았습니다. .env.local 파일이나 Vercel Environment Variables를 확인해주세요." 
+      }, { status: 500 });
     }
 
     const body = await req.json();
