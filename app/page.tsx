@@ -119,35 +119,32 @@ export default function HomePage() {
     const currentCommand = command;
     setCommand('');
 
-    let dbContextData = '';
-    const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active;
-    if (isSupabaseActive) {
-      const { data: recentLogs } = await supabase
-        .from('logs')
-        .select('content')
-        .limit(3);
-      dbContextData = `\n[Supabase DB 최근 데이터 맥락]: ${JSON.stringify(recentLogs || [])}`;
-    }
+    // 각 블록들의 활성화 상태 확인
+    const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active || false;
+    const isFileActive = blocks.find(b => b.id === 'filesystem')?.active || false;
+    const isSearchActive = blocks.find(b => b.id === 'search')?.active || false;
 
-    let fileContextData = '';
-    const isFileActive = blocks.find(b => b.id === 'filesystem')?.active;
-    if (isFileActive && files.length > 0) {
-      const aggregatedFiles = files.map(f => `[파일 이름: ${f.name}]\n내용: ${f.content || '내용 없음'}`).join('\n\n');
-      fileContextData = `\n\n[첨부된 문서/파일 컨텍스트]:\n${aggregatedFiles}`;
-    }
-    
-    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]${isSupabaseActive ? '\n[Supabase] 실제 DB 쿼리 연동 완료' : ''}${isFileActive ? '\n[File System] 첨부 파일 컨텍스트 로드 완료' : ''}`);
+    // 💡 가장 핵심: 사용자의 보안 토큰(신분증)을 가져옵니다.
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
+    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
 
     let aiAnswer = '';
 
     try {
-      const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]${dbContextData}${fileContextData}\n\n사용자 질문: ${currentCommand}`;
-
-      // 💡 여기서 브라우저가 Gemini에 직접 요청하지 않고, 1단계에서 만든 우리 서버(/api/chat)로 요청을 보냄!
+      // 💡 잡다한 문자열 짬뽕 대신, 데이터를 깔끔하게 나누어 서버로 보냅니다.
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptWithContext }),
+        body: JSON.stringify({ 
+          prompt: currentCommand, // 순수 질문
+          isSearchActive,
+          isSupabaseActive,
+          isFileActive,
+          files: isFileActive ? files : [], // 파일 데이터 배열
+          token // DB 조회를 위한 유저 신분증
+        }),
       });
 
       const data = await res.json();
@@ -168,7 +165,7 @@ export default function HomePage() {
     try {
       const { data, error } = await supabase
         .from('logs')
-        .insert([{ user_id: user.id, content: `[Prompt] ${currentCommand} (MCP 연동 완료)`, status: 'SUCCESS' }])
+        .insert([{ user_id: user.id, content: `[Prompt] ${currentCommand}`, status: 'SUCCESS' }])
         .select()
         .single();
 
