@@ -35,46 +35,33 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. File System 블록 (파일 형식별 안전한 컨텍스트 주입)
+    // 2. File System 블록 (모든 파일 포맷을 에러 없이 강제 분석 대상으로 주입)
     let fileTextSummary = "";
     if (isFileActive && files && files.length > 0) {
       for (const f of files) {
-        const lowerName = f.name.toLowerCase();
-
-        // .hwp 또는 바이너리 문서인 경우 특수 안내 추가
-        if (lowerName.endsWith('.hwp') || lowerName.endsWith('.hwpx')) {
-          fileTextSummary += `[파일명: ${f.name}]\n(안내: HWP 파일은 전용 포맷이므로, 핵심 내용을 복사해서 '텍스트 직접 입력'으로 등록해주시면 가장 정확한 분석이 가능합니다.)\n\n`;
-        } 
-        // 텍스트 계열 파일
-        else if (f.mimeType && f.mimeType.startsWith('text/')) {
-          try {
-            const decodedText = atob(f.content);
-            fileTextSummary += `[파일명: ${f.name}]\n내용:\n${decodedText}\n\n`;
-          } catch {
-            fileTextSummary += `[파일명: ${f.name}]\n내용:\n${f.content}\n\n`;
-          }
-        } 
-        // 이미지 및 PDF 멀티모달 파일
-        else if (f.mimeType && (f.mimeType.startsWith('image/') || f.mimeType.includes('pdf'))) {
-          contents.push({
-            inlineData: {
-              data: f.content,
-              mimeType: f.mimeType
-            }
-          });
-          fileTextSummary += `[첨부된 시각/문서 파일: ${f.name}]\n`;
-        } else {
-          try {
-            const decodedText = atob(f.content);
-            fileTextSummary += `[파일명: ${f.name}]\n내용:\n${decodedText}\n\n`;
-          } catch {
-            fileTextSummary += `[파일명: ${f.name}]\n내용:\n${f.content}\n\n`;
+        try {
+          // base64로 인코딩된 데이터를 디코딩 시도 (텍스트 파일이나 기타 문서용)
+          const decodedText = atob(f.content);
+          fileTextSummary += `[첨부 파일: ${f.name}]\n내용:\n${decodedText}\n\n`;
+        } catch {
+          // 디코딩 실패하거나 바이너리/이미지인 경우 멀티모달 데이터로 직접 첨부
+          if (f.mimeType && (f.mimeType.startsWith('image/') || f.mimeType.includes('pdf'))) {
+            contents.push({
+              inlineData: {
+                data: f.content,
+                mimeType: f.mimeType
+              }
+            });
+            fileTextSummary += `[첨부 파일 (멀티모달/이미지/문서): ${f.name}]\n`;
+          } else {
+            // HWP 등 특수 바이너리 파일의 경우 원본 데이터(base64)를 텍스트 형태로라도 AI에게 전달하여 분석 시도
+            fileTextSummary += `[첨부 파일 (원문 데이터): ${f.name}]\n원문 데이터 내용:\n${f.content}\n\n`;
           }
         }
       }
     }
 
-    const systemInstruction = `당신은 사용자의 요청을 해결해주는 뛰어난 AI 어시스턴트입니다.\n아래 제공된 배경 정보(과거 기록 및 첨부 파일 정보)를 바탕으로 사용자의 질문에 정확하게 답변하세요.\n\n${dbContext}${fileTextSummary}`;
+    const systemInstruction = `당신은 사용자의 요청을 해결해주는 뛰어난 AI 어시스턴트입니다.\n아래 제공된 배경 정보(과거 기록 및 첨부 파일 내용)를 바탕으로 사용자의 질문에 완벽하고 상세하게 답변하세요. 파일 내용이 복잡하거나 일부 특수 포맷의 문자열이 섞여 있더라도 최선을 다해 핵심을 파악하여 요약하고 분석해 주세요.\n\n${dbContext}${fileTextSummary}`;
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
