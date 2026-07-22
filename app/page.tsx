@@ -42,11 +42,13 @@ export default function HomePage() {
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
+  // 💡 [수정] 블록 이름과 설명을 직관적으로 변경하고, '캘린더 일정 분석 블록' 추가
   const [blocks, setBlocks] = useState<McpBlock[]>([
     { id: 'supabase', name: 'Supabase DB 블록', description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.', active: true, icon: '🗄️' },
     { id: 'search', name: 'Google Search 블록', description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.', active: false, icon: '🔍' },
     { id: 'filesystem', name: 'File System 블록', description: '첨부된 파일 및 문서 내용을 AI 컨텍스트에 주입합니다.', active: true, icon: '📁' },
-    { id: 'customapi', name: 'Custom API 블록', description: '외부 사용자 정의 REST API 엔드포인트와 연동합니다.', active: false, icon: '⚡' },
+    { id: 'calendar', name: '📅 캘린더 일정 분석 블록', description: '시간표나 일정 파일을 분석하여 주간/월간 계획을 체계적으로 정리합니다.', active: true, icon: '📅' },
+    { id: 'customapi', name: '⚡ 외부 서비스 연동 블록', description: '노션, 슬랙 등 외부 웹서비스 API와 간편하게 연동합니다.', active: false, icon: '🔌' },
   ]);
 
   const [logs, setLogs] = useState<LogItem[]>([]);
@@ -141,6 +143,7 @@ export default function HomePage() {
     const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active || false;
     const isFileActive = blocks.find(b => b.id === 'filesystem')?.active || false;
     const isSearchActive = blocks.find(b => b.id === 'search')?.active || false;
+    const isCalendarActive = blocks.find(b => b.id === 'calendar')?.active || false;
 
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
@@ -158,7 +161,8 @@ export default function HomePage() {
           isSearchActive,
           isSupabaseActive,
           isFileActive,
-          files: isFileActive ? files : [],
+          isCalendarActive, // 캘린더 상태 전달
+          files: (isFileActive || isCalendarActive) ? files : [],
           token
         }),
       });
@@ -220,14 +224,12 @@ export default function HomePage() {
     setFiles(files.filter(f => f.id !== id));
   };
 
-  // 💡 [수정] 대용량 파일(.pptx 등) 업로드 시 브라우저 뻗음 현상(Out of Memory) 방지용 안전 가드 추가
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 10MB 이상 파일은 브라우저 크래시 방지를 위해 텍스트 메타데이터 위주로 안전 처리
     if (file.size > 10 * 1024 * 1024) {
-      alert('파일 용량이 너무 큽니다 (10MB 초과). 핵심 텍스트를 복사해서 직접 입력하거나 PDF/이미지로 변환해서 올려주세요!');
+      alert('파일 용량이 너무 큽니다 (10MB 초과). 핵심 텍스트를 복사해서 직접 입력하거나 변환해서 올려주세요!');
       e.target.value = '';
       return;
     }
@@ -250,7 +252,6 @@ export default function HomePage() {
       e.target.value = '';
     };
     
-    // PPTX나 오피스 파일일 경우 에러 방지를 위해 안전하게 Read 시도
     try {
       reader.readAsDataURL(file);
     } catch (err) {
@@ -379,7 +380,7 @@ export default function HomePage() {
                     type="text"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
-                    placeholder="예: 첨부된 파일 내용을 바탕으로 요약해줘..."
+                    placeholder="예: 첨부된 일정표를 바탕으로 이번 주 계획을 정리해줘..."
                     className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-sky-500 transition-colors"
                   />
                   <button
@@ -456,16 +457,16 @@ export default function HomePage() {
                   📈 모니터링 & 파일 (RAG 컨텍스트)
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  AI가 참고할 수 있도록 이미지, PDF, 텍스트 등 모든 종류의 파일을 첨부하세요.
+                  AI가 참고할 수 있도록 일정표, 엑셀, 문서, 이미지 등의 파일을 첨부하세요.
                 </p>
               </div>
 
               <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 mb-6">
-                <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 파일 첨부</h3>
+                <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 파일 및 일정표 첨부</h3>
                 
                 <div className="mb-5">
                   <label className="inline-flex bg-sky-600 hover:bg-sky-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
-                    <span>📁 모든 파일 첨부하기 (이미지, PDF, 텍스트 등)</span>
+                    <span>📁 파일 및 캘린더 일정 첨부하기</span>
                     <input 
                       type="file" 
                       onChange={handleFileUpload} 
@@ -483,13 +484,13 @@ export default function HomePage() {
                 <form onSubmit={handleAddFile} className="flex flex-col gap-3">
                   <input
                     type="text"
-                    placeholder="문서 제목 (예: 회의록_요약.txt)"
+                    placeholder="문서 제목 (예: 5월_행사일정.txt)"
                     value={newFileName}
                     onChange={(e) => setNewFileName(e.target.value)}
                     className="bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2.5 text-white text-sm outline-none"
                   />
                   <textarea
-                    placeholder="AI가 읽을 문서 내용을 입력하세요..."
+                    placeholder="AI가 읽을 일정 내용이나 메모를 입력하세요..."
                     value={newFileContent}
                     onChange={(e) => setNewFileContent(e.target.value)}
                     rows={3}
