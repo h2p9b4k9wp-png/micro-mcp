@@ -103,7 +103,7 @@ export async function POST(req: Response | Request) {
     const genAI = new GoogleGenerativeAI(apiKey);
     
     const modelParams: any = { 
-      model: "gemini-3.5-flash-lite",
+      model: "gemini-3.6-flash",
       systemInstruction: systemInstruction 
     };
     
