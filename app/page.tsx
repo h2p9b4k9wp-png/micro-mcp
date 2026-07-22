@@ -33,6 +33,13 @@ interface FileItem {
   date: string;
 }
 
+interface Deadline {
+  id: string;
+  title: string;
+  course: string;
+  dueAt: string; // datetime-local 문자열
+}
+
 // 브랜드 로고마크 — 블록이 서로 연결되는 모습을 형상화. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
   return (
@@ -116,6 +123,13 @@ export default function HomePage() {
   const [testResult, setTestResult] = useState('블록을 선택하고 실제 연동 테스트를 실행해보세요.');
   const [selectedConfigBlock, setSelectedConfigBlock] = useState('supabase');
 
+  // 💡 [신규] 마감일 매니저 상태
+  const [deadlines, setDeadlines] = useState<Deadline[]>([]);
+  const [isDeadlinesLoaded, setIsDeadlinesLoaded] = useState(false);
+  const [newDeadlineTitle, setNewDeadlineTitle] = useState('');
+  const [newDeadlineCourse, setNewDeadlineCourse] = useState('');
+  const [newDeadlineDue, setNewDeadlineDue] = useState('');
+
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -160,6 +174,25 @@ export default function HomePage() {
       localStorage.setItem('mcp_uploaded_files', JSON.stringify(files));
     }
   }, [files, isFilesLoaded]);
+
+  // 💡 [신규] 마감일 목록 불러오기 / 저장하기
+  useEffect(() => {
+    const savedDeadlines = localStorage.getItem('mcp_deadlines');
+    if (savedDeadlines) {
+      try {
+        setDeadlines(JSON.parse(savedDeadlines));
+      } catch (e) {
+        console.error('마감일 로딩 실패:', e);
+      }
+    }
+    setIsDeadlinesLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isDeadlinesLoaded) {
+      localStorage.setItem('mcp_deadlines', JSON.stringify(deadlines));
+    }
+  }, [deadlines, isDeadlinesLoaded]);
 
   useEffect(() => {
     const initApp = async () => {
@@ -372,8 +405,54 @@ export default function HomePage() {
     }
   };
 
+  // 💡 [신규] 마감일 추가 / 삭제 / D-day 계산
+  const handleAddDeadline = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDeadlineTitle.trim() || !newDeadlineDue) return;
+
+    const newDeadline: Deadline = {
+      id: Date.now().toString(),
+      title: newDeadlineTitle,
+      course: newDeadlineCourse,
+      dueAt: newDeadlineDue,
+    };
+
+    setDeadlines(prev => [...prev, newDeadline]);
+    setNewDeadlineTitle('');
+    setNewDeadlineCourse('');
+    setNewDeadlineDue('');
+  };
+
+  const handleDeleteDeadline = (id: string) => {
+    setDeadlines(prev => prev.filter(d => d.id !== id));
+  };
+
+  const getDDayInfo = (dueAt: string) => {
+    const diffMs = new Date(dueAt).getTime() - Date.now();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMs < 0) return { label: '마감됨', urgency: 'overdue' as const };
+    if (diffDays <= 0) return { label: 'D-DAY', urgency: 'critical' as const };
+    if (diffDays <= 3) return { label: `D-${diffDays}`, urgency: 'high' as const };
+    if (diffDays <= 7) return { label: `D-${diffDays}`, urgency: 'medium' as const };
+    return { label: `D-${diffDays}`, urgency: 'low' as const };
+  };
+
+  const urgencyStyles: Record<string, string> = {
+    overdue: 'bg-[#F2F4F7] text-[#667085] border-[#E5E7EB]',
+    critical: 'bg-[#FEF3F2] text-[#B42318] border-[#FDA29B]',
+    high: 'bg-[#FFFAEB] text-[#B54708] border-[#FEDF89]',
+    medium: 'bg-[#EEF0FC] text-[#363EA6] border-[#C7CCF0]',
+    low: 'bg-[#F5F6F8] text-[#667085] border-[#E5E7EB]',
+  };
+
+  const sortedDeadlines = [...deadlines].sort(
+    (a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime()
+  );
+
   const NAV_ITEMS = [
     { id: 'workspace', label: '워크스페이스', icon: '📊' },
+    { id: 'deadlines', label: '마감일 매니저', icon: '⏰' },
     { id: 'mcp', label: 'MCP 블록 매니저', icon: '🧩' },
     { id: 'integration', label: '블록 연동 & 테스트', icon: '⚡' },
     { id: 'monitoring', label: '모니터링 & 파일', icon: '📈' },
@@ -549,6 +628,89 @@ export default function HomePage() {
                 </div>
               </div>
             </>
+          )}
+
+          {activeTab === 'deadlines' && (
+            <div>
+              <div className="mb-6">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                  마감일 매니저
+                </h1>
+                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
+                  과제와 시험 마감일을 한눈에 모아서, 가장 급한 것부터 자동으로 정렬해드려요.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#14171F]">새 마감일 추가</h3>
+                <form onSubmit={handleAddDeadline} className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr_auto] gap-3">
+                  <input
+                    type="text"
+                    required
+                    placeholder="할 일 (예: 데이터베이스 과제 3)"
+                    value={newDeadlineTitle}
+                    onChange={(e) => setNewDeadlineTitle(e.target.value)}
+                    className="px-3.5 py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 placeholder:text-[#98A2B3]"
+                  />
+                  <input
+                    type="text"
+                    placeholder="과목/카테고리 (선택)"
+                    value={newDeadlineCourse}
+                    onChange={(e) => setNewDeadlineCourse(e.target.value)}
+                    className="px-3.5 py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 placeholder:text-[#98A2B3]"
+                  />
+                  <input
+                    type="datetime-local"
+                    required
+                    value={newDeadlineDue}
+                    onChange={(e) => setNewDeadlineDue(e.target.value)}
+                    className="px-3.5 py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#363EA6] hover:bg-[#2C3189] text-white rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] focus-visible:ring-offset-2"
+                  >
+                    추가
+                  </button>
+                </form>
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                {sortedDeadlines.length === 0 && (
+                  <div className="text-sm text-[#98A2B3] text-center py-8 bg-white rounded-xl border border-[#E5E7EB]">
+                    등록된 마감일이 없습니다. 위에서 첫 마감일을 추가해보세요!
+                  </div>
+                )}
+                {sortedDeadlines.map((deadline) => {
+                  const dday = getDDayInfo(deadline.dueAt);
+                  return (
+                    <div
+                      key={deadline.id}
+                      className="bg-white rounded-xl border border-[#E5E7EB] p-4 flex items-center justify-between gap-3 shadow-sm"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className={`shrink-0 px-2.5 py-1 rounded-md text-xs font-bold border ${urgencyStyles[dday.urgency]}`}>
+                          {dday.label}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold text-[#14171F] truncate">{deadline.title}</div>
+                          <div className="text-xs text-[#98A2B3] mt-0.5">
+                            {deadline.course && <span>{deadline.course} · </span>}
+                            {new Date(deadline.dueAt).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteDeadline(deadline.id)}
+                        className="shrink-0 text-[#F04438] hover:text-[#D92D20] text-xs px-2.5 py-1.5 bg-[#FEF3F2] rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F04438]"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           )}
 
           {activeTab === 'mcp' && (
