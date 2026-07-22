@@ -109,8 +109,6 @@ export default function HomePage() {
     setBlocks(prev => prev.map(b => b.id === id ? { ...b, active: !b.active } : b));
   };
 
- // app/page.tsx 안의 handleExecute 함수 통째로 덮어쓰기
-
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!command.trim() || !user) return;
@@ -119,32 +117,34 @@ export default function HomePage() {
     const currentCommand = command;
     setCommand('');
 
-    // 각 블록들의 활성화 상태 확인
-    const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active || false;
-    const isFileActive = blocks.find(b => b.id === 'filesystem')?.active || false;
-    const isSearchActive = blocks.find(b => b.id === 'search')?.active || false;
+    let dbContextData = '';
+    const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active;
+    if (isSupabaseActive) {
+      const { data: recentLogs } = await supabase
+        .from('logs')
+        .select('content')
+        .limit(3);
+      dbContextData = `\n[Supabase DB 최근 데이터 맥락]: ${JSON.stringify(recentLogs || [])}`;
+    }
 
-    // 💡 가장 핵심: 사용자의 보안 토큰(신분증)을 가져옵니다.
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token;
-
-    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
+    let fileContextData = '';
+    const isFileActive = blocks.find(b => b.id === 'filesystem')?.active;
+    if (isFileActive && files.length > 0) {
+      const aggregatedFiles = files.map(f => `[파일 이름: ${f.name}]\n내용: ${f.content || '내용 없음'}`).join('\n\n');
+      fileContextData = `\n\n[첨부된 문서/파일 컨텍스트]:\n${aggregatedFiles}`;
+    }
+    
+    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]${isSupabaseActive ? '\n[Supabase] 실제 DB 쿼리 연동 완료' : ''}${isFileActive ? '\n[File System] 첨부 파일 컨텍스트 로드 완료' : ''}`);
 
     let aiAnswer = '';
 
     try {
-      // 💡 잡다한 문자열 짬뽕 대신, 데이터를 깔끔하게 나누어 서버로 보냅니다.
+      const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]${dbContextData}${fileContextData}\n\n사용자 질문: ${currentCommand}`;
+
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          prompt: currentCommand, // 순수 질문
-          isSearchActive,
-          isSupabaseActive,
-          isFileActive,
-          files: isFileActive ? files : [], // 파일 데이터 배열
-          token // DB 조회를 위한 유저 신분증
-        }),
+        body: JSON.stringify({ prompt: promptWithContext }),
       });
 
       const data = await res.json();
@@ -165,7 +165,7 @@ export default function HomePage() {
     try {
       const { data, error } = await supabase
         .from('logs')
-        .insert([{ user_id: user.id, content: `[Prompt] ${currentCommand}`, status: 'SUCCESS' }])
+        .insert([{ user_id: user.id, content: `[Prompt] ${currentCommand} (MCP 연동 완료)`, status: 'SUCCESS' }])
         .select()
         .single();
 
@@ -176,6 +176,7 @@ export default function HomePage() {
       console.error('로그 저장 중 오류 발생:', dbErr);
     }
   };
+
   const handleAddFile = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFileName.trim()) return;
@@ -195,6 +196,27 @@ export default function HomePage() {
 
   const handleDeleteFile = (id: string) => {
     setFiles(files.filter(f => f.id !== id));
+  };
+
+  // 💡 실제 컴퓨터 파일을 읽어오는 함수 추가됨
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      const newFile: FileItem = {
+        id: Date.now().toString(),
+        name: file.name,
+        size: `${(file.size / 1024).toFixed(1)} KB`,
+        content: content || '내용 없음',
+        date: new Date().toISOString().split('T')[0]
+      };
+      setFiles(prev => [newFile, ...prev]);
+      e.target.value = '';
+    };
+    reader.readAsText(file);
   };
 
   if (loading) {
@@ -394,12 +416,32 @@ export default function HomePage() {
                   📈 모니터링 & 파일 (RAG 컨텍스트)
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  AI가 참고할 수 있도록 문서 내용을 직접 등록하세요. (File System 블록 활성화 시 자동 반영)
+                  AI가 참고할 수 있도록 문서 내용을 직접 등록하거나 실제 파일을 첨부하세요. (File System 블록 활성화 시 자동 반영)
                 </p>
               </div>
 
               <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 mb-6">
-                <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 텍스트 문서 추가</h3>
+                <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 문서 추가</h3>
+                
+                {/* 💡 실제 파일 첨부 버튼 UI */}
+                <div className="mb-5">
+                  <label className="inline-flex bg-sky-600 hover:bg-sky-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
+                    <span>📁 내 컴퓨터에서 텍스트 파일(.txt, .md, .csv) 첨부하기</span>
+                    <input 
+                      type="file" 
+                      accept=".txt,.md,.csv,.json"
+                      onChange={handleFileUpload} 
+                      className="hidden" 
+                    />
+                  </label>
+                </div>
+
+                <div className="text-xs text-slate-500 mb-5 flex items-center gap-3">
+                  <hr className="flex-1 border-slate-800" />
+                  <span>또는 텍스트 직접 입력</span>
+                  <hr className="flex-1 border-slate-800" />
+                </div>
+
                 <form onSubmit={handleAddFile} className="flex flex-col gap-3">
                   <input
                     type="text"
@@ -415,20 +457,23 @@ export default function HomePage() {
                     rows={3}
                     className="bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2.5 text-white text-sm outline-none resize-none"
                   />
-                  <button type="submit" className="self-end bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold">
-                    문서 업로드 및 인덱싱
+                  <button type="submit" className="self-end bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold border border-slate-700">
+                    직접 입력해서 등록
                   </button>
                 </form>
 
-                <div className="mt-6 flex flex-col gap-2">
+                <div className="mt-8 flex flex-col gap-2">
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">등록된 컨텍스트 파일 목록</h4>
+                  {files.length === 0 && (
+                    <div className="text-sm text-slate-500 text-center py-4">등록된 파일이 없습니다.</div>
+                  )}
                   {files.map(file => (
                     <div key={file.id} className="flex flex-col bg-slate-950 p-3.5 rounded-lg border border-slate-800 text-sm gap-1">
                       <div className="flex justify-between items-center">
                         <span className="font-semibold text-sky-400">📄 {file.name} <span className="text-xs text-slate-500 font-normal">({file.size})</span></span>
-                        <button onClick={() => handleDeleteFile(file.id)} className="text-rose-400 hover:text-rose-300 text-xs">삭제</button>
+                        <button onClick={() => handleDeleteFile(file.id)} className="text-rose-400 hover:text-rose-300 text-xs px-2 py-1 bg-rose-500/10 rounded">삭제</button>
                       </div>
-                      <p className="text-xs text-slate-400 truncate">내용: {file.content}</p>
+                      <p className="text-xs text-slate-400 truncate mt-1">내용: {file.content}</p>
                     </div>
                   ))}
                 </div>
