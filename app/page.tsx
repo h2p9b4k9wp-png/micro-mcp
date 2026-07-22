@@ -15,7 +15,7 @@ interface McpBlock {
 interface LogItem {
   id: string;
   content: string;
-  response?: string; // 💡 AI 답변 저장용 필드 추가
+  response?: string;
   created_at: string;
 }
 
@@ -24,6 +24,7 @@ interface FileItem {
   name: string;
   size: string;
   content?: string;
+  mimeType?: string; // 💡 파일 타입 정보 추가
   date: string;
 }
 
@@ -38,9 +39,7 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('workspace');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // 💡 로그별 답변 펼침/접힘 상태 관리용 state
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
-
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
   const [blocks, setBlocks] = useState<McpBlock[]>([
@@ -52,7 +51,7 @@ export default function HomePage() {
 
   const [logs, setLogs] = useState<LogItem[]>([]);
   const [files, setFiles] = useState<FileItem[]>([
-    { id: '1', name: '2026_프로젝트_기획서.txt', size: '1.2 KB', content: '프로젝트 목표: 마이크로 MCP 기반 인공지능 에이전트 대시보드 구축 및 Supabase 연동.', date: '2026-07-20' },
+    { id: '1', name: '2026_프로젝트_기획서.txt', size: '1.2 KB', content: '프로젝트 목표: 마이크로 MCP 기반 인공지능 에이전트 대시보드 구축 및 Supabase 연동.', mimeType: 'text/plain', date: '2026-07-20' },
   ]);
   const [newFileName, setNewFileName] = useState('');
   const [newFileContent, setNewFileContent] = useState('');
@@ -161,14 +160,13 @@ export default function HomePage() {
     setStreamingLog(finalLogText);
     setIsExecuting(false);
 
-    // 💡 Supabase DB에 프롬프트와 AI 답변(response)을 함께 저장
     try {
       const { data, error } = await supabase
         .from('logs')
         .insert([{ 
           user_id: user.id, 
           content: `[Prompt] ${currentCommand}`, 
-          response: aiAnswer, // AI 답변 저장
+          response: aiAnswer,
           status: 'SUCCESS' 
         }])
         .select()
@@ -191,6 +189,7 @@ export default function HomePage() {
       name: newFileName,
       size: `${(newFileContent.length / 1024).toFixed(1)} KB`,
       content: newFileContent || '내용이 입력되지 않은 문서입니다.',
+      mimeType: 'text/plain',
       date: new Date().toISOString().split('T')[0]
     };
 
@@ -203,24 +202,30 @@ export default function HomePage() {
     setFiles(files.filter(f => f.id !== id));
   };
 
+  // 💡 [업데이트] 이미지, PDF 등 어떤 파일이든 Base64 데이터로 완벽하게 읽어오는 함수
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      const content = event.target?.result as string;
+      const result = event.target?.result as string;
+      // result는 "data:image/jpeg;base64,xxxx..." 형태이므로 순수 base64 데이터와 타입 분리
+      const commaIndex = result.indexOf(',');
+      const base64Content = commaIndex !== -1 ? result.substring(commaIndex + 1) : result;
+
       const newFile: FileItem = {
         id: Date.now().toString(),
         name: file.name,
         size: `${(file.size / 1024).toFixed(1)} KB`,
-        content: content || '내용 없음',
+        content: base64Content,
+        mimeType: file.type || 'application/octet-stream',
         date: new Date().toISOString().split('T')[0]
       };
       setFiles(prev => [newFile, ...prev]);
       e.target.value = '';
     };
-    reader.readAsText(file);
+    reader.readAsDataURL(file);
   };
 
   if (loading) {
@@ -420,19 +425,18 @@ export default function HomePage() {
                   📈 모니터링 & 파일 (RAG 컨텍스트)
                 </h1>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  AI가 참고할 수 있도록 문서 내용을 직접 등록하거나 실제 파일을 첨부하세요.
+                  AI가 참고할 수 있도록 이미지, PDF, 텍스트 등 모든 종류의 파일을 첨부하세요.
                 </p>
               </div>
 
               <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 mb-6">
-                <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 문서 추가</h3>
+                <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 파일 첨부</h3>
                 
                 <div className="mb-5">
                   <label className="inline-flex bg-sky-600 hover:bg-sky-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
-                    <span>📁 내 컴퓨터에서 텍스트 파일(.txt, .md, .csv) 첨부하기</span>
+                    <span>📁 모든 파일 첨부하기 (이미지, PDF, 텍스트 등)</span>
                     <input 
                       type="file" 
-                      accept=".txt,.md,.csv,.json"
                       onChange={handleFileUpload} 
                       className="hidden" 
                     />
@@ -476,7 +480,7 @@ export default function HomePage() {
                         <span className="font-semibold text-sky-400">📄 {file.name} <span className="text-xs text-slate-500 font-normal">({file.size})</span></span>
                         <button onClick={() => handleDeleteFile(file.id)} className="text-rose-400 hover:text-rose-300 text-xs px-2 py-1 bg-rose-500/10 rounded">삭제</button>
                       </div>
-                      <p className="text-xs text-slate-400 truncate mt-1">내용: {file.content}</p>
+                      <p className="text-xs text-slate-400 truncate mt-1">타입: {file.mimeType || 'text/plain'}</p>
                     </div>
                   ))}
                 </div>
@@ -520,7 +524,6 @@ export default function HomePage() {
                         )}
                       </div>
 
-                      {/* 💡 답변 보기 버튼을 눌렀을 때만 나타나는 토글 박스 */}
                       {isExpanded && log.response && (
                         <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 text-sm text-emerald-400 font-['Jua',sans-serif] leading-relaxed whitespace-pre-wrap mt-1">
                           <div className="text-xs text-slate-500 font-mono mb-2 font-sans">[AI 응답 결과 기록]</div>
