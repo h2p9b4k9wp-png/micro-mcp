@@ -16,10 +16,9 @@ export async function POST(req: Request) {
     const { prompt, isSearchActive, isSupabaseActive, isFileActive, files, token } = body;
 
     let dbContext = "";
-    // 멀티모달 파트를 담을 배열 (텍스트 + 이미지 파일 등)
     const contents: any[] = [];
 
-    // 1. Supabase DB 블록 (RLS 보안 적용)
+    // 1. Supabase DB 블록
     if (isSupabaseActive && token && supabaseUrl && supabaseAnonKey) {
       const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: `Bearer ${token}` } }
@@ -36,13 +35,18 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. File System 블록 (이미지, PDF, 텍스트 등 멀티모달 컨텍스트 처리)
+    // 2. File System 블록 (파일 형식별 안전한 컨텍스트 주입)
     let fileTextSummary = "";
     if (isFileActive && files && files.length > 0) {
       for (const f of files) {
-        // 이미지가 아닌 일반 텍스트/마크다운 파일인 경우
-        if (f.mimeType && f.mimeType.startsWith('text/')) {
-          // base64로 들어온 경우 디코딩하거나 그대로 텍스트 합산
+        const lowerName = f.name.toLowerCase();
+
+        // .hwp 또는 바이너리 문서인 경우 특수 안내 추가
+        if (lowerName.endsWith('.hwp') || lowerName.endsWith('.hwpx')) {
+          fileTextSummary += `[파일명: ${f.name}]\n(안내: HWP 파일은 전용 포맷이므로, 핵심 내용을 복사해서 '텍스트 직접 입력'으로 등록해주시면 가장 정확한 분석이 가능합니다.)\n\n`;
+        } 
+        // 텍스트 계열 파일
+        else if (f.mimeType && f.mimeType.startsWith('text/')) {
           try {
             const decodedText = atob(f.content);
             fileTextSummary += `[파일명: ${f.name}]\n내용:\n${decodedText}\n\n`;
@@ -50,7 +54,7 @@ export async function POST(req: Request) {
             fileTextSummary += `[파일명: ${f.name}]\n내용:\n${f.content}\n\n`;
           }
         } 
-        // 이미지나 기타 멀티모달 파일인 경우 (AI가 직접 시각적으로 분석하도록 주입)
+        // 이미지 및 PDF 멀티모달 파일
         else if (f.mimeType && (f.mimeType.startsWith('image/') || f.mimeType.includes('pdf'))) {
           contents.push({
             inlineData: {
@@ -58,15 +62,18 @@ export async function POST(req: Request) {
               mimeType: f.mimeType
             }
           });
-          fileTextSummary += `[첨부된 멀티모달 파일: ${f.name} (시각 자료 분석 대상 포함)]\n`;
+          fileTextSummary += `[첨부된 시각/문서 파일: ${f.name}]\n`;
         } else {
-          // 기본 텍스트 처리
-          fileTextSummary += `[파일명: ${f.name}]\n내용:\n${f.content}\n\n`;
+          try {
+            const decodedText = atob(f.content);
+            fileTextSummary += `[파일명: ${f.name}]\n내용:\n${decodedText}\n\n`;
+          } catch {
+            fileTextSummary += `[파일명: ${f.name}]\n내용:\n${f.content}\n\n`;
+          }
         }
       }
     }
 
-    // 3. 시스템 배경지식 및 프롬프트 조합
     const systemInstruction = `당신은 사용자의 요청을 해결해주는 뛰어난 AI 어시스턴트입니다.\n아래 제공된 배경 정보(과거 기록 및 첨부 파일 정보)를 바탕으로 사용자의 질문에 정확하게 답변하세요.\n\n${dbContext}${fileTextSummary}`;
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -82,7 +89,6 @@ export async function POST(req: Request) {
 
     const model = genAI.getGenerativeModel(modelParams);
 
-    // 최종 AI에게 보낼 메시지 구성 (이미지 데이터 + 유저 프롬프트)
     contents.push(prompt);
 
     const result = await model.generateContent(contents);
