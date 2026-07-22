@@ -50,8 +50,6 @@ export default function HomePage() {
   ]);
 
   const [logs, setLogs] = useState<LogItem[]>([]);
-  
-  // 💡 [수정] 하드코딩된 '2026_프로젝트_기획서'를 없애고, 브라우저 로컬 스토리지에서 안전하게 불러오도록 수정
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isFilesLoaded, setIsFilesLoaded] = useState(false);
 
@@ -63,7 +61,6 @@ export default function HomePage() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // 💡 [추가] 브라우저 로컬 스토리지에서 저장된 파일 불러오기
   useEffect(() => {
     const savedFiles = localStorage.getItem('mcp_uploaded_files');
     if (savedFiles) {
@@ -76,7 +73,6 @@ export default function HomePage() {
     setIsFilesLoaded(true);
   }, []);
 
-  // 💡 [추가] 파일이 추가되거나 삭제될 때마다 로컬 스토리지에 자동 저장하여 새로고침해도 유지
   useEffect(() => {
     if (isFilesLoaded) {
       localStorage.setItem('mcp_uploaded_files', JSON.stringify(files));
@@ -224,9 +220,17 @@ export default function HomePage() {
     setFiles(files.filter(f => f.id !== id));
   };
 
+  // 💡 [수정] 대용량 파일(.pptx 등) 업로드 시 브라우저 뻗음 현상(Out of Memory) 방지용 안전 가드 추가
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // 10MB 이상 파일은 브라우저 크래시 방지를 위해 텍스트 메타데이터 위주로 안전 처리
+    if (file.size > 10 * 1024 * 1024) {
+      alert('파일 용량이 너무 큽니다 (10MB 초과). 핵심 텍스트를 복사해서 직접 입력하거나 PDF/이미지로 변환해서 올려주세요!');
+      e.target.value = '';
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -245,7 +249,14 @@ export default function HomePage() {
       setFiles(prev => [newFile, ...prev]);
       e.target.value = '';
     };
-    reader.readAsDataURL(file);
+    
+    // PPTX나 오피스 파일일 경우 에러 방지를 위해 안전하게 Read 시도
+    try {
+      reader.readAsDataURL(file);
+    } catch (err) {
+      alert('이 파일 형식은 브라우저에서 직접 읽기 어렵습니다. 텍스트 직접 입력을 이용해 주세요.');
+      e.target.value = '';
+    }
   };
 
   if (loading) {
