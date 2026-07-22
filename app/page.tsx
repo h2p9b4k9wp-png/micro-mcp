@@ -42,13 +42,13 @@ export default function HomePage() {
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  // 💡 [수정] 블록 이름과 설명을 직관적으로 변경하고, '캘린더 일정 분석 블록' 추가
+  // 💡 [수정] 캘린더 아이콘 중복 제거 및 깔끔하게 단일화
   const [blocks, setBlocks] = useState<McpBlock[]>([
     { id: 'supabase', name: 'Supabase DB 블록', description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.', active: true, icon: '🗄️' },
     { id: 'search', name: 'Google Search 블록', description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.', active: false, icon: '🔍' },
     { id: 'filesystem', name: 'File System 블록', description: '첨부된 파일 및 문서 내용을 AI 컨텍스트에 주입합니다.', active: true, icon: '📁' },
-    { id: 'calendar', name: '📅 캘린더 일정 분석 블록', description: '시간표나 일정 파일을 분석하여 주간/월간 계획을 체계적으로 정리합니다.', active: true, icon: '📅' },
-    { id: 'customapi', name: '⚡ 외부 서비스 연동 블록', description: '노션, 슬랙 등 외부 웹서비스 API와 간편하게 연동합니다.', active: false, icon: '🔌' },
+    { id: 'calendar', name: '캘린더 일정 분석 블록', description: '시간표나 일정 파일을 분석하여 주간/월간 계획을 체계적으로 정리합니다.', active: true, icon: '🗓️' },
+    { id: 'customapi', name: '외부 서비스 연동 블록', description: '노션, 슬랙 등 외부 웹서비스 API와 간편하게 연동합니다.', active: false, icon: '🔌' },
   ]);
 
   const [logs, setLogs] = useState<LogItem[]>([]);
@@ -161,7 +161,7 @@ export default function HomePage() {
           isSearchActive,
           isSupabaseActive,
           isFileActive,
-          isCalendarActive, // 캘린더 상태 전달
+          isCalendarActive,
           files: (isFileActive || isCalendarActive) ? files : [],
           token
         }),
@@ -324,12 +324,25 @@ export default function HomePage() {
             📜 DB 연동 로그
           </div>
         </div>
-        <div className="p-4 border-t border-slate-800 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full ${dbStatus === 'connected' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
-            <span>Gemini 3.5 Flash Connected</span>
+
+        {/* 💡 [개선] 좌측 하단 MCP 연결 상태를 세련된 배디(Pill) UI로 변경 */}
+        <div className="p-4 border-t border-slate-800 text-xs text-slate-400 bg-slate-950/40">
+          <div className="flex items-center gap-2 mb-2">
+            <span className={`w-2 h-2 rounded-full ${dbStatus === 'connected' ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></span>
+            <span className="font-semibold text-slate-300">Gemini Flash 연동됨</span>
           </div>
-          <div className="mt-1 truncate">연결된 MCP: {activeMcpNames}</div>
+          <div className="text-[11px] text-slate-500 mb-1.5 font-medium">활성화된 MCP 블록:</div>
+          <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+            {blocks.filter(b => b.active).length === 0 ? (
+              <span className="text-slate-600 italic">없음</span>
+            ) : (
+              blocks.filter(b => b.active).map(b => (
+                <span key={b.id} className="bg-emerald-950/80 text-emerald-300 border border-emerald-800/50 px-2 py-0.5 rounded-md text-[10px] font-medium flex items-center gap-1">
+                  <span>{b.icon}</span> {b.name.replace(' 블록', '')}
+                </span>
+              ))
+            )}
+          </div>
         </div>
       </div>
 
@@ -370,7 +383,7 @@ export default function HomePage() {
                     <span>⚡ AI 프롬프트 전송</span>
                   </div>
                   <div className="flex items-center gap-1.5 bg-slate-950 px-3 py-1 rounded-full border border-slate-800 text-xs text-slate-400 max-w-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                     <span className="truncate">{activeMcpNames}</span>
                   </div>
                 </div>
@@ -424,25 +437,43 @@ export default function HomePage() {
                 </p>
               </div>
 
+              {/* 💡 [개선] 블록 활성화 시 초록불(인디케이터) 및 은은한 초록빛 테두리로 시각적 가시성 대폭 강화 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {blocks.map((block) => (
-                  <div key={block.id} className="bg-slate-900 rounded-xl border border-slate-800 p-5 flex flex-col justify-between">
+                  <div 
+                    key={block.id} 
+                    className={`rounded-xl border p-5 flex flex-col justify-between transition-all duration-200 ${
+                      block.active 
+                        ? 'bg-slate-900/90 border-emerald-500/60 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
+                        : 'bg-slate-900 border-slate-800 opacity-80'
+                    }`}
+                  >
                     <div>
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-sm sm:text-base font-bold flex items-center gap-2 truncate">
                           <span>{block.icon}</span> <span className="truncate">{block.name}</span>
                         </span>
-                        <span className={`text-xs px-2 py-0.5 rounded shrink-0 ${block.active ? 'bg-emerald-950 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
-                          {block.active ? '활성' : '비활성'}
-                        </span>
+                        
+                        {/* 초록불 인디케이터 배지 */}
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition-colors">
+                          <span className={`w-2 h-2 rounded-full ${block.active ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]' : 'bg-slate-600'}`}></span>
+                          <span className={block.active ? 'text-emerald-400' : 'text-slate-500'}>
+                            {block.active ? '활성됨' : '비활성'}
+                          </span>
+                        </div>
                       </div>
                       <p className="text-xs sm:text-sm text-slate-400 leading-normal">{block.description}</p>
                     </div>
+                    
                     <button 
                       onClick={() => toggleBlock(block.id)}
-                      className={`mt-4 w-full sm:w-auto self-start border-none rounded-md px-3 py-2 text-xs sm:text-sm cursor-pointer transition-colors ${block.active ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-sky-600 text-white hover:bg-sky-500'}`}
+                      className={`mt-4 w-full sm:w-auto self-start border rounded-md px-4 py-2 text-xs sm:text-sm font-semibold cursor-pointer transition-all ${
+                        block.active 
+                          ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-600/30' 
+                          : 'bg-sky-600 text-white border-transparent hover:bg-sky-500'
+                      }`}
                     >
-                      {block.active ? '블록 비활성화' : '블록 활성화'}
+                      {block.active ? '✓ 블록 작동 중 (클릭시 해제)' : '블록 활성화하기'}
                     </button>
                   </div>
                 ))}
