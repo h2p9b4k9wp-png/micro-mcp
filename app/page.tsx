@@ -129,6 +129,7 @@ export default function HomePage() {
   const [newDeadlineTitle, setNewDeadlineTitle] = useState('');
   const [newDeadlineCourse, setNewDeadlineCourse] = useState('');
   const [newDeadlineDue, setNewDeadlineDue] = useState('');
+  const [isImportingDeadlines, setIsImportingDeadlines] = useState(false);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -427,67 +428,72 @@ export default function HomePage() {
     setDeadlines(prev => prev.filter(d => d.id !== id));
   };
 
-  // 💡 [신규] 간단한 .ics(iCalendar) 파서 — 외부 라이브러리 없이 표준 VEVENT 블록만 추출합니다.
-  // 반복 일정(RRULE)은 다루지 않고, 단일 일정의 제목·시작일시만 뽑아옵니다.
-  const parseICS = (icsText: string): { title: string; dueAt: string }[] => {
-    const events: { title: string; dueAt: string }[] = [];
-    const veventBlocks = icsText.split('BEGIN:VEVENT').slice(1);
-
-    veventBlocks.forEach((block) => {
-      const summaryMatch = block.match(/SUMMARY(?:;[^:]*)?:(.*)/);
-      const dtStartMatch = block.match(/DTSTART(?:;[^:]*)?:(\d{8}T?\d{0,6}Z?)/);
-      const dtEndMatch = block.match(/DTEND(?:;[^:]*)?:(\d{8}T?\d{0,6}Z?)/);
-
-      const rawDate = dtStartMatch?.[1] || dtEndMatch?.[1];
-      if (!summaryMatch || !rawDate) return;
-
-      // YYYYMMDDTHHMMSS(Z) 형식을 <input type="datetime-local">이 요구하는 YYYY-MM-DDTHH:mm 형식으로 변환
-      const y = rawDate.slice(0, 4);
-      const m = rawDate.slice(4, 6);
-      const d = rawDate.slice(6, 8);
-      const hh = rawDate.length >= 11 ? rawDate.slice(9, 11) : '09';
-      const mm = rawDate.length >= 13 ? rawDate.slice(11, 13) : '00';
-
-      events.push({
-        title: summaryMatch[1].trim().replace(/\\,/g, ',').replace(/\\n/gi, ' '),
-        dueAt: `${y}-${m}-${d}T${hh}:${mm}`,
-      });
-    });
-
-    return events;
-  };
-
-  const handleICSImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 💡 [신규] 어떤 파일이든(이미지, PDF, .ics, 캡처본 등) 업로드하면 AI가 알아서 일정을 찾아 정리해줍니다.
+  const handleDeadlineFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      const parsedEvents = parseICS(text);
-
-      if (parsedEvents.length === 0) {
-        alert('일정을 찾을 수 없어요. 올바른 .ics 파일인지 확인해주세요.');
-        e.target.value = '';
-        return;
-      }
-
-      const imported: Deadline[] = parsedEvents.map((ev, idx) => ({
-        id: `${Date.now()}-${idx}`,
-        title: ev.title,
-        course: '가져온 일정',
-        dueAt: ev.dueAt,
-      }));
-
-      setDeadlines(prev => [...prev, ...imported]);
-      alert(`${imported.length}개의 일정을 가져왔어요! 필요 없는 항목은 목록에서 삭제해주세요.`);
+    if (file.size > 10 * 1024 * 1024) {
+      alert('파일 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.');
       e.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const result = event.target?.result as string;
+      const commaIndex = result.indexOf(',');
+      const base64Content = commaIndex !== -1 ? result.substring(commaIndex + 1) : result;
+
+      setIsImportingDeadlines(true);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+
+        const res = await fetch('/api/parse-deadlines', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileName: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            content: base64Content,
+            token,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(`가져오기 실패: ${data.error}`);
+          return;
+        }
+
+        if (!data.events || data.events.length === 0) {
+          alert('이 파일에서 일정을 찾지 못했어요. 날짜가 잘 보이는 파일로 다시 시도해보세요.');
+          return;
+        }
+
+        const imported: Deadline[] = data.events.map((ev: any, idx: number) => ({
+          id: `${Date.now()}-${idx}`,
+          title: ev.title || '제목 없음',
+          course: ev.course || '가져온 일정',
+          dueAt: ev.dueAt,
+        }));
+
+        setDeadlines(prev => [...prev, ...imported]);
+        alert(`${imported.length}개의 일정을 가져왔어요! 필요 없는 항목은 목록에서 삭제해주세요.`);
+      } catch (err: any) {
+        alert(`가져오기 중 오류가 발생했어요: ${err.message || err}`);
+      } finally {
+        setIsImportingDeadlines(false);
+        e.target.value = '';
+      }
     };
 
     try {
-      reader.readAsText(file);
+      reader.readAsDataURL(file);
     } catch (err) {
-      alert('파일을 읽는 중 문제가 발생했어요. 파일 형식을 확인해주세요.');
+      alert('파일을 읽는 중 문제가 발생했어요.');
       e.target.value = '';
     }
   };
@@ -709,12 +715,28 @@ export default function HomePage() {
               <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-4 shadow-sm">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-[#14171F]">캘린더 파일로 한 번에 가져오기</h3>
-                    <p className="text-xs text-[#667085] mt-1">구글 캘린더·애플 캘린더·학교 포털에서 내보낸 .ics 파일을 올리면 자동으로 등록돼요.</p>
+                    <h3 className="text-sm sm:text-base font-bold text-[#14171F]">파일 하나로 한 번에 가져오기</h3>
+                    <p className="text-xs text-[#667085] mt-1">캘린더 파일(.ics), 시간표 캡처, 학사일정 PDF 등 무엇이든 올리면 AI가 알아서 일정을 찾아 정리해요.</p>
                   </div>
-                  <label className="inline-flex bg-white hover:bg-[#F5F6F8] text-[#363EA6] px-4 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 border border-[#C7CCF0] transition-colors shrink-0 focus-within:ring-2 focus-within:ring-[#363EA6]">
-                    <span>.ics 파일 선택</span>
-                    <input type="file" accept=".ics" onChange={handleICSImport} className="hidden" />
+                  <label className={`inline-flex px-4 py-2.5 rounded-lg text-sm font-semibold items-center gap-2 border transition-colors shrink-0 focus-within:ring-2 focus-within:ring-[#363EA6] ${
+                    isImportingDeadlines
+                      ? 'bg-[#F5F6F8] text-[#98A2B3] border-[#E5E7EB] cursor-not-allowed'
+                      : 'bg-white hover:bg-[#F5F6F8] text-[#363EA6] border-[#C7CCF0] cursor-pointer'
+                  }`}>
+                    {isImportingDeadlines ? (
+                      <>
+                        <span className="w-3.5 h-3.5 border-2 border-[#D0D5DD] border-t-[#363EA6] rounded-full animate-spin" />
+                        <span>AI가 분석 중...</span>
+                      </>
+                    ) : (
+                      <span>파일 업로드</span>
+                    )}
+                    <input
+                      type="file"
+                      onChange={handleDeadlineFileUpload}
+                      disabled={isImportingDeadlines}
+                      className="hidden"
+                    />
                   </label>
                 </div>
               </div>
