@@ -427,6 +427,71 @@ export default function HomePage() {
     setDeadlines(prev => prev.filter(d => d.id !== id));
   };
 
+  // 💡 [신규] 간단한 .ics(iCalendar) 파서 — 외부 라이브러리 없이 표준 VEVENT 블록만 추출합니다.
+  // 반복 일정(RRULE)은 다루지 않고, 단일 일정의 제목·시작일시만 뽑아옵니다.
+  const parseICS = (icsText: string): { title: string; dueAt: string }[] => {
+    const events: { title: string; dueAt: string }[] = [];
+    const veventBlocks = icsText.split('BEGIN:VEVENT').slice(1);
+
+    veventBlocks.forEach((block) => {
+      const summaryMatch = block.match(/SUMMARY(?:;[^:]*)?:(.*)/);
+      const dtStartMatch = block.match(/DTSTART(?:;[^:]*)?:(\d{8}T?\d{0,6}Z?)/);
+      const dtEndMatch = block.match(/DTEND(?:;[^:]*)?:(\d{8}T?\d{0,6}Z?)/);
+
+      const rawDate = dtStartMatch?.[1] || dtEndMatch?.[1];
+      if (!summaryMatch || !rawDate) return;
+
+      // YYYYMMDDTHHMMSS(Z) 형식을 <input type="datetime-local">이 요구하는 YYYY-MM-DDTHH:mm 형식으로 변환
+      const y = rawDate.slice(0, 4);
+      const m = rawDate.slice(4, 6);
+      const d = rawDate.slice(6, 8);
+      const hh = rawDate.length >= 11 ? rawDate.slice(9, 11) : '09';
+      const mm = rawDate.length >= 13 ? rawDate.slice(11, 13) : '00';
+
+      events.push({
+        title: summaryMatch[1].trim().replace(/\\,/g, ',').replace(/\\n/gi, ' '),
+        dueAt: `${y}-${m}-${d}T${hh}:${mm}`,
+      });
+    });
+
+    return events;
+  };
+
+  const handleICSImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const parsedEvents = parseICS(text);
+
+      if (parsedEvents.length === 0) {
+        alert('일정을 찾을 수 없어요. 올바른 .ics 파일인지 확인해주세요.');
+        e.target.value = '';
+        return;
+      }
+
+      const imported: Deadline[] = parsedEvents.map((ev, idx) => ({
+        id: `${Date.now()}-${idx}`,
+        title: ev.title,
+        course: '가져온 일정',
+        dueAt: ev.dueAt,
+      }));
+
+      setDeadlines(prev => [...prev, ...imported]);
+      alert(`${imported.length}개의 일정을 가져왔어요! 필요 없는 항목은 목록에서 삭제해주세요.`);
+      e.target.value = '';
+    };
+
+    try {
+      reader.readAsText(file);
+    } catch (err) {
+      alert('파일을 읽는 중 문제가 발생했어요. 파일 형식을 확인해주세요.');
+      e.target.value = '';
+    }
+  };
+
   const getDDayInfo = (dueAt: string) => {
     const diffMs = new Date(dueAt).getTime() - Date.now();
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
@@ -641,8 +706,21 @@ export default function HomePage() {
                 </p>
               </div>
 
+              <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-4 shadow-sm">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div>
+                    <h3 className="text-sm sm:text-base font-bold text-[#14171F]">캘린더 파일로 한 번에 가져오기</h3>
+                    <p className="text-xs text-[#667085] mt-1">구글 캘린더·애플 캘린더·학교 포털에서 내보낸 .ics 파일을 올리면 자동으로 등록돼요.</p>
+                  </div>
+                  <label className="inline-flex bg-white hover:bg-[#F5F6F8] text-[#363EA6] px-4 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 border border-[#C7CCF0] transition-colors shrink-0 focus-within:ring-2 focus-within:ring-[#363EA6]">
+                    <span>.ics 파일 선택</span>
+                    <input type="file" accept=".ics" onChange={handleICSImport} className="hidden" />
+                  </label>
+                </div>
+              </div>
+
               <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#14171F]">새 마감일 추가</h3>
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#14171F]">직접 입력해서 추가</h3>
                 <form onSubmit={handleAddDeadline} className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr_auto] gap-3">
                   <input
                     type="text"
