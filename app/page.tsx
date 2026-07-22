@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { useRouter } from 'next/navigation';
 
 interface McpBlock {
@@ -110,6 +109,8 @@ export default function HomePage() {
     setBlocks(prev => prev.map(b => b.id === id ? { ...b, active: !b.active } : b));
   };
 
+ // app/page.tsx 안의 handleExecute 함수 통째로 덮어쓰기
+
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!command.trim() || !user) return;
@@ -140,24 +141,24 @@ export default function HomePage() {
     let aiAnswer = '';
 
     try {
-      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+      const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]${dbContextData}${fileContextData}\n\n사용자 질문: ${currentCommand}`;
 
-      if (!apiKey) {
-        aiAnswer = '⚠️ Gemini API 키가 설정되지 않았습니다.';
+      // 💡 여기서 브라우저가 Gemini에 직접 요청하지 않고, 1단계에서 만든 우리 서버(/api/chat)로 요청을 보냄!
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptWithContext }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        aiAnswer = `[ERROR] 서버 요청 실패: ${data.error}`;
       } else {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        
-        // 요구하신 Gemini 3.5 Flash 모델 적용
-        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
-
-        const promptWithContext = `[System Context: Active MCP Tools = ${activeMcpNames}]${dbContextData}${fileContextData}\n\n사용자 질문: ${currentCommand}`;
-
-        const result = await model.generateContent(promptWithContext);
-        const response = await result.response;
-        aiAnswer = response.text();
+        aiAnswer = data.answer;
       }
     } catch (err: any) {
-      aiAnswer = `[ERROR] AI 요청 실패 (한도 초과 또는 네트워크 오류): ${err.message || err}`;
+      aiAnswer = `[ERROR] 네트워크 오류: ${err.message || err}`;
     }
 
     const finalLogText = `[MCP CORE] Query: "${currentCommand}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[Gemini AI 답변]\n${aiAnswer}`;
@@ -178,7 +179,6 @@ export default function HomePage() {
       console.error('로그 저장 중 오류 발생:', dbErr);
     }
   };
-
   const handleAddFile = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFileName.trim()) return;
