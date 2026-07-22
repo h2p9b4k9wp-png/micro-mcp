@@ -33,6 +33,19 @@ interface FileItem {
   date: string;
 }
 
+// 브랜드 로고마크 — 블록이 서로 연결되는 모습을 형상화. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
+function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M12 17L20 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.45" />
+      <path d="M12 21L20 25" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.45" />
+      <rect x="2" y="13.5" width="10" height="10" rx="3" fill="currentColor" opacity="0.95" />
+      <rect x="20" y="1.5" width="10" height="10" rx="3" fill="currentColor" />
+      <rect x="20" y="19.5" width="10" height="10" rx="3" fill="currentColor" opacity="0.55" />
+    </svg>
+  );
+}
+
 export default function HomePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -49,43 +62,43 @@ export default function HomePage() {
 
   // 💡 [개선] 새로고침해도 블록 활성 상태가 유지되도록 로컬스토리지 연동 구조 적용
   const [blocks, setBlocks] = useState<McpBlock[]>([
-    { 
-      id: 'supabase', 
-      name: 'Supabase DB 블록', 
-      description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.', 
-      active: true, 
+    {
+      id: 'supabase',
+      name: 'Supabase DB 블록',
+      description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.',
+      active: true,
       icon: '🗄️',
       config: { statusText: 'Connected (Auth & Tables Active)' }
     },
-    { 
-      id: 'search', 
-      name: 'Google Search 블록', 
-      description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.', 
-      active: false, 
+    {
+      id: 'search',
+      name: 'Google Search 블록',
+      description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.',
+      active: false,
       icon: '🔍',
       config: { apiKey: 'Live Web Grounding Ready' }
     },
-    { 
-      id: 'filesystem', 
-      name: 'File System 블록', 
-      description: '첨부된 파일 및 문서 내용을 AI 컨텍스트에 주입합니다.', 
-      active: true, 
+    {
+      id: 'filesystem',
+      name: 'File System 블록',
+      description: '첨부된 파일 및 문서 내용을 AI 컨텍스트에 주입합니다.',
+      active: true,
       icon: '📁',
       config: { statusText: 'Local RAG Engine Active' }
     },
-    { 
-      id: 'calendar', 
-      name: '캘린더 일정 분석 블록', 
-      description: '시간표나 일정 파일을 분석하여 주간/월간 계획을 체계적으로 정리합니다.', 
-      active: true, 
+    {
+      id: 'calendar',
+      name: '캘린더 일정 분석 블록',
+      description: '시간표나 일정 파일을 분석하여 주간/월간 계획을 체계적으로 정리합니다.',
+      active: true,
       icon: '🗓️',
       config: { statusText: 'Schedule Parser Active' }
     },
-    { 
-      id: 'customapi', 
-      name: '외부 서비스 연동 블록', 
-      description: '노션, 슬랙 등 외부 웹서비스 API와 간편하게 연동합니다.', 
-      active: false, 
+    {
+      id: 'customapi',
+      name: '외부 서비스 연동 블록',
+      description: '노션, 슬랙 등 외부 웹서비스 API와 간편하게 연동합니다.',
+      active: false,
       icon: '🔌',
       config: { endpoint: 'https://api.external-hook.io/v1/mcp' }
     },
@@ -153,7 +166,7 @@ export default function HomePage() {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const { data: { session }, error } = await supabase.auth.getSession();
-      
+
       if (!session || error) {
         const { data: { session: retrySession } } = await supabase.auth.getSession();
         if (!retrySession) {
@@ -166,7 +179,7 @@ export default function HomePage() {
         setUser(session.user);
         fetchLogs(session.user.id);
       }
-      
+
       setLoading(false);
       setDbStatus('connected');
     };
@@ -255,7 +268,7 @@ export default function HomePage() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           prompt: currentCommand,
           isSearchActive,
           isSupabaseActive,
@@ -277,18 +290,18 @@ export default function HomePage() {
       aiAnswer = `[ERROR] 네트워크 오류: ${err.message || err}`;
     }
 
-    const finalLogText = `[MCP CORE] Query: "${currentCommand}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[Gemini AI 답변]\n${aiAnswer}`;
+    const finalLogText = `[MCP CORE] Query: "${currentCommand}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[AI 답변]\n${aiAnswer}`;
     setStreamingLog(finalLogText);
     setIsExecuting(false);
 
     try {
       const { data, error } = await supabase
         .from('logs')
-        .insert([{ 
-          user_id: user.id, 
-          content: `[Prompt] ${currentCommand}`, 
+        .insert([{
+          user_id: user.id,
+          content: `[Prompt] ${currentCommand}`,
           response: aiAnswer,
-          status: 'SUCCESS' 
+          status: 'SUCCESS'
         }])
         .select()
         .single();
@@ -350,7 +363,7 @@ export default function HomePage() {
       setFiles(prev => [newFile, ...prev]);
       e.target.value = '';
     };
-    
+
     try {
       reader.readAsDataURL(file);
     } catch (err) {
@@ -359,29 +372,51 @@ export default function HomePage() {
     }
   };
 
+  const NAV_ITEMS = [
+    { id: 'workspace', label: '워크스페이스', icon: '📊' },
+    { id: 'mcp', label: 'MCP 블록 매니저', icon: '🧩' },
+    { id: 'integration', label: '블록 연동 & 테스트', icon: '⚡' },
+    { id: 'monitoring', label: '모니터링 & 파일', icon: '📈' },
+    { id: 'logs', label: 'DB 연동 로그', icon: '📜' },
+  ];
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        로딩 중...
+      <div className="min-h-screen bg-[#F5F6F8] flex items-center justify-center">
+        <style jsx global>{`
+          @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+          * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        `}</style>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-[3px] border-[#E5E7EB] border-t-[#363EA6] rounded-full animate-spin" />
+          <span className="text-sm text-[#667085]">로딩 중...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-[#F5F6F8] text-[#14171F] flex flex-col md:flex-row">
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+        * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+        .font-mono-console { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+        @media (prefers-reduced-motion: reduce) {
+          * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
       `}</style>
 
       {/* 모바일 상단 바 */}
-      <div className="md:hidden flex items-center justify-between bg-slate-900 border-b border-slate-800 p-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🚀</span>
-          <span className="font-bold text-lg">Micro-MCP</span>
+      <div className="md:hidden flex items-center justify-between bg-white border-b border-[#E5E7EB] px-4 py-3.5">
+        <div className="flex items-center gap-2 text-[#363EA6]">
+          <Logomark className="w-6 h-6" />
+          <span className="font-extrabold text-[15px] text-[#14171F] tracking-tight">Micro-MCP</span>
         </div>
-        <button 
+        <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="text-slate-300 text-xl p-1 focus:outline-none"
+          aria-label="메뉴 열기"
+          className="text-[#14171F] text-xl p-1.5 rounded-lg hover:bg-[#F5F6F8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6]"
         >
           {isMobileMenuOpen ? '✕' : '☰'}
         </button>
@@ -389,61 +424,46 @@ export default function HomePage() {
 
       {/* 사이드바 메뉴 */}
       <div className={`
-        ${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex 
-        w-full md:w-64 bg-slate-900 border-r border-slate-800 flex-col shrink-0
-        transition-all duration-200 z-50
+        ${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex
+        w-full md:w-64 bg-white border-r border-[#E5E7EB] flex-col shrink-0
+        z-50
       `}>
-        <div className="hidden md:flex p-6 items-center gap-3 border-b border-slate-800">
-          <span className="text-xl">🚀</span>
-          <span className="text-lg font-bold">Micro-MCP</span>
+        <div className="hidden md:flex px-6 py-6 items-center gap-2.5 border-b border-[#E5E7EB] text-[#363EA6]">
+          <Logomark className="w-7 h-7" />
+          <span className="text-[16px] font-extrabold text-[#14171F] tracking-tight">Micro-MCP</span>
         </div>
-        <div className="p-4 flex flex-col gap-2 flex-1">
-          <div 
-            onClick={() => { setActiveTab('workspace'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'workspace' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
-          >
-            📊 워크스페이스
-          </div>
-          <div 
-            onClick={() => { setActiveTab('mcp'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'mcp' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
-          >
-            🧩 MCP 블록 매니저
-          </div>
-          {/* 💡 [신규 추가] 블록 실제 연동 및 검증을 위한 좌측 전용 툴 메뉴 */}
-          <div 
-            onClick={() => { setActiveTab('integration'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'integration' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
-          >
-            ⚡ 블록 연동 & 테스트 툴
-          </div>
-          <div 
-            onClick={() => { setActiveTab('monitoring'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'monitoring' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
-          >
-            📈 모니터링 & 파일
-          </div>
-          <div 
-            onClick={() => { setActiveTab('logs'); setIsMobileMenuOpen(false); }}
-            className={`p-3 rounded-lg font-medium cursor-pointer flex items-center gap-2 ${activeTab === 'logs' ? 'bg-sky-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
-          >
-            📜 DB 연동 로그
-          </div>
+        <div className="p-3 flex flex-col gap-1 flex-1">
+          {NAV_ITEMS.map(item => (
+            <div
+              key={item.id}
+              onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); }}
+              role="button"
+              tabIndex={0}
+              className={`px-3.5 py-2.5 rounded-lg text-sm font-medium cursor-pointer flex items-center gap-2.5 border-l-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] ${
+                activeTab === item.id
+                  ? 'bg-[#EEF0FC] text-[#363EA6] font-semibold border-[#363EA6]'
+                  : 'text-[#667085] border-transparent hover:bg-[#F5F6F8] hover:text-[#14171F]'
+              }`}
+            >
+              <span className="text-base leading-none">{item.icon}</span>
+              <span>{item.label}</span>
+            </div>
+          ))}
         </div>
 
         {/* 좌측 하단 MCP 연결 상태 배지 UI */}
-        <div className="p-4 border-t border-slate-800 text-xs text-slate-400 bg-slate-950/40">
-          <div className="flex items-center gap-2 mb-2">
-            <span className={`w-2 h-2 rounded-full ${dbStatus === 'connected' ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`}></span>
-            <span className="font-semibold text-slate-300">Gemini Flash 연동됨</span>
+        <div className="p-4 border-t border-[#E5E7EB] text-xs bg-[#FAFBFC]">
+          <div className="flex items-center gap-2 mb-2.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#12B76A] animate-pulse' : 'bg-[#F04438]'}`}></span>
+            <span className="font-semibold text-[#14171F]">Gemini Flash 연동됨</span>
           </div>
-          <div className="text-[11px] text-slate-500 mb-1.5 font-medium">활성화된 MCP 블록:</div>
-          <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+          <div className="text-[11px] text-[#98A2B3] mb-1.5 font-medium uppercase tracking-wide">활성화된 MCP 블록</div>
+          <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
             {blocks.filter(b => b.active).length === 0 ? (
-              <span className="text-slate-600 italic">없음</span>
+              <span className="text-[#98A2B3] italic">없음</span>
             ) : (
               blocks.filter(b => b.active).map(b => (
-                <span key={b.id} className="bg-emerald-950/80 text-emerald-300 border border-emerald-800/50 px-2 py-0.5 rounded-md text-[10px] font-medium flex items-center gap-1">
+                <span key={b.id} className="bg-[#ECFDF3] text-[#12734A] border border-[#ABEFC6] px-2 py-1 rounded-md text-[10px] font-medium flex items-center gap-1">
                   <span>{b.icon}</span> {b.name.replace(' 블록', '')}
                 </span>
               ))
@@ -454,42 +474,41 @@ export default function HomePage() {
 
       {/* 메인 콘텐츠 영역 */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <div className="hidden md:flex h-[70px] border-b border-slate-800 items-center justify-end px-8 gap-4 bg-slate-950/50 backdrop-blur">
-          <div className="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
-            <span className="text-sm">👤</span>
-            <span className="text-xs text-slate-300 max-w-[200px] truncate">{user?.email}</span>
+        <div className="hidden md:flex h-[68px] border-b border-[#E5E7EB] items-center justify-end px-8 gap-3 bg-white/70 backdrop-blur">
+          <div className="flex items-center gap-2 bg-[#F5F6F8] px-3.5 py-2 rounded-full border border-[#E5E7EB]">
+            <span className="text-xs text-[#667085] max-w-[220px] truncate">{user?.email}</span>
           </div>
           <button
             onClick={async () => {
               await supabase.auth.signOut();
               router.push('/login');
             }}
-            className="px-3.5 py-1.5 rounded-md border border-rose-500/50 bg-transparent text-rose-400 hover:bg-rose-500/10 text-xs cursor-pointer transition-colors"
+            className="px-4 py-2 rounded-lg border border-[#FDA29B] bg-white text-[#F04438] hover:bg-[#FEF3F2] text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F04438]"
           >
             로그아웃
           </button>
         </div>
 
         <div className="p-4 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
-          
+
           {activeTab === 'workspace' && (
             <>
               <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                  📊 Live Gemini AI Playground
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                  Live AI Playground
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
                   활성화된 MCP 블록 맥락 및 첨부된 문서 내용을 바탕으로 AI가 실제 답변을 도출합니다.
                 </p>
               </div>
 
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 sm:p-6 mb-6 shadow-sm">
+              <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 sm:p-6 mb-6 shadow-sm">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                  <div className="text-sm font-semibold text-slate-200">
-                    <span>⚡ AI 프롬프트 전송</span>
+                  <div className="text-sm font-semibold text-[#14171F]">
+                    AI 프롬프트 전송
                   </div>
-                  <div className="flex items-center gap-1.5 bg-slate-950 px-3 py-1 rounded-full border border-slate-800 text-xs text-slate-400 max-w-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                  <div className="flex items-center gap-1.5 bg-[#F5F6F8] px-3 py-1 rounded-full border border-[#E5E7EB] text-xs text-[#667085] max-w-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#12B76A] animate-pulse shrink-0"></span>
                     <span className="truncate">{activeMcpNames}</span>
                   </div>
                 </div>
@@ -500,31 +519,31 @@ export default function HomePage() {
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
                     placeholder="예: 첨부된 일정표를 바탕으로 이번 주 계획을 정리해줘..."
-                    className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-white text-sm outline-none focus:border-sky-500 transition-colors"
+                    className="flex-1 bg-white border border-[#D0D5DD] rounded-lg px-4 py-3 text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 transition-colors placeholder:text-[#98A2B3]"
                   />
                   <button
                     type="submit"
                     disabled={isExecuting}
-                    className="bg-sky-600 hover:bg-sky-500 text-white border-none rounded-lg px-6 py-3 font-semibold text-sm cursor-pointer disabled:opacity-50 transition-colors whitespace-nowrap"
+                    className="bg-[#363EA6] hover:bg-[#2C3189] text-white border-none rounded-lg px-6 py-3 font-semibold text-sm cursor-pointer disabled:opacity-50 transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] focus-visible:ring-offset-2"
                   >
                     {isExecuting ? '전송 중...' : '프롬프트 전송'}
                   </button>
                 </form>
               </div>
 
-              <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-lg">
-                <div className="bg-slate-900 px-4 py-3 flex items-center gap-2 border-b border-slate-800">
+              <div className="bg-[#0F1117] rounded-xl border border-[#1F2330] overflow-hidden shadow-sm">
+                <div className="bg-[#171A23] px-4 py-3 flex items-center gap-2 border-b border-[#1F2330]">
                   <div className="flex gap-1.5">
-                    <span className="w-2.5 h-2.5 bg-rose-500 rounded-full inline-block"></span>
-                    <span className="w-2.5 h-2.5 bg-amber-500 rounded-full inline-block"></span>
-                    <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block"></span>
+                    <span className="w-2.5 h-2.5 bg-[#F04438] rounded-full inline-block"></span>
+                    <span className="w-2.5 h-2.5 bg-[#F79009] rounded-full inline-block"></span>
+                    <span className="w-2.5 h-2.5 bg-[#12B76A] rounded-full inline-block"></span>
                   </div>
-                  <span className="text-xs font-bold text-slate-400 ml-2 tracking-wider">
-                    💻 GEMINI AI LIVE CONSOLE
+                  <span className="text-[11px] font-semibold text-[#8A94A6] ml-2 tracking-wider font-mono-console">
+                    AI LIVE CONSOLE
                   </span>
                 </div>
 
-                <div className="p-4 sm:p-5 font-['Jua',sans-serif] text-base text-emerald-400 whitespace-pre-wrap leading-relaxed min-h-[150px] tracking-wide">
+                <div className="p-4 sm:p-5 font-mono-console text-[13px] leading-relaxed text-[#3DDC97] whitespace-pre-wrap min-h-[150px] tracking-wide">
                   {streamingLog}
                   <div ref={terminalEndRef} />
                 </div>
@@ -535,46 +554,46 @@ export default function HomePage() {
           {activeTab === 'mcp' && (
             <div>
               <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                  🧩 MCP 블록 매니저
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                  MCP 블록 매니저
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
                   AI 파이프라인에 연결할 MCP 블록을 활성화하세요. 설정은 브라우저에 안전하게 영구 저장됩니다.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {blocks.map((block) => (
-                  <div 
-                    key={block.id} 
-                    className={`rounded-xl border p-5 flex flex-col justify-between transition-all duration-200 ${
-                      block.active 
-                        ? 'bg-slate-900/90 border-emerald-500/60 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
-                        : 'bg-slate-900 border-slate-800 opacity-80'
+                  <div
+                    key={block.id}
+                    className={`rounded-xl border p-5 flex flex-col justify-between transition-all duration-200 bg-white ${
+                      block.active
+                        ? 'border-[#363EA6]/40 shadow-sm'
+                        : 'border-[#E5E7EB]'
                     }`}
                   >
                     <div>
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-sm sm:text-base font-bold flex items-center gap-2 truncate">
+                        <span className="text-sm sm:text-base font-bold flex items-center gap-2 truncate text-[#14171F]">
                           <span>{block.icon}</span> <span className="truncate">{block.name}</span>
                         </span>
-                        
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition-colors">
-                          <span className={`w-2 h-2 rounded-full ${block.active ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]' : 'bg-slate-600'}`}></span>
-                          <span className={block.active ? 'text-emerald-400' : 'text-slate-500'}>
+
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0">
+                          <span className={`w-1.5 h-1.5 rounded-full ${block.active ? 'bg-[#12B76A] animate-pulse' : 'bg-[#D0D5DD]'}`}></span>
+                          <span className={block.active ? 'text-[#12734A]' : 'text-[#98A2B3]'}>
                             {block.active ? '활성됨' : '비활성'}
                           </span>
                         </div>
                       </div>
-                      <p className="text-xs sm:text-sm text-slate-400 leading-normal">{block.description}</p>
+                      <p className="text-xs sm:text-sm text-[#667085] leading-normal">{block.description}</p>
                     </div>
-                    
-                    <button 
+
+                    <button
                       onClick={() => toggleBlock(block.id)}
-                      className={`mt-4 w-full sm:w-auto self-start border rounded-md px-4 py-2 text-xs sm:text-sm font-semibold cursor-pointer transition-all ${
-                        block.active 
-                          ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-600/30' 
-                          : 'bg-sky-600 text-white border-transparent hover:bg-sky-500'
+                      className={`mt-4 w-full sm:w-auto self-start border rounded-lg px-4 py-2 text-xs sm:text-sm font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] ${
+                        block.active
+                          ? 'bg-[#ECFDF3] text-[#12734A] border-[#ABEFC6] hover:bg-[#D4F5E3]'
+                          : 'bg-[#363EA6] text-white border-transparent hover:bg-[#2C3189]'
                       }`}
                     >
                       {block.active ? '✓ 블록 작동 중 (클릭시 해제)' : '블록 활성화하기'}
@@ -589,57 +608,58 @@ export default function HomePage() {
           {activeTab === 'integration' && (
             <div>
               <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-emerald-400">
-                  ⚡ 실시간 블록 연동 & 테스트 툴
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#12734A]">
+                  실시간 블록 연동 & 테스트 툴
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
                   각각의 MCP 블록이 실제 백엔드 및 외부 데이터와 통신하는지 진단하고 검증합니다.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 {blocks.map(b => (
-                  <div 
-                    key={b.id} 
+                  <div
+                    key={b.id}
                     onClick={() => setSelectedConfigBlock(b.id)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                      selectedConfigBlock === b.id 
-                        ? 'bg-emerald-950/40 border-emerald-500 shadow-lg' 
-                        : 'bg-slate-900 border-slate-800 hover:bg-slate-850'
+                    role="button"
+                    tabIndex={0}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] ${
+                      selectedConfigBlock === b.id
+                        ? 'border-[#12B76A] shadow-sm ring-1 ring-[#12B76A]/30'
+                        : 'border-[#E5E7EB] hover:border-[#D0D5DD]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-sm flex items-center gap-1.5">
+                      <span className="font-bold text-sm flex items-center gap-1.5 text-[#14171F]">
                         <span>{b.icon}</span> {b.name}
                       </span>
-                      <span className={`w-2 h-2 rounded-full ${b.active ? 'bg-emerald-400' : 'bg-slate-600'}`}></span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${b.active ? 'bg-[#12B76A]' : 'bg-[#D0D5DD]'}`}></span>
                     </div>
-                    <div className="text-[11px] text-slate-400">
-                      상태: <span className={b.active ? 'text-emerald-400 font-semibold' : 'text-slate-500'}>{b.active ? '연동 활성' : '비활성'}</span>
+                    <div className="text-[11px] text-[#667085]">
+                      상태: <span className={b.active ? 'text-[#12734A] font-semibold' : 'text-[#98A2B3]'}>{b.active ? '연동 활성' : '비활성'}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-6 shadow-md">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
-                  <div className="font-bold text-base flex items-center gap-2">
-                    <span>🛠️</span> 
-                    <span>{blocks.find(b => b.id === selectedConfigBlock)?.name} 진단 및 연동 테스트</span>
+              <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#E5E7EB]">
+                  <div className="font-bold text-base text-[#14171F]">
+                    {blocks.find(b => b.id === selectedConfigBlock)?.name} 진단 및 연동 테스트
                   </div>
                   <button
                     onClick={() => handleTestBlockIntegration(selectedConfigBlock)}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                    className="bg-[#12B76A] hover:bg-[#0F9D5A] text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#12B76A] focus-visible:ring-offset-2"
                   >
-                    🚀 실시간 연동 테스트 실행
+                    실시간 연동 테스트 실행
                   </button>
                 </div>
 
-                <div className="mb-4 text-xs text-slate-300">
-                  <p className="mb-1 text-slate-400">설명: {blocks.find(b => b.id === selectedConfigBlock)?.description}</p>
+                <div className="mb-4 text-xs text-[#667085]">
+                  <p className="mb-1">설명: {blocks.find(b => b.id === selectedConfigBlock)?.description}</p>
                 </div>
 
-                <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs text-emerald-400 whitespace-pre-wrap min-h-[120px]">
+                <div className="bg-[#0F1117] p-4 rounded-lg border border-[#1F2330] font-mono-console text-[13px] text-[#3DDC97] whitespace-pre-wrap min-h-[120px]">
                   {testResult}
                 </div>
               </div>
@@ -649,32 +669,32 @@ export default function HomePage() {
           {activeTab === 'monitoring' && (
             <div>
               <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                  📈 모니터링 & 파일 (RAG 컨텍스트)
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                  모니터링 & 파일 (RAG 컨텍스트)
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
                   AI가 참고할 수 있도록 일정표, 엑셀, 문서, 이미지 등의 파일을 첨부하세요.
                 </p>
               </div>
 
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-5 mb-6">
-                <h3 className="text-sm sm:text-base font-bold mb-4">📄 AI 참조용 파일 및 일정표 첨부</h3>
-                
+              <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#14171F]">AI 참조용 파일 및 일정표 첨부</h3>
+
                 <div className="mb-5">
-                  <label className="inline-flex bg-sky-600 hover:bg-sky-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
-                    <span>📁 파일 및 캘린더 일정 첨부하기</span>
-                    <input 
-                      type="file" 
-                      onChange={handleFileUpload} 
-                      className="hidden" 
+                  <label className="inline-flex bg-[#363EA6] hover:bg-[#2C3189] text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
+                    <span>파일 및 캘린더 일정 첨부하기</span>
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      className="hidden"
                     />
                   </label>
                 </div>
 
-                <div className="text-xs text-slate-500 mb-5 flex items-center gap-3">
-                  <hr className="flex-1 border-slate-800" />
+                <div className="text-xs text-[#98A2B3] mb-5 flex items-center gap-3">
+                  <hr className="flex-1 border-[#E5E7EB]" />
                   <span>또는 텍스트 직접 입력</span>
-                  <hr className="flex-1 border-slate-800" />
+                  <hr className="flex-1 border-[#E5E7EB]" />
                 </div>
 
                 <form onSubmit={handleAddFile} className="flex flex-col gap-3">
@@ -683,32 +703,32 @@ export default function HomePage() {
                     placeholder="문서 제목 (예: 5월_행사일정.txt)"
                     value={newFileName}
                     onChange={(e) => setNewFileName(e.target.value)}
-                    className="bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2.5 text-white text-sm outline-none"
+                    className="bg-white border border-[#D0D5DD] rounded-lg px-3.5 py-2.5 text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 placeholder:text-[#98A2B3]"
                   />
                   <textarea
                     placeholder="AI가 읽을 일정 내용이나 메모를 입력하세요..."
                     value={newFileContent}
                     onChange={(e) => setNewFileContent(e.target.value)}
                     rows={3}
-                    className="bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2.5 text-white text-sm outline-none resize-none"
+                    className="bg-white border border-[#D0D5DD] rounded-lg px-3.5 py-2.5 text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 resize-none placeholder:text-[#98A2B3]"
                   />
-                  <button type="submit" className="self-end bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold border border-slate-700">
+                  <button type="submit" className="self-end bg-white hover:bg-[#F5F6F8] text-[#14171F] px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#D0D5DD] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6]">
                     직접 입력해서 등록
                   </button>
                 </form>
 
                 <div className="mt-8 flex flex-col gap-2">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">등록된 컨텍스트 파일 목록</h4>
+                  <h4 className="text-xs font-bold text-[#98A2B3] uppercase tracking-wider mb-1">등록된 컨텍스트 파일 목록</h4>
                   {files.length === 0 && (
-                    <div className="text-sm text-slate-500 text-center py-4">등록된 파일이 없습니다.</div>
+                    <div className="text-sm text-[#98A2B3] text-center py-4">등록된 파일이 없습니다.</div>
                   )}
                   {files.map(file => (
-                    <div key={file.id} className="flex flex-col bg-slate-950 p-3.5 rounded-lg border border-slate-800 text-sm gap-1">
+                    <div key={file.id} className="flex flex-col bg-[#FAFBFC] p-3.5 rounded-lg border border-[#E5E7EB] text-sm gap-1">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold text-sky-400">📄 {file.name} <span className="text-xs text-slate-500 font-normal">({file.size})</span></span>
-                        <button onClick={() => handleDeleteFile(file.id)} className="text-rose-400 hover:text-rose-300 text-xs px-2 py-1 bg-rose-500/10 rounded">삭제</button>
+                        <span className="font-semibold text-[#363EA6]">📄 {file.name} <span className="text-xs text-[#98A2B3] font-normal">({file.size})</span></span>
+                        <button onClick={() => handleDeleteFile(file.id)} className="text-[#F04438] hover:text-[#D92D20] text-xs px-2 py-1 bg-[#FEF3F2] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F04438]">삭제</button>
                       </div>
-                      <p className="text-xs text-slate-400 truncate mt-1">타입: {file.mimeType || 'text/plain'}</p>
+                      <p className="text-xs text-[#667085] truncate mt-1">타입: {file.mimeType || 'text/plain'}</p>
                     </div>
                   ))}
                 </div>
@@ -719,33 +739,33 @@ export default function HomePage() {
           {activeTab === 'logs' && (
             <div>
               <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                  📜 DB 연동 로그 & AI 답변 조회
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                  DB 연동 로그 & AI 답변 조회
                 </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
                   Supabase 데이터베이스에 기록된 프롬프트 이력과 당시 AI의 답변을 확인할 수 있습니다.
                 </p>
               </div>
 
               <div className="flex flex-col gap-3">
                 {logs.length === 0 && (
-                  <div className="text-sm text-slate-500 text-center py-8 bg-slate-900 rounded-xl border border-slate-800">
+                  <div className="text-sm text-[#98A2B3] text-center py-8 bg-white rounded-xl border border-[#E5E7EB]">
                     저장된 로그가 없습니다. 워크스페이스에서 프롬프트를 전송해 보세요!
                   </div>
                 )}
                 {logs.map((log) => {
                   const isExpanded = expandedLogId === log.id;
                   return (
-                    <div key={log.id} className="bg-slate-900 rounded-xl border border-slate-800 p-4 flex flex-col gap-3">
+                    <div key={log.id} className="bg-white rounded-xl border border-[#E5E7EB] p-4 flex flex-col gap-3 shadow-sm">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <div className="flex items-center gap-2 font-mono text-xs text-sky-300">
-                          <span className="text-slate-500">[{new Date(log.created_at).toLocaleTimeString()}]</span>
-                          <span className="font-semibold text-white">{log.content}</span>
+                        <div className="flex items-center gap-2 font-mono-console text-xs text-[#363EA6]">
+                          <span className="text-[#98A2B3]">[{new Date(log.created_at).toLocaleTimeString()}]</span>
+                          <span className="font-semibold text-[#14171F]">{log.content}</span>
                         </div>
                         {log.response && (
                           <button
                             onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
-                            className="bg-sky-600/20 hover:bg-sky-600/30 text-sky-400 border border-sky-500/30 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer self-end sm:self-auto"
+                            className="bg-[#EEF0FC] hover:bg-[#E1E4F9] text-[#363EA6] border border-[#C7CCF0] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer self-end sm:self-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6]"
                           >
                             {isExpanded ? '▲ 답변 접기' : '▼ AI 답변 보기'}
                           </button>
@@ -753,8 +773,8 @@ export default function HomePage() {
                       </div>
 
                       {isExpanded && log.response && (
-                        <div className="bg-slate-950 p-4 rounded-lg border border-slate-800 text-sm text-emerald-400 font-['Jua',sans-serif] leading-relaxed whitespace-pre-wrap mt-1">
-                          <div className="text-xs text-slate-500 font-mono mb-2 font-sans">[AI 응답 결과 기록]</div>
+                        <div className="bg-[#0F1117] p-4 rounded-lg border border-[#1F2330] text-[13px] text-[#3DDC97] font-mono-console leading-relaxed whitespace-pre-wrap mt-1">
+                          <div className="text-[11px] text-[#8A94A6] mb-2">[AI 응답 결과 기록]</div>
                           {log.response}
                         </div>
                       )}
