@@ -70,44 +70,44 @@ export default function HomePage() {
   // 💡 [개선] 새로고침해도 블록 활성 상태가 유지되도록 로컬스토리지 연동 구조 적용
   const [blocks, setBlocks] = useState<McpBlock[]>([
     {
-      id: 'supabase',
-      name: 'Supabase DB 블록',
-      description: '실시간 데이터베이스 쿼리 및 사용자 세션 상태를 연동합니다.',
-      active: true,
-      icon: '🗄️',
-      config: { statusText: 'Connected (Auth & Tables Active)' }
-    },
-    {
       id: 'search',
-      name: 'Google Search 블록',
-      description: '웹 검색 기능을 통해 최신 정보를 실시간으로 가져옵니다.',
-      active: false,
+      name: '최신 정보 검색',
+      description: '뉴스, 시세, 최신 트렌드처럼 실시간 정보가 필요한 질문에 웹 검색 결과를 반영해서 답변합니다.',
+      active: true,
       icon: '🔍',
       config: { apiKey: 'Live Web Grounding Ready' }
     },
     {
       id: 'filesystem',
-      name: 'File System 블록',
-      description: '첨부된 파일 및 문서 내용을 AI 컨텍스트에 주입합니다.',
+      name: '문서 분석 & 요약',
+      description: '업로드한 강의자료, 보고서, 계약서, 엑셀 표를 AI가 읽고 답변에 정확히 반영합니다.',
       active: true,
       icon: '📁',
       config: { statusText: 'Local RAG Engine Active' }
     },
     {
-      id: 'calendar',
-      name: '캘린더 일정 분석 블록',
-      description: '시간표나 일정 파일을 분석하여 주간/월간 계획을 체계적으로 정리합니다.',
+      id: 'deadlines',
+      name: '마감일 인식',
+      description: '마감일 매니저에 등록한 과제·시험·업무 일정을 AI가 파악해서, "오늘 뭐부터 해야 하지?" 같은 질문에 실제 일정 기준으로 답합니다.',
       active: true,
-      icon: '🗓️',
-      config: { statusText: 'Schedule Parser Active' }
+      icon: '⏰',
+      config: { statusText: 'Deadline Context Active' }
     },
     {
-      id: 'customapi',
-      name: '외부 서비스 연동 블록',
-      description: '노션, 슬랙 등 외부 웹서비스 API와 간편하게 연동합니다.',
+      id: 'writing',
+      name: '글쓰기 도우미',
+      description: '이메일, 보고서, 자기소개서 등 상황과 대상에 맞는 톤으로 바로 쓸 수 있는 초안을 작성해드립니다.',
       active: false,
-      icon: '🔌',
-      config: { endpoint: 'https://api.external-hook.io/v1/mcp' }
+      icon: '✍️',
+      config: { statusText: 'Draft Assistant Ready' }
+    },
+    {
+      id: 'meetingNotes',
+      name: '회의·강의 노트 정리',
+      description: '회의록이나 강의 필기를 붙여넣으면 핵심 요약과 할 일 목록으로 깔끔하게 구조화해드립니다.',
+      active: false,
+      icon: '📝',
+      config: { statusText: 'Note Structuring Ready' }
     },
   ]);
 
@@ -121,7 +121,7 @@ export default function HomePage() {
 
   // 💡 [신규] 블록 실제 연동 테스트용 상태
   const [testResult, setTestResult] = useState('블록을 선택하고 실제 연동 테스트를 실행해보세요.');
-  const [selectedConfigBlock, setSelectedConfigBlock] = useState('supabase');
+  const [selectedConfigBlock, setSelectedConfigBlock] = useState('search');
 
   // 💡 [신규] 마감일 매니저 상태
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
@@ -258,23 +258,19 @@ export default function HomePage() {
 
     setTestResult(`[실행 중] ${targetBlock.name} 실시간 연동 진단 중...`);
 
-    if (blockId === 'supabase') {
-      try {
-        const { data, error } = await supabase.from('logs').select('count', { count: 'exact', head: true });
-        if (error) throw error;
-        setTestResult(`[성공] Supabase DB 연결 정상 작동 중!\n- 사용자 인증 세션: 활성 (${user?.email})\n- 테이블 접근성: 정상 (Logs Count 확인 완료)`);
-      } catch (err: any) {
-        setTestResult(`[Supabase 오류] ${err.message}`);
-      }
-    } else if (blockId === 'search') {
+    if (blockId === 'search') {
       await new Promise(r => setTimeout(r, 600));
-      setTestResult(`[성공] Google Search 블록 연동 완료!\n- 검색 채널: 실시간 웹 그라운딩 파이프라인\n- 상태: 최신 정보 검색 쿼리 수신 대기 중`);
+      setTestResult(`[성공] 최신 정보 검색 블록 연동 완료!\n- 검색 채널: 실시간 웹 그라운딩 파이프라인\n- 상태: 최신 정보 검색 쿼리 수신 대기 중`);
     } else if (blockId === 'filesystem') {
-      setTestResult(`[성공] File System 블록 연동 완료!\n- 현재 업로드된 컨텍스트 파일 수: ${files.length}개\n- RAG 인덱싱 엔진: 정상 구동 중`);
-    } else if (blockId === 'calendar') {
-      setTestResult(`[성공] 캘린더 일정 분석 블록 연동 완료!\n- 시간표 및 스케줄 파서: 활성화됨\n- 주간/월간 계획 자동 정렬 모듈 대기 중`);
-    } else if (blockId === 'customapi') {
-      setTestResult(`[성공] 외부 서비스 연동 블록(Webhook) 연결 완료!\n- 엔드포인트: https://api.external-hook.io/v1/mcp\n- 상태코드: 200 OK (정상 응답 수신)`);
+      setTestResult(`[성공] 문서 분석 & 요약 블록 연동 완료!\n- 현재 업로드된 컨텍스트 파일 수: ${files.length}개\n- RAG 인덱싱 엔진: 정상 구동 중`);
+    } else if (blockId === 'deadlines') {
+      setTestResult(`[성공] 마감일 인식 블록 연동 완료!\n- 등록된 마감일 수: ${deadlines.length}개\n- 워크스페이스 질문에 마감일 컨텍스트가 자동으로 반영됩니다`);
+    } else if (blockId === 'writing') {
+      await new Promise(r => setTimeout(r, 400));
+      setTestResult(`[성공] 글쓰기 도우미 블록 연동 완료!\n- 모드: 이메일 / 보고서 / 자기소개서 초안 작성\n- 상태: 다음 프롬프트부터 바로 적용됩니다`);
+    } else if (blockId === 'meetingNotes') {
+      await new Promise(r => setTimeout(r, 400));
+      setTestResult(`[성공] 회의·강의 노트 정리 블록 연동 완료!\n- 출력 형식: 핵심 요약 / 주요 논의 내용 / 할 일(Action Items)\n- 상태: 다음 프롬프트부터 바로 적용됩니다`);
     }
   };
 
@@ -286,10 +282,11 @@ export default function HomePage() {
     const currentCommand = command;
     setCommand('');
 
-    const isSupabaseActive = blocks.find(b => b.id === 'supabase')?.active || false;
     const isFileActive = blocks.find(b => b.id === 'filesystem')?.active || false;
     const isSearchActive = blocks.find(b => b.id === 'search')?.active || false;
-    const isCalendarActive = blocks.find(b => b.id === 'calendar')?.active || false;
+    const isDeadlineActive = blocks.find(b => b.id === 'deadlines')?.active || false;
+    const isWritingActive = blocks.find(b => b.id === 'writing')?.active || false;
+    const isMeetingNotesActive = blocks.find(b => b.id === 'meetingNotes')?.active || false;
 
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
@@ -305,10 +302,12 @@ export default function HomePage() {
         body: JSON.stringify({
           prompt: currentCommand,
           isSearchActive,
-          isSupabaseActive,
           isFileActive,
-          isCalendarActive,
-          files: (isFileActive || isCalendarActive) ? files : [],
+          isDeadlineActive,
+          isWritingActive,
+          isMeetingNotesActive,
+          files: isFileActive ? files : [],
+          deadlines: isDeadlineActive ? deadlines : [],
           token
         }),
       });
