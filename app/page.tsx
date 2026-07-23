@@ -607,7 +607,7 @@ export default function HomePage() {
         <div className="p-4 border-t border-[#322D3B] text-xs bg-[#1C1922]">
           <div className="flex items-center gap-2 mb-2.5">
             <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#6EE7B7] animate-pulse' : 'bg-[#FF7A6B]'}`}></span>
-            <span className="font-semibold text-[#F5F2F7]">Gemini Flash 연동됨</span>
+            <span className="font-semibold text-[#F5F2F7]">DeepSeek V4 Flash 연동됨</span>
           </div>
           <div className="text-[11px] text-[#857C93] mb-1.5 font-medium uppercase tracking-wide">활성화된 MCP 블록</div>
           <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
@@ -690,12 +690,12 @@ export default function HomePage() {
                     <span className="w-2.5 h-2.5 bg-[#F79009] rounded-full inline-block"></span>
                     <span className="w-2.5 h-2.5 bg-[#6EE7B7] rounded-full inline-block"></span>
                   </div>
-                  <span className="text-[11px] font-semibold text-[#8D8499] ml-2 tracking-wider font-mono-console">
-                    AI LIVE CONSOLE
+                  <span className="text-[11px] font-semibold text-[#F4679B] ml-2 tracking-wide">
+                    ✨ AI LIVE CONSOLE
                   </span>
                 </div>
 
-                <div className="p-4 sm:p-5 font-mono-console text-[13px] leading-relaxed text-[#3DDC97] whitespace-pre-wrap min-h-[150px] tracking-wide">
+                <div className="p-4 sm:p-5 text-[14px] leading-[1.8] font-medium text-[#FBE4EE] whitespace-pre-wrap min-h-[150px]">
                   {streamingLog}
                   <div ref={terminalEndRef} />
                 </div>
@@ -923,7 +923,7 @@ export default function HomePage() {
                   <p className="mb-1">설명: {blocks.find(b => b.id === selectedConfigBlock)?.description}</p>
                 </div>
 
-                <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] font-mono-console text-[13px] text-[#3DDC97] whitespace-pre-wrap min-h-[120px]">
+                <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] text-[14px] font-medium text-[#FBE4EE] leading-[1.8] whitespace-pre-wrap min-h-[120px]">
                   {testResult}
                 </div>
               </div>
@@ -1037,7 +1037,7 @@ export default function HomePage() {
                       </div>
 
                       {isExpanded && log.response && (
-                        <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] text-[13px] text-[#3DDC97] font-mono-console leading-relaxed whitespace-pre-wrap mt-1">
+                        <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] text-[14px] font-medium text-[#FBE4EE] leading-[1.8] whitespace-pre-wrap mt-1">
                           <div className="text-[11px] text-[#8D8499] mb-2">[AI 응답 결과 기록]</div>
                           {log.response}
                         </div>
