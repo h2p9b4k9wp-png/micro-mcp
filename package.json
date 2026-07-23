@@ -10,12 +10,15 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@ohah/hwpjs": "^0.1.0-rc.10",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.7",
     "next": "16.2.10",
+    "officeparser": "^7.4.0",
     "openai": "^6.48.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "tesseract.js": "^7.0.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
