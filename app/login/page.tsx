@@ -161,10 +161,7 @@ export default function LoginPage() {
 
           {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) — 스크롤 없이 폼이 보이도록 최대한 짧게 구성 */}
           <div className="flex md:hidden flex-col items-center mb-7">
-            <div className="flex items-center gap-2 text-[#F4679B] mb-3">
-              <Logomark className="w-6 h-6" />
-              <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight">Micro-MCP</span>
-            </div>
+            <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight mb-3">Micro-MCP</span>
             <Logomark className="w-14 h-14 text-[#F4679B]" />
             <p className="text-[#C9C0D6] text-sm text-center mt-3 max-w-[280px] leading-snug">
               블록을 조립하듯, 나만의 업무를 자동화하세요

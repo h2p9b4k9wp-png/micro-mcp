@@ -599,10 +599,7 @@ export default function HomePage() {
 
       {/* 모바일 상단 바 */}
       <div className="md:hidden flex items-center justify-between bg-[#211E28] border-b border-[#322D3B] px-4 py-3.5">
-        <div className="flex items-center gap-2 text-[#F4679B]">
-          <Logomark className="w-6 h-6" />
-          <span className="font-extrabold text-[15px] text-[#F5F2F7] tracking-tight">Micro-MCP</span>
-        </div>
+        <span className="font-extrabold text-[15px] text-[#F5F2F7] tracking-tight">Micro-MCP</span>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="메뉴 열기"
