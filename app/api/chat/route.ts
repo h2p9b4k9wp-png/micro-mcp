@@ -164,19 +164,39 @@ ${dbContext}${deadlineContext}${fileTextSummary}
       baseURL: 'https://api.deepseek.com',
     });
 
-    const completion = await deepseek.chat.completions.create({
+    // 💡 [속도 개선] 답변이 완성될 때까지 기다리지 않고, 생성되는 대로 바로바로 흘려보냅니다.
+    const stream = await deepseek.chat.completions.create({
       // 가장 저렴한 모델로 시작합니다. 품질을 올리고 싶으면 'deepseek-v4-pro'로 바꾸면 됩니다.
       model: 'deepseek-v4-flash',
       max_tokens: 4096,
+      stream: true,
       messages: [
         { role: 'system', content: systemInstruction },
         { role: 'user', content: prompt },
       ],
     });
 
-    const text = completion.choices[0]?.message?.content || '';
+    const encoder = new TextEncoder();
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            const delta = chunk.choices[0]?.delta?.content || '';
+            if (delta) {
+              controller.enqueue(encoder.encode(delta));
+            }
+          }
+          controller.close();
+        } catch (streamErr) {
+          console.error('스트리밍 중 오류:', streamErr);
+          controller.error(streamErr);
+        }
+      },
+    });
 
-    return NextResponse.json({ answer: text });
+    return new Response(readableStream, {
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
   } catch (error: any) {
     console.error("API 호출 중 에러 발생:", error);
     return NextResponse.json(

@@ -294,9 +294,10 @@ export default function HomePage() {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
 
-    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
-
     let aiAnswer = '';
+    const header = `[MCP CORE] Query: "${currentCommand}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[AI 답변]\n`;
+
+    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
 
     try {
       const res = await fetch('/api/chat', {
@@ -315,19 +316,29 @@ export default function HomePage() {
         }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        aiAnswer = `[ERROR] 서버 요청 실패: ${data.error}`;
-      } else {
-        aiAnswer = data.answer;
+        // 에러 응답은 이전처럼 JSON 형태로 옵니다.
+        const errData = await res.json().catch(() => ({ error: '알 수 없는 오류가 발생했습니다.' }));
+        aiAnswer = `[ERROR] 서버 요청 실패: ${errData.error}`;
+        setStreamingLog(header + aiAnswer);
+      } else if (res.body) {
+        // 💡 [속도 개선] 답변을 다 기다리지 않고, 도착하는 대로 바로바로 화면에 이어붙입니다.
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        setStreamingLog(header);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          aiAnswer += decoder.decode(value, { stream: true });
+          setStreamingLog(header + aiAnswer);
+        }
       }
     } catch (err: any) {
       aiAnswer = `[ERROR] 네트워크 오류: ${err.message || err}`;
+      setStreamingLog(header + aiAnswer);
     }
 
-    const finalLogText = `[MCP CORE] Query: "${currentCommand}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[AI 답변]\n${aiAnswer}`;
-    setStreamingLog(finalLogText);
     setIsExecuting(false);
 
     try {
@@ -370,6 +381,18 @@ export default function HomePage() {
 
   const handleDeleteFile = (id: string) => {
     setFiles(files.filter(f => f.id !== id));
+  };
+
+  // 💡 [신규] DB 연동 로그 삭제
+  const handleDeleteLog = async (id: string) => {
+    try {
+      const { error } = await supabase.from('logs').delete().eq('id', id);
+      if (error) throw error;
+      setLogs(prev => prev.filter(log => log.id !== id));
+      if (expandedLogId === id) setExpandedLogId(null);
+    } catch (err: any) {
+      alert(`로그 삭제 중 오류가 발생했어요: ${err.message || err}`);
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1026,14 +1049,23 @@ export default function HomePage() {
                           <span className="text-[#857C93]">[{new Date(log.created_at).toLocaleTimeString()}]</span>
                           <span className="font-semibold text-[#F5F2F7]">{log.content}</span>
                         </div>
-                        {log.response && (
+                        <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                          {log.response && (
+                            <button
+                              onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
+                              className="bg-[#331F29] hover:bg-[#3D2733] text-[#F4679B] border border-[#5C3A4A] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                            >
+                              {isExpanded ? '▲ 답변 접기' : '▼ AI 답변 보기'}
+                            </button>
+                          )}
                           <button
-                            onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
-                            className="bg-[#331F29] hover:bg-[#3D2733] text-[#F4679B] border border-[#5C3A4A] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer self-end sm:self-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                            onClick={() => handleDeleteLog(log.id)}
+                            aria-label="로그 삭제"
+                            className="w-7 h-7 flex items-center justify-center bg-[#15131A] hover:bg-[#35201D] text-[#857C93] hover:text-[#FF7A6B] border border-[#322D3B] rounded-lg text-xs transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
                           >
-                            {isExpanded ? '▲ 답변 접기' : '▼ AI 답변 보기'}
+                            ✕
                           </button>
-                        )}
+                        </div>
                       </div>
 
                       {isExpanded && log.response && (
