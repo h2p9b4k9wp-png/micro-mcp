@@ -4,15 +4,18 @@ import { useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 
-// 브랜드 로고마크 — 블록이 서로 연결되는 모습을 형상화. 대시보드와 동일한 마크를 사용해 시각적 일관성을 유지합니다.
+// 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 대시보드와 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <path d="M12 17L20 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.45" />
-      <path d="M12 21L20 25" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.45" />
-      <rect x="2" y="13.5" width="10" height="10" rx="3" fill="currentColor" opacity="0.95" />
-      <rect x="20" y="1.5" width="10" height="10" rx="3" fill="currentColor" />
-      <rect x="20" y="19.5" width="10" height="10" rx="3" fill="currentColor" opacity="0.55" />
+      <circle cx="11" cy="5" r="2" fill="currentColor" opacity="0.7" />
+      <circle cx="21" cy="5" r="2" fill="currentColor" opacity="0.7" />
+      <path d="M11 7L13 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+      <path d="M21 7L19 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+      <rect x="5" y="10" width="22" height="19" rx="8" fill="currentColor" />
+      <circle cx="13" cy="19" r="2.2" fill="white" />
+      <circle cx="19" cy="19" r="2.2" fill="white" />
+      <path d="M12.5 23.5C13.8 25 18.2 25 19.5 23.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="none" />
     </svg>
   );
 }
@@ -90,7 +93,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white text-[#14171F]">
+    <div className="min-h-screen flex bg-[#211E28] text-[#F5F2F7]">
       <style jsx global>{`
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
         * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
@@ -100,12 +103,18 @@ export default function LoginPage() {
       `}</style>
 
       {/* 좌측 브랜드 패널 (데스크톱 전용) */}
-      <div className="hidden md:flex md:w-[44%] lg:w-[40%] relative overflow-hidden bg-gradient-to-br from-[#363EA6] to-[#1B1F5C] text-white flex-col justify-between p-12 lg:p-16">
-        {/* 배경 장식용 대형 로고마크 (은은하게) */}
-        <Logomark className="absolute -right-16 -bottom-16 w-[420px] h-[420px] opacity-[0.07]" />
+      <div className="hidden md:flex md:w-[44%] lg:w-[40%] relative overflow-hidden bg-[#17141D] text-white flex-col justify-between p-12 lg:p-16">
+        {/* 은은한 색색 조명 효과 (귀여운 분위기용, 단색 그라데이션 대신 부드러운 블러 블롭) */}
+        <div className="absolute w-72 h-72 bg-[#F4679B] rounded-full blur-3xl opacity-[0.18] -top-10 -left-16 pointer-events-none" />
+        <div className="absolute w-72 h-72 bg-[#6EE7B7] rounded-full blur-3xl opacity-[0.12] -bottom-16 -right-10 pointer-events-none" />
+
+        {/* 큼직한 캐릭터 마스코트 */}
+        <Logomark className="absolute right-8 bottom-24 w-40 h-40 text-[#F4679B] opacity-90" />
+        <span className="absolute right-16 bottom-[168px] w-2 h-2 rounded-full bg-[#6EE7B7]" />
+        <span className="absolute right-32 bottom-[228px] w-1.5 h-1.5 rounded-full bg-[#FFD97D]" />
 
         <div className="flex items-center gap-2.5 relative">
-          <Logomark className="w-8 h-8" />
+          <Logomark className="w-8 h-8 text-[#F4679B]" />
           <span className="text-lg font-extrabold tracking-tight">Micro-MCP</span>
         </div>
 
@@ -119,12 +128,12 @@ export default function LoginPage() {
 
           <div className="flex flex-col gap-4">
             {[
-              { title: '연동 자동화', desc: '데이터베이스·캘린더·검색·파일을 블록으로 연결' },
-              { title: '실행 중심 결과물', desc: '대화로 끝나지 않고, 실제 문서와 일정으로 정리' },
-              { title: '하이브리드 AI 엔진', desc: '작업 난이도에 맞춰 최적의 모델을 자동 선택' },
+              { title: '연동 자동화', desc: '데이터베이스·캘린더·검색·파일을 블록으로 연결', dot: '#F4679B' },
+              { title: '실행 중심 결과물', desc: '대화로 끝나지 않고, 실제 문서와 일정으로 정리', dot: '#6EE7B7' },
+              { title: '하이브리드 AI 엔진', desc: '작업 난이도에 맞춰 최적의 모델을 자동 선택', dot: '#FFD97D' },
             ].map((item) => (
               <div key={item.title} className="flex items-start gap-3">
-                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-white/60 shrink-0" />
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: item.dot }} />
                 <div>
                   <div className="text-sm font-semibold">{item.title}</div>
                   <div className="text-white/60 text-xs mt-0.5">{item.desc}</div>
@@ -138,19 +147,19 @@ export default function LoginPage() {
       </div>
 
       {/* 우측 로그인 폼 패널 */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#FAFBFC] md:bg-white">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#1C1922] md:bg-[#211E28]">
         <div className="w-full max-w-[380px]">
 
           {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) */}
-          <div className="flex md:hidden items-center gap-2 text-[#363EA6] mb-8 justify-center">
+          <div className="flex md:hidden items-center gap-2 text-[#F4679B] mb-8 justify-center">
             <Logomark className="w-6 h-6" />
-            <span className="text-base font-extrabold text-[#14171F] tracking-tight">Micro-MCP</span>
+            <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight">Micro-MCP</span>
           </div>
 
           <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
             {isSignUp ? '새 계정 만들기' : '다시 만나서 반가워요'}
           </h2>
-          <p className="text-[#667085] text-sm text-center md:text-left mb-7">
+          <p className="text-[#AFA6BD] text-sm text-center md:text-left mb-7">
             {isSignUp ? '새 계정을 생성하여 시작하세요' : '서비스 이용을 위해 로그인해 주세요'}
           </p>
 
@@ -158,8 +167,8 @@ export default function LoginPage() {
             <div
               className={`px-4 py-3 rounded-lg text-sm mb-5 border ${
                 message.type === 'error'
-                  ? 'bg-[#FEF3F2] text-[#B42318] border-[#FECDCA]'
-                  : 'bg-[#ECFDF3] text-[#12734A] border-[#ABEFC6]'
+                  ? 'bg-[#35201D] text-[#FF9585] border-[#63392F]'
+                  : 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D]'
               }`}
             >
               {message.text}
@@ -168,7 +177,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleAuth} className="flex flex-col gap-4">
             <div>
-              <label className="block text-[13px] font-medium text-[#344054] mb-1.5">
+              <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
                 이메일 주소
               </label>
               <input
@@ -177,12 +186,12 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 placeholder:text-[#98A2B3] transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93] transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-[13px] font-medium text-[#344054] mb-1.5">
+              <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
                 비밀번호
               </label>
               <input
@@ -191,28 +200,28 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 placeholder:text-[#98A2B3] transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93] transition-colors"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 mt-1 rounded-lg border-none bg-[#363EA6] text-white font-semibold text-sm cursor-pointer hover:bg-[#2C3189] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] focus-visible:ring-offset-2"
+              className="w-full py-2.5 mt-1 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
             >
               {loading ? '처리 중...' : isSignUp ? '회원가입' : '로그인'}
             </button>
           </form>
 
           <div className="my-6 flex items-center gap-3">
-            <hr className="flex-1 border-[#E5E7EB]" />
-            <span className="text-xs text-[#98A2B3]">간편 로그인</span>
-            <hr className="flex-1 border-[#E5E7EB]" />
+            <hr className="flex-1 border-[#322D3B]" />
+            <span className="text-xs text-[#857C93]">간편 로그인</span>
+            <hr className="flex-1 border-[#322D3B]" />
           </div>
 
           <button
             onClick={() => handleOAuthLogin('google')}
-            className="w-full py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#344054] text-sm font-medium cursor-pointer flex items-center justify-center gap-2.5 hover:bg-[#F5F6F8] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6]"
+            className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-medium cursor-pointer flex items-center justify-center gap-2.5 hover:bg-[#15131A] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
           >
             <GoogleIcon />
             Google로 계속하기
@@ -224,7 +233,7 @@ export default function LoginPage() {
                 setIsSignUp(!isSignUp);
                 setMessage(null);
               }}
-              className="bg-transparent border-none text-[#363EA6] text-[13px] font-medium cursor-pointer hover:underline focus:outline-none"
+              className="bg-transparent border-none text-[#F4679B] text-[13px] font-medium cursor-pointer hover:underline focus:outline-none"
             >
               {isSignUp ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입'}
             </button>

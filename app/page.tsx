@@ -40,15 +40,18 @@ interface Deadline {
   dueAt: string; // datetime-local 문자열
 }
 
-// 브랜드 로고마크 — 블록이 서로 연결되는 모습을 형상화. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
+// 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <path d="M12 17L20 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.45" />
-      <path d="M12 21L20 25" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.45" />
-      <rect x="2" y="13.5" width="10" height="10" rx="3" fill="currentColor" opacity="0.95" />
-      <rect x="20" y="1.5" width="10" height="10" rx="3" fill="currentColor" />
-      <rect x="20" y="19.5" width="10" height="10" rx="3" fill="currentColor" opacity="0.55" />
+      <circle cx="11" cy="5" r="2" fill="currentColor" opacity="0.7" />
+      <circle cx="21" cy="5" r="2" fill="currentColor" opacity="0.7" />
+      <path d="M11 7L13 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+      <path d="M21 7L19 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+      <rect x="5" y="10" width="22" height="19" rx="8" fill="currentColor" />
+      <circle cx="13" cy="19" r="2.2" fill="white" />
+      <circle cx="19" cy="19" r="2.2" fill="white" />
+      <path d="M12.5 23.5C13.8 25 18.2 25 19.5 23.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="none" />
     </svg>
   );
 }
@@ -509,11 +512,11 @@ export default function HomePage() {
   };
 
   const urgencyStyles: Record<string, string> = {
-    overdue: 'bg-[#F2F4F7] text-[#667085] border-[#E5E7EB]',
-    critical: 'bg-[#FEF3F2] text-[#B42318] border-[#FDA29B]',
-    high: 'bg-[#FFFAEB] text-[#B54708] border-[#FEDF89]',
-    medium: 'bg-[#EEF0FC] text-[#363EA6] border-[#C7CCF0]',
-    low: 'bg-[#F5F6F8] text-[#667085] border-[#E5E7EB]',
+    overdue: 'bg-[#262330] text-[#AFA6BD] border-[#322D3B]',
+    critical: 'bg-[#35201D] text-[#FF9585] border-[#63392F]',
+    high: 'bg-[#362E1A] text-[#FFD97D] border-[#63501F]',
+    medium: 'bg-[#331F29] text-[#F4679B] border-[#5C3A4A]',
+    low: 'bg-[#15131A] text-[#AFA6BD] border-[#322D3B]',
   };
 
   const sortedDeadlines = [...deadlines].sort(
@@ -531,21 +534,21 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F6F8] flex items-center justify-center">
+      <div className="min-h-screen bg-[#15131A] flex items-center justify-center">
         <style jsx global>{`
           @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
           * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
         `}</style>
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-[3px] border-[#E5E7EB] border-t-[#363EA6] rounded-full animate-spin" />
-          <span className="text-sm text-[#667085]">로딩 중...</span>
+          <div className="w-8 h-8 border-[3px] border-[#322D3B] border-t-[#F4679B] rounded-full animate-spin" />
+          <span className="text-sm text-[#AFA6BD]">로딩 중...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F6F8] text-[#14171F] flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#15131A] text-[#F5F2F7] flex flex-col md:flex-row">
       <style jsx global>{`
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
@@ -557,15 +560,15 @@ export default function HomePage() {
       `}</style>
 
       {/* 모바일 상단 바 */}
-      <div className="md:hidden flex items-center justify-between bg-white border-b border-[#E5E7EB] px-4 py-3.5">
-        <div className="flex items-center gap-2 text-[#363EA6]">
+      <div className="md:hidden flex items-center justify-between bg-[#211E28] border-b border-[#322D3B] px-4 py-3.5">
+        <div className="flex items-center gap-2 text-[#F4679B]">
           <Logomark className="w-6 h-6" />
-          <span className="font-extrabold text-[15px] text-[#14171F] tracking-tight">Micro-MCP</span>
+          <span className="font-extrabold text-[15px] text-[#F5F2F7] tracking-tight">Micro-MCP</span>
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="메뉴 열기"
-          className="text-[#14171F] text-xl p-1.5 rounded-lg hover:bg-[#F5F6F8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6]"
+          className="text-[#F5F2F7] text-xl p-1.5 rounded-lg hover:bg-[#15131A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
         >
           {isMobileMenuOpen ? '✕' : '☰'}
         </button>
@@ -574,12 +577,12 @@ export default function HomePage() {
       {/* 사이드바 메뉴 */}
       <div className={`
         ${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex
-        w-full md:w-64 bg-white border-r border-[#E5E7EB] flex-col shrink-0
+        w-full md:w-64 bg-[#211E28] border-r border-[#322D3B] flex-col shrink-0
         z-50
       `}>
-        <div className="hidden md:flex px-6 py-6 items-center gap-2.5 border-b border-[#E5E7EB] text-[#363EA6]">
+        <div className="hidden md:flex px-6 py-6 items-center gap-2.5 border-b border-[#322D3B] text-[#F4679B]">
           <Logomark className="w-7 h-7" />
-          <span className="text-[16px] font-extrabold text-[#14171F] tracking-tight">Micro-MCP</span>
+          <span className="text-[16px] font-extrabold text-[#F5F2F7] tracking-tight">Micro-MCP</span>
         </div>
         <div className="p-3 flex flex-col gap-1 flex-1">
           {NAV_ITEMS.map(item => (
@@ -588,10 +591,10 @@ export default function HomePage() {
               onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); }}
               role="button"
               tabIndex={0}
-              className={`px-3.5 py-2.5 rounded-lg text-sm font-medium cursor-pointer flex items-center gap-2.5 border-l-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] ${
+              className={`px-3.5 py-2.5 rounded-lg text-sm font-medium cursor-pointer flex items-center gap-2.5 border-l-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                 activeTab === item.id
-                  ? 'bg-[#EEF0FC] text-[#363EA6] font-semibold border-[#363EA6]'
-                  : 'text-[#667085] border-transparent hover:bg-[#F5F6F8] hover:text-[#14171F]'
+                  ? 'bg-[#331F29] text-[#F4679B] font-semibold border-[#F4679B]'
+                  : 'text-[#AFA6BD] border-transparent hover:bg-[#15131A] hover:text-[#F5F2F7]'
               }`}
             >
               <span className="text-base leading-none">{item.icon}</span>
@@ -601,18 +604,18 @@ export default function HomePage() {
         </div>
 
         {/* 좌측 하단 MCP 연결 상태 배지 UI */}
-        <div className="p-4 border-t border-[#E5E7EB] text-xs bg-[#FAFBFC]">
+        <div className="p-4 border-t border-[#322D3B] text-xs bg-[#1C1922]">
           <div className="flex items-center gap-2 mb-2.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#12B76A] animate-pulse' : 'bg-[#F04438]'}`}></span>
-            <span className="font-semibold text-[#14171F]">Gemini Flash 연동됨</span>
+            <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#6EE7B7] animate-pulse' : 'bg-[#FF7A6B]'}`}></span>
+            <span className="font-semibold text-[#F5F2F7]">Gemini Flash 연동됨</span>
           </div>
-          <div className="text-[11px] text-[#98A2B3] mb-1.5 font-medium uppercase tracking-wide">활성화된 MCP 블록</div>
+          <div className="text-[11px] text-[#857C93] mb-1.5 font-medium uppercase tracking-wide">활성화된 MCP 블록</div>
           <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
             {blocks.filter(b => b.active).length === 0 ? (
-              <span className="text-[#98A2B3] italic">없음</span>
+              <span className="text-[#857C93] italic">없음</span>
             ) : (
               blocks.filter(b => b.active).map(b => (
-                <span key={b.id} className="bg-[#ECFDF3] text-[#12734A] border border-[#ABEFC6] px-2 py-1 rounded-md text-[10px] font-medium flex items-center gap-1">
+                <span key={b.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2 py-1 rounded-md text-[10px] font-medium flex items-center gap-1">
                   <span>{b.icon}</span> {b.name.replace(' 블록', '')}
                 </span>
               ))
@@ -623,16 +626,16 @@ export default function HomePage() {
 
       {/* 메인 콘텐츠 영역 */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <div className="hidden md:flex h-[68px] border-b border-[#E5E7EB] items-center justify-end px-8 gap-3 bg-white/70 backdrop-blur">
-          <div className="flex items-center gap-2 bg-[#F5F6F8] px-3.5 py-2 rounded-full border border-[#E5E7EB]">
-            <span className="text-xs text-[#667085] max-w-[220px] truncate">{user?.email}</span>
+        <div className="hidden md:flex h-[68px] border-b border-[#322D3B] items-center justify-end px-8 gap-3 bg-[#211E28]/70 backdrop-blur">
+          <div className="flex items-center gap-2 bg-[#15131A] px-3.5 py-2 rounded-full border border-[#322D3B]">
+            <span className="text-xs text-[#AFA6BD] max-w-[220px] truncate">{user?.email}</span>
           </div>
           <button
             onClick={async () => {
               await supabase.auth.signOut();
               router.push('/login');
             }}
-            className="px-4 py-2 rounded-lg border border-[#FDA29B] bg-white text-[#F04438] hover:bg-[#FEF3F2] text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F04438]"
+            className="px-4 py-2 rounded-lg border border-[#63392F] bg-[#211E28] text-[#FF7A6B] hover:bg-[#35201D] text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
           >
             로그아웃
           </button>
@@ -646,18 +649,18 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   Live AI Playground
                 </h1>
-                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
                   활성화된 MCP 블록 맥락 및 첨부된 문서 내용을 바탕으로 AI가 실제 답변을 도출합니다.
                 </p>
               </div>
 
-              <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 sm:p-6 mb-6 shadow-sm">
+              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-4 sm:p-6 mb-6 shadow-sm">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                  <div className="text-sm font-semibold text-[#14171F]">
+                  <div className="text-sm font-semibold text-[#F5F2F7]">
                     AI 프롬프트 전송
                   </div>
-                  <div className="flex items-center gap-1.5 bg-[#F5F6F8] px-3 py-1 rounded-full border border-[#E5E7EB] text-xs text-[#667085] max-w-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#12B76A] animate-pulse shrink-0"></span>
+                  <div className="flex items-center gap-1.5 bg-[#15131A] px-3 py-1 rounded-full border border-[#322D3B] text-xs text-[#AFA6BD] max-w-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#6EE7B7] animate-pulse shrink-0"></span>
                     <span className="truncate">{activeMcpNames}</span>
                   </div>
                 </div>
@@ -668,26 +671,26 @@ export default function HomePage() {
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
                     placeholder="예: 첨부된 일정표를 바탕으로 이번 주 계획을 정리해줘..."
-                    className="flex-1 bg-white border border-[#D0D5DD] rounded-lg px-4 py-3 text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 transition-colors placeholder:text-[#98A2B3]"
+                    className="flex-1 bg-[#211E28] border border-[#423B4C] rounded-lg px-4 py-3 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#857C93]"
                   />
                   <button
                     type="submit"
                     disabled={isExecuting}
-                    className="bg-[#363EA6] hover:bg-[#2C3189] text-white border-none rounded-lg px-6 py-3 font-semibold text-sm cursor-pointer disabled:opacity-50 transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] focus-visible:ring-offset-2"
+                    className="bg-[#F4679B] hover:bg-[#D1477F] text-white border-none rounded-lg px-6 py-3 font-semibold text-sm cursor-pointer disabled:opacity-50 transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
                   >
                     {isExecuting ? '전송 중...' : '프롬프트 전송'}
                   </button>
                 </form>
               </div>
 
-              <div className="bg-[#0F1117] rounded-xl border border-[#1F2330] overflow-hidden shadow-sm">
-                <div className="bg-[#171A23] px-4 py-3 flex items-center gap-2 border-b border-[#1F2330]">
+              <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] overflow-hidden shadow-sm">
+                <div className="bg-[#17141D] px-4 py-3 flex items-center gap-2 border-b border-[#2A2632]">
                   <div className="flex gap-1.5">
-                    <span className="w-2.5 h-2.5 bg-[#F04438] rounded-full inline-block"></span>
+                    <span className="w-2.5 h-2.5 bg-[#FF7A6B] rounded-full inline-block"></span>
                     <span className="w-2.5 h-2.5 bg-[#F79009] rounded-full inline-block"></span>
-                    <span className="w-2.5 h-2.5 bg-[#12B76A] rounded-full inline-block"></span>
+                    <span className="w-2.5 h-2.5 bg-[#6EE7B7] rounded-full inline-block"></span>
                   </div>
-                  <span className="text-[11px] font-semibold text-[#8A94A6] ml-2 tracking-wider font-mono-console">
+                  <span className="text-[11px] font-semibold text-[#8D8499] ml-2 tracking-wider font-mono-console">
                     AI LIVE CONSOLE
                   </span>
                 </div>
@@ -706,25 +709,25 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   마감일 매니저
                 </h1>
-                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
                   과제와 시험 마감일을 한눈에 모아서, 가장 급한 것부터 자동으로 정렬해드려요.
                 </p>
               </div>
 
-              <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-4 shadow-sm">
+              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-4 shadow-sm">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-[#14171F]">파일 하나로 한 번에 가져오기</h3>
-                    <p className="text-xs text-[#667085] mt-1">캘린더 파일(.ics), 시간표 캡처, 학사일정 PDF 등 무엇이든 올리면 AI가 알아서 일정을 찾아 정리해요.</p>
+                    <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7]">파일 하나로 한 번에 가져오기</h3>
+                    <p className="text-xs text-[#AFA6BD] mt-1">캘린더 파일(.ics), 시간표 캡처, 학사일정 PDF 등 무엇이든 올리면 AI가 알아서 일정을 찾아 정리해요.</p>
                   </div>
-                  <label className={`inline-flex px-4 py-2.5 rounded-lg text-sm font-semibold items-center gap-2 border transition-colors shrink-0 focus-within:ring-2 focus-within:ring-[#363EA6] ${
+                  <label className={`inline-flex px-4 py-2.5 rounded-lg text-sm font-semibold items-center gap-2 border transition-colors shrink-0 focus-within:ring-2 focus-within:ring-[#F4679B] ${
                     isImportingDeadlines
-                      ? 'bg-[#F5F6F8] text-[#98A2B3] border-[#E5E7EB] cursor-not-allowed'
-                      : 'bg-white hover:bg-[#F5F6F8] text-[#363EA6] border-[#C7CCF0] cursor-pointer'
+                      ? 'bg-[#15131A] text-[#857C93] border-[#322D3B] cursor-not-allowed'
+                      : 'bg-[#211E28] hover:bg-[#15131A] text-[#F4679B] border-[#5C3A4A] cursor-pointer'
                   }`}>
                     {isImportingDeadlines ? (
                       <>
-                        <span className="w-3.5 h-3.5 border-2 border-[#D0D5DD] border-t-[#363EA6] rounded-full animate-spin" />
+                        <span className="w-3.5 h-3.5 border-2 border-[#423B4C] border-t-[#F4679B] rounded-full animate-spin" />
                         <span>AI가 분석 중...</span>
                       </>
                     ) : (
@@ -740,8 +743,8 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#14171F]">직접 입력해서 추가</h3>
+              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#F5F2F7]">직접 입력해서 추가</h3>
                 <form onSubmit={handleAddDeadline} className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr_auto] gap-3">
                   <input
                     type="text"
@@ -749,25 +752,25 @@ export default function HomePage() {
                     placeholder="할 일 (예: 데이터베이스 과제 3)"
                     value={newDeadlineTitle}
                     onChange={(e) => setNewDeadlineTitle(e.target.value)}
-                    className="px-3.5 py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 placeholder:text-[#98A2B3]"
+                    className="px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                   />
                   <input
                     type="text"
                     placeholder="과목/카테고리 (선택)"
                     value={newDeadlineCourse}
                     onChange={(e) => setNewDeadlineCourse(e.target.value)}
-                    className="px-3.5 py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 placeholder:text-[#98A2B3]"
+                    className="px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                   />
                   <input
                     type="datetime-local"
                     required
                     value={newDeadlineDue}
                     onChange={(e) => setNewDeadlineDue(e.target.value)}
-                    className="px-3.5 py-2.5 rounded-lg border border-[#D0D5DD] bg-white text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20"
+                    className="px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                   />
                   <button
                     type="submit"
-                    className="bg-[#363EA6] hover:bg-[#2C3189] text-white rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] focus-visible:ring-offset-2"
+                    className="bg-[#F4679B] hover:bg-[#D1477F] text-white rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
                   >
                     추가
                   </button>
@@ -776,7 +779,7 @@ export default function HomePage() {
 
               <div className="flex flex-col gap-2.5">
                 {sortedDeadlines.length === 0 && (
-                  <div className="text-sm text-[#98A2B3] text-center py-8 bg-white rounded-xl border border-[#E5E7EB]">
+                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
                     등록된 마감일이 없습니다. 위에서 첫 마감일을 추가해보세요!
                   </div>
                 )}
@@ -785,15 +788,15 @@ export default function HomePage() {
                   return (
                     <div
                       key={deadline.id}
-                      className="bg-white rounded-xl border border-[#E5E7EB] p-4 flex items-center justify-between gap-3 shadow-sm"
+                      className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-4 flex items-center justify-between gap-3 shadow-sm"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span className={`shrink-0 px-2.5 py-1 rounded-md text-xs font-bold border ${urgencyStyles[dday.urgency]}`}>
                           {dday.label}
                         </span>
                         <div className="min-w-0">
-                          <div className="text-sm font-semibold text-[#14171F] truncate">{deadline.title}</div>
-                          <div className="text-xs text-[#98A2B3] mt-0.5">
+                          <div className="text-sm font-semibold text-[#F5F2F7] truncate">{deadline.title}</div>
+                          <div className="text-xs text-[#857C93] mt-0.5">
                             {deadline.course && <span>{deadline.course} · </span>}
                             {new Date(deadline.dueAt).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </div>
@@ -801,7 +804,7 @@ export default function HomePage() {
                       </div>
                       <button
                         onClick={() => handleDeleteDeadline(deadline.id)}
-                        className="shrink-0 text-[#F04438] hover:text-[#D92D20] text-xs px-2.5 py-1.5 bg-[#FEF3F2] rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F04438]"
+                        className="shrink-0 text-[#FF7A6B] hover:text-[#FF9585] text-xs px-2.5 py-1.5 bg-[#35201D] rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
                       >
                         삭제
                       </button>
@@ -818,7 +821,7 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   MCP 블록 매니저
                 </h1>
-                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
                   AI 파이프라인에 연결할 MCP 블록을 활성화하세요. 설정은 브라우저에 안전하게 영구 저장됩니다.
                 </p>
               </div>
@@ -827,34 +830,34 @@ export default function HomePage() {
                 {blocks.map((block) => (
                   <div
                     key={block.id}
-                    className={`rounded-xl border p-5 flex flex-col justify-between transition-all duration-200 bg-white ${
+                    className={`rounded-2xl border p-5 flex flex-col justify-between transition-all duration-200 bg-[#211E28] ${
                       block.active
-                        ? 'border-[#363EA6]/40 shadow-sm'
-                        : 'border-[#E5E7EB]'
+                        ? 'border-[#F4679B]/40 shadow-sm'
+                        : 'border-[#322D3B]'
                     }`}
                   >
                     <div>
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-sm sm:text-base font-bold flex items-center gap-2 truncate text-[#14171F]">
+                        <span className="text-sm sm:text-base font-bold flex items-center gap-2 truncate text-[#F5F2F7]">
                           <span>{block.icon}</span> <span className="truncate">{block.name}</span>
                         </span>
 
                         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0">
-                          <span className={`w-1.5 h-1.5 rounded-full ${block.active ? 'bg-[#12B76A] animate-pulse' : 'bg-[#D0D5DD]'}`}></span>
-                          <span className={block.active ? 'text-[#12734A]' : 'text-[#98A2B3]'}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${block.active ? 'bg-[#6EE7B7] animate-pulse' : 'bg-[#423B4C]'}`}></span>
+                          <span className={block.active ? 'text-[#6EE7B7]' : 'text-[#857C93]'}>
                             {block.active ? '활성됨' : '비활성'}
                           </span>
                         </div>
                       </div>
-                      <p className="text-xs sm:text-sm text-[#667085] leading-normal">{block.description}</p>
+                      <p className="text-xs sm:text-sm text-[#AFA6BD] leading-normal">{block.description}</p>
                     </div>
 
                     <button
                       onClick={() => toggleBlock(block.id)}
-                      className={`mt-4 w-full sm:w-auto self-start border rounded-lg px-4 py-2 text-xs sm:text-sm font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] ${
+                      className={`mt-4 w-full sm:w-auto self-start border rounded-lg px-4 py-2 text-xs sm:text-sm font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                         block.active
-                          ? 'bg-[#ECFDF3] text-[#12734A] border-[#ABEFC6] hover:bg-[#D4F5E3]'
-                          : 'bg-[#363EA6] text-white border-transparent hover:bg-[#2C3189]'
+                          ? 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D] hover:bg-[#234438]'
+                          : 'bg-[#F4679B] text-white border-transparent hover:bg-[#D1477F]'
                       }`}
                     >
                       {block.active ? '✓ 블록 작동 중 (클릭시 해제)' : '블록 활성화하기'}
@@ -869,10 +872,10 @@ export default function HomePage() {
           {activeTab === 'integration' && (
             <div>
               <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#12734A]">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#6EE7B7]">
                   실시간 블록 연동 & 테스트 툴
                 </h1>
-                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
                   각각의 MCP 블록이 실제 백엔드 및 외부 데이터와 통신하는지 진단하고 검증합니다.
                 </p>
               </div>
@@ -884,43 +887,43 @@ export default function HomePage() {
                     onClick={() => setSelectedConfigBlock(b.id)}
                     role="button"
                     tabIndex={0}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6] ${
+                    className={`p-4 rounded-2xl border cursor-pointer transition-all bg-[#211E28] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                       selectedConfigBlock === b.id
-                        ? 'border-[#12B76A] shadow-sm ring-1 ring-[#12B76A]/30'
-                        : 'border-[#E5E7EB] hover:border-[#D0D5DD]'
+                        ? 'border-[#6EE7B7] shadow-sm ring-1 ring-[#6EE7B7]/30'
+                        : 'border-[#322D3B] hover:border-[#423B4C]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-sm flex items-center gap-1.5 text-[#14171F]">
+                      <span className="font-bold text-sm flex items-center gap-1.5 text-[#F5F2F7]">
                         <span>{b.icon}</span> {b.name}
                       </span>
-                      <span className={`w-1.5 h-1.5 rounded-full ${b.active ? 'bg-[#12B76A]' : 'bg-[#D0D5DD]'}`}></span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${b.active ? 'bg-[#6EE7B7]' : 'bg-[#423B4C]'}`}></span>
                     </div>
-                    <div className="text-[11px] text-[#667085]">
-                      상태: <span className={b.active ? 'text-[#12734A] font-semibold' : 'text-[#98A2B3]'}>{b.active ? '연동 활성' : '비활성'}</span>
+                    <div className="text-[11px] text-[#AFA6BD]">
+                      상태: <span className={b.active ? 'text-[#6EE7B7] font-semibold' : 'text-[#857C93]'}>{b.active ? '연동 활성' : '비활성'}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#E5E7EB]">
-                  <div className="font-bold text-base text-[#14171F]">
+              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#322D3B]">
+                  <div className="font-bold text-base text-[#F5F2F7]">
                     {blocks.find(b => b.id === selectedConfigBlock)?.name} 진단 및 연동 테스트
                   </div>
                   <button
                     onClick={() => handleTestBlockIntegration(selectedConfigBlock)}
-                    className="bg-[#12B76A] hover:bg-[#0F9D5A] text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#12B76A] focus-visible:ring-offset-2"
+                    className="bg-[#2FAE7C] hover:bg-[#268F66] text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2FAE7C] focus-visible:ring-offset-2"
                   >
                     실시간 연동 테스트 실행
                   </button>
                 </div>
 
-                <div className="mb-4 text-xs text-[#667085]">
+                <div className="mb-4 text-xs text-[#AFA6BD]">
                   <p className="mb-1">설명: {blocks.find(b => b.id === selectedConfigBlock)?.description}</p>
                 </div>
 
-                <div className="bg-[#0F1117] p-4 rounded-lg border border-[#1F2330] font-mono-console text-[13px] text-[#3DDC97] whitespace-pre-wrap min-h-[120px]">
+                <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] font-mono-console text-[13px] text-[#3DDC97] whitespace-pre-wrap min-h-[120px]">
                   {testResult}
                 </div>
               </div>
@@ -933,16 +936,16 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   모니터링 & 파일 (RAG 컨텍스트)
                 </h1>
-                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
                   AI가 참고할 수 있도록 일정표, 엑셀, 문서, 이미지 등의 파일을 첨부하세요.
                 </p>
               </div>
 
-              <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#14171F]">AI 참조용 파일 및 일정표 첨부</h3>
+              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#F5F2F7]">AI 참조용 파일 및 일정표 첨부</h3>
 
                 <div className="mb-5">
-                  <label className="inline-flex bg-[#363EA6] hover:bg-[#2C3189] text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
+                  <label className="inline-flex bg-[#F4679B] hover:bg-[#D1477F] text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
                     <span>파일 및 캘린더 일정 첨부하기</span>
                     <input
                       type="file"
@@ -952,10 +955,10 @@ export default function HomePage() {
                   </label>
                 </div>
 
-                <div className="text-xs text-[#98A2B3] mb-5 flex items-center gap-3">
-                  <hr className="flex-1 border-[#E5E7EB]" />
+                <div className="text-xs text-[#857C93] mb-5 flex items-center gap-3">
+                  <hr className="flex-1 border-[#322D3B]" />
                   <span>또는 텍스트 직접 입력</span>
-                  <hr className="flex-1 border-[#E5E7EB]" />
+                  <hr className="flex-1 border-[#322D3B]" />
                 </div>
 
                 <form onSubmit={handleAddFile} className="flex flex-col gap-3">
@@ -964,32 +967,32 @@ export default function HomePage() {
                     placeholder="문서 제목 (예: 5월_행사일정.txt)"
                     value={newFileName}
                     onChange={(e) => setNewFileName(e.target.value)}
-                    className="bg-white border border-[#D0D5DD] rounded-lg px-3.5 py-2.5 text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 placeholder:text-[#98A2B3]"
+                    className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                   />
                   <textarea
                     placeholder="AI가 읽을 일정 내용이나 메모를 입력하세요..."
                     value={newFileContent}
                     onChange={(e) => setNewFileContent(e.target.value)}
                     rows={3}
-                    className="bg-white border border-[#D0D5DD] rounded-lg px-3.5 py-2.5 text-[#14171F] text-sm outline-none focus:border-[#363EA6] focus:ring-2 focus:ring-[#363EA6]/20 resize-none placeholder:text-[#98A2B3]"
+                    className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 resize-none placeholder:text-[#857C93]"
                   />
-                  <button type="submit" className="self-end bg-white hover:bg-[#F5F6F8] text-[#14171F] px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#D0D5DD] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6]">
+                  <button type="submit" className="self-end bg-[#211E28] hover:bg-[#15131A] text-[#F5F2F7] px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#423B4C] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]">
                     직접 입력해서 등록
                   </button>
                 </form>
 
                 <div className="mt-8 flex flex-col gap-2">
-                  <h4 className="text-xs font-bold text-[#98A2B3] uppercase tracking-wider mb-1">등록된 컨텍스트 파일 목록</h4>
+                  <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wider mb-1">등록된 컨텍스트 파일 목록</h4>
                   {files.length === 0 && (
-                    <div className="text-sm text-[#98A2B3] text-center py-4">등록된 파일이 없습니다.</div>
+                    <div className="text-sm text-[#857C93] text-center py-4">등록된 파일이 없습니다.</div>
                   )}
                   {files.map(file => (
-                    <div key={file.id} className="flex flex-col bg-[#FAFBFC] p-3.5 rounded-lg border border-[#E5E7EB] text-sm gap-1">
+                    <div key={file.id} className="flex flex-col bg-[#1C1922] p-3.5 rounded-lg border border-[#322D3B] text-sm gap-1">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold text-[#363EA6]">📄 {file.name} <span className="text-xs text-[#98A2B3] font-normal">({file.size})</span></span>
-                        <button onClick={() => handleDeleteFile(file.id)} className="text-[#F04438] hover:text-[#D92D20] text-xs px-2 py-1 bg-[#FEF3F2] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F04438]">삭제</button>
+                        <span className="font-semibold text-[#F4679B]">📄 {file.name} <span className="text-xs text-[#857C93] font-normal">({file.size})</span></span>
+                        <button onClick={() => handleDeleteFile(file.id)} className="text-[#FF7A6B] hover:text-[#FF9585] text-xs px-2 py-1 bg-[#35201D] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]">삭제</button>
                       </div>
-                      <p className="text-xs text-[#667085] truncate mt-1">타입: {file.mimeType || 'text/plain'}</p>
+                      <p className="text-xs text-[#AFA6BD] truncate mt-1">타입: {file.mimeType || 'text/plain'}</p>
                     </div>
                   ))}
                 </div>
@@ -1003,30 +1006,30 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   DB 연동 로그 & AI 답변 조회
                 </h1>
-                <p className="text-[#667085] text-xs sm:text-sm mt-1.5">
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
                   Supabase 데이터베이스에 기록된 프롬프트 이력과 당시 AI의 답변을 확인할 수 있습니다.
                 </p>
               </div>
 
               <div className="flex flex-col gap-3">
                 {logs.length === 0 && (
-                  <div className="text-sm text-[#98A2B3] text-center py-8 bg-white rounded-xl border border-[#E5E7EB]">
+                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
                     저장된 로그가 없습니다. 워크스페이스에서 프롬프트를 전송해 보세요!
                   </div>
                 )}
                 {logs.map((log) => {
                   const isExpanded = expandedLogId === log.id;
                   return (
-                    <div key={log.id} className="bg-white rounded-xl border border-[#E5E7EB] p-4 flex flex-col gap-3 shadow-sm">
+                    <div key={log.id} className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-4 flex flex-col gap-3 shadow-sm">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <div className="flex items-center gap-2 font-mono-console text-xs text-[#363EA6]">
-                          <span className="text-[#98A2B3]">[{new Date(log.created_at).toLocaleTimeString()}]</span>
-                          <span className="font-semibold text-[#14171F]">{log.content}</span>
+                        <div className="flex items-center gap-2 font-mono-console text-xs text-[#F4679B]">
+                          <span className="text-[#857C93]">[{new Date(log.created_at).toLocaleTimeString()}]</span>
+                          <span className="font-semibold text-[#F5F2F7]">{log.content}</span>
                         </div>
                         {log.response && (
                           <button
                             onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
-                            className="bg-[#EEF0FC] hover:bg-[#E1E4F9] text-[#363EA6] border border-[#C7CCF0] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer self-end sm:self-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#363EA6]"
+                            className="bg-[#331F29] hover:bg-[#3D2733] text-[#F4679B] border border-[#5C3A4A] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer self-end sm:self-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                           >
                             {isExpanded ? '▲ 답변 접기' : '▼ AI 답변 보기'}
                           </button>
@@ -1034,8 +1037,8 @@ export default function HomePage() {
                       </div>
 
                       {isExpanded && log.response && (
-                        <div className="bg-[#0F1117] p-4 rounded-lg border border-[#1F2330] text-[13px] text-[#3DDC97] font-mono-console leading-relaxed whitespace-pre-wrap mt-1">
-                          <div className="text-[11px] text-[#8A94A6] mb-2">[AI 응답 결과 기록]</div>
+                        <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] text-[13px] text-[#3DDC97] font-mono-console leading-relaxed whitespace-pre-wrap mt-1">
+                          <div className="text-[11px] text-[#8D8499] mb-2">[AI 응답 결과 기록]</div>
                           {log.response}
                         </div>
                       )}
