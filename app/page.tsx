@@ -134,6 +134,9 @@ export default function HomePage() {
   const [newDeadlineDue, setNewDeadlineDue] = useState('');
   const [isImportingDeadlines, setIsImportingDeadlines] = useState(false);
 
+  // 💡 [신규] 회의·강의 노트 정리 블록이 감지한, 날짜가 있는 할 일 목록
+  const [detectedActionItems, setDetectedActionItems] = useState<{ title: string; dueAt: string }[]>([]);
+
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -284,6 +287,7 @@ export default function HomePage() {
     setIsExecuting(true);
     const currentCommand = command;
     setCommand('');
+    setDetectedActionItems([]);
 
     const isFileActive = blocks.find(b => b.id === 'filesystem')?.active || false;
     const isSearchActive = blocks.find(b => b.id === 'search')?.active || false;
@@ -332,6 +336,29 @@ export default function HomePage() {
           if (done) break;
           aiAnswer += decoder.decode(value, { stream: true });
           setStreamingLog(header + aiAnswer);
+        }
+
+        // 💡 [신규] 회의·강의 노트 정리 블록이 덧붙인 할 일(마감일 포함) JSON 블록을 추출합니다.
+        const actionItemsMatch = aiAnswer.match(/<!--ACTION_ITEMS_JSON-->([\s\S]*?)<!--END_ACTION_ITEMS_JSON-->/);
+        if (actionItemsMatch) {
+          try {
+            const parsed = JSON.parse(actionItemsMatch[1].trim());
+            if (Array.isArray(parsed)) {
+              const validItems = parsed.filter(
+                (item: any) =>
+                  item &&
+                  typeof item.title === 'string' &&
+                  typeof item.dueAt === 'string' &&
+                  !isNaN(new Date(item.dueAt).getTime())
+              );
+              setDetectedActionItems(validItems);
+            }
+          } catch (parseErr) {
+            console.error('할 일 블록 파싱 실패:', parseErr);
+          }
+          // 화면(콘솔)에는 이 JSON 블록을 숨기고 깔끔한 텍스트만 보여줍니다.
+          const cleanedAnswer = aiAnswer.replace(actionItemsMatch[0], '').trim();
+          setStreamingLog(header + cleanedAnswer);
         }
       }
     } catch (err: any) {
@@ -451,6 +478,18 @@ export default function HomePage() {
 
   const handleDeleteDeadline = (id: string) => {
     setDeadlines(prev => prev.filter(d => d.id !== id));
+  };
+
+  // 💡 [신규] 회의·강의 노트 정리 블록이 감지한 할 일을 마감일로 등록
+  const handleAddDetectedDeadline = (item: { title: string; dueAt: string }) => {
+    const newDeadline: Deadline = {
+      id: Date.now().toString(),
+      title: item.title,
+      course: '회의·강의 노트에서 감지됨',
+      dueAt: item.dueAt,
+    };
+    setDeadlines(prev => [...prev, newDeadline]);
+    setDetectedActionItems(prev => prev.filter(i => i !== item));
   };
 
   // 💡 [신규] 어떤 파일이든(이미지, PDF, .ics, 캡처본 등) 업로드하면 AI가 알아서 일정을 찾아 정리해줍니다.
@@ -723,6 +762,33 @@ export default function HomePage() {
                   <div ref={terminalEndRef} />
                 </div>
               </div>
+
+              {detectedActionItems.length > 0 && (
+                <div className="mt-4 bg-[#211E28] rounded-2xl border border-[#F4679B]/40 p-5 shadow-sm">
+                  <h3 className="text-sm font-bold text-[#F4679B] mb-3">✨ 날짜가 있는 할 일을 발견했어요</h3>
+                  <div className="flex flex-col gap-2.5">
+                    {detectedActionItems.map((item, idx) => (
+                      <div
+                        key={`${item.title}-${idx}`}
+                        className="flex items-center justify-between gap-3 bg-[#15131A] border border-[#322D3B] rounded-lg p-3"
+                      >
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold text-[#F5F2F7] truncate">{item.title}</div>
+                          <div className="text-xs text-[#857C93] mt-0.5">
+                            {new Date(item.dueAt).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleAddDetectedDeadline(item)}
+                          className="shrink-0 bg-[#F4679B] hover:bg-[#D1477F] text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
+                        >
+                          마감일로 등록하기
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
 
