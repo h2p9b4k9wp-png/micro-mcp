@@ -159,10 +159,16 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#1C1922] md:bg-[#211E28]">
         <div className="w-full max-w-[380px]">
 
-          {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) */}
-          <div className="flex md:hidden items-center gap-2 text-[#F4679B] mb-8 justify-center">
-            <Logomark className="w-6 h-6" />
-            <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight">Micro-MCP</span>
+          {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) — 스크롤 없이 폼이 보이도록 최대한 짧게 구성 */}
+          <div className="flex md:hidden flex-col items-center mb-7">
+            <div className="flex items-center gap-2 text-[#F4679B] mb-3">
+              <Logomark className="w-6 h-6" />
+              <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight">Micro-MCP</span>
+            </div>
+            <Logomark className="w-14 h-14 text-[#F4679B]" />
+            <p className="text-[#C9C0D6] text-sm text-center mt-3 max-w-[280px] leading-snug">
+              블록을 조립하듯, 나만의 업무를 자동화하세요
+            </p>
           </div>
 
           <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
