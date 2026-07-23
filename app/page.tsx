@@ -122,10 +122,6 @@ export default function HomePage() {
   const [newFileName, setNewFileName] = useState('');
   const [newFileContent, setNewFileContent] = useState('');
 
-  // 💡 [신규] 블록 실제 연동 테스트용 상태
-  const [testResult, setTestResult] = useState('블록을 선택하고 실제 연동 테스트를 실행해보세요.');
-  const [selectedConfigBlock, setSelectedConfigBlock] = useState('search');
-
   // 💡 [신규] 마감일 매니저 상태
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
   const [isDeadlinesLoaded, setIsDeadlinesLoaded] = useState(false);
@@ -259,34 +255,6 @@ export default function HomePage() {
 
   const toggleBlock = (id: string) => {
     setBlocks(prev => prev.map(b => b.id === id ? { ...b, active: !b.active } : b));
-  };
-
-  // 💡 [신규] 허울뿐인 블록에 생명을 불어넣는 실제 연동 진단 테스트 함수
-  const handleTestBlockIntegration = async (blockId: string) => {
-    const targetBlock = blocks.find(b => b.id === blockId);
-    if (!targetBlock) return;
-
-    if (!targetBlock.active) {
-      setTestResult(`[오류] "${targetBlock.name}"이(가) 비활성화 상태입니다. [MCP 블록 매니저]에서 먼저 블록을 활성화해 주세요!`);
-      return;
-    }
-
-    setTestResult(`[실행 중] ${targetBlock.name} 실시간 연동 진단 중...`);
-
-    if (blockId === 'search') {
-      await new Promise(r => setTimeout(r, 600));
-      setTestResult(`[성공] 최신 정보 검색 블록 연동 완료!\n- 검색 채널: 실시간 웹 그라운딩 파이프라인\n- 상태: 최신 정보 검색 쿼리 수신 대기 중`);
-    } else if (blockId === 'filesystem') {
-      setTestResult(`[성공] 문서 분석 & 요약 블록 연동 완료!\n- 현재 업로드된 컨텍스트 파일 수: ${files.length}개\n- RAG 인덱싱 엔진: 정상 구동 중`);
-    } else if (blockId === 'deadlines') {
-      setTestResult(`[성공] 마감일 인식 블록 연동 완료!\n- 등록된 마감일 수: ${deadlines.length}개\n- 워크스페이스 질문에 마감일 컨텍스트가 자동으로 반영됩니다`);
-    } else if (blockId === 'writing') {
-      await new Promise(r => setTimeout(r, 400));
-      setTestResult(`[성공] 글쓰기 도우미 블록 연동 완료!\n- 모드: 이메일 / 보고서 / 자기소개서 초안 작성\n- 상태: 다음 프롬프트부터 바로 적용됩니다`);
-    } else if (blockId === 'meetingNotes') {
-      await new Promise(r => setTimeout(r, 400));
-      setTestResult(`[성공] 회의·강의 노트 정리 블록 연동 완료!\n- 출력 형식: 핵심 요약 / 주요 논의 내용 / 할 일(Action Items)\n- 상태: 다음 프롬프트부터 바로 적용됩니다`);
-    }
   };
 
   const handleExecute = async (e: React.FormEvent) => {
@@ -598,7 +566,6 @@ export default function HomePage() {
     { id: 'workspace', label: '워크스페이스', icon: '📊' },
     { id: 'deadlines', label: '마감일 매니저', icon: '⏰' },
     { id: 'mcp', label: 'MCP 블록 매니저', icon: '🧩' },
-    { id: 'integration', label: '블록 연동 & 테스트', icon: '⚡' },
     { id: 'monitoring', label: '모니터링 & 파일', icon: '📈' },
     { id: 'logs', label: 'DB 연동 로그', icon: '📜' },
   ];
@@ -962,68 +929,6 @@ export default function HomePage() {
                     </button>
                   </div>
                 ))}
-              </div>
-            </div>
-          )}
-
-          {/* 💡 [신규 추가된 실제 블록 연동 & 진단 테스트 페이지] */}
-          {activeTab === 'integration' && (
-            <div>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#6EE7B7]">
-                  실시간 블록 연동 & 테스트 툴
-                </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  각각의 MCP 블록이 실제 백엔드 및 외부 데이터와 통신하는지 진단하고 검증합니다.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                {blocks.map(b => (
-                  <div
-                    key={b.id}
-                    onClick={() => setSelectedConfigBlock(b.id)}
-                    role="button"
-                    tabIndex={0}
-                    className={`p-4 rounded-2xl border cursor-pointer transition-all bg-[#211E28] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
-                      selectedConfigBlock === b.id
-                        ? 'border-[#6EE7B7] shadow-sm ring-1 ring-[#6EE7B7]/30'
-                        : 'border-[#322D3B] hover:border-[#423B4C]'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-sm flex items-center gap-1.5 text-[#F5F2F7]">
-                        <span>{b.icon}</span> {b.name}
-                      </span>
-                      <span className={`w-1.5 h-1.5 rounded-full ${b.active ? 'bg-[#6EE7B7]' : 'bg-[#423B4C]'}`}></span>
-                    </div>
-                    <div className="text-[11px] text-[#AFA6BD]">
-                      상태: <span className={b.active ? 'text-[#6EE7B7] font-semibold' : 'text-[#857C93]'}>{b.active ? '연동 활성' : '비활성'}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#322D3B]">
-                  <div className="font-bold text-base text-[#F5F2F7]">
-                    {blocks.find(b => b.id === selectedConfigBlock)?.name} 진단 및 연동 테스트
-                  </div>
-                  <button
-                    onClick={() => handleTestBlockIntegration(selectedConfigBlock)}
-                    className="bg-[#2FAE7C] hover:bg-[#268F66] text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2FAE7C] focus-visible:ring-offset-2"
-                  >
-                    실시간 연동 테스트 실행
-                  </button>
-                </div>
-
-                <div className="mb-4 text-xs text-[#AFA6BD]">
-                  <p className="mb-1">설명: {blocks.find(b => b.id === selectedConfigBlock)?.description}</p>
-                </div>
-
-                <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] text-[14px] font-medium text-[#FBE4EE] leading-[1.8] whitespace-pre-wrap min-h-[120px]">
-                  {testResult}
-                </div>
               </div>
             </div>
           )}
