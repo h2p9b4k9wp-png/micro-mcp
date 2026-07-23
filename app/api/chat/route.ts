@@ -122,7 +122,7 @@ export async function POST(req: Request) {
         else if (lowerName.endsWith('.hwp') || lowerName.endsWith('.hwpx')) {
           try {
             const buffer = Buffer.from(f.content, 'base64');
-            const hwpMarkdown = toMarkdown(new Uint8Array(buffer));
+            const { markdown: hwpMarkdown } = toMarkdown(buffer);
             fileTextSummary += `[첨부 HWP 문서: ${f.name}]\n${hwpMarkdown}\n\n`;
           } catch (hwpErr) {
             console.error('HWP 파싱 중 오류:', hwpErr);
