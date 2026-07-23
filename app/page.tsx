@@ -83,7 +83,7 @@ export default function HomePage() {
     {
       id: 'filesystem',
       name: '문서 분석 & 요약',
-      description: '업로드한 강의자료, 보고서, 계약서, 엑셀 표를 AI가 읽고 답변에 정확히 반영합니다.',
+      description: '업로드한 강의자료, 보고서, 계약서, 엑셀 표를 AI가 읽고 답변에 정확히 반영합니다. (엑셀, HWP, PPT, 워드, PDF 텍스트 지원)',
       active: true,
       icon: '📁',
       config: { statusText: 'Local RAG Engine Active' }

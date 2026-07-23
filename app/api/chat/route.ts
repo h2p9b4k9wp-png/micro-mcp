@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import * as XLSX from 'xlsx'; // 💡 엑셀 완벽 분석을 위한 라이브러리
+import { toMarkdown } from '@ohah/hwpjs'; // 💡 HWP/HWPX 문서 분석을 위한 라이브러리
+import { OfficeParser } from 'officeparser'; // 💡 PPT/워드/PDF 텍스트 분석을 위한 라이브러리
+import { createWorker } from 'tesseract.js'; // 💡 이미지 속 텍스트 인식(OCR)을 위한 라이브러리
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 // 💡 [속도 개선] 스트리밍 응답이 중간에 버퍼링되지 않도록, 이 라우트를 항상 동적으로 실행되게 강제합니다.
@@ -116,11 +119,48 @@ export async function POST(req: Request) {
             fileTextSummary += `[첨부 엑셀 파일: ${f.name}]\n(엑셀 파싱 중 오류가 발생했으나 파일이 첨부되었습니다.)\n\n`;
           }
         }
-        else if (lowerName.endsWith('.pptx') || lowerName.endsWith('.ppt') || lowerName.endsWith('.hwp') || lowerName.endsWith('.hwpx') || lowerName.endsWith('.docx')) {
-          fileTextSummary += `[첨부 오피스 문서: ${f.name} (${f.size})]\n\n`;
-        } else if (f.mimeType && (f.mimeType.startsWith('image/') || f.mimeType.includes('pdf'))) {
-          // ⚠️ DeepSeek는 이미지/PDF 인식 지원 여부가 아직 불확실해서, 지금은 안전하게 내용 분석은 건너뛰고 파일이 있다는 것만 알립니다.
-          fileTextSummary += `[첨부 파일: ${f.name}] (이미지/PDF 내용 분석은 현재 DeepSeek 연동에서 지원되지 않습니다.)\n\n`;
+        else if (lowerName.endsWith('.hwp') || lowerName.endsWith('.hwpx')) {
+          try {
+            const buffer = Buffer.from(f.content, 'base64');
+            const hwpMarkdown = toMarkdown(new Uint8Array(buffer));
+            fileTextSummary += `[첨부 HWP 문서: ${f.name}]\n${hwpMarkdown}\n\n`;
+          } catch (hwpErr) {
+            console.error('HWP 파싱 중 오류:', hwpErr);
+            fileTextSummary += `[첨부 HWP 문서: ${f.name}]\n(HWP 파싱 중 오류가 발생했으나 파일이 첨부되었습니다. 표나 특수 서식이 복잡한 문서는 아직 정확히 읽지 못할 수 있어요.)\n\n`;
+          }
+        }
+        else if (lowerName.endsWith('.pptx') || lowerName.endsWith('.docx') || lowerName.endsWith('.pdf')) {
+          try {
+            const buffer = Buffer.from(f.content, 'base64');
+            const ast = await OfficeParser.parseOffice(buffer);
+            const { value: extractedText } = await ast.to('text');
+            const label = lowerName.endsWith('.pdf') ? 'PDF' : lowerName.endsWith('.pptx') ? 'PPT' : '워드';
+            fileTextSummary += `[첨부 ${label} 문서: ${f.name}]\n${extractedText}\n\n`;
+          } catch (officeErr) {
+            console.error('오피스 문서 파싱 중 오류:', officeErr);
+            fileTextSummary += `[첨부 문서: ${f.name}]\n(문서 파싱 중 오류가 발생했으나 파일이 첨부되었습니다. 스캔본 PDF나 이미지 위주 문서는 텍스트를 못 읽을 수 있어요.)\n\n`;
+          }
+        }
+        else if (lowerName.endsWith('.ppt') || lowerName.endsWith('.doc')) {
+          // ⚠️ 2007년 이전 구형 바이너리 포맷(.ppt, .doc)은 아직 지원하지 않습니다. .pptx/.docx로 저장해서 다시 올려주세요.
+          fileTextSummary += `[첨부 문서: ${f.name} (${f.size})] (구버전 .ppt/.doc 형식은 아직 지원되지 않아요. .pptx/.docx로 저장 후 다시 올려주세요.)\n\n`;
+        } else if (f.mimeType && f.mimeType.startsWith('image/')) {
+          // 💡 [신규] OCR로 이미지 속 글자를 추출합니다. (한글 사진 인식은 완벽하지 않을 수 있어요)
+          try {
+            const buffer = Buffer.from(f.content, 'base64');
+            const worker = await createWorker(['eng', 'kor']);
+            const { data: { text: ocrText } } = await worker.recognize(buffer);
+            await worker.terminate();
+
+            if (ocrText && ocrText.trim().length > 0) {
+              fileTextSummary += `[첨부 이미지: ${f.name}] (OCR로 인식한 텍스트 — 사진 상태에 따라 정확도가 낮을 수 있습니다)\n${ocrText.trim()}\n\n`;
+            } else {
+              fileTextSummary += `[첨부 이미지: ${f.name}] (이미지에서 텍스트를 인식하지 못했습니다.)\n\n`;
+            }
+          } catch (ocrErr) {
+            console.error('이미지 OCR 중 오류:', ocrErr);
+            fileTextSummary += `[첨부 이미지: ${f.name}] (이미지 텍스트 인식 중 오류가 발생했습니다.)\n\n`;
+          }
         } else {
           try {
             const decodedText = atob(f.content);
