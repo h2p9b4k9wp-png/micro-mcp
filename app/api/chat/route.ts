@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import * as XLSX from 'xlsx'; // 💡 엑셀 완벽 분석을 위한 라이브러리
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
+// 💡 [속도 개선] 스트리밍 응답이 중간에 버퍼링되지 않도록, 이 라우트를 항상 동적으로 실행되게 강제합니다.
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
@@ -35,37 +37,34 @@ export async function POST(req: Request) {
         })
       : null;
 
-    // 💡 [신규] 간단한 속도 제한 — 1분에 10회 넘게 요청하면 차단 (계정 탈취·자동화 남용 방지)
+    // 💡 [속도 개선] 속도 제한 체크 + 최근 대화 기록 조회를 순서대로 기다리지 않고 동시에 처리합니다.
+    let dbContext = "";
     if (supabase) {
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
-      const { count } = await supabase
-        .from('logs')
-        .select('id', { count: 'exact', head: true })
-        .gte('created_at', oneMinuteAgo);
 
-      if (count !== null && count >= 10) {
+      const [rateLimitResult, recentLogsResult] = await Promise.all([
+        supabase
+          .from('logs')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', oneMinuteAgo),
+        supabase
+          .from('logs')
+          .select('content')
+          .order('created_at', { ascending: false })
+          .limit(3),
+      ]);
+
+      // 💡 간단한 속도 제한 — 1분에 10회 넘게 요청하면 차단 (계정 탈취·자동화 남용 방지)
+      if (rateLimitResult.count !== null && rateLimitResult.count >= 10) {
         return NextResponse.json(
           { error: '요청이 너무 많아요. 잠시 후(1분 뒤) 다시 시도해주세요.' },
           { status: 429 }
         );
       }
-    }
 
-    // 💡 최근 대화 기록은 블록 토글과 상관없이 항상 가볍게 포함해서 대화 연속성을 유지합니다.
-    let dbContext = "";
-    if (supabase) {
-      try {
-        const { data: recentLogs, error } = await supabase
-          .from('logs')
-          .select('content')
-          .order('created_at', { ascending: false })
-          .limit(3);
-
-        if (!error && recentLogs && recentLogs.length > 0) {
-          dbContext = "[[최근 대화 기록]]\n" + recentLogs.map(l => l.content).join('\n') + "\n\n";
-        }
-      } catch (e) {
-        console.error('최근 대화 기록 조회 실패:', e);
+      const recentLogs = recentLogsResult.data;
+      if (!recentLogsResult.error && recentLogs && recentLogs.length > 0) {
+        dbContext = "[[최근 대화 기록]]\n" + recentLogs.map(l => l.content).join('\n') + "\n\n";
       }
     }
 
