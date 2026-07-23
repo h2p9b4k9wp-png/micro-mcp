@@ -142,6 +142,15 @@ export default function HomePage() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
+  // 💡 [신규] PWA 서비스워커 등록 (홈 화면에 앱으로 설치 가능하게 해줍니다)
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch((err) => {
+        console.error('서비스워커 등록 실패:', err);
+      });
+    }
+  }, []);
+
   // 💡 [개선] localStorage에서 블록 활성 상태 불러오기
   useEffect(() => {
     const savedBlocks = localStorage.getItem('mcp_blocks_state');
