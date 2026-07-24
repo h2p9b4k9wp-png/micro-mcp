@@ -539,11 +539,21 @@ export default function HomePage() {
     }
   };
 
+  // 시각은 무시하고 '달력 날짜' 차이로 계산합니다.
+  // (ms/day에 Math.ceil을 쓰면 오늘 마감이어도 하루가 덜 지났다는 이유로 1로 반올림되어 "오늘"이 아닌 것처럼 보이는 문제가 있었음)
+  const getCalendarDayDiff = (dueAt: string) => {
+    const due = new Date(dueAt);
+    const now = new Date();
+    const startOfDueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((startOfDueDay.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
   const getDDayInfo = (dueAt: string) => {
     const diffMs = new Date(dueAt).getTime() - Date.now();
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
     if (diffMs < 0) return { label: '마감됨', urgency: 'overdue' as const };
+
+    const diffDays = getCalendarDayDiff(dueAt);
     if (diffDays <= 0) return { label: 'D-DAY', urgency: 'critical' as const };
     if (diffDays <= 3) return { label: `D-${diffDays}`, urgency: 'high' as const };
     if (diffDays <= 7) return { label: `D-${diffDays}`, urgency: 'medium' as const };
@@ -594,8 +604,8 @@ export default function HomePage() {
   const maxUrgencyCount = Math.max(0, ...urgencyBuckets.map((b) => urgencyCounts[b.key] || 0));
 
   const getTimelineBucketLabel = (dueAt: string) => {
-    const diffDays = Math.ceil((new Date(dueAt).getTime() - nowTs) / (1000 * 60 * 60 * 24));
-    if (diffDays < 0) return '지연됨';
+    if (new Date(dueAt).getTime() < nowTs) return '지연됨';
+    const diffDays = getCalendarDayDiff(dueAt);
     if (diffDays <= 7) return '이번 주';
     if (diffDays <= 14) return '다음 주';
     if (diffDays <= 21) return '2주 후';
