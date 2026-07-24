@@ -14,12 +14,12 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.DEEPSEEK_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!apiKey) {
-      return NextResponse.json({ error: "[ERROR] DEEPSEEK_API_KEY가 설정되지 않았습니다." }, { status: 500 });
+      return NextResponse.json({ error: "[ERROR] OPENAI_API_KEY가 설정되지 않았습니다." }, { status: 500 });
     }
 
     const body = await (req as Request).json();
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
         "\n\n";
     }
 
-    // 문서 분석 & 요약 블록 — 엑셀/CSV/텍스트는 그대로 파싱, 이미지·PDF는 현재 DeepSeek 연동에서 미지원
+    // 문서 분석 & 요약 블록 — 형식별로 파싱 방식이 다릅니다 (엑셀/CSV/텍스트는 그대로 파싱, 이미지는 OCR, PDF/PPT/워드는 텍스트 추출)
     let fileTextSummary = "";
     if (isFileActive && files && files.length > 0) {
       for (const f of files) {
@@ -248,15 +248,11 @@ ${blockStatusText}[배경 정보 시작]
 ${dbContext}${deadlineContext}${fileTextSummary}${searchContext}
 [배경 정보 끝]`;
 
-    const deepseek = new OpenAI({
-      apiKey,
-      baseURL: 'https://api.deepseek.com',
-    });
+    const openai = new OpenAI({ apiKey });
 
     // 💡 [속도 개선] 답변이 완성될 때까지 기다리지 않고, 생성되는 대로 바로바로 흘려보냅니다.
-    const stream = await deepseek.chat.completions.create({
-      // 가장 저렴한 모델로 시작합니다. 품질을 올리고 싶으면 'deepseek-v4-pro'로 바꾸면 됩니다.
-      model: 'deepseek-v4-flash',
+    const stream = await openai.chat.completions.create({
+      model: 'gpt-4.1-mini',
       max_tokens: 4096,
       stream: true,
       messages: [

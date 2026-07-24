@@ -5,9 +5,9 @@ import OpenAI from 'openai';
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.DEEPSEEK_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: '[ERROR] DEEPSEEK_API_KEY가 설정되지 않았습니다.' }, { status: 500 });
+      return NextResponse.json({ error: '[ERROR] OPENAI_API_KEY가 설정되지 않았습니다.' }, { status: 500 });
     }
 
     const body = await req.json();
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       lowerName.endsWith('.txt') ||
       lowerName.endsWith('.ical');
 
-    // ⚠️ DeepSeek는 이미지/PDF 인식 지원 여부가 아직 불확실해서, 텍스트 계열 파일만 처리합니다.
+    // ⚠️ 이 라우트는 텍스트 계열 파일만 처리합니다. 이미지·PDF에서 일정을 추출하려면 /api/chat의 문서 분석 블록을 이용하세요.
     if (!isTextLike) {
       return NextResponse.json(
         {
@@ -61,10 +61,10 @@ export async function POST(req: Request) {
 ${decodedText}
 [사용자 첨부 파일 내용 끝]`;
 
-    const deepseek = new OpenAI({ apiKey, baseURL: 'https://api.deepseek.com' });
+    const openai = new OpenAI({ apiKey });
 
-    const completion = await deepseek.chat.completions.create({
-      model: 'deepseek-v4-flash',
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4.1-mini',
       max_tokens: 2048,
       response_format: { type: 'json_object' },
       messages: [{ role: 'user', content: instruction }],

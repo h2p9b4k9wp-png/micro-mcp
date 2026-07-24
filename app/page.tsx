@@ -853,7 +853,7 @@ export default function HomePage() {
         <div className="p-4 border-t border-[#322D3B] text-xs bg-[#1C1922]">
           <div className="flex items-center gap-2 mb-2.5">
             <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#6EE7B7] animate-pulse' : 'bg-[#FF7A6B]'}`}></span>
-            <span className="font-semibold text-[#F5F2F7]">DeepSeek V4 Flash 연동됨</span>
+            <span className="font-semibold text-[#F5F2F7]">OpenAI GPT-4.1 mini 연동됨</span>
           </div>
           <div className="text-[11px] text-[#857C93] mb-1.5 font-medium uppercase tracking-wide">활성화된 MCP 블록</div>
           <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
