@@ -73,6 +73,32 @@ function getFileFormatKey(name: string, mimeType?: string): string {
   return 'etc';
 }
 
+// 💡 [수정] 블록 활성 상태·첨부 파일·마감일은 계정별로 완전히 분리된 localStorage 키에 저장합니다.
+// (예전에는 키가 계정 구분 없이 공용이라, 같은 브라우저에서 다른 계정으로 로그인하면 이전 계정의
+// 블록/파일/마감일이 그대로 보이는 문제가 있었음.) 예전 공용 키에 데이터가 남아있으면 지금 로그인한
+// 계정 몫으로 1회만 이전(migrate)하고 공용 키는 지워서, 그다음 다른 계정이 로그인해도 새지 않게 합니다.
+function loadUserScopedItem<T>(userId: string, legacyKey: string): T | null {
+  const scopedKey = `${legacyKey}:${userId}`;
+  try {
+    const scoped = localStorage.getItem(scopedKey);
+    if (scoped !== null) return JSON.parse(scoped) as T;
+
+    const legacy = localStorage.getItem(legacyKey);
+    if (legacy !== null) {
+      localStorage.setItem(scopedKey, legacy);
+      localStorage.removeItem(legacyKey);
+      return JSON.parse(legacy) as T;
+    }
+  } catch (e) {
+    console.error(`로컬 데이터(${legacyKey}) 로딩 실패:`, e);
+  }
+  return null;
+}
+
+function saveUserScopedItem(userId: string, legacyKey: string, value: unknown) {
+  localStorage.setItem(`${legacyKey}:${userId}`, JSON.stringify(value));
+}
+
 // 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
   return (
@@ -117,12 +143,14 @@ export default function HomePage() {
   const commandInputRef = useRef<HTMLInputElement>(null);
 
   // 💡 [개선] 새로고침해도 블록 활성 상태가 유지되도록 로컬스토리지 연동 구조 적용
+  // (이 초기값은 이 계정으로 저장된 적이 있는지 확인하기 전 아주 잠깐 쓰이는 값이자,
+  // 로컬 저장 데이터가 전혀 없는 신규 계정의 최종 상태이기도 합니다 — 그래서 전부 비활성으로 시작합니다.)
   const [blocks, setBlocks] = useState<McpBlock[]>([
     {
       id: 'search',
       name: '최신 정보 검색',
       description: '뉴스, 시세, 최신 트렌드처럼 실시간 정보가 필요한 질문에 웹 검색 결과를 반영해서 답변합니다.',
-      active: true,
+      active: false,
       icon: Search,
       config: { apiKey: 'Live Web Grounding Ready' }
     },
@@ -130,7 +158,7 @@ export default function HomePage() {
       id: 'filesystem',
       name: '문서 분석 & 요약',
       description: '업로드한 강의자료, 보고서, 계약서, 엑셀 표를 AI가 읽고 답변에 정확히 반영합니다. (엑셀, HWP, PPT, 워드, PDF 텍스트 지원)',
-      active: true,
+      active: false,
       icon: FileText,
       config: { statusText: 'Local RAG Engine Active' }
     },
@@ -138,7 +166,7 @@ export default function HomePage() {
       id: 'deadlines',
       name: '마감일 인식',
       description: '마감일 매니저에 등록한 과제·시험·업무 일정을 AI가 파악해서, "오늘 뭐부터 해야 하지?" 같은 질문에 실제 일정 기준으로 답합니다.',
-      active: true,
+      active: false,
       icon: CalendarClock,
       config: { statusText: 'Deadline Context Active' }
     },
@@ -197,64 +225,51 @@ export default function HomePage() {
     }
   }, []);
 
-  // 💡 [개선] localStorage에서 블록 활성 상태 불러오기
+  // 💡 [수정] localStorage에서 블록 활성 상태 불러오기 — 로그인한 계정(user.id)이 확정된 뒤에만 실행하고,
+  // 반드시 그 계정 전용 키에서 읽습니다. 이 계정으로 저장된 데이터가 전혀 없으면(=신규 계정이거나,
+  // 이 브라우저에서 처음 로그인) 모든 블록을 비활성 상태로 되돌립니다.
   useEffect(() => {
-    const savedBlocks = localStorage.getItem('mcp_blocks_state');
-    if (savedBlocks) {
-      try {
-        const parsed = JSON.parse(savedBlocks);
-        setBlocks(prev => prev.map(b => {
-          const found = parsed.find((p: any) => p.id === b.id);
-          return found ? { ...b, active: found.active } : b;
-        }));
-      } catch (e) {
-        console.error('블록 상태 로딩 실패:', e);
-      }
-    }
+    if (!user) return;
+
+    const savedBlocks = loadUserScopedItem<{ id: string; active: boolean }[]>(user.id, 'mcp_blocks_state');
+    setBlocks(prev => prev.map(b => {
+      if (!savedBlocks) return { ...b, active: false };
+      const found = savedBlocks.find((p) => p.id === b.id);
+      return { ...b, active: found ? found.active : false };
+    }));
     setIsBlocksLoaded(true);
 
-    const savedFiles = localStorage.getItem('mcp_uploaded_files');
-    if (savedFiles) {
-      try {
-        setFiles(JSON.parse(savedFiles));
-      } catch (e) {
-        console.error('파일 상태 로딩 실패:', e);
-      }
-    }
+    const savedFiles = loadUserScopedItem<FileItem[]>(user.id, 'mcp_uploaded_files');
+    setFiles(savedFiles || []);
     setIsFilesLoaded(true);
-  }, []);
+  }, [user]);
 
-  // 💡 [개선] 블록 상태 변경 시 localStorage 자동 저장 (새로고침 초기화 방지)
+  // 💡 [개선] 블록 상태 변경 시 localStorage 자동 저장 (새로고침 초기화 방지, 계정별로 분리 저장)
   useEffect(() => {
-    if (isBlocksLoaded) {
-      localStorage.setItem('mcp_blocks_state', JSON.stringify(blocks.map(b => ({ id: b.id, active: b.active }))));
+    if (isBlocksLoaded && user) {
+      saveUserScopedItem(user.id, 'mcp_blocks_state', blocks.map(b => ({ id: b.id, active: b.active })));
     }
-  }, [blocks, isBlocksLoaded]);
+  }, [blocks, isBlocksLoaded, user]);
 
   useEffect(() => {
-    if (isFilesLoaded) {
-      localStorage.setItem('mcp_uploaded_files', JSON.stringify(files));
+    if (isFilesLoaded && user) {
+      saveUserScopedItem(user.id, 'mcp_uploaded_files', files);
     }
-  }, [files, isFilesLoaded]);
+  }, [files, isFilesLoaded, user]);
 
-  // 💡 [신규] 마감일 목록 불러오기 / 저장하기
+  // 💡 [수정] 마감일 목록 불러오기 / 저장하기 — 위와 동일하게 계정별로 분리합니다.
   useEffect(() => {
-    const savedDeadlines = localStorage.getItem('mcp_deadlines');
-    if (savedDeadlines) {
-      try {
-        setDeadlines(JSON.parse(savedDeadlines));
-      } catch (e) {
-        console.error('마감일 로딩 실패:', e);
-      }
-    }
+    if (!user) return;
+    const savedDeadlines = loadUserScopedItem<Deadline[]>(user.id, 'mcp_deadlines');
+    setDeadlines(savedDeadlines || []);
     setIsDeadlinesLoaded(true);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    if (isDeadlinesLoaded) {
-      localStorage.setItem('mcp_deadlines', JSON.stringify(deadlines));
+    if (isDeadlinesLoaded && user) {
+      saveUserScopedItem(user.id, 'mcp_deadlines', deadlines);
     }
-  }, [deadlines, isDeadlinesLoaded]);
+  }, [deadlines, isDeadlinesLoaded, user]);
 
   useEffect(() => {
     const initApp = async () => {
