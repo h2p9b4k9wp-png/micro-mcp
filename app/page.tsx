@@ -40,6 +40,24 @@ interface Deadline {
   dueAt: string; // datetime-local 문자열
 }
 
+// 💡 [신규] '나의 기록' 대시보드가 기기와 무관하게 일관되게 보이도록, 파일 업로드 이력을 DB(document_uploads)에 누적 기록합니다.
+interface DocumentUploadRecord {
+  format: string;
+  created_at: string;
+}
+
+// 파일명/MIME 타입으로 문서 형식을 분류합니다 (/api/chat의 파일 파싱 분기와 동일한 기준).
+function getFileFormatKey(name: string, mimeType?: string): string {
+  const lowerName = name.toLowerCase();
+  if (lowerName.endsWith('.xlsx') || lowerName.endsWith('.xls') || lowerName.endsWith('.csv')) return 'excel';
+  if (lowerName.endsWith('.hwp') || lowerName.endsWith('.hwpx')) return 'hwp';
+  if (lowerName.endsWith('.pptx') || lowerName.endsWith('.ppt')) return 'ppt';
+  if (lowerName.endsWith('.docx') || lowerName.endsWith('.doc')) return 'word';
+  if (lowerName.endsWith('.pdf')) return 'pdf';
+  if (mimeType && mimeType.startsWith('image/')) return 'image';
+  return 'etc';
+}
+
 // 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
   return (
@@ -118,6 +136,10 @@ export default function HomePage() {
   const [logs, setLogs] = useState<LogItem[]>([]);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isFilesLoaded, setIsFilesLoaded] = useState(false);
+
+  // 💡 [신규] 문서 업로드 이력 (DB 저장 — 기기가 바뀌어도 '나의 기록'에서 동일하게 보임)
+  const [documentUploads, setDocumentUploads] = useState<DocumentUploadRecord[]>([]);
+  const [isDocumentUploadsLoaded, setIsDocumentUploadsLoaded] = useState(false);
 
   const [newFileName, setNewFileName] = useState('');
   const [newFileContent, setNewFileContent] = useState('');
@@ -220,9 +242,11 @@ export default function HomePage() {
         }
         setUser(retrySession.user);
         fetchLogs(retrySession.user.id);
+        fetchDocumentUploads(retrySession.user.id);
       } else {
         setUser(session.user);
         fetchLogs(session.user.id);
+        fetchDocumentUploads(session.user.id);
       }
 
       setLoading(false);
@@ -241,6 +265,55 @@ export default function HomePage() {
 
     if (data && data.length > 0) {
       setLogs(data);
+    }
+  };
+
+  // 💡 [신규] 문서 업로드 이력 조회 (DB 기준 — 기기 무관하게 '나의 기록'에 동일하게 표시됨)
+  const fetchDocumentUploads = async (userId: string) => {
+    const { data } = await supabase
+      .from('document_uploads')
+      .select('format, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    setDocumentUploads(data || []);
+    setIsDocumentUploadsLoaded(true);
+  };
+
+  // 💡 [신규] 기존에 localStorage에만 있던 첨부 파일 이력을 DB로 1회 이전 (신규 마이그레이션 직후, 기록이 0개인 사용자 한정)
+  useEffect(() => {
+    if (!user || !isFilesLoaded || !isDocumentUploadsLoaded) return;
+    if (documentUploads.length > 0 || files.length === 0) return;
+
+    const backfillDocumentUploads = async () => {
+      const rows = files.map((f) => ({
+        file_name: f.name,
+        format: getFileFormatKey(f.name, f.mimeType),
+      }));
+      const { data, error } = await supabase
+        .from('document_uploads')
+        .insert(rows)
+        .select('format, created_at');
+
+      if (!error && data) {
+        setDocumentUploads(data);
+      } else if (error) {
+        console.error('문서 업로드 이력 이전 실패:', error);
+      }
+    };
+
+    backfillDocumentUploads();
+  }, [user, isFilesLoaded, isDocumentUploadsLoaded, documentUploads.length, files, supabase]);
+
+  // 💡 [신규] 새 파일이 추가될 때마다 DB에도 이력을 남깁니다 (실패해도 파일 첨부 자체는 막지 않음).
+  const recordDocumentUpload = async (name: string, mimeType?: string) => {
+    const format = getFileFormatKey(name, mimeType);
+    setDocumentUploads((prev) => [{ format, created_at: new Date().toISOString() }, ...prev]);
+    try {
+      const { error } = await supabase.from('document_uploads').insert({ file_name: name, format });
+      if (error) throw error;
+    } catch (err) {
+      console.error('문서 업로드 기록 실패:', err);
     }
   };
 
@@ -379,6 +452,7 @@ export default function HomePage() {
     };
 
     setFiles([newFile, ...files]);
+    recordDocumentUpload(newFile.name, newFile.mimeType);
     setNewFileName('');
     setNewFileContent('');
   };
@@ -424,6 +498,7 @@ export default function HomePage() {
         date: new Date().toISOString().split('T')[0]
       };
       setFiles(prev => [newFile, ...prev]);
+      recordDocumentUpload(newFile.name, newFile.mimeType);
       e.target.value = '';
     };
 
@@ -622,8 +697,41 @@ export default function HomePage() {
   }));
   const maxTimelineCount = Math.max(0, ...timelineBuckets.map((b) => b.count));
 
+  // 💡 [신규] '나의 기록' 대시보드 — 지금까지 앱에 쌓인 마감일·문서·대화 데이터를 종합 요약
+  // 문서 개수는 기기와 무관하게 일관되도록 로컬 files가 아니라 DB(document_uploads) 이력을 기준으로 집계합니다.
+  const totalKnownCount = deadlines.length + documentUploads.length + logs.length;
+
+  const daysSinceJoin = user?.created_at
+    ? Math.max(1, Math.floor((nowTs - new Date(user.created_at).getTime()) / (1000 * 60 * 60 * 24)) + 1)
+    : null;
+
+  const courseBreakdown = Object.entries(
+    deadlines.reduce((acc, d) => {
+      const key = d.course?.trim() || '카테고리 없음';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>)
+  )
+    .map(([course, count]) => ({ course, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const fileFormatCounts = documentUploads.reduce((acc, d) => {
+    acc[d.format] = (acc[d.format] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const fileFormatBreakdown = [
+    { key: 'excel', label: '엑셀', icon: '📊' },
+    { key: 'hwp', label: 'HWP', icon: '📃' },
+    { key: 'ppt', label: 'PPT', icon: '📽️' },
+    { key: 'word', label: '워드', icon: '📝' },
+    { key: 'pdf', label: 'PDF', icon: '📕' },
+    { key: 'image', label: '이미지', icon: '🖼️' },
+  ].map((f) => ({ ...f, count: fileFormatCounts[f.key] || 0 }));
+  const etcFileCount = fileFormatCounts['etc'] || 0;
+
   const NAV_ITEMS = [
     { id: 'workspace', label: '워크스페이스', icon: '📊' },
+    { id: 'records', label: '나의 기록', icon: '🗂️' },
     { id: 'deadlines', label: '마감일 매니저', icon: '⏰' },
     { id: 'mcp', label: 'MCP 블록 매니저', icon: '🧩' },
     { id: 'monitoring', label: '모니터링 & 파일', icon: '📈' },
@@ -823,6 +931,108 @@ export default function HomePage() {
                 </div>
               )}
             </>
+          )}
+
+          {activeTab === 'records' && (
+            <div>
+              <div className="mb-6">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                  나의 기록
+                </h1>
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                  지금까지 Micro-MCP에 쌓인 내 데이터를 한눈에 확인해보세요.
+                </p>
+              </div>
+
+              {/* 히어로 숫자 */}
+              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-6 sm:p-8 mb-5 shadow-sm text-center">
+                <p className="text-xs sm:text-sm text-[#AFA6BD] mb-3">Micro-MCP가 당신에 대해 알고 있는 것</p>
+                <div className="text-5xl sm:text-6xl font-extrabold text-[#F4679B] tracking-tight leading-none">
+                  {totalKnownCount}
+                  <span className="text-xl sm:text-2xl text-[#F5F2F7] ml-1.5 align-middle">개</span>
+                </div>
+                {daysSinceJoin !== null && (
+                  <p className="text-xs sm:text-sm text-[#857C93] mt-4">
+                    가입한 지 <span className="text-[#F5F2F7] font-semibold">{daysSinceJoin}일째</span> 함께하고 있어요
+                  </p>
+                )}
+              </div>
+
+              {/* 카드 3개: 마감일 / 문서 / 대화 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-lg">⏰</span>
+                    <h3 className="text-sm font-bold text-[#F5F2F7]">등록된 마감일</h3>
+                  </div>
+                  <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
+                    {deadlines.length}<span className="text-xs font-medium text-[#857C93] ml-1">개</span>
+                  </div>
+                  {courseBreakdown.length === 0 ? (
+                    <p className="text-xs text-[#857C93]">아직 등록된 마감일이 없어요.</p>
+                  ) : (
+                    <div className="flex flex-col gap-1.5">
+                      {courseBreakdown.slice(0, 5).map((c) => (
+                        <div key={c.course} className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-[#AFA6BD] truncate">{c.course}</span>
+                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{c.count}개</span>
+                        </div>
+                      ))}
+                      {courseBreakdown.length > 5 && (
+                        <span className="text-[11px] text-[#857C93] mt-0.5">외 {courseBreakdown.length - 5}개 카테고리 더</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-lg">📁</span>
+                    <h3 className="text-sm font-bold text-[#F5F2F7]">분석한 문서</h3>
+                  </div>
+                  <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
+                    {files.length}<span className="text-xs font-medium text-[#857C93] ml-1">개</span>
+                  </div>
+                  {files.length === 0 ? (
+                    <p className="text-xs text-[#857C93]">아직 첨부한 문서가 없어요.</p>
+                  ) : (
+                    <div className="flex flex-col gap-1.5">
+                      {fileFormatBreakdown.map((f) => (
+                        <div key={f.key} className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-[#AFA6BD] flex items-center gap-1.5 truncate">
+                            <span>{f.icon}</span>{f.label}
+                          </span>
+                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{f.count}개</span>
+                        </div>
+                      ))}
+                      {etcFileCount > 0 && (
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-[#AFA6BD] flex items-center gap-1.5 truncate"><span>📄</span>기타</span>
+                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{etcFileCount}개</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-lg">📜</span>
+                    <h3 className="text-sm font-bold text-[#F5F2F7]">저장된 대화</h3>
+                  </div>
+                  <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
+                    {logs.length}<span className="text-xs font-medium text-[#857C93] ml-1">개</span>
+                  </div>
+                  {logs.length === 0 ? (
+                    <p className="text-xs text-[#857C93]">아직 저장된 대화가 없어요.</p>
+                  ) : (
+                    <p className="text-xs text-[#857C93]">
+                      가장 최근 대화: {new Date(logs[0].created_at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
           {activeTab === 'deadlines' && (

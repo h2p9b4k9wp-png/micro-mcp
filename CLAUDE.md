@@ -41,7 +41,7 @@ Supabase Auth (email/password + Google OAuth) gates the whole app via [middlewar
 
 ### Data model (Supabase)
 
-Referenced tables (schema itself lives in Supabase, not in this repo): `logs` (`user_id`, `content`, `response`, `status`, `created_at` — chat history, also used for a simple 10-req/min rate limit in `/api/chat`), `profiles` (`id`, `username`), `prompts` (`user_id`, `slug`, `content`).
+Referenced tables (schema itself lives in Supabase, not in this repo): `logs` (`user_id`, `content`, `response`, `status`, `created_at` — chat history, also used for a simple 10-req/min rate limit in `/api/chat`), `profiles` (`id`, `username`), `prompts` (`user_id`, `slug`, `content`), `document_uploads` (`user_id`, `file_name`, `format`, `created_at` — append-only metadata log of every file attached via the file-analysis/deadline blocks, written client-side from [app/page.tsx](app/page.tsx); powers the cross-device "나의 기록" tab's document-format breakdown. `user_id` defaults to `auth.uid()` and RLS restricts rows to their owner. Migration: [supabase/migrations/20260724_create_document_uploads.sql](supabase/migrations/20260724_create_document_uploads.sql) — this is the one table whose DDL is tracked in-repo; apply it manually via the Supabase SQL Editor since the app only holds the anon/service-role keys, not schema-change credentials).
 
 ### Env vars
 
