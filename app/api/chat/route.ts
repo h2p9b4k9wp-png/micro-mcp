@@ -4,7 +4,9 @@ import { createClient } from '@supabase/supabase-js';
 import * as XLSX from 'xlsx'; // 💡 엑셀 완벽 분석을 위한 라이브러리
 import { toMarkdown } from '@ohah/hwpjs'; // 💡 HWP/HWPX 문서 분석을 위한 라이브러리
 import { OfficeParser } from 'officeparser'; // 💡 PPT/워드/PDF 텍스트 분석을 위한 라이브러리
-import { createWorker } from 'tesseract.js'; // 💡 이미지 속 텍스트 인식(OCR)을 위한 라이브러리
+// 💡 tesseract.js(이미지 OCR)는 이미지가 실제로 첨부됐을 때만 동적으로 불러옵니다.
+// 파일 상단에서 정적으로 import하면, Vercel 번들에서 워커 스크립트를 못 찾을 경우
+// 이미지 첨부 여부와 무관하게 이 라우트로 오는 모든 요청이 모듈 로드 단계에서 죽어버립니다.
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 // 💡 [속도 개선] 스트리밍 응답이 중간에 버퍼링되지 않도록, 이 라우트를 항상 동적으로 실행되게 강제합니다.
@@ -148,6 +150,7 @@ export async function POST(req: Request) {
           // 💡 [신규] OCR로 이미지 속 글자를 추출합니다. (한글 사진 인식은 완벽하지 않을 수 있어요)
           try {
             const buffer = Buffer.from(f.content, 'base64');
+            const { createWorker } = await import('tesseract.js');
             const worker = await createWorker(['eng', 'kor']);
             const { data: { text: ocrText } } = await worker.recognize(buffer);
             await worker.terminate();
