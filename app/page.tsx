@@ -562,6 +562,56 @@ export default function HomePage() {
     (a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime()
   );
 
+  // 💡 [신규] 마감일 매니저 상단 대시보드 — 등록된 마감일·파일·블록 데이터를 한눈에 요약
+  const nowTs = Date.now();
+  const upcomingWeekCount = deadlines.filter((d) => {
+    const diff = new Date(d.dueAt).getTime() - nowTs;
+    return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
+  }).length;
+  const overdueDeadlinesCount = deadlines.filter((d) => new Date(d.dueAt).getTime() < nowTs).length;
+  const activeBlocksCount = blocks.filter((b) => b.active).length;
+
+  const kpiTiles = [
+    { label: '전체 마감일', icon: '⏰', value: deadlines.length },
+    { label: '이번 주 마감', icon: '📅', value: upcomingWeekCount },
+    { label: '지연됨', icon: '⚠️', value: overdueDeadlinesCount, emphasize: overdueDeadlinesCount > 0 },
+    { label: '참고 파일', icon: '📁', value: files.length },
+    { label: '활성 MCP 블록', icon: '🧩', value: activeBlocksCount },
+  ];
+
+  const urgencyBuckets = [
+    { key: 'overdue', label: '지연됨', color: '#857C93' },
+    { key: 'critical', label: '오늘 마감', color: '#FF7A6B' },
+    { key: 'high', label: '임박 (3일 내)', color: '#FFD97D' },
+    { key: 'medium', label: '이번 주 (7일 내)', color: '#F4679B' },
+    { key: 'low', label: '여유 (7일 후)', color: '#6EE7B7' },
+  ];
+  const urgencyCounts = deadlines.reduce((acc, d) => {
+    const { urgency } = getDDayInfo(d.dueAt);
+    acc[urgency] = (acc[urgency] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const maxUrgencyCount = Math.max(0, ...urgencyBuckets.map((b) => urgencyCounts[b.key] || 0));
+
+  const getTimelineBucketLabel = (dueAt: string) => {
+    const diffDays = Math.ceil((new Date(dueAt).getTime() - nowTs) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return '지연됨';
+    if (diffDays <= 7) return '이번 주';
+    if (diffDays <= 14) return '다음 주';
+    if (diffDays <= 21) return '2주 후';
+    return '3주+';
+  };
+  const timelineCountMap = deadlines.reduce((acc, d) => {
+    const label = getTimelineBucketLabel(d.dueAt);
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const timelineBuckets = ['지연됨', '이번 주', '다음 주', '2주 후', '3주+'].map((label) => ({
+    label,
+    count: timelineCountMap[label] || 0,
+  }));
+  const maxTimelineCount = Math.max(0, ...timelineBuckets.map((b) => b.count));
+
   const NAV_ITEMS = [
     { id: 'workspace', label: '워크스페이스', icon: '📊' },
     { id: 'deadlines', label: '마감일 매니저', icon: '⏰' },
@@ -774,6 +824,118 @@ export default function HomePage() {
                 <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
                   과제와 시험 마감일을 한눈에 모아서, 가장 급한 것부터 자동으로 정렬해드려요.
                 </p>
+              </div>
+
+              {/* 대시보드 — 마감일 · 첨부 파일 · 활성 블록 데이터를 한눈에 요약 */}
+              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7] mb-4">📊 대시보드 — 지금까지 알고 있는 것</h3>
+
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+                  {kpiTiles.map((tile) => (
+                    <div key={tile.label} className="bg-[#15131A] border border-[#322D3B] rounded-xl p-3.5 flex flex-col gap-1.5">
+                      <span className="text-[11px] text-[#857C93] font-medium uppercase tracking-wide flex items-center gap-1">
+                        <span>{tile.icon}</span> {tile.label}
+                      </span>
+                      <span className={`text-xl sm:text-2xl font-extrabold tabular-nums ${tile.emphasize ? 'text-[#FF7A6B]' : 'text-[#F5F2F7]'}`}>
+                        {tile.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {deadlines.length === 0 ? (
+                  <div className="text-sm text-[#857C93] text-center py-6 bg-[#15131A] rounded-xl border border-[#322D3B]">
+                    아직 등록된 마감일이 없어요. 아래에서 첫 마감일을 추가하면 여기에 분포와 타임라인이 표시돼요.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* 긴급도 분포 */}
+                    <div>
+                      <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-3">긴급도 분포</h4>
+                      <div className="flex flex-col gap-2.5">
+                        {urgencyBuckets.map((bucket) => {
+                          const count = urgencyCounts[bucket.key] || 0;
+                          const widthPct = maxUrgencyCount > 0 ? (count / maxUrgencyCount) * 100 : 0;
+                          return (
+                            <div key={bucket.key} className="flex items-center gap-2.5">
+                              <span className="w-[92px] shrink-0 text-xs text-[#AFA6BD] truncate">{bucket.label}</span>
+                              <div className="flex-1 h-2.5 bg-[#15131A] border border-[#322D3B] rounded-full overflow-hidden">
+                                {count > 0 && (
+                                  <div
+                                    className="h-full rounded-full"
+                                    style={{ width: `${Math.max(widthPct, 6)}%`, backgroundColor: bucket.color }}
+                                  />
+                                )}
+                              </div>
+                              <span className="w-5 shrink-0 text-right text-xs font-semibold text-[#F5F2F7] tabular-nums">{count}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 다가오는 일정 타임라인 */}
+                    <div>
+                      <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-3">다가오는 일정 타임라인</h4>
+                      <div className="flex items-end justify-between gap-2 h-[96px] border-b border-[#322D3B]">
+                        {timelineBuckets.map((bucket) => {
+                          const heightPct = maxTimelineCount > 0 ? (bucket.count / maxTimelineCount) * 100 : 0;
+                          return (
+                            <div key={bucket.label} className="flex-1 flex flex-col items-center justify-end h-full gap-1.5">
+                              <span className="text-[11px] font-semibold text-[#F5F2F7] tabular-nums h-4">{bucket.count > 0 ? bucket.count : ''}</span>
+                              {bucket.count > 0 && (
+                                <div
+                                  className="w-5 rounded-t-[4px] bg-[#F4679B]"
+                                  style={{ height: `${Math.max(heightPct, 6)}%` }}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="flex justify-between gap-2 mt-1.5">
+                        {timelineBuckets.map((bucket) => (
+                          <span key={bucket.label} className="flex-1 text-center text-[10px] text-[#857C93] truncate">{bucket.label}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 pt-5 border-t border-[#322D3B]">
+                  <div>
+                    <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">활성화된 MCP 블록</h4>
+                    <div className="flex flex-wrap gap-1.5">
+                      {blocks.filter((b) => b.active).length === 0 ? (
+                        <span className="text-xs text-[#857C93] italic">활성화된 블록이 없어요</span>
+                      ) : (
+                        blocks.filter((b) => b.active).map((b) => (
+                          <span key={b.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2.5 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
+                            <span>{b.icon}</span> {b.name}
+                          </span>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">최근 첨부 파일</h4>
+                    {files.length === 0 ? (
+                      <span className="text-xs text-[#857C93] italic">첨부된 파일이 없어요</span>
+                    ) : (
+                      <div className="flex flex-col gap-1.5">
+                        {files.slice(0, 3).map((f) => (
+                          <div key={f.id} className="flex items-center justify-between gap-2 text-xs text-[#AFA6BD]">
+                            <span className="truncate">📄 {f.name}</span>
+                            <span className="shrink-0 text-[#857C93]">{f.date}</span>
+                          </div>
+                        ))}
+                        {files.length > 3 && (
+                          <span className="text-[11px] text-[#857C93]">외 {files.length - 3}개 더</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-4 shadow-sm">
