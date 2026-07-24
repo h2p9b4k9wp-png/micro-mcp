@@ -3,13 +3,28 @@
 import { useState, useEffect, useRef } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
+import {
+  type LucideIcon,
+  Sparkles,
+  Archive,
+  AlarmClock,
+  Puzzle,
+  LineChart,
+  ScrollText,
+  Search,
+  FileText,
+  CalendarClock,
+  PenLine,
+  NotebookPen,
+  MessageCircle,
+} from 'lucide-react';
 
 interface McpBlock {
   id: string;
   name: string;
   description: string;
   active: boolean;
-  icon: string;
+  icon: LucideIcon;
   config?: {
     apiKey?: string;
     endpoint?: string;
@@ -74,19 +89,32 @@ function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
   );
 }
 
+// AI 콘솔이 아직 아무 대화도 시작하지 않았을 때 보여주는 인사말
+const IDLE_CONSOLE_MESSAGE = '안녕하세요! 무엇이든 물어보세요!';
+
+// 콘솔이 비어있을 때 채워주는 예시 프롬프트 — 5가지 MCP 블록과 하나씩 매칭됩니다.
+const EXAMPLE_PROMPTS = [
+  { icon: Search, prompt: '요즘 이 분야 최신 트렌드가 뭔지 검색해서 알려줘' },
+  { icon: FileText, prompt: '첨부한 문서 핵심만 요약해줘' },
+  { icon: CalendarClock, prompt: '이번 주에 뭐부터 처리해야 하는지 정리해줘' },
+  { icon: PenLine, prompt: '기한 연장 요청 메일 초안 써줘' },
+  { icon: NotebookPen, prompt: '방금 붙여넣은 회의 노트 정리해줘' },
+];
+
 export default function HomePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('connecting');
   const [command, setCommand] = useState('');
-  const [streamingLog, setStreamingLog] = useState('[MCP CORE] 시스템 대기 중...');
+  const [streamingLog, setStreamingLog] = useState(IDLE_CONSOLE_MESSAGE);
   const [isExecuting, setIsExecuting] = useState(false);
   const [activeTab, setActiveTab] = useState('workspace');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
+  const commandInputRef = useRef<HTMLInputElement>(null);
 
   // 💡 [개선] 새로고침해도 블록 활성 상태가 유지되도록 로컬스토리지 연동 구조 적용
   const [blocks, setBlocks] = useState<McpBlock[]>([
@@ -95,7 +123,7 @@ export default function HomePage() {
       name: '최신 정보 검색',
       description: '뉴스, 시세, 최신 트렌드처럼 실시간 정보가 필요한 질문에 웹 검색 결과를 반영해서 답변합니다.',
       active: true,
-      icon: '🔍',
+      icon: Search,
       config: { apiKey: 'Live Web Grounding Ready' }
     },
     {
@@ -103,7 +131,7 @@ export default function HomePage() {
       name: '문서 분석 & 요약',
       description: '업로드한 강의자료, 보고서, 계약서, 엑셀 표를 AI가 읽고 답변에 정확히 반영합니다. (엑셀, HWP, PPT, 워드, PDF 텍스트 지원)',
       active: true,
-      icon: '📁',
+      icon: FileText,
       config: { statusText: 'Local RAG Engine Active' }
     },
     {
@@ -111,7 +139,7 @@ export default function HomePage() {
       name: '마감일 인식',
       description: '마감일 매니저에 등록한 과제·시험·업무 일정을 AI가 파악해서, "오늘 뭐부터 해야 하지?" 같은 질문에 실제 일정 기준으로 답합니다.',
       active: true,
-      icon: '⏰',
+      icon: CalendarClock,
       config: { statusText: 'Deadline Context Active' }
     },
     {
@@ -119,7 +147,7 @@ export default function HomePage() {
       name: '글쓰기 도우미',
       description: '이메일, 보고서, 자기소개서 등 상황과 대상에 맞는 톤으로 바로 쓸 수 있는 초안을 작성해드립니다.',
       active: false,
-      icon: '✍️',
+      icon: PenLine,
       config: { statusText: 'Draft Assistant Ready' }
     },
     {
@@ -127,7 +155,7 @@ export default function HomePage() {
       name: '회의·강의 노트 정리',
       description: '회의록이나 강의 필기를 붙여넣으면 핵심 요약과 할 일 목록으로 깔끔하게 구조화해드립니다.',
       active: false,
-      icon: '📝',
+      icon: NotebookPen,
       config: { statusText: 'Note Structuring Ready' }
     },
   ]);
@@ -349,9 +377,9 @@ export default function HomePage() {
     const token = session?.access_token;
 
     let aiAnswer = '';
-    const header = `[MCP CORE] Query: "${currentCommand}"\n[CONNECTORS] [${activeMcpNames}]\n[SUCCESS] Response generated successfully.\n\n----------------------------------------\n[AI 답변]\n`;
+    const header = `${currentCommand}\n\n`;
 
-    setStreamingLog(`[MCP CORE] Analyzing query: "${currentCommand}"...\n[MCP BRIDGE] Active Connectors: [${activeMcpNames}]`);
+    setStreamingLog(`${currentCommand}\n\n답변을 준비하고 있어요...`);
 
     try {
       const res = await fetch('/api/chat', {
@@ -373,7 +401,7 @@ export default function HomePage() {
       if (!res.ok) {
         // 에러 응답은 이전처럼 JSON 형태로 옵니다.
         const errData = await res.json().catch(() => ({ error: '알 수 없는 오류가 발생했습니다.' }));
-        aiAnswer = `[ERROR] 서버 요청 실패: ${errData.error}`;
+        aiAnswer = `죄송해요, 요청을 처리하지 못했어요: ${errData.error}`;
         setStreamingLog(header + aiAnswer);
       } else if (res.body) {
         // 💡 [속도 개선] 답변을 다 기다리지 않고, 도착하는 대로 바로바로 화면에 이어붙입니다.
@@ -412,7 +440,7 @@ export default function HomePage() {
         }
       }
     } catch (err: any) {
-      aiAnswer = `[ERROR] 네트워크 오류: ${err.message || err}`;
+      aiAnswer = `죄송해요, 네트워크 오류가 발생했어요: ${err.message || err}`;
       setStreamingLog(header + aiAnswer);
     }
 
@@ -730,12 +758,12 @@ export default function HomePage() {
   const etcFileCount = fileFormatCounts['etc'] || 0;
 
   const NAV_ITEMS = [
-    { id: 'workspace', label: '워크스페이스', icon: '📊' },
-    { id: 'records', label: '나의 기록', icon: '🗂️' },
-    { id: 'deadlines', label: '마감일 매니저', icon: '⏰' },
-    { id: 'mcp', label: 'MCP 블록 매니저', icon: '🧩' },
-    { id: 'monitoring', label: '모니터링 & 파일', icon: '📈' },
-    { id: 'logs', label: 'DB 연동 로그', icon: '📜' },
+    { id: 'workspace', label: '워크스페이스', icon: Sparkles },
+    { id: 'records', label: '나의 기록', icon: Archive },
+    { id: 'deadlines', label: '마감일 매니저', icon: AlarmClock },
+    { id: 'mcp', label: 'MCP 블록 매니저', icon: Puzzle },
+    { id: 'monitoring', label: '모니터링 & 파일', icon: LineChart },
+    { id: 'logs', label: 'DB 연동 로그', icon: ScrollText },
   ];
 
   if (loading) {
@@ -800,7 +828,7 @@ export default function HomePage() {
                   : 'text-[#AFA6BD] border-transparent hover:bg-[#15131A] hover:text-[#F5F2F7]'
               }`}
             >
-              <span className="text-base leading-none">{item.icon}</span>
+              <item.icon className="w-[18px] h-[18px] shrink-0" strokeWidth={2} />
               <span>{item.label}</span>
             </div>
           ))}
@@ -819,7 +847,7 @@ export default function HomePage() {
             ) : (
               blocks.filter(b => b.active).map(b => (
                 <span key={b.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2 py-1 rounded-md text-[10px] font-medium flex items-center gap-1">
-                  <span>{b.icon}</span> {b.name.replace(' 블록', '')}
+                  <b.icon className="w-3 h-3 shrink-0" strokeWidth={2} /> {b.name.replace(' 블록', '')}
                 </span>
               ))
             )}
@@ -870,6 +898,7 @@ export default function HomePage() {
 
                 <form onSubmit={handleExecute} className="flex flex-col sm:flex-row gap-3">
                   <input
+                    ref={commandInputRef}
                     type="text"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
@@ -888,18 +917,32 @@ export default function HomePage() {
 
               <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] overflow-hidden shadow-sm">
                 <div className="bg-[#17141D] px-4 py-3 flex items-center gap-2 border-b border-[#2A2632]">
-                  <div className="flex gap-1.5">
-                    <span className="w-2.5 h-2.5 bg-[#FF7A6B] rounded-full inline-block"></span>
-                    <span className="w-2.5 h-2.5 bg-[#F79009] rounded-full inline-block"></span>
-                    <span className="w-2.5 h-2.5 bg-[#6EE7B7] rounded-full inline-block"></span>
-                  </div>
-                  <span className="text-[11px] font-semibold text-[#F4679B] ml-2 tracking-wide">
-                    ✨ AI LIVE CONSOLE
+                  <MessageCircle className="w-4 h-4 text-[#F4679B]" strokeWidth={2} />
+                  <span className="text-[13px] font-semibold text-[#F5F2F7]">
+                    AI 응답
                   </span>
                 </div>
 
                 <div className="p-4 sm:p-5 text-[14px] leading-[1.8] font-medium text-[#FBE4EE] whitespace-pre-wrap min-h-[150px]">
                   {streamingLog}
+                  {streamingLog === IDLE_CONSOLE_MESSAGE && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {EXAMPLE_PROMPTS.map((example) => (
+                        <button
+                          key={example.prompt}
+                          type="button"
+                          onClick={() => {
+                            setCommand(example.prompt);
+                            commandInputRef.current?.focus();
+                          }}
+                          className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-xs font-medium pl-2.5 pr-3.5 py-2 rounded-full transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                        >
+                          <example.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />
+                          {example.prompt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <div ref={terminalEndRef} />
                 </div>
               </div>
@@ -1131,7 +1174,7 @@ export default function HomePage() {
                       ) : (
                         blocks.filter((b) => b.active).map((b) => (
                           <span key={b.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2.5 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
-                            <span>{b.icon}</span> {b.name}
+                            <b.icon className="w-3.5 h-3.5 shrink-0" strokeWidth={2} /> {b.name}
                           </span>
                         ))
                       )}
@@ -1283,7 +1326,7 @@ export default function HomePage() {
                     <div>
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-sm sm:text-base font-bold flex items-center gap-2 truncate text-[#F5F2F7]">
-                          <span>{block.icon}</span> <span className="truncate">{block.name}</span>
+                          <block.icon className="w-[18px] h-[18px] shrink-0 text-[#F4679B]" strokeWidth={2} /> <span className="truncate">{block.name}</span>
                         </span>
 
                         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0">
