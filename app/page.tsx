@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import {
-  type LucideIcon,
   Sparkles,
   Archive,
   AlarmClock,
@@ -17,21 +16,12 @@ import {
   PenLine,
   NotebookPen,
   MessageCircle,
-  Cpu,
 } from 'lucide-react';
-
-interface McpBlock {
-  id: string;
-  name: string;
-  description: string;
-  active: boolean;
-  icon: LucideIcon;
-  config?: {
-    apiKey?: string;
-    endpoint?: string;
-    statusText?: string;
-  };
-}
+import type { McpBlock } from '@/types/blocks';
+import { DEFAULT_BLOCKS } from '@/lib/blocks/defaults';
+import { loadBlockState, saveBlockState } from '@/lib/blocks/storage';
+import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
+import { CircuitBoard } from '@/components/circuit/circuit-board';
 
 interface LogItem {
   id: string;
@@ -72,124 +62,6 @@ function getFileFormatKey(name: string, mimeType?: string): string {
   if (lowerName.endsWith('.pdf')) return 'pdf';
   if (mimeType && mimeType.startsWith('image/')) return 'image';
   return 'etc';
-}
-
-// 💡 [수정] 블록 활성 상태·첨부 파일·마감일은 계정별로 완전히 분리된 localStorage 키에 저장합니다.
-// (예전에는 키가 계정 구분 없이 공용이라, 같은 브라우저에서 다른 계정으로 로그인하면 이전 계정의
-// 블록/파일/마감일이 그대로 보이는 문제가 있었음.) 예전 공용 키에 데이터가 남아있으면 지금 로그인한
-// 계정 몫으로 1회만 이전(migrate)하고 공용 키는 지워서, 그다음 다른 계정이 로그인해도 새지 않게 합니다.
-function loadUserScopedItem<T>(userId: string, legacyKey: string): T | null {
-  const scopedKey = `${legacyKey}:${userId}`;
-  try {
-    const scoped = localStorage.getItem(scopedKey);
-    if (scoped !== null) return JSON.parse(scoped) as T;
-
-    const legacy = localStorage.getItem(legacyKey);
-    if (legacy !== null) {
-      localStorage.setItem(scopedKey, legacy);
-      localStorage.removeItem(legacyKey);
-      return JSON.parse(legacy) as T;
-    }
-  } catch (e) {
-    console.error(`로컬 데이터(${legacyKey}) 로딩 실패:`, e);
-  }
-  return null;
-}
-
-function saveUserScopedItem(userId: string, legacyKey: string, value: unknown) {
-  localStorage.setItem(`${legacyKey}:${userId}`, JSON.stringify(value));
-}
-
-// 💡 [신규] "MCP 블록 매니저" 탭의 회로도 스타일 다이어그램 — 좌표계는 이 viewBox 기준의 고정 단위이며,
-// 렌더링 시 %로 환산해 SVG 배선과 HTML 노드(블록 칩·AI 코어)가 같은 좌표를 공유하도록 맞춥니다.
-const CIRCUIT_VIEWBOX = { width: 900, height: 560 };
-const CIRCUIT_CORE = { x: 450, y: 290 };
-const CIRCUIT_RADIUS = 210;
-
-function getCircuitNodePosition(index: number, total: number) {
-  const angle = (-90 + (360 / total) * index) * (Math.PI / 180);
-  return {
-    x: CIRCUIT_CORE.x + CIRCUIT_RADIUS * Math.cos(angle),
-    y: CIRCUIT_CORE.y + CIRCUIT_RADIUS * Math.sin(angle),
-  };
-}
-
-// 두 점을 회로 기판 트레이스처럼 직각(+둥근 모서리)으로 잇는 SVG path를 만듭니다.
-// 두 점이 이미 수평/수직으로 거의 맞아떨어지면 굳이 꺾지 않고 직선으로 잇습니다.
-function buildCircuitTracePath(x1: number, y1: number, x2: number, y2: number, corner = 20) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  if (Math.min(Math.abs(dx), Math.abs(dy)) < corner * 1.5) {
-    return `M ${x1},${y1} L ${x2},${y2}`;
-  }
-  const signX = dx > 0 ? 1 : -1;
-  const signY = dy > 0 ? 1 : -1;
-  if (Math.abs(dx) >= Math.abs(dy)) {
-    const bendX = x2 - signX * corner;
-    const bendY = y1 + signY * corner;
-    return `M ${x1},${y1} L ${bendX},${y1} Q ${x2},${y1} ${x2},${bendY} L ${x2},${y2}`;
-  }
-  const bendY = y2 - signY * corner;
-  const bendX = x1 + signX * corner;
-  return `M ${x1},${y1} L ${x1},${bendY} Q ${x1},${y2} ${bendX},${y2} L ${x2},${y2}`;
-}
-
-// 블록 하나 ↔ AI 코어를 잇는 배선 한 가닥. 꺼져있으면 어두운 기본 트레이스만 보이고,
-// 켜지는 순간 블록 → 코어 방향으로 빛(스파크)이 한 번 흐른 뒤 배선 전체가 계속 밝게 빛납니다.
-function Wire({ d, active, sparkKey }: { d: string; active: boolean; sparkKey: number }) {
-  const pathRef = useRef<SVGPathElement>(null);
-  const [length, setLength] = useState(0);
-
-  useLayoutEffect(() => {
-    if (pathRef.current) {
-      setLength(pathRef.current.getTotalLength());
-    }
-  }, [d]);
-
-  const dashStyle = {
-    strokeDasharray: length,
-    strokeDashoffset: active ? 0 : length,
-    transition: active
-      ? 'stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease-out'
-      : 'opacity 0.5s ease-in',
-  };
-
-  return (
-    <g>
-      {/* 항상 보이는 기본 배선 (꺼져있을 때의 어둡고 흐릿한 회로 트레이스) */}
-      <path d={d} stroke="#332C3D" strokeWidth={2.5} fill="none" strokeLinecap="round" />
-
-      {/* 활성화 시 빛나는 배선 — 블러 처리된 은은한 글로우 레이어 */}
-      <path
-        ref={pathRef}
-        d={d}
-        stroke="#F4679B"
-        strokeWidth={7}
-        fill="none"
-        strokeLinecap="round"
-        opacity={active ? 0.45 : 0}
-        style={{ ...dashStyle, filter: 'blur(5px)' }}
-      />
-      {/* 활성화 시 빛나는 배선 — 선명한 코어 라인 */}
-      <path
-        d={d}
-        stroke="#FCD9E7"
-        strokeWidth={2}
-        fill="none"
-        strokeLinecap="round"
-        opacity={active ? 1 : 0}
-        style={dashStyle}
-      />
-
-      {/* 전류가 흐르는 듯한 스파크 — 블록이 켜질 때 블록→코어 방향으로 한 번 재생 */}
-      {active && length > 0 && (
-        <circle key={sparkKey} r={4.5} fill="#FFF0F6">
-          <animateMotion dur="0.7s" fill="freeze" path={d} keyPoints="0;1" keyTimes="0;1" calcMode="linear" />
-          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.85;1" dur="0.7s" fill="freeze" />
-        </circle>
-      )}
-    </g>
-  );
 }
 
 // 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
@@ -238,48 +110,7 @@ export default function HomePage() {
   // 💡 [개선] 새로고침해도 블록 활성 상태가 유지되도록 로컬스토리지 연동 구조 적용
   // (이 초기값은 이 계정으로 저장된 적이 있는지 확인하기 전 아주 잠깐 쓰이는 값이자,
   // 로컬 저장 데이터가 전혀 없는 신규 계정의 최종 상태이기도 합니다 — 그래서 전부 비활성으로 시작합니다.)
-  const [blocks, setBlocks] = useState<McpBlock[]>([
-    {
-      id: 'search',
-      name: '최신 정보 검색',
-      description: '뉴스, 시세, 최신 트렌드처럼 실시간 정보가 필요한 질문에 웹 검색 결과를 반영해서 답변합니다.',
-      active: false,
-      icon: Search,
-      config: { apiKey: 'Live Web Grounding Ready' }
-    },
-    {
-      id: 'filesystem',
-      name: '문서 분석 & 요약',
-      description: '업로드한 강의자료, 보고서, 계약서, 엑셀 표를 AI가 읽고 답변에 정확히 반영합니다. (엑셀, HWP, PPT, 워드, PDF 텍스트 지원)',
-      active: false,
-      icon: FileText,
-      config: { statusText: 'Local RAG Engine Active' }
-    },
-    {
-      id: 'deadlines',
-      name: '마감일 인식',
-      description: '마감일 매니저에 등록한 과제·시험·업무 일정을 AI가 파악해서, "오늘 뭐부터 해야 하지?" 같은 질문에 실제 일정 기준으로 답합니다.',
-      active: false,
-      icon: CalendarClock,
-      config: { statusText: 'Deadline Context Active' }
-    },
-    {
-      id: 'writing',
-      name: '글쓰기 도우미',
-      description: '이메일, 보고서, 자기소개서 등 상황과 대상에 맞는 톤으로 바로 쓸 수 있는 초안을 작성해드립니다.',
-      active: false,
-      icon: PenLine,
-      config: { statusText: 'Draft Assistant Ready' }
-    },
-    {
-      id: 'meetingNotes',
-      name: '회의·강의 노트 정리',
-      description: '회의록이나 강의 필기를 붙여넣으면 핵심 요약과 할 일 목록으로 깔끔하게 구조화해드립니다.',
-      active: false,
-      icon: NotebookPen,
-      config: { statusText: 'Note Structuring Ready' }
-    },
-  ]);
+  const [blocks, setBlocks] = useState<McpBlock[]>(DEFAULT_BLOCKS);
 
   const [isBlocksLoaded, setIsBlocksLoaded] = useState(false);
   const [logs, setLogs] = useState<LogItem[]>([]);
@@ -324,7 +155,7 @@ export default function HomePage() {
   useEffect(() => {
     if (!user) return;
 
-    const savedBlocks = loadUserScopedItem<{ id: string; active: boolean }[]>(user.id, 'mcp_blocks_state');
+    const savedBlocks = loadBlockState(user.id);
     setBlocks(prev => prev.map(b => {
       if (!savedBlocks) return { ...b, active: false };
       const found = savedBlocks.find((p) => p.id === b.id);
@@ -340,7 +171,7 @@ export default function HomePage() {
   // 💡 [개선] 블록 상태 변경 시 localStorage 자동 저장 (새로고침 초기화 방지, 계정별로 분리 저장)
   useEffect(() => {
     if (isBlocksLoaded && user) {
-      saveUserScopedItem(user.id, 'mcp_blocks_state', blocks.map(b => ({ id: b.id, active: b.active })));
+      saveBlockState(user.id, blocks.map(b => ({ id: b.id, active: b.active })));
     }
   }, [blocks, isBlocksLoaded, user]);
 
@@ -1421,143 +1252,7 @@ export default function HomePage() {
           )}
 
           {activeTab === 'mcp' && (
-            <div>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  MCP 블록 매니저
-                </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  블록을 누르면 AI 코어로 연결된 회로에 전류가 흐르듯 켜집니다. 설정은 브라우저에 안전하게 영구 저장됩니다.
-                </p>
-              </div>
-
-              {/* 회로도 다이어그램 */}
-              <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 sm:p-6 mb-6 shadow-sm overflow-x-auto">
-                <div
-                  className="relative mx-auto w-full max-w-[720px]"
-                  style={{ aspectRatio: `${CIRCUIT_VIEWBOX.width} / ${CIRCUIT_VIEWBOX.height}`, minWidth: 480 }}
-                >
-                  <svg
-                    viewBox={`0 0 ${CIRCUIT_VIEWBOX.width} ${CIRCUIT_VIEWBOX.height}`}
-                    className="absolute inset-0 w-full h-full overflow-visible"
-                    aria-hidden="true"
-                  >
-                    {blocks.map((block, i) => {
-                      const pos = getCircuitNodePosition(i, blocks.length);
-                      const d = buildCircuitTracePath(pos.x, pos.y, CIRCUIT_CORE.x, CIRCUIT_CORE.y);
-                      return <Wire key={block.id} d={d} active={block.active} sparkKey={sparkKeys[block.id] || 0} />;
-                    })}
-                  </svg>
-
-                  {/* AI 코어 허브 */}
-                  <div
-                    className="absolute z-10 flex flex-col items-center justify-center gap-1 rounded-full border-2 transition-shadow duration-700"
-                    style={{
-                      left: `${(CIRCUIT_CORE.x / CIRCUIT_VIEWBOX.width) * 100}%`,
-                      top: `${(CIRCUIT_CORE.y / CIRCUIT_VIEWBOX.height) * 100}%`,
-                      transform: 'translate(-50%, -50%)',
-                      width: 'clamp(84px, 15vw, 128px)',
-                      height: 'clamp(84px, 15vw, 128px)',
-                      borderColor: activeBlocksCount > 0 ? '#F4679B' : '#332C3D',
-                      background: activeBlocksCount > 0
-                        ? 'radial-gradient(circle, #331F29 0%, #211E28 70%)'
-                        : '#1C1922',
-                      boxShadow: activeBlocksCount > 0
-                        ? `0 0 ${18 + activeBlocksCount * 10}px ${2 + activeBlocksCount}px rgba(244,103,155,${0.28 + activeBlocksCount * 0.09})`
-                        : 'none',
-                    }}
-                  >
-                    {activeBlocksCount > 0 && (
-                      <span
-                        className="absolute -inset-2 rounded-full border border-dashed border-[#F4679B]/40 animate-[spin_16s_linear_infinite]"
-                        aria-hidden="true"
-                      />
-                    )}
-                    <Cpu className={`w-6 h-6 sm:w-7 sm:h-7 ${activeBlocksCount > 0 ? 'text-[#F4679B]' : 'text-[#5B5566]'}`} strokeWidth={1.75} />
-                    <span className={`text-[10px] sm:text-[11px] font-bold tracking-wide ${activeBlocksCount > 0 ? 'text-[#F5F2F7]' : 'text-[#5B5566]'}`}>
-                      AI 코어
-                    </span>
-                  </div>
-
-                  {/* 블록 노드 */}
-                  {blocks.map((block, i) => {
-                    const pos = getCircuitNodePosition(i, blocks.length);
-                    return (
-                      <button
-                        key={block.id}
-                        type="button"
-                        onClick={() => handleToggleBlock(block)}
-                        className="group absolute z-10 flex flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2.5 transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                        style={{
-                          left: `${(pos.x / CIRCUIT_VIEWBOX.width) * 100}%`,
-                          top: `${(pos.y / CIRCUIT_VIEWBOX.height) * 100}%`,
-                          transform: 'translate(-50%, -50%)',
-                          width: 'clamp(76px, 13vw, 108px)',
-                          borderColor: block.active ? '#F4679B' : '#322D3B',
-                          background: block.active ? '#2A1520' : '#1C1922',
-                          boxShadow: block.active ? '0 0 16px rgba(244,103,155,0.35)' : 'none',
-                        }}
-                      >
-                        {block.active && (
-                          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#F4679B] animate-pulse" />
-                        )}
-                        <block.icon
-                          className={`w-5 h-5 sm:w-6 sm:h-6 ${block.active ? 'text-[#F4679B]' : 'text-[#5B5566]'}`}
-                          strokeWidth={2}
-                        />
-                        <span className={`text-[10px] sm:text-[11px] font-semibold text-center leading-tight ${block.active ? 'text-[#F5F2F7]' : 'text-[#7A7286]'}`}>
-                          {block.name}
-                        </span>
-
-                        {/* 설명 툴팁 (호버/포커스 시에만 표시) */}
-                        <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 rounded-lg border border-[#322D3B] bg-[#15131A] px-3 py-2 text-[11px] leading-snug text-[#C9C0D6] opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 z-20">
-                          {block.description}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <p className="text-center text-[11px] sm:text-xs text-[#857C93] mt-3 sm:mt-4">
-                  {activeBlocksCount === 0
-                    ? '활성화된 블록이 없어요 — 노드를 눌러 회로를 연결해보세요'
-                    : `${blocks.length}개 중 ${activeBlocksCount}개 블록이 AI 코어에 연결되어 있어요`}
-                </p>
-              </div>
-
-              {/* 블록 목록 — 상세 설명과 켜기/끄기 버튼 */}
-              <div className="flex flex-col gap-2.5">
-                {blocks.map((block) => (
-                  <div
-                    key={block.id}
-                    className={`rounded-xl border p-3.5 sm:p-4 flex items-center gap-3 transition-colors ${
-                      block.active ? 'border-[#F4679B]/30 bg-[#211E28]' : 'border-[#322D3B] bg-[#1C1922]'
-                    }`}
-                  >
-                    <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${block.active ? 'bg-[#331F29] text-[#F4679B]' : 'bg-[#15131A] text-[#5B5566]'}`}>
-                      <block.icon className="w-4 h-4" strokeWidth={2} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-[#F5F2F7] truncate">{block.name}</span>
-                        <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${block.active ? 'bg-[#F4679B] animate-pulse' : 'bg-[#423B4C]'}`} />
-                      </div>
-                      <p className="text-xs text-[#AFA6BD] leading-normal mt-0.5">{block.description}</p>
-                    </div>
-                    <button
-                      onClick={() => handleToggleBlock(block)}
-                      className={`shrink-0 border rounded-lg px-3.5 py-2 text-xs font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
-                        block.active
-                          ? 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D] hover:bg-[#234438]'
-                          : 'bg-[#F4679B] text-white border-transparent hover:bg-[#D1477F]'
-                      }`}
-                    >
-                      {block.active ? '끄기' : '켜기'}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <CircuitBoard blocks={blocks} onToggle={handleToggleBlock} sparkKeys={sparkKeys} />
           )}
 
           {activeTab === 'monitoring' && (

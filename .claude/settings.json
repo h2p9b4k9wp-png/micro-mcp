@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx supabase *)",
+      "Bash(env)",
+      "Read(//c/Users/havru/**)",
+      "Read(//c/Users/havru/.supabase/**)",
+      "Bash(node -e ' *)",
+      "Bash(git commit -m ' *)",
+      "Bash(node -e \"const d=JSON.parse\\(require\\('fs'\\).readFileSync\\(0,'utf8'\\)\\); console.log\\(JSON.stringify\\(d.dependencies, null, 2\\)\\)\")",
+      "Bash(npx --prefix c:/Users/havru/micro-mcp vercel inspect https://micro-mcp.vercel.app)",
+      "Bash(npm install *)"
+    ]
+  }
+}
