@@ -1,21 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 
-export interface McpBlock {
-  id: string;
-  name: string;
-  description: string;
-  active: boolean;
-  icon: LucideIcon;
-  config?: {
-    apiKey?: string;
-    endpoint?: string;
-    statusText?: string;
-  };
-}
-
-// 💡 [신규] 3계층 노드 그래프 모델 (source → lens → action). 기존 McpBlock(on/off 토글) 모델을 대체할
-// 새 데이터 모델로, 지금은 레지스트리/검증 로직만 추가된 상태이며 UI(app/page.tsx, circuit-board 등)는
-// 아직 McpBlock 기반 그대로입니다.
+// 💡 [신규] 3계층 노드 그래프 모델 (source → lens → action). 예전 McpBlock(on/off 토글) 모델은
+// 이번 단계로 완전히 대체되어 삭제되었습니다.
 export type NodeLayer = 'source' | 'lens' | 'action';
 
 export type NodeId =
@@ -23,6 +9,7 @@ export type NodeId =
   | 'deadlines' | 'questions' | 'digest'
   | 'save_deadline' | 'sync_calendar' | 'export_hwp';
 
+// 노드 레지스트리 항목 — "어떤 노드가 존재하는지"에 대한 정적 메타데이터입니다 (lib/blocks/defaults.ts).
 export interface CircuitNode {
   id: NodeId;
   layer: NodeLayer;
@@ -32,4 +19,26 @@ export interface CircuitNode {
   estimatedSeconds: number;
   minLibraryDocs?: number; // 이 개수 이상일 때만 활성 (my_library: 5)
   defaultForLens?: NodeId; // action 노드가 어떤 lens의 기본값인지
+}
+
+// 그래프 자료구조 — "지금 이 그래프에 실제로 어떤 노드가 놓여있고 어떻게 연결돼 있는지"에 대한
+// 런타임 상태입니다. CircuitNode(정적 메타데이터)와 달리 상태(status)를 가지며, 노드 자체의
+// label/hint/icon 등은 갖지 않고 id로 NODE_REGISTRY를 조회해서 얻습니다.
+export type NodeStatus = 'idle' | 'running' | 'done' | 'error';
+
+export interface GraphNode {
+  id: NodeId;
+  layer: NodeLayer;
+  status: NodeStatus;
+}
+
+export interface GraphEdge {
+  from: NodeId;
+  to: NodeId;
+  label?: string;
+}
+
+export interface CircuitGraphState {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
 }

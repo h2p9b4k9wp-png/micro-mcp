@@ -2,15 +2,28 @@
 
 import { useState, useRef, useLayoutEffect } from 'react';
 
-// 블록 하나 ↔ AI 코어를 잇는 배선 한 가닥. 꺼져있으면 어두운 기본 트레이스만 보이고,
-// 켜지는 순간 블록 → 코어 방향으로 빛(스파크)이 한 번 흐른 뒤 배선 전체가 계속 밝게 빛납니다.
-export function Wire({ d, active, sparkKey }: { d: string; active: boolean; sparkKey: number }) {
+// 파이프라인의 두 노드를 잇는 배선 한 가닥. 꺼져있으면 어두운 기본 트레이스만 보이고,
+// 켜지는 순간 출발 노드 → 도착 노드 방향으로 빛(스파크)이 한 번 흐른 뒤 배선 전체가 계속 밝게 빛납니다.
+export function Wire({
+  d,
+  active,
+  sparkKey,
+  label,
+}: {
+  d: string;
+  active: boolean;
+  sparkKey: number;
+  label?: string;
+}) {
   const pathRef = useRef<SVGPathElement>(null);
   const [length, setLength] = useState(0);
+  const [midPoint, setMidPoint] = useState<{ x: number; y: number } | null>(null);
 
   useLayoutEffect(() => {
     if (pathRef.current) {
-      setLength(pathRef.current.getTotalLength());
+      const total = pathRef.current.getTotalLength();
+      setLength(total);
+      setMidPoint(pathRef.current.getPointAtLength(total / 2));
     }
   }, [d]);
 
@@ -49,12 +62,26 @@ export function Wire({ d, active, sparkKey }: { d: string; active: boolean; spar
         style={dashStyle}
       />
 
-      {/* 전류가 흐르는 듯한 스파크 — 블록이 켜질 때 블록→코어 방향으로 한 번 재생 */}
+      {/* 전류가 흐르는 듯한 스파크 — 배선이 켜질 때 출발→도착 방향으로 한 번 재생 */}
       {active && length > 0 && (
         <circle key={sparkKey} r={4.5} fill="#FFF0F6">
           <animateMotion dur="0.7s" fill="freeze" path={d} keyPoints="0;1" keyTimes="0;1" calcMode="linear" />
           <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.85;1" dur="0.7s" fill="freeze" />
         </circle>
+      )}
+
+      {/* 엣지 라벨 — 배선 중앙 위에 흐린 색 작은 글씨로, label이 있을 때만 */}
+      {label && midPoint && (
+        <text
+          x={midPoint.x}
+          y={midPoint.y - 8}
+          fontSize={12}
+          fill="#857C93"
+          textAnchor="middle"
+          style={{ pointerEvents: 'none' }}
+        >
+          {label}
+        </text>
       )}
     </g>
   );

@@ -17,11 +17,27 @@ import {
   NotebookPen,
   MessageCircle,
 } from 'lucide-react';
-import type { McpBlock } from '@/types/blocks';
-import { DEFAULT_BLOCKS } from '@/lib/blocks/defaults';
-import { loadBlockState, saveBlockState } from '@/lib/blocks/storage';
+import type { NodeId, CircuitGraphState } from '@/types/blocks';
+import { NODE_REGISTRY } from '@/lib/blocks/defaults';
+import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
+
+function getNodeMeta(id: NodeId) {
+  return NODE_REGISTRY.find((n) => n.id === id);
+}
+
+// 💡 [신규] 이번 단계는 UI를 9노드 3열 파이프라인으로 전환하는 게 목표라, 그래프 자체를 만들고
+// 편집하는 로직은 아직 없습니다. 눈으로 확인할 수 있도록 더미 그래프를 하드코딩해서 렌더합니다.
+const DUMMY_GRAPH: CircuitGraphState = {
+  nodes: [
+    { id: 'this_doc', layer: 'source', status: 'done' },
+    { id: 'digest', layer: 'lens', status: 'running' },
+  ],
+  edges: [
+    { from: 'this_doc', to: 'digest' },
+  ],
+};
 
 interface LogItem {
   id: string;
@@ -107,12 +123,15 @@ export default function HomePage() {
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const commandInputRef = useRef<HTMLInputElement>(null);
 
-  // 💡 [개선] 새로고침해도 블록 활성 상태가 유지되도록 로컬스토리지 연동 구조 적용
-  // (이 초기값은 이 계정으로 저장된 적이 있는지 확인하기 전 아주 잠깐 쓰이는 값이자,
-  // 로컬 저장 데이터가 전혀 없는 신규 계정의 최종 상태이기도 합니다 — 그래서 전부 비활성으로 시작합니다.)
-  const [blocks, setBlocks] = useState<McpBlock[]>(DEFAULT_BLOCKS);
+  // 💡 [신규] 9노드 3열(source→lens→action) 파이프라인 그래프 상태. 그래프 자체(노드 배치·연결)는
+  // 매 문서/세션마다 새로 구성되는 걸 전제로 하고 있어 저장하지 않습니다 — 지금은 더미 그래프 고정.
+  const [graph] = useState<CircuitGraphState>(DUMMY_GRAPH);
 
-  const [isBlocksLoaded, setIsBlocksLoaded] = useState(false);
+  // 💡 [신규] 그래프 자체는 저장하지 않지만, 다음 그래프를 빠르게 구성할 때 참고할 최소한의 힌트
+  // (마지막에 쓴 렌즈, 선호 action)는 계정별로 저장합니다.
+  const [graphPreferences, setGraphPreferences] = useState<GraphPreferences>({ lastLens: null, preferredAction: null });
+  const [isGraphPreferencesLoaded, setIsGraphPreferencesLoaded] = useState(false);
+
   const [logs, setLogs] = useState<LogItem[]>([]);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isFilesLoaded, setIsFilesLoaded] = useState(false);
@@ -149,31 +168,31 @@ export default function HomePage() {
     }
   }, []);
 
-  // 💡 [수정] localStorage에서 블록 활성 상태 불러오기 — 로그인한 계정(user.id)이 확정된 뒤에만 실행하고,
-  // 반드시 그 계정 전용 키에서 읽습니다. 이 계정으로 저장된 데이터가 전혀 없으면(=신규 계정이거나,
-  // 이 브라우저에서 처음 로그인) 모든 블록을 비활성 상태로 되돌립니다.
+  // 💡 [수정] localStorage에서 첨부 파일 불러오기 — 로그인한 계정(user.id)이 확정된 뒤에만 실행하고,
+  // 반드시 그 계정 전용 키에서 읽습니다.
   useEffect(() => {
     if (!user) return;
-
-    const savedBlocks = loadBlockState(user.id);
-    setBlocks(prev => prev.map(b => {
-      if (!savedBlocks) return { ...b, active: false };
-      const found = savedBlocks.find((p) => p.id === b.id);
-      return { ...b, active: found ? found.active : false };
-    }));
-    setIsBlocksLoaded(true);
 
     const savedFiles = loadUserScopedItem<FileItem[]>(user.id, 'mcp_uploaded_files');
     setFiles(savedFiles || []);
     setIsFilesLoaded(true);
   }, [user]);
 
-  // 💡 [개선] 블록 상태 변경 시 localStorage 자동 저장 (새로고침 초기화 방지, 계정별로 분리 저장)
+  // 💡 [신규] 그래프 선호 설정 불러오기 + 예전 블록 모델(v1, mcp_blocks_state) 정리.
+  // "마운트 시"는 실제로는 user.id를 알아야 계정별 키를 다룰 수 있어서, 계정이 확정된 시점을 뜻합니다.
   useEffect(() => {
-    if (isBlocksLoaded && user) {
-      saveBlockState(user.id, blocks.map(b => ({ id: b.id, active: b.active })));
+    if (!user) return;
+    clearLegacyBlockState(user.id);
+    const savedPreferences = loadGraphPreferences(user.id);
+    setGraphPreferences(savedPreferences || { lastLens: null, preferredAction: null });
+    setIsGraphPreferencesLoaded(true);
+  }, [user]);
+
+  useEffect(() => {
+    if (isGraphPreferencesLoaded && user) {
+      saveGraphPreferences(user.id, graphPreferences);
     }
-  }, [blocks, isBlocksLoaded, user]);
+  }, [graphPreferences, isGraphPreferencesLoaded, user]);
 
   useEffect(() => {
     if (isFilesLoaded && user) {
@@ -288,23 +307,21 @@ export default function HomePage() {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [streamingLog, logs]);
 
-  const activeMcpNames = blocks
-    .filter(b => b.active)
-    .map(b => b.name)
-    .join(', ') || '활성화된 MCP 없음';
+  const activeMcpNames = graph.nodes
+    .map(n => getNodeMeta(n.id)?.label)
+    .filter((label): label is string => Boolean(label))
+    .join(', ') || '연결된 노드 없음';
 
-  const toggleBlock = (id: string) => {
-    setBlocks(prev => prev.map(b => b.id === id ? { ...b, active: !b.active } : b));
-  };
-
-  // 💡 [신규] 회로도 다이어그램에서 블록이 꺼짐→켜짐으로 바뀔 때만 스파크 애니메이션을 재생시키기 위한 트리거.
-  // (기존 toggleBlock 로직 자체는 그대로 두고, UI 쪽에서만 감싸서 사용합니다.)
-  const [sparkKeys, setSparkKeys] = useState<Record<string, number>>({});
-  const handleToggleBlock = (block: McpBlock) => {
-    if (!block.active) {
-      setSparkKeys(prev => ({ ...prev, [block.id]: (prev[block.id] || 0) + 1 }));
+  // 💡 [신규] 노드 클릭 시 그래프 자체를 편집하지는 않습니다(더미 그래프 고정 단계). 대신 lens/action
+  // 노드를 클릭하면 "마지막에 쓴 렌즈"/"선호 action" 힌트를 갱신합니다 — 실행 로직과는 무관합니다.
+  const handleNodeClick = (nodeId: NodeId) => {
+    const meta = getNodeMeta(nodeId);
+    if (!meta) return;
+    if (meta.layer === 'lens') {
+      setGraphPreferences(prev => ({ ...prev, lastLens: nodeId }));
+    } else if (meta.layer === 'action') {
+      setGraphPreferences(prev => ({ ...prev, preferredAction: nodeId }));
     }
-    toggleBlock(block.id);
   };
 
   const handleExecute = async (e: React.FormEvent) => {
@@ -316,11 +333,15 @@ export default function HomePage() {
     setCommand('');
     setDetectedActionItems([]);
 
-    const isFileActive = blocks.find(b => b.id === 'filesystem')?.active || false;
-    const isSearchActive = blocks.find(b => b.id === 'search')?.active || false;
-    const isDeadlineActive = blocks.find(b => b.id === 'deadlines')?.active || false;
-    const isWritingActive = blocks.find(b => b.id === 'writing')?.active || false;
-    const isMeetingNotesActive = blocks.find(b => b.id === 'meetingNotes')?.active || false;
+    // 💡 [신규] 예전 5개 블록 토글은 새 9노드 파이프라인 모델과 1:1로 대응되지 않습니다(이름이 같은
+    // 'deadlines'조차 의미가 다릅니다 — 이제는 "AI 마감일 컨텍스트 포함 여부"가 아니라 lens 노드).
+    // 이번 단계는 UI 전환만 다루고 실행 로직은 건드리지 않기로 해서, 그래프를 실제 실행 컨텍스트에
+    // 연결하는 작업은 다음 단계로 미루고 일단 전부 비활성으로 둡니다.
+    const isFileActive = false;
+    const isSearchActive = false;
+    const isDeadlineActive = false;
+    const isWritingActive = false;
+    const isMeetingNotesActive = false;
 
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
@@ -631,7 +652,7 @@ export default function HomePage() {
     return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
   }).length;
   const overdueDeadlinesCount = deadlines.filter((d) => new Date(d.dueAt).getTime() < nowTs).length;
-  const activeBlocksCount = blocks.filter((b) => b.active).length;
+  const activeBlocksCount = graph.nodes.length;
 
   const kpiTiles = [
     { label: '전체 마감일', icon: '⏰', value: deadlines.length },
@@ -791,14 +812,18 @@ export default function HomePage() {
           </div>
           <div className="text-[11px] text-[#857C93] mb-1.5 font-medium uppercase tracking-wide">활성화된 MCP 블록</div>
           <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
-            {blocks.filter(b => b.active).length === 0 ? (
+            {graph.nodes.length === 0 ? (
               <span className="text-[#857C93] italic">없음</span>
             ) : (
-              blocks.filter(b => b.active).map(b => (
-                <span key={b.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2 py-1 rounded-md text-[10px] font-medium flex items-center gap-1">
-                  <b.icon className="w-3 h-3 shrink-0" strokeWidth={2} /> {b.name.replace(' 블록', '')}
-                </span>
-              ))
+              graph.nodes.map(n => {
+                const meta = getNodeMeta(n.id);
+                if (!meta) return null;
+                return (
+                  <span key={n.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2 py-1 rounded-md text-[10px] font-medium flex items-center gap-1">
+                    <meta.icon className="w-3 h-3 shrink-0" strokeWidth={2} /> {meta.label}
+                  </span>
+                );
+              })
             )}
           </div>
         </div>
@@ -1118,14 +1143,18 @@ export default function HomePage() {
                   <div>
                     <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">활성화된 MCP 블록</h4>
                     <div className="flex flex-wrap gap-1.5">
-                      {blocks.filter((b) => b.active).length === 0 ? (
+                      {graph.nodes.length === 0 ? (
                         <span className="text-xs text-[#857C93] italic">활성화된 블록이 없어요</span>
                       ) : (
-                        blocks.filter((b) => b.active).map((b) => (
-                          <span key={b.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2.5 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
-                            <b.icon className="w-3.5 h-3.5 shrink-0" strokeWidth={2} /> {b.name}
-                          </span>
-                        ))
+                        graph.nodes.map((n) => {
+                          const meta = getNodeMeta(n.id);
+                          if (!meta) return null;
+                          return (
+                            <span key={n.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2.5 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
+                              <meta.icon className="w-3.5 h-3.5 shrink-0" strokeWidth={2} /> {meta.label}
+                            </span>
+                          );
+                        })
                       )}
                     </div>
                   </div>
@@ -1252,7 +1281,7 @@ export default function HomePage() {
           )}
 
           {activeTab === 'mcp' && (
-            <CircuitBoard blocks={blocks} onToggle={handleToggleBlock} sparkKeys={sparkKeys} />
+            <CircuitBoard graph={graph} onNodeClick={handleNodeClick} />
           )}
 
           {activeTab === 'monitoring' && (

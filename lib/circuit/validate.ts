@@ -1,26 +1,16 @@
-import type { CircuitNode, NodeLayer } from '@/types/blocks';
-
-export interface CircuitEdge {
-  from: CircuitNode['id'];
-  to: CircuitNode['id'];
-}
-
-export interface CircuitGraphState {
-  nodes: CircuitNode[];
-  edges: CircuitEdge[];
-}
+import type { GraphNode, CircuitGraphState, NodeLayer } from '@/types/blocks';
 
 const LAYER_ORDER: Record<NodeLayer, number> = { source: 0, lens: 1, action: 2 };
 
 // source → lens, lens → action 방향으로만 연결을 허용합니다.
 // (source → action 직결, 역방향, 같은 계층끼리는 전부 불가)
-export function canConnect(from: CircuitNode, to: CircuitNode): boolean {
+export function canConnect(from: GraphNode, to: GraphNode): boolean {
   return LAYER_ORDER[to.layer] === LAYER_ORDER[from.layer] + 1;
 }
 
 // 그래프에는 lens가 항상 정확히 1개만 존재합니다. 새 lens 노드를 놓으면 기존 lens 노드와
 // 거기 연결돼 있던 edge를 함께 교체합니다.
-export function placeLensNode(graph: CircuitGraphState, node: CircuitNode): CircuitGraphState {
+export function placeLensNode(graph: CircuitGraphState, node: GraphNode): CircuitGraphState {
   if (node.layer !== 'lens') {
     throw new Error(`placeLensNode에는 lens 노드만 전달할 수 있습니다: ${node.id}`);
   }

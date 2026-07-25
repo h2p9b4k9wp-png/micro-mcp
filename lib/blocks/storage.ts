@@ -14,9 +14,7 @@ export interface GraphPreferences {
   preferredAction: NodeId | null;
 }
 
-// 아직 어디서도 호출하지 않습니다 — 3단계에서 loadGraphPreferences가 이걸 호출하도록 연결할 예정입니다.
-// (지금 바로 연결하면 app/page.tsx가 여전히 의존하는 loadBlockState/saveBlockState의 mcp_blocks_state
-// 키를 이 함수가 지워버려서, 아직 마이그레이션되지 않은 UI의 블록 상태가 날아갑니다.)
+// app/page.tsx가 계정이 확정되는 시점(사실상 마운트 시)에 한 번 호출해서, v1 키가 남아있으면 지웁니다.
 export function clearLegacyBlockState(userId: string) {
   try {
     localStorage.removeItem(LEGACY_V1_KEY);
@@ -32,15 +30,4 @@ export function loadGraphPreferences(userId: string): GraphPreferences | null {
 
 export function saveGraphPreferences(userId: string, prefs: GraphPreferences): void {
   saveUserScopedItem(userId, GRAPH_STATE_KEY, prefs);
-}
-
-// @deprecated 3단계에서 제거 예정 — McpBlock on/off 토글 모델 전용 저장소. app/page.tsx가 아직 이
-// 형태를 그대로 쓰고 있어서, 예전 시그니처·예전 키(mcp_blocks_state) 그대로 복원합니다.
-export function loadBlockState(userId: string) {
-  return loadUserScopedItem<{ id: string; active: boolean }[]>(userId, LEGACY_V1_KEY);
-}
-
-// @deprecated 3단계에서 제거 예정
-export function saveBlockState(userId: string, blocks: { id: string; active: boolean }[]) {
-  saveUserScopedItem(userId, LEGACY_V1_KEY, blocks);
 }
