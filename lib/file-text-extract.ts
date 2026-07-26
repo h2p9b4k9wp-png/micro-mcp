@@ -1,4 +1,6 @@
 import * as XLSX from 'xlsx';
+import * as CFB from 'cfb';
+import { inflateRaw } from 'pako';
 
 // 문서 파일(base64)에서 순수 텍스트만 뽑아내는 공용 함수입니다. /api/extract가 사용합니다.
 // (더 풍부한 처리가 필요한 /api/chat의 파일 분석 블록(OCR, HWP 등)은 이 함수와 별도로 유지됩니다.)
@@ -83,6 +85,93 @@ async function extractTextFromZipXml(
   return parts.join('\n\n');
 }
 
+const HWPTAG_PARA_TEXT = 67;
+
+// HWP 5.0(.hwp)은 CFBF(복합 문서) 컨테이너입니다 — zip이 아닙니다.
+// 1) cfb로 컨테이너를 열고 2) FileHeader 스트림에서 압축/암호화 여부를 확인한 뒤
+// 3) BodyText/SectionN 스트림들을 꺼내 4) 압축돼 있으면 raw deflate(pako)로 풀고
+// 5) 레코드 중 문단 텍스트 레코드(HWPTAG_PARA_TEXT, 태그 67)만 UTF-16LE로 디코딩합니다.
+async function extractTextFromHwp(buffer: Buffer): Promise<string> {
+  let cfb: CFB.CFB$Container;
+  try {
+    cfb = CFB.parse(buffer);
+  } catch {
+    // HWP 3.0 등 아주 옛날 버전은 CFBF 구조 자체가 아니라서 여기서 실패합니다.
+    throw new FileExtractError('너무 옛날 버전이에요. 한글에서 열어 HWPX나 PDF로 저장해주세요.');
+  }
+
+  const fileHeaderEntry = CFB.find(cfb, '/FileHeader');
+  if (!fileHeaderEntry) {
+    throw new FileExtractError('너무 옛날 버전이에요. 한글에서 열어 HWPX나 PDF로 저장해주세요.');
+  }
+
+  const fileHeader = Buffer.from(fileHeaderEntry.content as Uint8Array);
+  // FileHeader 36~39바이트: 속성 비트필드(LE uint32). bit0=압축, bit1=암호화.
+  const attributes = fileHeader.readUInt32LE(36);
+  const isCompressed = (attributes & 0x1) !== 0;
+  const isEncrypted = (attributes & 0x2) !== 0;
+
+  if (isEncrypted) {
+    throw new FileExtractError('암호가 걸린 한글 파일은 읽을 수 없어요. 암호를 풀고 다시 올려주세요');
+  }
+
+  const sectionPaths = cfb.FullPaths
+    .filter((path) => /\/BodyText\/Section\d+$/i.test(path))
+    .sort((a, b) => {
+      const numA = parseInt(a.match(/Section(\d+)$/i)?.[1] ?? '0', 10);
+      const numB = parseInt(b.match(/Section(\d+)$/i)?.[1] ?? '0', 10);
+      return numA - numB;
+    });
+
+  const parts: string[] = [];
+  for (const path of sectionPaths) {
+    const entry = CFB.find(cfb, path);
+    if (!entry) continue;
+    const raw = Buffer.from(entry.content as Uint8Array);
+    const sectionBuffer = isCompressed ? Buffer.from(inflateRaw(raw)) : raw;
+    const text = extractParaTextRecords(sectionBuffer);
+    if (text) parts.push(text);
+  }
+
+  return parts.join('\n\n');
+}
+
+// 레코드 스트림을 순회하며 HWPTAG_PARA_TEXT(67) 레코드만 UTF-16LE로 디코딩합니다.
+// 레코드 헤더(LE uint32): bit0-9 태그, bit10-19 레벨, bit20-31 크기(0xFFF면 다음 4바이트가 실제 크기).
+function extractParaTextRecords(buffer: Buffer): string {
+  const paragraphs: string[] = [];
+  let offset = 0;
+
+  while (offset + 4 <= buffer.length) {
+    const header = buffer.readUInt32LE(offset);
+    offset += 4;
+
+    const tagId = header & 0x3ff;
+    let size = (header >>> 20) & 0xfff;
+    if (size === 0xfff) {
+      if (offset + 4 > buffer.length) break;
+      size = buffer.readUInt32LE(offset);
+      offset += 4;
+    }
+    if (offset + size > buffer.length) break;
+
+    if (tagId === HWPTAG_PARA_TEXT) {
+      const payload = buffer.subarray(offset, offset + size);
+      const text = Array.from(payload.toString('utf16le'))
+        .filter((ch) => {
+          const code = ch.codePointAt(0) ?? 0;
+          return code > 0x1f; // 제어 문자(0x00~0x1F)는 걸러냄
+        })
+        .join('');
+      paragraphs.push(text);
+    }
+
+    offset += size;
+  }
+
+  return paragraphs.join('\n'); // 문단 끝은 줄바꿈으로
+}
+
 /**
  * 파일(base64)에서 순수 텍스트를 뽑아 돌려줍니다.
  * 지원하지 않는 형식이거나 파일이 손상된 경우 FileExtractError(한국어 메시지)를 던집니다.
@@ -106,11 +195,11 @@ export async function extractFileText(
 
   const ext = getExtension(fileName);
 
-  if (ext === 'hwp') {
-    throw new FileExtractError('한글 파일은 [다른 이름으로 저장]에서 HWPX나 PDF로 바꿔서 올려주세요.');
-  }
-
   try {
+    if (ext === 'hwp') {
+      return await extractTextFromHwp(buffer);
+    }
+
     if (ext === 'xlsx' || ext === 'xls') {
       const workbook = XLSX.read(buffer, { type: 'buffer' });
       return workbookToText(workbook);
