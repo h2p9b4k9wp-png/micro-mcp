@@ -10,6 +10,32 @@ export interface LensDefinition {
   schema: Record<string, unknown>;
 }
 
+// 각 관점의 analyze 결과(JSON 스키마와 1:1로 대응하는 TS 타입) — 클라이언트에서 결과를 렌더링할 때 사용합니다.
+export interface DeadlineItem {
+  title: string;
+  date: string;
+  excerpt: string;
+  confidence: number;
+}
+export interface DeadlinesResult {
+  items: DeadlineItem[];
+}
+
+export interface QuestionItem {
+  question: string;
+  targetWeakness: string;
+  draftAnswer: string;
+}
+export interface QuestionsResult {
+  items: QuestionItem[];
+}
+
+export interface DigestResult {
+  summary: string;
+  keyPoints: string[];
+  terms: string[];
+}
+
 // 모든 관점이 공유하는 공통 규칙. 각 관점의 systemPrompt 맨 앞에 붙습니다.
 const COMMON_RULES = `다음 규칙을 반드시 지키세요.
 - 문서 원문에 없는 내용은 절대 추가하거나 추측하지 마세요.

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import {
@@ -16,12 +16,22 @@ import {
   PenLine,
   NotebookPen,
   MessageCircle,
+  UploadCloud,
+  Loader2,
+  AlertTriangle,
 } from 'lucide-react';
 import type { NodeId, CircuitGraphState } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
+import {
+  detectLens,
+  type LensId,
+  type DeadlinesResult,
+  type QuestionsResult,
+  type DigestResult,
+} from '@/lib/lenses';
 
 function getNodeMeta(id: NodeId) {
   return NODE_REGISTRY.find((n) => n.id === id);
@@ -135,6 +145,16 @@ export default function HomePage() {
   const [logs, setLogs] = useState<LogItem[]>([]);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isFilesLoaded, setIsFilesLoaded] = useState(false);
+
+  // 💡 [신규] "MCP 블록 매니저" 탭 — 문서를 올리면 /api/extract로 글자를 뽑고 detectLens로 관점을
+  // 자동으로 고른 뒤 회로도를 그리고 /api/analyze 결과를 보여줍니다. 뽑아낸 글자(lensText)는 화면에
+  // 들고 있다가, 아래 관점 전환 버튼을 누르면 재추출 없이 그 글자로 바로 다시 분석합니다.
+  const [lensFileName, setLensFileName] = useState<string | null>(null);
+  const [lensText, setLensText] = useState<string | null>(null);
+  const [lensId, setLensId] = useState<LensId | null>(null);
+  const [lensStage, setLensStage] = useState<'idle' | 'extracting' | 'analyzing' | 'done' | 'error'>('idle');
+  const [lensResult, setLensResult] = useState<DeadlinesResult | QuestionsResult | DigestResult | null>(null);
+  const [lensError, setLensError] = useState<string | null>(null);
 
   // 💡 [신규] 문서 업로드 이력 (DB 저장 — 기기가 바뀌어도 '나의 기록'에서 동일하게 보임)
   const [documentUploads, setDocumentUploads] = useState<DocumentUploadRecord[]>([]);
@@ -324,6 +344,91 @@ export default function HomePage() {
     }
   };
 
+  // 💡 [신규] "MCP 블록 매니저" 탭에서 업로드한 문서로 그리는 회로도 — this_doc(source) → 고른 관점(lens)
+  // 두 노드뿐인 최소 그래프입니다. 분석 중엔 lens 노드가 running, 끝나면 done/error로 바뀝니다.
+  const lensGraph: CircuitGraphState | null = useMemo(() => {
+    if (!lensId) return null;
+    return {
+      nodes: [
+        { id: 'this_doc', layer: 'source', status: 'done' },
+        { id: lensId, layer: 'lens', status: lensStage === 'analyzing' ? 'running' : lensStage === 'error' ? 'error' : 'done' },
+      ],
+      edges: [{ from: 'this_doc', to: lensId }],
+    };
+  }, [lensId, lensStage]);
+
+  // 💡 [신규] 고른 관점(lensId)에 맞춰 /api/analyze 결과(lensResult)를 렌더링합니다.
+  const renderLensResult = () => {
+    if (!lensId || !lensResult) return null;
+
+    if (lensId === 'deadlines') {
+      const result = lensResult as DeadlinesResult;
+      if (result.items.length === 0) {
+        return <p className="text-sm text-[#857C93]">기한이 있는 항목을 찾지 못했어요.</p>;
+      }
+      return (
+        <ul className="flex flex-col gap-3">
+          {result.items.map((item, i) => (
+            <li key={i} className="border border-[#2A2632] rounded-xl p-3.5">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="text-sm font-semibold text-[#F5F2F7]">{item.title}</span>
+                <span className="text-xs font-semibold text-[#F4679B] shrink-0">{item.date}</span>
+              </div>
+              <p className="text-xs text-[#AFA6BD] italic">&quot;{item.excerpt}&quot;</p>
+              <div className="mt-2 h-1 rounded-full bg-[#211E28] overflow-hidden">
+                <div
+                  className="h-full bg-[#6EE7B7]"
+                  style={{ width: `${Math.round(Math.max(0, Math.min(1, item.confidence)) * 100)}%` }}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    if (lensId === 'questions') {
+      const result = lensResult as QuestionsResult;
+      if (result.items.length === 0) {
+        return <p className="text-sm text-[#857C93]">예상 질문을 뽑지 못했어요.</p>;
+      }
+      return (
+        <ul className="flex flex-col gap-3">
+          {result.items.map((item, i) => (
+            <li key={i} className="border border-[#2A2632] rounded-xl p-3.5">
+              <p className="text-sm font-semibold text-[#F5F2F7] mb-1.5">Q. {item.question}</p>
+              <p className="text-xs text-[#F4679B] mb-1.5">약점: {item.targetWeakness}</p>
+              <p className="text-xs text-[#AFA6BD] leading-relaxed">A. {item.draftAnswer}</p>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    const result = lensResult as DigestResult;
+    return (
+      <div className="flex flex-col gap-4">
+        <p className="text-sm font-semibold text-[#F5F2F7]">{result.summary}</p>
+        {result.keyPoints.length > 0 && (
+          <ul className="flex flex-col gap-1.5 list-disc list-inside">
+            {result.keyPoints.map((point, i) => (
+              <li key={i} className="text-xs text-[#C9C0D6]">{point}</li>
+            ))}
+          </ul>
+        )}
+        {result.terms.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {result.terms.map((term, i) => (
+              <span key={i} className="bg-[#211E28] border border-[#322D3B] text-[#C9C0D6] text-[11px] px-2.5 py-1 rounded-full">
+                {term}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!command.trim() || !user) return;
@@ -494,6 +599,90 @@ export default function HomePage() {
       alert('이 파일 형식은 브라우저에서 직접 읽기 어렵습니다. 텍스트 직접 입력을 이용해 주세요.');
       e.target.value = '';
     }
+  };
+
+  // 💡 [신규] 이미 뽑아둔 lensText로 지정한 관점(lens)만 다시 분석합니다. 관점 전환 버튼과
+  // 최초 업로드 직후 자동 분석이 공유하는 경로라, 재추출 없이 항상 이 함수만 거칩니다.
+  const runLensAnalyze = async (text: string, lens: LensId, fileName?: string) => {
+    setLensId(lens);
+    setLensStage('analyzing');
+    setLensError(null);
+
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, fileName, lens }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '분석에 실패했어요.');
+
+      setLensResult(data.result);
+      setLensStage('done');
+    } catch (err: any) {
+      setLensError(err.message || '분석 중 오류가 발생했어요.');
+      setLensStage('error');
+    }
+  };
+
+  const handleLensFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('파일 용량이 너무 큽니다 (10MB 초과).');
+      e.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const result = event.target?.result as string;
+      const commaIndex = result.indexOf(',');
+      const base64Content = commaIndex !== -1 ? result.substring(commaIndex + 1) : result;
+      e.target.value = '';
+
+      setLensFileName(file.name);
+      setLensText(null);
+      setLensResult(null);
+      setLensError(null);
+      setLensStage('extracting');
+
+      try {
+        const extractRes = await fetch('/api/extract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileName: file.name, mimeType: file.type, content: base64Content }),
+        });
+        const extractData = await extractRes.json();
+        if (!extractRes.ok) throw new Error(extractData.error || '파일에서 글자를 뽑지 못했어요.');
+
+        const text: string = extractData.text || '';
+        setLensText(text);
+
+        const detected = detectLens(text, file.name);
+        await runLensAnalyze(text, detected, file.name);
+      } catch (err: any) {
+        setLensError(err.message || '파일 처리 중 오류가 발생했어요.');
+        setLensStage('error');
+      }
+    };
+
+    try {
+      reader.readAsDataURL(file);
+    } catch (err) {
+      alert('이 파일 형식은 브라우저에서 직접 읽기 어렵습니다.');
+      e.target.value = '';
+    }
+  };
+
+  const resetLensFlow = () => {
+    setLensFileName(null);
+    setLensText(null);
+    setLensId(null);
+    setLensStage('idle');
+    setLensResult(null);
+    setLensError(null);
   };
 
   // 💡 [신규] 마감일 추가 / 삭제 / D-day 계산
@@ -1269,7 +1458,101 @@ export default function HomePage() {
           )}
 
           {activeTab === 'mcp' && (
-            <CircuitBoard graph={graph} onNodeClick={handleNodeClick} />
+            <div>
+              <div className="mb-6">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                  MCP 블록 매니저
+                </h1>
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                  문서를 올리면 알맞은 관점을 자동으로 골라 회로도를 그리고, 결과를 보여드려요.
+                </p>
+              </div>
+
+              {!lensId ? (
+                <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-10 sm:p-16 flex flex-col items-center justify-center text-center gap-4">
+                  <label
+                    htmlFor="lens-file-input"
+                    className={`flex flex-col items-center gap-3 ${lensStage === 'extracting' ? 'cursor-wait opacity-70' : 'cursor-pointer'}`}
+                  >
+                    <span className="w-14 h-14 rounded-2xl bg-[#211E28] border border-[#322D3B] flex items-center justify-center">
+                      {lensStage === 'extracting' ? (
+                        <Loader2 className="w-6 h-6 text-[#F4679B] animate-spin" strokeWidth={2} />
+                      ) : (
+                        <UploadCloud className="w-6 h-6 text-[#F4679B]" strokeWidth={2} />
+                      )}
+                    </span>
+                    <span className="text-sm font-semibold text-[#F5F2F7]">
+                      {lensStage === 'extracting' ? '글자를 뽑는 중이에요...' : '문서를 올려서 시작하세요'}
+                    </span>
+                    <span className="text-xs text-[#857C93]">텍스트(.txt), 캘린더(.ics), CSV 파일을 지원해요</span>
+                    <input
+                      id="lens-file-input"
+                      type="file"
+                      className="hidden"
+                      onChange={handleLensFileUpload}
+                      disabled={lensStage === 'extracting'}
+                    />
+                  </label>
+
+                  {lensError && (
+                    <p className="flex items-center gap-1.5 text-xs text-[#FF7A6B]">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                      {lensError}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <CircuitBoard graph={lensGraph!} onNodeClick={handleNodeClick} />
+
+                  <div className="mt-6 bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-4 sm:p-6">
+                    {lensStage === 'analyzing' && (
+                      <div className="flex items-center gap-2 text-sm text-[#AFA6BD]">
+                        <Loader2 className="w-4 h-4 animate-spin text-[#F4679B]" strokeWidth={2} />
+                        분석하는 중이에요...
+                      </div>
+                    )}
+
+                    {lensStage === 'error' && (
+                      <p className="flex items-center gap-1.5 text-sm text-[#FF7A6B]">
+                        <AlertTriangle className="w-4 h-4 shrink-0" strokeWidth={2} />
+                        {lensError}
+                      </p>
+                    )}
+
+                    {lensStage === 'done' && renderLensResult()}
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    {(['deadlines', 'questions', 'digest'] as LensId[])
+                      .filter((id) => id !== lensId)
+                      .map((id) => {
+                        const meta = getNodeMeta(id);
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            disabled={lensStage === 'analyzing' || !lensText}
+                            onClick={() => lensText && runLensAnalyze(lensText, id, lensFileName ?? undefined)}
+                            className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-xs font-medium px-3.5 py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                          >
+                            {meta && <meta.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />}
+                            {meta?.label}(으)로 보기
+                          </button>
+                        );
+                      })}
+
+                    <button
+                      type="button"
+                      onClick={resetLensFlow}
+                      className="text-xs text-[#857C93] hover:text-[#C9C0D6] underline underline-offset-2 cursor-pointer ml-auto"
+                    >
+                      다른 문서 올리기
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           )}
 
           {activeTab === 'monitoring' && (
