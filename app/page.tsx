@@ -361,41 +361,43 @@ export default function HomePage() {
   }, [lensId, lensStage]);
 
   // 💡 [신규] 고른 관점(lensId)에 맞춰 /api/analyze 결과(lensResult)를 렌더링합니다.
+  // 💡 결과 카드 글자 크기·여백은 모바일 기준을 기본값으로 하고(폰에서 컴퓨터 기준 크기가 답답했음),
+  // sm: 이상에서만 기존 데스크톱 크기로 다시 줄입니다.
   const renderLensResult = () => {
     if (!lensId || !lensResult) return null;
 
     if (lensId === 'deadlines') {
       const result = lensResult as DeadlinesResult;
       if (result.items.length === 0) {
-        return <p className="text-sm text-[#857C93]">기한이 있는 항목을 찾지 못했어요.</p>;
+        return <p className="text-base sm:text-sm text-[#857C93]">기한이 있는 항목을 찾지 못했어요.</p>;
       }
       const allRegistered = result.items.every((_, i) => registeredDeadlineIndexes.has(i));
       return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4 sm:gap-3">
           <div className="flex justify-end">
             <button
               type="button"
               disabled={allRegistered}
               onClick={() => registerAllDeadlineItems(result.items)}
-              className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-xs font-semibold px-3.5 py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-[#322D3B] disabled:text-[#857C93] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-sm sm:text-xs font-semibold px-4 sm:px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-[#322D3B] disabled:text-[#857C93] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
             >
               {allRegistered ? '전체 등록됨' : '전체 등록'}
             </button>
           </div>
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-4 sm:gap-3">
             {result.items.map((item, i) => {
               const isRegistered = registeredDeadlineIndexes.has(i);
               return (
-                <li key={i} className="border border-[#2A2632] rounded-xl p-3.5">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-sm font-semibold text-[#F5F2F7]">{item.title}</span>
+                <li key={i} className="border border-[#2A2632] rounded-xl p-4 sm:p-3.5">
+                  <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-1">
+                    <span className="text-base sm:text-sm font-semibold text-[#F5F2F7]">{item.title}</span>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs font-semibold text-[#F4679B]">{item.date}</span>
+                      <span className="text-sm sm:text-xs font-semibold text-[#F4679B]">{item.date}</span>
                       <button
                         type="button"
                         disabled={isRegistered}
                         onClick={() => registerDeadlineItem(item, i)}
-                        className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                        className={`text-xs sm:text-[11px] font-semibold px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                           isRegistered
                             ? 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D] cursor-default'
                             : 'bg-[#211E28] hover:bg-[#2A2632] text-[#F4679B] border-[#5C3A4A] cursor-pointer'
@@ -405,8 +407,8 @@ export default function HomePage() {
                       </button>
                     </div>
                   </div>
-                  <p className="text-xs text-[#AFA6BD] italic">&quot;{item.excerpt}&quot;</p>
-                  <div className="mt-2 h-1 rounded-full bg-[#211E28] overflow-hidden">
+                  <p className="text-sm sm:text-xs text-[#AFA6BD] italic leading-relaxed">&quot;{item.excerpt}&quot;</p>
+                  <div className="mt-2.5 sm:mt-2 h-1.5 sm:h-1 rounded-full bg-[#211E28] overflow-hidden">
                     <div
                       className="h-full bg-[#6EE7B7]"
                       style={{ width: `${Math.round(Math.max(0, Math.min(1, item.confidence)) * 100)}%` }}
@@ -423,15 +425,15 @@ export default function HomePage() {
     if (lensId === 'questions') {
       const result = lensResult as QuestionsResult;
       if (result.items.length === 0) {
-        return <p className="text-sm text-[#857C93]">예상 질문을 뽑지 못했어요.</p>;
+        return <p className="text-base sm:text-sm text-[#857C93]">예상 질문을 뽑지 못했어요.</p>;
       }
       return (
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-4 sm:gap-3">
           {result.items.map((item, i) => (
-            <li key={i} className="border border-[#2A2632] rounded-xl p-3.5">
-              <p className="text-sm font-semibold text-[#F5F2F7] mb-1.5">Q. {item.question}</p>
-              <p className="text-xs text-[#F4679B] mb-1.5">약점: {item.targetWeakness}</p>
-              <p className="text-xs text-[#AFA6BD] leading-relaxed">A. {item.draftAnswer}</p>
+            <li key={i} className="border border-[#2A2632] rounded-xl p-4 sm:p-3.5">
+              <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] mb-2 sm:mb-1.5 leading-snug">Q. {item.question}</p>
+              <p className="text-sm sm:text-xs text-[#F4679B] mb-2 sm:mb-1.5 leading-relaxed">약점: {item.targetWeakness}</p>
+              <p className="text-sm sm:text-xs text-[#AFA6BD] leading-relaxed">A. {item.draftAnswer}</p>
             </li>
           ))}
         </ul>
@@ -440,19 +442,19 @@ export default function HomePage() {
 
     const result = lensResult as DigestResult;
     return (
-      <div className="flex flex-col gap-4">
-        <p className="text-sm font-semibold text-[#F5F2F7]">{result.summary}</p>
+      <div className="flex flex-col gap-5 sm:gap-4">
+        <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] leading-snug">{result.summary}</p>
         {result.keyPoints.length > 0 && (
-          <ul className="flex flex-col gap-1.5 list-disc list-inside">
+          <ul className="flex flex-col gap-2 sm:gap-1.5 list-disc list-inside">
             {result.keyPoints.map((point, i) => (
-              <li key={i} className="text-xs text-[#C9C0D6]">{point}</li>
+              <li key={i} className="text-sm sm:text-xs text-[#C9C0D6] leading-relaxed">{point}</li>
             ))}
           </ul>
         )}
         {result.terms.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2 sm:gap-1.5">
             {result.terms.map((term, i) => (
-              <span key={i} className="bg-[#211E28] border border-[#322D3B] text-[#C9C0D6] text-[11px] px-2.5 py-1 rounded-full">
+              <span key={i} className="bg-[#211E28] border border-[#322D3B] text-[#C9C0D6] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
                 {term}
               </span>
             ))}
@@ -719,6 +721,38 @@ export default function HomePage() {
     setLensError(null);
     setRegisteredDeadlineIndexes(new Set());
   };
+
+  // 💡 [신규] 관점 전환 버튼 + "다른 문서 올리기" — 데스크톱에서는 결과 카드 아래 그대로,
+  // 모바일에서는 엄지가 닿는 화면 하단 고정 바에도 같은 버튼을 띄웁니다(둘 다 같은 상태를 공유).
+  const lensActionsRow = lensId && (
+    <div className="flex flex-wrap items-center gap-2">
+      {(['deadlines', 'questions', 'digest'] as LensId[])
+        .filter((id) => id !== lensId)
+        .map((id) => {
+          const meta = getNodeMeta(id);
+          return (
+            <button
+              key={id}
+              type="button"
+              disabled={lensStage === 'analyzing' || !lensText}
+              onClick={() => lensText && runLensAnalyze(lensText, id, lensFileName ?? undefined)}
+              className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-[13px] sm:text-xs font-medium px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+            >
+              {meta && <meta.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />}
+              {meta?.label}(으)로 보기
+            </button>
+          );
+        })}
+
+      <button
+        type="button"
+        onClick={resetLensFlow}
+        className="text-[13px] sm:text-xs text-[#857C93] hover:text-[#C9C0D6] underline underline-offset-2 cursor-pointer sm:ml-auto"
+      >
+        다른 문서 올리기
+      </button>
+    </div>
+  );
 
   // 💡 [신규] 마감일 추가 / 삭제 / D-day 계산
   const handleAddDeadline = (e: React.FormEvent) => {
@@ -1445,101 +1479,113 @@ export default function HomePage() {
           )}
 
           {activeTab === 'mcp' && (
-            <div>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  MCP 블록 매니저
-                </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  문서를 올리면 알맞은 관점을 자동으로 골라 회로도를 그리고, 결과를 보여드려요.
-                </p>
+            <>
+              {/* 모바일에서 하단 고정 액션 바에 콘텐츠가 가려지지 않도록 여백을 둡니다. */}
+              <div className="pb-24 sm:pb-0">
+                <div className="mb-6">
+                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                    MCP 블록 매니저
+                  </h1>
+                  <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                    문서를 올리면 알맞은 관점을 자동으로 골라 회로도를 그리고, 결과를 보여드려요.
+                  </p>
+                </div>
+
+                {!lensId ? (
+                  <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-8 sm:p-16 flex flex-col items-center justify-center text-center gap-4 min-h-[50vh] sm:min-h-0">
+                    <label
+                      htmlFor="lens-file-input"
+                      className={`flex flex-col items-center gap-3 ${lensStage === 'extracting' ? 'cursor-wait opacity-70' : 'cursor-pointer'}`}
+                    >
+                      <span className="w-16 h-16 sm:w-14 sm:h-14 rounded-2xl bg-[#211E28] border border-[#322D3B] flex items-center justify-center">
+                        {lensStage === 'extracting' ? (
+                          <Loader2 className="w-7 h-7 sm:w-6 sm:h-6 text-[#F4679B] animate-spin" strokeWidth={2} />
+                        ) : (
+                          <UploadCloud className="w-7 h-7 sm:w-6 sm:h-6 text-[#F4679B]" strokeWidth={2} />
+                        )}
+                      </span>
+                      <span className="text-base sm:text-sm font-semibold text-[#F5F2F7]">
+                        {lensStage === 'extracting' ? '글자를 뽑는 중이에요...' : '문서를 올려서 시작하세요'}
+                      </span>
+                      <span className="text-sm sm:text-xs text-[#857C93]">텍스트(.txt), 캘린더(.ics), CSV 파일을 지원해요</span>
+                      <input
+                        id="lens-file-input"
+                        type="file"
+                        className="hidden"
+                        onChange={handleLensFileUpload}
+                        disabled={lensStage === 'extracting'}
+                      />
+                    </label>
+
+                    {lensError && (
+                      <p className="flex items-center gap-1.5 text-sm sm:text-xs text-[#FF7A6B]">
+                        <AlertTriangle className="w-4 h-4 sm:w-3.5 sm:h-3.5 shrink-0" strokeWidth={2} />
+                        {lensError}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <CircuitBoard graph={lensGraph!} onNodeClick={handleNodeClick} />
+
+                    <div className="mt-6 bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-5 sm:p-6">
+                      {lensStage === 'analyzing' && (
+                        <div className="flex items-center gap-2 text-base sm:text-sm text-[#AFA6BD]">
+                          <Loader2 className="w-5 h-5 sm:w-4 sm:h-4 animate-spin text-[#F4679B]" strokeWidth={2} />
+                          분석하는 중이에요...
+                        </div>
+                      )}
+
+                      {lensStage === 'error' && (
+                        <p className="flex items-center gap-1.5 text-base sm:text-sm text-[#FF7A6B]">
+                          <AlertTriangle className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" strokeWidth={2} />
+                          {lensError}
+                        </p>
+                      )}
+
+                      {lensStage === 'done' && renderLensResult()}
+                    </div>
+
+                    {/* 데스크톱: 결과 카드 바로 아래에 인라인으로 표시 (모바일용은 하단 고정 바로 따로 렌더링) */}
+                    <div className="hidden sm:block mt-4">{lensActionsRow}</div>
+                  </>
+                )}
               </div>
 
-              {!lensId ? (
-                <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-10 sm:p-16 flex flex-col items-center justify-center text-center gap-4">
+              {/* 💡 모바일 전용 하단 고정 액션 바 — 엄지가 자연스럽게 닿는 화면 아래쪽에 핵심 동작(업로드,
+                  관점 전환, 다른 문서 올리기)을 항상 띄워둡니다. 위쪽까지 스크롤하거나 손을 뻗을 필요가 없게. */}
+              <div
+                className="sm:hidden fixed bottom-0 inset-x-0 z-30 bg-[#15131A]/95 backdrop-blur border-t border-[#322D3B] px-4 pt-3"
+                style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+              >
+                {!lensId ? (
                   <label
-                    htmlFor="lens-file-input"
-                    className={`flex flex-col items-center gap-3 ${lensStage === 'extracting' ? 'cursor-wait opacity-70' : 'cursor-pointer'}`}
+                    htmlFor="lens-file-input-mobile"
+                    className={`flex items-center justify-center gap-2 w-full rounded-xl px-4 py-3.5 text-base font-semibold transition-colors ${
+                      lensStage === 'extracting'
+                        ? 'bg-[#211E28] text-[#857C93] cursor-wait'
+                        : 'bg-[#F4679B] text-white cursor-pointer active:bg-[#D1477F]'
+                    }`}
                   >
-                    <span className="w-14 h-14 rounded-2xl bg-[#211E28] border border-[#322D3B] flex items-center justify-center">
-                      {lensStage === 'extracting' ? (
-                        <Loader2 className="w-6 h-6 text-[#F4679B] animate-spin" strokeWidth={2} />
-                      ) : (
-                        <UploadCloud className="w-6 h-6 text-[#F4679B]" strokeWidth={2} />
-                      )}
-                    </span>
-                    <span className="text-sm font-semibold text-[#F5F2F7]">
-                      {lensStage === 'extracting' ? '글자를 뽑는 중이에요...' : '문서를 올려서 시작하세요'}
-                    </span>
-                    <span className="text-xs text-[#857C93]">텍스트(.txt), 캘린더(.ics), CSV 파일을 지원해요</span>
+                    {lensStage === 'extracting' ? (
+                      <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
+                    ) : (
+                      <UploadCloud className="w-5 h-5" strokeWidth={2} />
+                    )}
+                    {lensStage === 'extracting' ? '글자를 뽑는 중이에요...' : '문서 올리기'}
                     <input
-                      id="lens-file-input"
+                      id="lens-file-input-mobile"
                       type="file"
                       className="hidden"
                       onChange={handleLensFileUpload}
                       disabled={lensStage === 'extracting'}
                     />
                   </label>
-
-                  {lensError && (
-                    <p className="flex items-center gap-1.5 text-xs text-[#FF7A6B]">
-                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
-                      {lensError}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <CircuitBoard graph={lensGraph!} onNodeClick={handleNodeClick} />
-
-                  <div className="mt-6 bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-4 sm:p-6">
-                    {lensStage === 'analyzing' && (
-                      <div className="flex items-center gap-2 text-sm text-[#AFA6BD]">
-                        <Loader2 className="w-4 h-4 animate-spin text-[#F4679B]" strokeWidth={2} />
-                        분석하는 중이에요...
-                      </div>
-                    )}
-
-                    {lensStage === 'error' && (
-                      <p className="flex items-center gap-1.5 text-sm text-[#FF7A6B]">
-                        <AlertTriangle className="w-4 h-4 shrink-0" strokeWidth={2} />
-                        {lensError}
-                      </p>
-                    )}
-
-                    {lensStage === 'done' && renderLensResult()}
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    {(['deadlines', 'questions', 'digest'] as LensId[])
-                      .filter((id) => id !== lensId)
-                      .map((id) => {
-                        const meta = getNodeMeta(id);
-                        return (
-                          <button
-                            key={id}
-                            type="button"
-                            disabled={lensStage === 'analyzing' || !lensText}
-                            onClick={() => lensText && runLensAnalyze(lensText, id, lensFileName ?? undefined)}
-                            className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-xs font-medium px-3.5 py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                          >
-                            {meta && <meta.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />}
-                            {meta?.label}(으)로 보기
-                          </button>
-                        );
-                      })}
-
-                    <button
-                      type="button"
-                      onClick={resetLensFlow}
-                      className="text-xs text-[#857C93] hover:text-[#C9C0D6] underline underline-offset-2 cursor-pointer ml-auto"
-                    >
-                      다른 문서 올리기
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+                ) : (
+                  lensActionsRow
+                )}
+              </div>
+            </>
           )}
 
           {activeTab === 'monitoring' && (
