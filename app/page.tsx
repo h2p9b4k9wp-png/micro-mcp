@@ -19,6 +19,9 @@ import {
   UploadCloud,
   Loader2,
   AlertTriangle,
+  Paperclip,
+  ImageIcon,
+  X,
 } from 'lucide-react';
 import type { NodeId, CircuitGraphState } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
@@ -71,6 +74,18 @@ interface Deadline {
   title: string;
   course: string;
   dueAt: string; // datetime-local 문자열
+}
+
+// 💡 [신규] "물어보기" 채팅창에서 첨부한 파일/사진 — 대화(세션) 동안 계속 참조되도록 상태로 들고 있습니다.
+// 텍스트 파일은 /api/extract로 미리 뽑아둔 글자(text)를, 사진은 GPT-4.1 mini 비전에 바로 보낼
+// base64 데이터 URL(dataUrl)을 들고 있습니다.
+interface ChatAttachment {
+  id: string;
+  name: string;
+  kind: 'text' | 'image';
+  text?: string;
+  mimeType?: string;
+  dataUrl?: string;
 }
 
 // 💡 [신규] '나의 기록' 대시보드가 기기와 무관하게 일관되게 보이도록, 파일 업로드 이력을 DB(document_uploads)에 누적 기록합니다.
@@ -127,6 +142,12 @@ export default function HomePage() {
   const [command, setCommand] = useState('');
   const [streamingLog, setStreamingLog] = useState(IDLE_CONSOLE_MESSAGE);
   const [isExecuting, setIsExecuting] = useState(false);
+
+  // 💡 [신규] 물어보기 채팅창 첨부 — 이 대화(세션) 동안 계속 참조되고, 매번 다시 올릴 필요 없음.
+  const [chatAttachments, setChatAttachments] = useState<ChatAttachment[]>([]);
+  const [isAttachingChatFile, setIsAttachingChatFile] = useState(false);
+  const [isDraggingOverChat, setIsDraggingOverChat] = useState(false);
+
   const [activeTab, setActiveTab] = useState('workspace');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -464,6 +485,87 @@ export default function HomePage() {
     );
   };
 
+  // 💡 [신규] 물어보기 채팅창에 파일/사진 첨부. 사진은 GPT-4.1 mini 비전에 바로 넘길 base64를
+  // 들고 있고, 그 외 파일은 /api/extract로 글자만 미리 뽑아서 들고 있습니다(chatAttachments는
+  // 세션 동안 계속 남아 매 프롬프트에 같이 실려갑니다 — handleExecute 참고).
+  const handleChatAttachmentFiles = async (fileList: FileList | File[]) => {
+    const filesToAttach = Array.from(fileList);
+    if (filesToAttach.length === 0) return;
+
+    setIsAttachingChatFile(true);
+    try {
+      for (const file of filesToAttach) {
+        if (file.size > 10 * 1024 * 1024) {
+          alert(`"${file.name}"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.`);
+          continue;
+        }
+
+        const dataUrl: string = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error('파일을 읽는 중 문제가 발생했어요.'));
+          reader.readAsDataURL(file);
+        });
+
+        const isImage = file.type.startsWith('image/');
+        const commaIndex = dataUrl.indexOf(',');
+        const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
+
+        if (isImage) {
+          setChatAttachments(prev => [
+            ...prev,
+            { id: `${Date.now()}-${file.name}`, name: file.name, kind: 'image', mimeType: file.type, dataUrl },
+          ]);
+          continue;
+        }
+
+        try {
+          const res = await fetch('/api/extract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileName: file.name,
+              mimeType: file.type || 'application/octet-stream',
+              content: base64Content,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            alert(`"${file.name}"에서 글자를 뽑지 못했어요: ${data.error}`);
+            continue;
+          }
+          setChatAttachments(prev => [
+            ...prev,
+            { id: `${Date.now()}-${file.name}`, name: file.name, kind: 'text', text: data.text || '' },
+          ]);
+        } catch (err: any) {
+          alert(`"${file.name}" 처리 중 오류가 발생했어요: ${err.message || err}`);
+        }
+      }
+    } finally {
+      setIsAttachingChatFile(false);
+    }
+  };
+
+  const handleChatAttachInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleChatAttachmentFiles(e.target.files);
+    }
+    e.target.value = '';
+  };
+
+  const handleChatDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingOverChat(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleChatAttachmentFiles(e.dataTransfer.files);
+    }
+  };
+
+  const removeChatAttachment = (id: string) => {
+    setChatAttachments(prev => prev.filter(a => a.id !== id));
+  };
+
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!command.trim() || !user) return;
@@ -492,6 +594,7 @@ export default function HomePage() {
           useWebSearch: false,
           files,
           deadlines,
+          chatAttachments,
           token
         }),
       });
@@ -1079,7 +1182,14 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-4 sm:p-6 mb-6 shadow-sm">
+              <div
+                onDragOver={(e) => { e.preventDefault(); setIsDraggingOverChat(true); }}
+                onDragLeave={() => setIsDraggingOverChat(false)}
+                onDrop={handleChatDrop}
+                className={`bg-[#211E28] rounded-2xl border p-4 sm:p-6 mb-6 shadow-sm transition-colors ${
+                  isDraggingOverChat ? 'border-[#F4679B] bg-[#2A1F26]' : 'border-[#322D3B]'
+                }`}
+              >
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                   <div className="text-sm font-semibold text-[#F5F2F7]">
                     AI 프롬프트 전송
@@ -1090,7 +1200,54 @@ export default function HomePage() {
                   </div>
                 </div>
 
+                {chatAttachments.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {chatAttachments.map((a) => (
+                      <span
+                        key={a.id}
+                        className="inline-flex items-center gap-1.5 bg-[#15131A] border border-[#322D3B] text-[#C9C0D6] text-xs pl-2.5 pr-1.5 py-1.5 rounded-full max-w-[220px]"
+                      >
+                        {a.kind === 'image' ? (
+                          <ImageIcon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />
+                        ) : (
+                          <FileText className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />
+                        )}
+                        <span className="truncate">{a.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeChatAttachment(a.id)}
+                          aria-label={`${a.name} 첨부 삭제`}
+                          className="shrink-0 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[#2A2632] text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+                        >
+                          <X className="w-3 h-3" strokeWidth={2.5} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 <form onSubmit={handleExecute} className="flex flex-col sm:flex-row gap-3">
+                  <label
+                    className={`shrink-0 flex items-center justify-center w-11 sm:w-auto sm:px-3.5 h-11 sm:h-auto rounded-lg border transition-colors ${
+                      isAttachingChatFile
+                        ? 'bg-[#15131A] border-[#322D3B] text-[#857C93] cursor-wait'
+                        : 'bg-[#211E28] hover:bg-[#2A2632] border-[#423B4C] text-[#C9C0D6] hover:text-[#F5F2F7] cursor-pointer'
+                    }`}
+                    aria-label="파일/사진 첨부"
+                  >
+                    {isAttachingChatFile ? (
+                      <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
+                    ) : (
+                      <Paperclip className="w-4 h-4" strokeWidth={2} />
+                    )}
+                    <input
+                      type="file"
+                      multiple
+                      className="hidden"
+                      onChange={handleChatAttachInputChange}
+                      disabled={isAttachingChatFile}
+                    />
+                  </label>
                   <input
                     ref={commandInputRef}
                     type="text"
@@ -1107,6 +1264,9 @@ export default function HomePage() {
                     {isExecuting ? '전송 중...' : '프롬프트 전송'}
                   </button>
                 </form>
+                <p className="text-[11px] text-[#857C93] mt-2">
+                  파일이나 사진을 여기로 끌어다 놓아도 첨부돼요. 첨부한 내용은 이 대화 동안 계속 참조돼요.
+                </p>
               </div>
 
               <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] overflow-hidden shadow-sm">
