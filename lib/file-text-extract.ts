@@ -136,6 +136,43 @@ async function extractTextFromHwp(buffer: Buffer): Promise<string> {
   return parts.join('\n\n');
 }
 
+// PARA_TEXT 안의 제어 문자는 종류에 따라 차지하는 UTF-16 코드유닛 길이가 다릅니다 — 문자 하나만
+// 지우면 나머지가 쓰레기 텍스트로 남으므로, 종류별로 정해진 길이만큼 통째로 건너뜁니다.
+// 1글자 차지: 0, 10, 13, 24~31 / 8글자 차지: 1~3, 11, 12, 14~18(확장), 4~9, 19, 20(인라인)
+const CONTROL_ONE_UNIT = new Set([0, 10, 13, 24, 25, 26, 27, 28, 29, 30, 31]);
+const CONTROL_EIGHT_UNIT = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 20]);
+// 11 = 표/그림 등 개체 앵커 — 이 제어 문자(8유닛) 뒤가 표가 끝나는 자리라, 줄바꿈을 넣습니다.
+const TABLE_OBJECT_CONTROL_CODE = 11;
+
+// PARA_TEXT 페이로드를 UTF-16 코드유닛 단위로 순회하며 제어 문자를 종류별 길이만큼 건너뛰고,
+// 남은 코드유닛만 모아 문자열로 복원합니다.
+function decodeParaText(payload: Buffer): string {
+  const unitCount = Math.floor(payload.length / 2);
+  const kept: number[] = [];
+
+  let i = 0;
+  while (i < unitCount) {
+    const code = payload.readUInt16LE(i * 2);
+
+    if (CONTROL_EIGHT_UNIT.has(code)) {
+      if (code === TABLE_OBJECT_CONTROL_CODE) kept.push(0x0a); // 표가 끝나는 자리 — 줄바꿈
+      i += 8;
+      continue;
+    }
+    if (CONTROL_ONE_UNIT.has(code) || code <= 0x1f) {
+      i += 1; // 목록에 없는 예약된 제어 코드도 안전하게 1유닛만 건너뜀
+      continue;
+    }
+
+    kept.push(code);
+    i += 1;
+  }
+
+  const out = Buffer.alloc(kept.length * 2);
+  kept.forEach((code, idx) => out.writeUInt16LE(code, idx * 2));
+  return out.toString('utf16le');
+}
+
 // 레코드 스트림을 순회하며 HWPTAG_PARA_TEXT(67) 레코드만 UTF-16LE로 디코딩합니다.
 // 레코드 헤더(LE uint32): bit0-9 태그, bit10-19 레벨, bit20-31 크기(0xFFF면 다음 4바이트가 실제 크기).
 function extractParaTextRecords(buffer: Buffer): string {
@@ -157,13 +194,7 @@ function extractParaTextRecords(buffer: Buffer): string {
 
     if (tagId === HWPTAG_PARA_TEXT) {
       const payload = buffer.subarray(offset, offset + size);
-      const text = Array.from(payload.toString('utf16le'))
-        .filter((ch) => {
-          const code = ch.codePointAt(0) ?? 0;
-          return code > 0x1f; // 제어 문자(0x00~0x1F)는 걸러냄
-        })
-        .join('');
-      paragraphs.push(text);
+      paragraphs.push(decodeParaText(payload));
     }
 
     offset += size;
