@@ -333,16 +333,6 @@ export default function HomePage() {
     setCommand('');
     setDetectedActionItems([]);
 
-    // 💡 [신규] 예전 5개 블록 토글은 새 9노드 파이프라인 모델과 1:1로 대응되지 않습니다(이름이 같은
-    // 'deadlines'조차 의미가 다릅니다 — 이제는 "AI 마감일 컨텍스트 포함 여부"가 아니라 lens 노드).
-    // 이번 단계는 UI 전환만 다루고 실행 로직은 건드리지 않기로 해서, 그래프를 실제 실행 컨텍스트에
-    // 연결하는 작업은 다음 단계로 미루고 일단 전부 비활성으로 둡니다.
-    const isFileActive = false;
-    const isSearchActive = false;
-    const isDeadlineActive = false;
-    const isWritingActive = false;
-    const isMeetingNotesActive = false;
-
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
 
@@ -357,13 +347,11 @@ export default function HomePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: currentCommand,
-          isSearchActive,
-          isFileActive,
-          isDeadlineActive,
-          isWritingActive,
-          isMeetingNotesActive,
-          files: isFileActive ? files : [],
-          deadlines: isDeadlineActive ? deadlines : [],
+          // 💡 [원칙] 첨부 파일·마감일은 읽기 능력이라 토글하지 않고 항상 보냅니다.
+          // 웹 검색만 비용·지연이 커서 명시적 opt-in — 지금은 켜는 UI가 없어 기본값 false로 보냅니다.
+          useWebSearch: false,
+          files,
+          deadlines,
           token
         }),
       });
