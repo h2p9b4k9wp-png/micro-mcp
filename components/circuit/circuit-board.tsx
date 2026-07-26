@@ -23,7 +23,7 @@ interface CircuitBoardProps {
 type Orientation = 'horizontal' | 'vertical';
 
 const LAYERS: NodeLayer[] = ['source', 'lens', 'action'];
-const LAYER_TITLES: Record<NodeLayer, string> = { source: '입력', lens: '관점', action: '결과' };
+const LAYER_TITLES: Record<NodeLayer, string> = { source: '파일', lens: '분석', action: '결과' };
 const edgeKey = (edge: GraphEdge) => `${edge.from}->${edge.to}`;
 
 function getNodeMeta(id: NodeId) {
@@ -241,16 +241,6 @@ export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-          MCP 블록 매니저
-        </h1>
-        <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-          입력 → 관점 → 결과 순서로 흐르는 파이프라인이에요. 노드를 누르면 자세히 볼 수 있어요.
-          손가락으로 확대·축소·이동할 수 있어요.
-        </p>
-      </div>
-
       {/* 좁은 화면(모바일): 위→아래로 흐르는 세로 배치 + 핀치 확대/축소·드래그 이동 */}
       <div className="sm:hidden bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 mb-6 shadow-sm">
         <PannableCanvas>{renderDiagram('vertical')}</PannableCanvas>

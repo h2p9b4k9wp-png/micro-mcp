@@ -948,12 +948,12 @@ export default function HomePage() {
   const etcFileCount = fileFormatCounts['etc'] || 0;
 
   const NAV_ITEMS = [
-    { id: 'workspace', label: '워크스페이스', icon: Sparkles },
+    { id: 'workspace', label: '물어보기', icon: Sparkles },
     { id: 'records', label: '나의 기록', icon: Archive },
-    { id: 'deadlines', label: '마감일 매니저', icon: AlarmClock },
-    { id: 'mcp', label: 'MCP 블록 매니저', icon: Puzzle },
-    { id: 'monitoring', label: '모니터링 & 파일', icon: LineChart },
-    { id: 'logs', label: 'DB 연동 로그', icon: ScrollText },
+    { id: 'deadlines', label: '마감일', icon: AlarmClock },
+    { id: 'mcp', label: '파일 분석', icon: Puzzle },
+    { id: 'monitoring', label: '내 파일', icon: LineChart },
+    { id: 'logs', label: '지난 대화', icon: ScrollText },
   ];
 
   if (loading) {
@@ -1308,7 +1308,7 @@ export default function HomePage() {
                       onClick={() => setActiveTab('mcp')}
                       className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-xs font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                     >
-                      회로도 탭으로 가기
+                      파일 분석 탭으로 가기
                     </button>
                   </div>
                 ) : (
@@ -1484,10 +1484,10 @@ export default function HomePage() {
               <div className="pb-24 sm:pb-0">
                 <div className="mb-6">
                   <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                    MCP 블록 매니저
+                    파일 분석
                   </h1>
                   <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                    문서를 올리면 알맞은 관점을 자동으로 골라 회로도를 그리고, 결과를 보여드려요.
+                    파일을 올리면 알아서 읽고 정리해드려요.
                   </p>
                 </div>
 
@@ -1672,7 +1672,7 @@ export default function HomePage() {
               <div className="flex flex-col gap-3">
                 {logs.length === 0 && (
                   <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
-                    저장된 로그가 없습니다. 워크스페이스에서 프롬프트를 전송해 보세요!
+                    저장된 대화가 없습니다. 물어보기에서 질문을 보내보세요!
                   </div>
                 )}
                 {logs.map((log) => {
