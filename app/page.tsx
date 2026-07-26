@@ -369,7 +369,7 @@ export default function HomePage() {
     if (lensId === 'deadlines') {
       const result = lensResult as DeadlinesResult;
       if (result.items.length === 0) {
-        return <p className="text-base sm:text-sm text-[#857C93]">기한이 있는 항목을 찾지 못했어요.</p>;
+        return <p className="text-base sm:text-sm text-[#C9C0D6] leading-relaxed">기한이 있는 항목을 찾지 못했어요.</p>;
       }
       const allRegistered = result.items.every((_, i) => registeredDeadlineIndexes.has(i));
       return (
@@ -379,7 +379,7 @@ export default function HomePage() {
               type="button"
               disabled={allRegistered}
               onClick={() => registerAllDeadlineItems(result.items)}
-              className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-sm sm:text-xs font-semibold px-4 sm:px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-[#322D3B] disabled:text-[#857C93] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              className="inline-flex items-center gap-1.5 bg-[#2A2632] hover:bg-[#332D3B] border border-[#5C3A4A] text-[#F4679B] text-sm sm:text-xs font-semibold px-4 sm:px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-[#332D3B] disabled:text-[#857C93] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
             >
               {allRegistered ? '전체 등록됨' : '전체 등록'}
             </button>
@@ -388,9 +388,9 @@ export default function HomePage() {
             {result.items.map((item, i) => {
               const isRegistered = registeredDeadlineIndexes.has(i);
               return (
-                <li key={i} className="border border-[#2A2632] rounded-xl p-4 sm:p-3.5">
+                <li key={i} className="border border-[#332D3B] rounded-xl p-4 sm:p-3.5">
                   <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-1">
-                    <span className="text-base sm:text-sm font-semibold text-[#F5F2F7]">{item.title}</span>
+                    <span className="text-base sm:text-sm font-semibold text-[#F5F2F7] leading-snug">{item.title}</span>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-sm sm:text-xs font-semibold text-[#F4679B]">{item.date}</span>
                       <button
@@ -400,15 +400,15 @@ export default function HomePage() {
                         className={`text-xs sm:text-[11px] font-semibold px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                           isRegistered
                             ? 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D] cursor-default'
-                            : 'bg-[#211E28] hover:bg-[#2A2632] text-[#F4679B] border-[#5C3A4A] cursor-pointer'
+                            : 'bg-[#2A2632] hover:bg-[#332D3B] text-[#F4679B] border-[#5C3A4A] cursor-pointer'
                         }`}
                       >
                         {isRegistered ? '등록됨' : '등록'}
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm sm:text-xs text-[#AFA6BD] italic leading-relaxed">&quot;{item.excerpt}&quot;</p>
-                  <div className="mt-2.5 sm:mt-2 h-1.5 sm:h-1 rounded-full bg-[#211E28] overflow-hidden">
+                  <p className="text-sm sm:text-xs text-[#E4DEEA] italic leading-loose">&quot;{item.excerpt}&quot;</p>
+                  <div className="mt-2.5 sm:mt-2 h-1.5 sm:h-1 rounded-full bg-[#2A2632] overflow-hidden">
                     <div
                       className="h-full bg-[#6EE7B7]"
                       style={{ width: `${Math.round(Math.max(0, Math.min(1, item.confidence)) * 100)}%` }}
@@ -425,15 +425,15 @@ export default function HomePage() {
     if (lensId === 'questions') {
       const result = lensResult as QuestionsResult;
       if (result.items.length === 0) {
-        return <p className="text-base sm:text-sm text-[#857C93]">예상 질문을 뽑지 못했어요.</p>;
+        return <p className="text-base sm:text-sm text-[#C9C0D6] leading-relaxed">예상 질문을 뽑지 못했어요.</p>;
       }
       return (
         <ul className="flex flex-col gap-4 sm:gap-3">
           {result.items.map((item, i) => (
-            <li key={i} className="border border-[#2A2632] rounded-xl p-4 sm:p-3.5">
-              <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] mb-2 sm:mb-1.5 leading-snug">Q. {item.question}</p>
-              <p className="text-sm sm:text-xs text-[#F4679B] mb-2 sm:mb-1.5 leading-relaxed">약점: {item.targetWeakness}</p>
-              <p className="text-sm sm:text-xs text-[#AFA6BD] leading-relaxed">A. {item.draftAnswer}</p>
+            <li key={i} className="border border-[#332D3B] rounded-xl p-4 sm:p-3.5">
+              <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] mb-2 sm:mb-1.5 leading-relaxed">Q. {item.question}</p>
+              <p className="text-sm sm:text-xs text-[#F4679B] mb-2 sm:mb-1.5 leading-loose">약점: {item.targetWeakness}</p>
+              <p className="text-sm sm:text-xs text-[#E4DEEA] leading-loose">A. {item.draftAnswer}</p>
             </li>
           ))}
         </ul>
@@ -443,18 +443,18 @@ export default function HomePage() {
     const result = lensResult as DigestResult;
     return (
       <div className="flex flex-col gap-5 sm:gap-4">
-        <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] leading-snug">{result.summary}</p>
+        <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] leading-relaxed">{result.summary}</p>
         {result.keyPoints.length > 0 && (
           <ul className="flex flex-col gap-2 sm:gap-1.5 list-disc list-inside">
             {result.keyPoints.map((point, i) => (
-              <li key={i} className="text-sm sm:text-xs text-[#C9C0D6] leading-relaxed">{point}</li>
+              <li key={i} className="text-sm sm:text-xs text-[#E4DEEA] leading-loose">{point}</li>
             ))}
           </ul>
         )}
         {result.terms.length > 0 && (
           <div className="flex flex-wrap gap-2 sm:gap-1.5">
             {result.terms.map((term, i) => (
-              <span key={i} className="bg-[#211E28] border border-[#322D3B] text-[#C9C0D6] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
+              <span key={i} className="bg-[#2A2632] border border-[#332D3B] text-[#E4DEEA] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
                 {term}
               </span>
             ))}
@@ -1528,9 +1528,9 @@ export default function HomePage() {
                   <>
                     <CircuitBoard graph={lensGraph!} onNodeClick={handleNodeClick} />
 
-                    <div className="mt-6 bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-5 sm:p-6">
+                    <div className="mt-6 bg-[#1C1922] rounded-2xl border border-[#332D3B] p-5 sm:p-6">
                       {lensStage === 'analyzing' && (
-                        <div className="flex items-center gap-2 text-base sm:text-sm text-[#AFA6BD]">
+                        <div className="flex items-center gap-2 text-base sm:text-sm text-[#C9C0D6]">
                           <Loader2 className="w-5 h-5 sm:w-4 sm:h-4 animate-spin text-[#F4679B]" strokeWidth={2} />
                           분석하는 중이에요...
                         </div>
