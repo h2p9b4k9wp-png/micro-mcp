@@ -23,9 +23,10 @@ There is no test suite configured in this repo.
 
 Almost all UI and state lives in one client component, [app/page.tsx](app/page.tsx) — tabs (workspace / deadlines / MCP blocks / monitoring / logs) are rendered conditionally from `activeTab` state rather than via routing. "MCP blocks" are just booleans (`isSearchActive`, `isFileActive`, `isDeadlineActive`, `isWritingActive`, `isMeetingNotesActive`) sent to the API, not a real plugin/tool-calling protocol. Block toggle state, uploaded files, and deadlines persist to `localStorage` (not the DB) and are re-sent with every prompt.
 
-The actual AI work happens server-side in two routes:
+The actual AI work happens server-side in a few routes:
 - [app/api/chat/route.ts](app/api/chat/route.ts) — main chat endpoint. Builds a single system prompt by concatenating: recent Supabase `logs` rows, the user's deadline list, parsed file contents, and (if search is active) live Tavily search results — then streams an OpenAI (`gpt-4.1-mini`) chat completion back as a raw text stream (`export const dynamic = 'force-dynamic'` so it isn't buffered). The "meeting notes" block asks the model to append a `<!--ACTION_ITEMS_JSON-->...<!--END_ACTION_ITEMS_JSON-->` sentinel block that the client parses out and turns into "add as deadline" suggestions — if you change this format, update the client-side regex in [app/page.tsx](app/page.tsx) to match.
-- [app/api/parse-deadlines/route.ts](app/api/parse-deadlines/route.ts) — takes an uploaded file (base64), asks OpenAI (`gpt-4.1-mini`, `response_format: json_object`) to extract `{events: [{title, course, dueAt}]}`. Currently only accepts text-like content (`.txt`/`.csv`/`.ics`/`text/*`); image/PDF deadline extraction is explicitly unsupported here (contrast with `/api/chat`, which does OCR/PDF parsing for the file-analysis block — the two routes intentionally have different file-type coverage).
+- [app/api/analyze/route.ts](app/api/analyze/route.ts) — takes `{text, fileName?, lens?}`, picks a lens from [lib/lenses.ts](lib/lenses.ts) (`deadlines`/`questions`/`digest`, auto-detected via `detectLens()` when `lens` is omitted), and calls OpenAI with Structured Outputs (`response_format: json_schema`, `strict: true`) to force the lens's JSON shape. Drives the "MCP 블록 매니저" (circuit) tab: uploading a document there calls `/api/extract` for text, `detectLens()` to pick a lens, then this route for the result.
+- [app/api/extract/route.ts](app/api/extract/route.ts) — takes an uploaded file (base64) and returns plain text, via the shared [lib/file-text-extract.ts](lib/file-text-extract.ts) (PDF via `unpdf`, `.docx` via `mammoth`, `.xlsx/.xls/.csv` via `xlsx`, `.pptx`/`.hwpx` via `jszip` + manual XML tag-stripping; legacy `.hwp` is explicitly rejected with a re-save prompt). This is the one file-reading implementation shared across routes that need plain extracted text — don't reintroduce a second copy of it.
 
 File parsing in `/api/chat` is dispatched by extension/mimetype: `.xlsx/.xls/.csv` → `xlsx`, `.hwp/.hwpx` → `@ohah/hwpjs`, `.pptx/.docx/.pdf` → `officeparser`, images → `tesseract.js` OCR (`eng`+`kor`). Legacy `.ppt`/`.doc` binary formats are explicitly rejected with a message asking users to re-save as `.pptx`/`.docx`.
 
@@ -48,7 +49,7 @@ Referenced tables (schema itself lives in Supabase, not in this repo): `logs` (`
 Required at runtime (not committed; see `.env.local` locally):
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — used client- and server-side
 - `SUPABASE_SERVICE_ROLE_KEY` — server-only, used by the `/api/v1/[username]/[slug]` route
-- `OPENAI_API_KEY` — required by both `/api/chat` and `/api/parse-deadlines` (model: `gpt-4.1-mini`); routes return a clean JSON error if missing rather than throwing
+- `OPENAI_API_KEY` — required by `/api/chat` and `/api/analyze` (model: `gpt-4.1-mini`); routes return a clean JSON error if missing rather than throwing
 - `TAVILY_API_KEY` — optional; if unset, the search block degrades gracefully (tells the model to say so rather than guess)
 
 ### PWA

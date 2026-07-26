@@ -29,6 +29,7 @@ import {
   detectLens,
   type LensId,
   type DeadlinesResult,
+  type DeadlineItem,
   type QuestionsResult,
   type DigestResult,
 } from '@/lib/lenses';
@@ -169,7 +170,9 @@ export default function HomePage() {
   const [newDeadlineTitle, setNewDeadlineTitle] = useState('');
   const [newDeadlineCourse, setNewDeadlineCourse] = useState('');
   const [newDeadlineDue, setNewDeadlineDue] = useState('');
-  const [isImportingDeadlines, setIsImportingDeadlines] = useState(false);
+
+  // 💡 [신규] 회로도("마감 뽑기" 관점) 결과에서 [등록]한 항목의 인덱스 — 새로 분석할 때마다 초기화됩니다.
+  const [registeredDeadlineIndexes, setRegisteredDeadlineIndexes] = useState<Set<number>>(new Set());
 
   // 💡 [신규] 회의·강의 노트 정리 블록이 감지한, 날짜가 있는 할 일 목록
   const [detectedActionItems, setDetectedActionItems] = useState<{ title: string; dueAt: string }[]>([]);
@@ -366,24 +369,54 @@ export default function HomePage() {
       if (result.items.length === 0) {
         return <p className="text-sm text-[#857C93]">기한이 있는 항목을 찾지 못했어요.</p>;
       }
+      const allRegistered = result.items.every((_, i) => registeredDeadlineIndexes.has(i));
       return (
-        <ul className="flex flex-col gap-3">
-          {result.items.map((item, i) => (
-            <li key={i} className="border border-[#2A2632] rounded-xl p-3.5">
-              <div className="flex items-center justify-between gap-2 mb-1">
-                <span className="text-sm font-semibold text-[#F5F2F7]">{item.title}</span>
-                <span className="text-xs font-semibold text-[#F4679B] shrink-0">{item.date}</span>
-              </div>
-              <p className="text-xs text-[#AFA6BD] italic">&quot;{item.excerpt}&quot;</p>
-              <div className="mt-2 h-1 rounded-full bg-[#211E28] overflow-hidden">
-                <div
-                  className="h-full bg-[#6EE7B7]"
-                  style={{ width: `${Math.round(Math.max(0, Math.min(1, item.confidence)) * 100)}%` }}
-                />
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              disabled={allRegistered}
+              onClick={() => registerAllDeadlineItems(result.items)}
+              className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-xs font-semibold px-3.5 py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-[#322D3B] disabled:text-[#857C93] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+            >
+              {allRegistered ? '전체 등록됨' : '전체 등록'}
+            </button>
+          </div>
+          <ul className="flex flex-col gap-3">
+            {result.items.map((item, i) => {
+              const isRegistered = registeredDeadlineIndexes.has(i);
+              return (
+                <li key={i} className="border border-[#2A2632] rounded-xl p-3.5">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-sm font-semibold text-[#F5F2F7]">{item.title}</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs font-semibold text-[#F4679B]">{item.date}</span>
+                      <button
+                        type="button"
+                        disabled={isRegistered}
+                        onClick={() => registerDeadlineItem(item, i)}
+                        className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                          isRegistered
+                            ? 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D] cursor-default'
+                            : 'bg-[#211E28] hover:bg-[#2A2632] text-[#F4679B] border-[#5C3A4A] cursor-pointer'
+                        }`}
+                      >
+                        {isRegistered ? '등록됨' : '등록'}
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#AFA6BD] italic">&quot;{item.excerpt}&quot;</p>
+                  <div className="mt-2 h-1 rounded-full bg-[#211E28] overflow-hidden">
+                    <div
+                      className="h-full bg-[#6EE7B7]"
+                      style={{ width: `${Math.round(Math.max(0, Math.min(1, item.confidence)) * 100)}%` }}
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       );
     }
 
@@ -607,6 +640,7 @@ export default function HomePage() {
     setLensId(lens);
     setLensStage('analyzing');
     setLensError(null);
+    setRegisteredDeadlineIndexes(new Set());
 
     try {
       const res = await fetch('/api/analyze', {
@@ -683,6 +717,7 @@ export default function HomePage() {
     setLensStage('idle');
     setLensResult(null);
     setLensError(null);
+    setRegisteredDeadlineIndexes(new Set());
   };
 
   // 💡 [신규] 마감일 추가 / 삭제 / D-day 계산
@@ -719,74 +754,48 @@ export default function HomePage() {
     setDetectedActionItems(prev => prev.filter(i => i !== item));
   };
 
-  // 💡 [신규] 어떤 파일이든(이미지, PDF, .ics, 캡처본 등) 업로드하면 AI가 알아서 일정을 찾아 정리해줍니다.
-  const handleDeadlineFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // 💡 [신규] 원문 날짜 문구(item.date)를 datetime-local 값으로 변환 시도 — 실패하면 null.
+  const tryParseDeadlineDate = (raw: string): string | null => {
+    const parsed = new Date(raw);
+    if (isNaN(parsed.getTime())) return null;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}T${pad(parsed.getHours())}:${pad(parsed.getMinutes())}`;
+  };
 
-    if (file.size > 10 * 1024 * 1024) {
-      alert('파일 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.');
-      e.target.value = '';
-      return;
-    }
+  // 원문 날짜를 못 알아들었을 때의 대체값(오늘 23:59) — 목록에서 바로 확인할 수 있도록 course에 원문을 남깁니다.
+  const fallbackDeadlineDueAt = (): string => {
+    const d = new Date();
+    d.setHours(23, 59, 0, 0);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const result = event.target?.result as string;
-      const commaIndex = result.indexOf(',');
-      const base64Content = commaIndex !== -1 ? result.substring(commaIndex + 1) : result;
+  const deadlineItemToDeadline = (item: DeadlineItem, index: number): Deadline => ({
+    id: `${Date.now()}-${index}`,
+    title: item.title,
+    course: `마감 뽑기 · 원문: "${item.date}"`,
+    dueAt: tryParseDeadlineDate(item.date) ?? fallbackDeadlineDueAt(),
+  });
 
-      setIsImportingDeadlines(true);
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token;
+  // 💡 [신규] 회로도 "마감 뽑기" 결과에서 항목 하나를 마감일 매니저에 등록 — 기존 마감일 저장 방식(setDeadlines)을 그대로 씁니다.
+  const registerDeadlineItem = (item: DeadlineItem, index: number) => {
+    if (registeredDeadlineIndexes.has(index)) return;
+    setDeadlines(prev => [...prev, deadlineItemToDeadline(item, index)]);
+    setRegisteredDeadlineIndexes(prev => new Set(prev).add(index));
+  };
 
-        const res = await fetch('/api/parse-deadlines', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fileName: file.name,
-            mimeType: file.type || 'application/octet-stream',
-            content: base64Content,
-            token,
-          }),
-        });
+  const registerAllDeadlineItems = (items: DeadlineItem[]) => {
+    const toRegister = items
+      .map((item, index) => ({ item, index }))
+      .filter(({ index }) => !registeredDeadlineIndexes.has(index));
+    if (toRegister.length === 0) return;
 
-        const data = await res.json();
-
-        if (!res.ok) {
-          alert(`가져오기 실패: ${data.error}`);
-          return;
-        }
-
-        if (!data.events || data.events.length === 0) {
-          alert('이 파일에서 일정을 찾지 못했어요. 날짜가 잘 보이는 파일로 다시 시도해보세요.');
-          return;
-        }
-
-        const imported: Deadline[] = data.events.map((ev: any, idx: number) => ({
-          id: `${Date.now()}-${idx}`,
-          title: ev.title || '제목 없음',
-          course: ev.course || '가져온 일정',
-          dueAt: ev.dueAt,
-        }));
-
-        setDeadlines(prev => [...prev, ...imported]);
-        alert(`${imported.length}개의 일정을 가져왔어요! 필요 없는 항목은 목록에서 삭제해주세요.`);
-      } catch (err: any) {
-        alert(`가져오기 중 오류가 발생했어요: ${err.message || err}`);
-      } finally {
-        setIsImportingDeadlines(false);
-        e.target.value = '';
-      }
-    };
-
-    try {
-      reader.readAsDataURL(file);
-    } catch (err) {
-      alert('파일을 읽는 중 문제가 발생했어요.');
-      e.target.value = '';
-    }
+    setDeadlines(prev => [...prev, ...toRegister.map(({ item, index }) => deadlineItemToDeadline(item, index))]);
+    setRegisteredDeadlineIndexes(prev => {
+      const next = new Set(prev);
+      toRegister.forEach(({ index }) => next.add(index));
+      return next;
+    });
   };
 
   // 시각은 무시하고 '달력 날짜' 차이로 계산합니다.
@@ -1258,8 +1267,15 @@ export default function HomePage() {
                 </div>
 
                 {deadlines.length === 0 ? (
-                  <div className="text-sm text-[#857C93] text-center py-6 bg-[#15131A] rounded-xl border border-[#322D3B]">
-                    아직 등록된 마감일이 없어요. 아래에서 첫 마감일을 추가하면 여기에 분포와 타임라인이 표시돼요.
+                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#15131A] rounded-xl border border-[#322D3B] flex flex-col items-center gap-3">
+                    <span>파일을 올려서 일정을 뽑아보세요</span>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('mcp')}
+                      className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-xs font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                    >
+                      회로도 탭으로 가기
+                    </button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1353,35 +1369,6 @@ export default function HomePage() {
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
-
-              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-4 shadow-sm">
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7]">파일 하나로 한 번에 가져오기</h3>
-                    <p className="text-xs text-[#AFA6BD] mt-1">캘린더 파일(.ics), 시간표 캡처, 학사일정 PDF 등 무엇이든 올리면 AI가 알아서 일정을 찾아 정리해요.</p>
-                  </div>
-                  <label className={`inline-flex px-4 py-2.5 rounded-lg text-sm font-semibold items-center gap-2 border transition-colors shrink-0 focus-within:ring-2 focus-within:ring-[#F4679B] ${
-                    isImportingDeadlines
-                      ? 'bg-[#15131A] text-[#857C93] border-[#322D3B] cursor-not-allowed'
-                      : 'bg-[#211E28] hover:bg-[#15131A] text-[#F4679B] border-[#5C3A4A] cursor-pointer'
-                  }`}>
-                    {isImportingDeadlines ? (
-                      <>
-                        <span className="w-3.5 h-3.5 border-2 border-[#423B4C] border-t-[#F4679B] rounded-full animate-spin" />
-                        <span>AI가 분석 중...</span>
-                      </>
-                    ) : (
-                      <span>파일 업로드</span>
-                    )}
-                    <input
-                      type="file"
-                      onChange={handleDeadlineFileUpload}
-                      disabled={isImportingDeadlines}
-                      className="hidden"
-                    />
-                  </label>
                 </div>
               </div>
 

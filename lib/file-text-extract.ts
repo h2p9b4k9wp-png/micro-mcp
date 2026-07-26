@@ -1,7 +1,6 @@
 import * as XLSX from 'xlsx';
 
-// 문서 파일(base64)에서 순수 텍스트만 뽑아내는 공용 함수입니다.
-// /api/extract, /api/parse-deadlines가 함께 사용합니다 — 파일 읽는 코드를 두 곳에 두지 않기 위함입니다.
+// 문서 파일(base64)에서 순수 텍스트만 뽑아내는 공용 함수입니다. /api/extract가 사용합니다.
 // (더 풍부한 처리가 필요한 /api/chat의 파일 분석 블록(OCR, HWP 등)은 이 함수와 별도로 유지됩니다.)
 
 export const MAX_EXTRACT_FILE_BYTES = 20 * 1024 * 1024;
