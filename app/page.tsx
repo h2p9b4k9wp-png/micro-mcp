@@ -232,6 +232,38 @@ function chunkText(text: string, maxChars = 1500): string[] {
   return chunks;
 }
 
+const CHAT_IMAGE_MAX_EDGE = 1568; // GPT-4.1 mini 비전이 내부적으로 다운스케일하는 기준과 맞춰, 그 이상은 보내봐야 비용만 늘고 품질 이득이 없습니다.
+
+// 💡 [신규] 폰으로 찍은 사진처럼 큰 이미지를 GPT-4.1 mini에 보내기 전에 긴 변 기준
+// CHAT_IMAGE_MAX_EDGE로 줄여서 base64 용량(=토큰 비용)을 낮춥니다. 이미 그보다 작으면(대부분의
+// 스크린샷) 원본 포맷을 그대로 유지 — 리사이즈 과정에서 JPEG로 다시 인코딩되면 투명 배경이 깨질
+// 수 있어서, 정말 큰 이미지만 다시 인코딩합니다. 디코딩 자체가 실패하면 원본을 그대로 씁니다.
+function resizeImageDataUrl(dataUrl: string, maxEdge = CHAT_IMAGE_MAX_EDGE): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const longEdge = Math.max(img.width, img.height);
+      if (longEdge <= maxEdge) {
+        resolve(dataUrl);
+        return;
+      }
+      const scale = maxEdge / longEdge;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(dataUrl);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
 // 자료 개수에 따라 분석 결과 위에 붙는 한 줄 — 개수가 많아질수록 신뢰도가 올라간다는 걸 보여줍니다.
 function getProfessorAnalysisFramingLine(count: number): string {
   if (count <= 1) return '자료 1개로 본 첫인상이에요';
@@ -252,6 +284,9 @@ export default function HomePage() {
   const [chatAttachments, setChatAttachments] = useState<ChatAttachment[]>([]);
   const [isAttachingChatFile, setIsAttachingChatFile] = useState(false);
   const [isDraggingOverChat, setIsDraggingOverChat] = useState(false);
+  // 💡 [신규] 웹 검색은 느리고 비용도 드니 기본은 꺼두고, 필요할 때만 사용자가 직접 켭니다
+  // (첨부 파일·마감일 같은 "읽기 능력"과 달리 유일하게 토글 가능한 기능 — handleExecute 참고).
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   const [activeTab, setActiveTab] = useState('workspace');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -721,9 +756,11 @@ export default function HomePage() {
         const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
 
         if (isImage) {
+          const resizedDataUrl = await resizeImageDataUrl(dataUrl);
+          const resizedMimeType = resizedDataUrl === dataUrl ? file.type : 'image/jpeg';
           setChatAttachments(prev => [
             ...prev,
-            { id: `${Date.now()}-${file.name}`, name: file.name, kind: 'image', mimeType: file.type, dataUrl },
+            { id: `${Date.now()}-${file.name}`, name: file.name, kind: 'image', mimeType: resizedMimeType, dataUrl: resizedDataUrl },
           ]);
           continue;
         }
@@ -1016,8 +1053,8 @@ export default function HomePage() {
         body: JSON.stringify({
           prompt: currentCommand,
           // 💡 [원칙] 첨부 파일·마감일은 읽기 능력이라 토글하지 않고 항상 보냅니다.
-          // 웹 검색만 비용·지연이 커서 명시적 opt-in — 지금은 켜는 UI가 없어 기본값 false로 보냅니다.
-          useWebSearch: false,
+          // 웹 검색만 비용·지연이 커서 명시적 opt-in — 입력창 옆 토글(isSearchActive)로 켭니다.
+          useWebSearch: isSearchActive,
           files,
           deadlines,
           chatAttachments,
@@ -1700,6 +1737,23 @@ export default function HomePage() {
                       disabled={isAttachingChatFile}
                     />
                   </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsSearchActive((prev) => !prev)}
+                    aria-pressed={isSearchActive}
+                    aria-label="웹 검색 켜기/끄기"
+                    title={isSearchActive ? '웹 검색 켜짐 — 느리고 비용이 들어요' : '웹 검색 꺼짐 — 최신 정보가 필요할 때 켜세요'}
+                    className={`shrink-0 flex items-center justify-center gap-1.5 w-11 sm:w-auto sm:px-3.5 h-11 sm:h-auto rounded-lg border transition-colors cursor-pointer ${
+                      isSearchActive
+                        ? 'bg-[#331F29] hover:bg-[#3D2733] border-[#F4679B] text-[#F4679B]'
+                        : 'bg-[#211E28] hover:bg-[#2A2632] border-[#423B4C] text-[#C9C0D6] hover:text-[#F5F2F7]'
+                    }`}
+                  >
+                    <Search className="w-4 h-4" strokeWidth={2} />
+                    <span className="hidden sm:inline text-xs font-semibold">
+                      웹 검색 {isSearchActive ? 'ON' : 'OFF'}
+                    </span>
+                  </button>
                   <input
                     ref={commandInputRef}
                     type="text"
