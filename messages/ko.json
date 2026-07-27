@@ -1,0 +1,19 @@
+{
+  "app": {
+    "loadingSession": "로딩 중..."
+  },
+  "nav": {
+    "workspace": "물어보기",
+    "records": "나의 기록",
+    "deadlines": "마감일",
+    "professors": "교수님",
+    "monitoring": "내 파일",
+    "logs": "지난 대화"
+  },
+  "common": {
+    "send": "프롬프트 전송",
+    "sending": "전송 중...",
+    "delete": "삭제",
+    "create": "만들기"
+  }
+}

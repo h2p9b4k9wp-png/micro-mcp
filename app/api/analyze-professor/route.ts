@@ -76,16 +76,23 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { documents, professor } = body as {
+    const { documents, professor, locale } = body as {
       documents?: { fileName: string; text: string; docType?: string }[];
       professor?: { school?: string | null; department?: string | null };
+      locale?: string;
     };
 
     if (!documents || documents.length === 0) {
       return NextResponse.json({ error: '분석할 자료가 없습니다.' }, { status: 400 });
     }
 
-    const combinedText = documents
+    // 💡 [신규] 답변 언어는 BASE_SYSTEM_PROMPT(고정 프리픽스)가 아니라 매 요청마다 달라지는 user
+    // 메시지 쪽에 넣습니다 — lib/lenses.ts COMMON_RULES와 같은 이유(캐싱 프리픽스 보존).
+    const languageDirective = locale === 'en'
+      ? '[Answer language: English — you must answer in English regardless of the documents\' language.]\n\n'
+      : '';
+
+    const combinedText = languageDirective + documents
       .map((doc) => {
         const typeLabel = DOC_TYPE_LABELS[doc.docType || ''] || '강의자료';
         return `[문서: ${doc.fileName}] [종류: ${typeLabel}]\n${doc.text}`;

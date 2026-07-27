@@ -30,6 +30,8 @@ import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
+import { LocaleSwitcher } from '@/components/locale-switcher';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   detectLens,
   type LensId,
@@ -305,6 +307,10 @@ function getProfessorAnalysisFramingLine(count: number): string {
 
 export default function HomePage() {
   const router = useRouter();
+  // 💡 [신규] 다국어 지원 스캐폴딩 — 지금은 사이드바 메뉴·전송 버튼·로딩 문구 등 핵심 UI 일부만
+  // 번역했고(messages/ko.json, en.json), 나머지 화면 문자열은 다음 단계에서 이어서 이관합니다.
+  const t = useTranslations();
+  const locale = useLocale();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('connecting');
@@ -919,6 +925,7 @@ export default function HomePage() {
         body: JSON.stringify({
           documents: docs.map(d => ({ fileName: d.file_name, text: d.content, docType: d.doc_type })),
           professor: professor ? { school: professor.school, department: professor.department } : undefined,
+          locale,
         }),
       });
       const data = await res.json();
@@ -1306,7 +1313,7 @@ export default function HomePage() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, fileName, lens }),
+        body: JSON.stringify({ text, fileName, lens, locale }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || '분석에 실패했어요.');
@@ -1610,12 +1617,12 @@ export default function HomePage() {
   const etcFileCount = fileFormatCounts['etc'] || 0;
 
   const NAV_ITEMS = [
-    { id: 'workspace', label: '물어보기', icon: Sparkles },
-    { id: 'records', label: '나의 기록', icon: Archive },
-    { id: 'deadlines', label: '마감일', icon: AlarmClock },
-    { id: 'professors', label: '교수님', icon: GraduationCap },
-    { id: 'monitoring', label: '내 파일', icon: LineChart },
-    { id: 'logs', label: '지난 대화', icon: ScrollText },
+    { id: 'workspace', label: t('nav.workspace'), icon: Sparkles },
+    { id: 'records', label: t('nav.records'), icon: Archive },
+    { id: 'deadlines', label: t('nav.deadlines'), icon: AlarmClock },
+    { id: 'professors', label: t('nav.professors'), icon: GraduationCap },
+    { id: 'monitoring', label: t('nav.monitoring'), icon: LineChart },
+    { id: 'logs', label: t('nav.logs'), icon: ScrollText },
   ];
 
   if (loading) {
@@ -1627,7 +1634,7 @@ export default function HomePage() {
         `}</style>
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-[3px] border-[#322D3B] border-t-[#F4679B] rounded-full animate-spin" />
-          <span className="text-sm text-[#AFA6BD]">로딩 중...</span>
+          <span className="text-sm text-[#AFA6BD]">{t('app.loadingSession')}</span>
         </div>
       </div>
     );
@@ -1684,9 +1691,12 @@ export default function HomePage() {
         w-full md:w-64 bg-[#211E28] border-r border-[#322D3B] flex-col shrink-0
         z-50
       `}>
-        <div className="hidden md:flex px-6 py-6 items-center gap-2.5 border-b border-[#322D3B] text-[#F4679B]">
-          <Logomark className="w-7 h-7" />
-          <span className="text-[16px] font-extrabold text-[#F5F2F7] tracking-tight">Micro-MCP</span>
+        <div className="hidden md:flex px-6 py-6 items-center justify-between border-b border-[#322D3B]">
+          <div className="flex items-center gap-2.5 text-[#F4679B]">
+            <Logomark className="w-7 h-7" />
+            <span className="text-[16px] font-extrabold text-[#F5F2F7] tracking-tight">Micro-MCP</span>
+          </div>
+          <LocaleSwitcher />
         </div>
         <div className="p-3 flex flex-col gap-1 flex-1">
           {NAV_ITEMS.map(item => (
@@ -1880,7 +1890,7 @@ export default function HomePage() {
                     disabled={isExecuting}
                     className="bg-[#F4679B] hover:bg-[#D1477F] text-white border-none rounded-lg px-6 py-3 font-semibold text-sm cursor-pointer disabled:opacity-50 transition-colors whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
                   >
-                    {isExecuting ? '전송 중...' : '프롬프트 전송'}
+                    {isExecuting ? t('common.sending') : t('common.send')}
                   </button>
                 </form>
                 <p className="text-[11px] text-[#857C93] mt-2">

@@ -1,0 +1,19 @@
+{
+  "app": {
+    "loadingSession": "Loading..."
+  },
+  "nav": {
+    "workspace": "Ask AI",
+    "records": "My Records",
+    "deadlines": "Deadlines",
+    "professors": "Professors",
+    "monitoring": "My Files",
+    "logs": "Past Conversations"
+  },
+  "common": {
+    "send": "Send Prompt",
+    "sending": "Sending...",
+    "delete": "Delete",
+    "create": "Create"
+  }
+}

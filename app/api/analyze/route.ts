@@ -12,10 +12,11 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { text, fileName, lens } = body as {
+    const { text, fileName, lens, locale } = body as {
       text?: string;
       fileName?: string;
       lens?: LensId;
+      locale?: string;
     };
 
     if (!text) {
@@ -26,6 +27,15 @@ export async function POST(req: Request) {
     const lensDef = LENSES[lensId];
 
     const openai = new OpenAI({ apiKey });
+
+    // 💡 [신규] 답변 언어는 lensDef.systemPrompt(COMMON_RULES 포함, 모든 요청에 동일한 고정 문자열
+    // — OpenAI가 프롬프트 캐싱하는 부분)에 넣지 않고, 요청마다 어차피 매번 달라지는 user 메시지
+    // 앞에 붙입니다. 고정 프리픽스에 넣으면 언어가 바뀔 때마다(혹은 로케일별로) 캐시가 갈라져서
+    // 캐싱 이득이 사라집니다.
+    const languageDirective = locale === 'en'
+      ? '[Answer language: English — you must answer in English regardless of the document\'s language.]\n\n'
+      : '';
+    const userContent = `${languageDirective}${text}`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4.1-mini',
@@ -40,7 +50,7 @@ export async function POST(req: Request) {
       },
       messages: [
         { role: 'system', content: lensDef.systemPrompt },
-        { role: 'user', content: text },
+        { role: 'user', content: userContent },
       ],
     });
 
