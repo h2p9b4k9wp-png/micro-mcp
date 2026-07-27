@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import * as XLSX from 'xlsx'; // 💡 엑셀 완벽 분석을 위한 라이브러리
-import { toMarkdown } from '@ohah/hwpjs'; // 💡 HWP/HWPX 문서 분석을 위한 라이브러리
+import { toMarkdown } from '@ohah/hwpjs'; // 💡 HWP(.hwp) 문서 분석을 위한 라이브러리 — CFB(복합 문서) 컨테이너 전용, .hwpx(zip)는 못 읽음
 import { OfficeParser } from 'officeparser'; // 💡 PPT/워드/PDF 텍스트 분석을 위한 라이브러리
+import { extractFileText, FileExtractError } from '@/lib/file-text-extract'; // 💡 .hwpx(zip 기반) 텍스트 추출 — hwpjs는 .hwp 전용이라 별도 처리
 // 💡 tesseract.js(이미지 OCR)는 이미지가 실제로 첨부됐을 때만 동적으로 불러옵니다.
 // 파일 상단에서 정적으로 import하면, Vercel 번들에서 워커 스크립트를 못 찾을 경우
 // 이미지 첨부 여부와 무관하게 이 라우트로 오는 모든 요청이 모듈 로드 단계에서 죽어버립니다.
@@ -129,7 +130,7 @@ export async function POST(req: Request) {
             fileTextSummary += `[첨부 엑셀 파일: ${f.name}]\n(엑셀 파싱 중 오류가 발생했으나 파일이 첨부되었습니다.)\n\n`;
           }
         }
-        else if (lowerName.endsWith('.hwp') || lowerName.endsWith('.hwpx')) {
+        else if (lowerName.endsWith('.hwp')) {
           try {
             const buffer = Buffer.from(f.content, 'base64');
             const { markdown: hwpMarkdown } = toMarkdown(buffer);
@@ -137,6 +138,21 @@ export async function POST(req: Request) {
           } catch (hwpErr) {
             console.error('HWP 파싱 중 오류:', hwpErr);
             fileTextSummary += `[첨부 HWP 문서: ${f.name}]\n(HWP 파싱 중 오류가 발생했으나 파일이 첨부되었습니다. 표나 특수 서식이 복잡한 문서는 아직 정확히 읽지 못할 수 있어요.)\n\n`;
+          }
+        }
+        // 💡 [수정] .hwpx는 zip 컨테이너라 CFB 전용인 hwpjs로는 파싱이 불가능합니다(예전엔 .hwp와 묶여서
+        // 매번 "Invalid CFB file (wrong magic number)"로 실패했음). lib/file-text-extract.ts의 zip+XML
+        // 추출 로직(/api/extract가 쓰는 것과 동일)을 그대로 재사용합니다.
+        else if (lowerName.endsWith('.hwpx')) {
+          try {
+            const hwpxText = await extractFileText(f.name, f.mimeType, f.content);
+            fileTextSummary += `[첨부 HWPX 문서: ${f.name}]\n${hwpxText}\n\n`;
+          } catch (hwpxErr) {
+            console.error('HWPX 파싱 중 오류:', hwpxErr);
+            const message = hwpxErr instanceof FileExtractError
+              ? hwpxErr.message
+              : 'HWPX 파싱 중 오류가 발생했어요.';
+            fileTextSummary += `[첨부 HWPX 문서: ${f.name}]\n(${message} 파일은 첨부되었습니다.)\n\n`;
           }
         }
         else if (lowerName.endsWith('.pptx') || lowerName.endsWith('.docx') || lowerName.endsWith('.pdf')) {
