@@ -24,7 +24,7 @@ import {
   GraduationCap,
   ArrowLeft,
 } from 'lucide-react';
-import type { NodeId, CircuitGraphState } from '@/types/blocks';
+import type { NodeId, CircuitGraphState, GraphNode } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
@@ -219,6 +219,24 @@ const PROFESSOR_CATEGORY_DEFS: { key: keyof ProfessorAnalysisResult; label: stri
   { key: 'gradingStrictness', label: '채점 기준의 엄격함' },
   { key: 'researchInterests', label: '연구 관심사' },
 ];
+
+// 💡 [신규] 교수님 상세 화면 회로도의 action 노드 3개 — 이미 계산된 6개 카테고리 결과를 재활용해서
+// 매핑합니다(별도 API 호출 없음). "공부 방식"은 어느 카테고리와도 정확히 대응되지 않아서, 자주
+// 강조되는 주제(topics)를 "무엇을 중점적으로 공부해야 하는지"로 재해석해서 씁니다.
+const PROFESSOR_CIRCUIT_DEFS: { nodeId: Extract<NodeId, 'expected_questions' | 'assignment_direction' | 'study_method'>; label: string; keys: (keyof ProfessorAnalysisResult)[] }[] = [
+  { nodeId: 'expected_questions', label: '예상 문제', keys: ['examStyle', 'examQuestionTypes'] },
+  { nodeId: 'assignment_direction', label: '과제 방향', keys: ['assignmentStyle'] },
+  { nodeId: 'study_method', label: '공부 방식', keys: ['topics'] },
+];
+
+function getProfessorCircuitCardData(result: ProfessorAnalysisResult | undefined, keys: (keyof ProfessorAnalysisResult)[]) {
+  if (!result) return { confident: false, items: [] as string[] };
+  const confidentKeys = keys.filter((k) => result[k].confident);
+  return {
+    confident: confidentKeys.length > 0,
+    items: confidentKeys.flatMap((k) => result[k].items),
+  };
+}
 
 // 문서를 일정 길이로 쪼갭니다(doc_chunks 저장용). 지금은 분석에서 안 쓰이지만, 업로드 시점에
 // 미리 쪼개 둬서 나중에 청크 단위 검색/임베딩으로 확장할 때 다시 손댈 필요가 없게 합니다.
@@ -1567,6 +1585,27 @@ export default function HomePage() {
         @media (prefers-reduced-motion: reduce) {
           * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
+
+        /* 교수님 상세 회로도 — AI 코어에서 나온 결과 3장이 순서대로(각 카드 300ms씩 지연) 나타납니다. */
+        @keyframes professorCircuitReveal {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .professor-circuit-reveal {
+          animation: professorCircuitReveal 0.4s ease-out both;
+        }
+
+        /* 로딩 중 점 애니메이션 — "." → ".." → "..." → "."을 0.5초마다 반복합니다. */
+        @keyframes loadingDots {
+          0% { content: '.'; }
+          33% { content: '..'; }
+          66% { content: '...'; }
+          100% { content: '.'; }
+        }
+        .loading-dots::after {
+          content: '.';
+          animation: loadingDots 1.5s steps(1) infinite;
+        }
       `}</style>
 
       {/* 모바일 상단 바 */}
@@ -2330,6 +2369,36 @@ export default function HomePage() {
             const confidentDefs = result ? PROFESSOR_CATEGORY_DEFS.filter((def) => result[def.key].confident) : [];
             const unconfidentDefs = result ? PROFESSOR_CATEGORY_DEFS.filter((def) => !result[def.key].confident) : [];
 
+            // 💡 [신규] 왼쪽 "이 교수님 자료" → 중앙 AI 코어 → 오른쪽 예상 문제/과제 방향/공부 방식
+            // 3갈래. 기존 물어보기 미니 전선(chatLensGraph)과 같은 방식으로 매 렌더마다 새로 계산해서
+            // CircuitBoard에 새 그래프 객체를 넘기고, 그 참조가 바뀔 때마다 전선 애니메이션이 재생됩니다.
+            const professorCircuitGraph: CircuitGraphState = {
+              nodes: [
+                { id: 'professor_docs', layer: 'source', status: docs.length > 0 ? 'done' : 'idle' },
+                {
+                  id: 'professor_ai_core',
+                  layer: 'lens',
+                  status: isAnalyzingProfessor ? 'running' : analysisRow ? 'done' : 'idle',
+                },
+                ...PROFESSOR_CIRCUIT_DEFS.map((def) => ({
+                  id: def.nodeId,
+                  layer: 'action' as const,
+                  status: (getProfessorCircuitCardData(result, def.keys).confident ? 'done' : 'idle') as GraphNode['status'],
+                })),
+              ],
+              edges: [
+                { from: 'professor_docs', to: 'professor_ai_core' },
+                ...PROFESSOR_CIRCUIT_DEFS.map((def) => ({ from: 'professor_ai_core' as NodeId, to: def.nodeId as NodeId })),
+              ],
+            };
+
+            const handleProfessorCircuitNodeClick = (nodeId: NodeId) => {
+              if (nodeId === 'professor_docs' || nodeId === 'professor_ai_core') {
+                if (docs.length === 0 || isAnalyzingProfessor) return;
+                recomputeProfessorAnalysis(professor.id);
+              }
+            };
+
             return (
               <div>
                 <button
@@ -2415,6 +2484,36 @@ export default function HomePage() {
                           </div>
                         </div>
                       ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 sm:p-6 mb-6 shadow-sm">
+                  <p className="text-xs text-[#857C93] text-center mb-3">AI 코어를 클릭하면 이 교수님 자료를 분석해요</p>
+                  <CircuitBoard graph={professorCircuitGraph} onNodeClick={handleProfessorCircuitNodeClick} />
+                  {result && (
+                    <div key={analysisRow?.updated_at} className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                      {PROFESSOR_CIRCUIT_DEFS.map((def, i) => {
+                        const card = getProfessorCircuitCardData(result, def.keys);
+                        return (
+                          <div
+                            key={def.nodeId}
+                            className="professor-circuit-reveal bg-[#211E28] border border-[#322D3B] rounded-xl p-3.5"
+                            style={{ animationDelay: `${i * 300}ms` }}
+                          >
+                            <h5 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2">{def.label}</h5>
+                            {card.confident ? (
+                              <ul className="flex flex-col gap-1">
+                                {card.items.slice(0, 4).map((item, j) => (
+                                  <li key={j} className="text-xs text-[#E4DEEA] leading-relaxed">· {item}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-xs text-[#5B5566]">아직 확신 있게 판단하지 못했어요</p>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

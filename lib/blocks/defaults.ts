@@ -1,4 +1,4 @@
-import { FileText, Library, Search, CalendarClock, HelpCircle, NotebookPen, CalendarPlus, CalendarSync, FileDown } from 'lucide-react';
+import { FileText, Library, Search, CalendarClock, HelpCircle, NotebookPen, CalendarPlus, CalendarSync, FileDown, GraduationCap, Cpu, ClipboardList, BookOpen } from 'lucide-react';
 import type { CircuitNode } from '@/types/blocks';
 
 // 💡 [신규] 3계층 노드 레지스트리 (source → lens → action). 예전 5개 블록(McpBlock, on/off 토글) 모델은
@@ -86,5 +86,48 @@ export const NODE_REGISTRY: CircuitNode[] = [
     hint: '결과를 한글(HWP) 파일로 저장해요',
     icon: FileDown,
     estimatedSeconds: 2,
+  },
+
+  // 💡 [신규] "교수님" 상세 화면 회로도 전용 (물어보기 미니 전선과는 별개 그래프) — recomputeProfessorAnalysis
+  // 결과를 예상 문제/과제 방향/공부 방식 3갈래로 나눠 보여줄 때 씁니다.
+  {
+    id: 'professor_docs',
+    layer: 'source',
+    label: '이 교수님 자료',
+    hint: '지금까지 올린 자료 전체를 참고해요',
+    icon: GraduationCap,
+    estimatedSeconds: 0,
+  },
+  {
+    id: 'professor_ai_core',
+    layer: 'lens',
+    label: 'AI 분석',
+    hint: '올라온 자료를 종합해서 패턴을 찾아요',
+    icon: Cpu,
+    estimatedSeconds: 6,
+  },
+  {
+    id: 'expected_questions',
+    layer: 'action',
+    label: '예상 문제',
+    hint: '문제 내는 방식·유형을 바탕으로 예상해요',
+    icon: HelpCircle,
+    estimatedSeconds: 0,
+  },
+  {
+    id: 'assignment_direction',
+    layer: 'action',
+    label: '과제 방향',
+    hint: '과제를 요구하는 스타일을 알려줘요',
+    icon: ClipboardList,
+    estimatedSeconds: 0,
+  },
+  {
+    id: 'study_method',
+    layer: 'action',
+    label: '공부 방식',
+    hint: '자주 강조하는 주제를 중심으로 알려줘요',
+    icon: BookOpen,
+    estimatedSeconds: 0,
   },
 ];

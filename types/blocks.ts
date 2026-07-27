@@ -7,7 +7,10 @@ export type NodeLayer = 'source' | 'lens' | 'action';
 export type NodeId =
   | 'this_doc' | 'my_library' | 'web_search'
   | 'deadlines' | 'questions' | 'digest'
-  | 'save_deadline' | 'sync_calendar' | 'export_hwp';
+  | 'save_deadline' | 'sync_calendar' | 'export_hwp'
+  // 💡 [신규] "교수님" 상세 화면 회로도 전용 노드 — 위 9개(물어보기 미니 전선용)와는 별개 그래프에서만 씁니다.
+  | 'professor_docs' | 'professor_ai_core'
+  | 'expected_questions' | 'assignment_direction' | 'study_method';
 
 // 노드 레지스트리 항목 — "어떤 노드가 존재하는지"에 대한 정적 메타데이터입니다 (lib/blocks/defaults.ts).
 export interface CircuitNode {
