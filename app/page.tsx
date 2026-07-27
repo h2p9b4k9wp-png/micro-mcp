@@ -1250,12 +1250,83 @@ export default function HomePage() {
     setDetectedActionItems(prev => prev.filter(i => i !== item));
   };
 
-  // 💡 [신규] 원문 날짜 문구(item.date)를 datetime-local 값으로 변환 시도 — 실패하면 null.
+  // 💡 [수정] 원문 날짜 문구(item.date)를 datetime-local 값으로 변환 시도 — 실패하면 null.
+  // "마감 뽑기" lens는 날짜를 문서에 적힌 표기 그대로("3월 15일", "5/21", "20260315T090000Z" 같은
+  // 한글/ICS 형식) 돌려주는데, 이런 형식은 new Date(raw)로 바로 파싱하면 대부분 Invalid Date가 되거나
+  // (→ 항상 "오늘"로 대체되어 전부 D-DAY로 보임) "3/15"처럼 조용히 엉뚱한 연도(2001년 등)로 파싱되는
+  // 문제가 있었습니다. 흔한 한글/ICS 표기를 정규식으로 먼저 직접 해석하고, 마지막에만 네이티브
+  // Date 파서로 넘깁니다. 연도가 없는 표기는 "오늘보다 이미 지난 날짜면 내년"으로 추정합니다
+  // (마감일은 보통 앞으로 다가올 날짜를 가리키므로).
   const tryParseDeadlineDate = (raw: string): string | null => {
-    const parsed = new Date(raw);
-    if (isNaN(parsed.getTime())) return null;
+    const text = raw.trim();
     const pad = (n: number) => String(n).padStart(2, '0');
-    return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}T${pad(parsed.getHours())}:${pad(parsed.getMinutes())}`;
+
+    const timeMatch = text.match(/(\d{1,2})\s*[:시]\s*(\d{2})/);
+    let hour = 23;
+    let minute = 59;
+    if (timeMatch) {
+      hour = parseInt(timeMatch[1], 10);
+      minute = parseInt(timeMatch[2], 10);
+    }
+
+    const fromParts = (month: number, day: number, explicitYear?: number): string | null => {
+      if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+      const now = new Date();
+      let year = explicitYear ?? now.getFullYear();
+      let candidate = new Date(year, month - 1, day, hour, minute);
+      if (explicitYear === undefined) {
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        if (candidate.getTime() < startOfToday.getTime()) {
+          year += 1;
+          candidate = new Date(year, month - 1, day, hour, minute);
+        }
+      }
+      if (isNaN(candidate.getTime())) return null;
+      return `${candidate.getFullYear()}-${pad(candidate.getMonth() + 1)}-${pad(candidate.getDate())}T${pad(candidate.getHours())}:${pad(candidate.getMinutes())}`;
+    };
+
+    // "2026년 3월 15일"
+    let m = text.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+    if (m) return fromParts(parseInt(m[2], 10), parseInt(m[3], 10), parseInt(m[1], 10));
+
+    // "3월 15일" (연도 없음)
+    m = text.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+    if (m) return fromParts(parseInt(m[1], 10), parseInt(m[2], 10));
+
+    // "2026.3.15" / "2026-3-15" / "2026/3/15"
+    m = text.match(/(\d{4})\s*[.\-/]\s*(\d{1,2})\s*[.\-/]\s*(\d{1,2})/);
+    if (m) return fromParts(parseInt(m[2], 10), parseInt(m[3], 10), parseInt(m[1], 10));
+
+    // ICS 형식: "20260315" 또는 "20260315T090000Z"
+    m = text.match(/\b(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2}))?/);
+    if (m) {
+      const year = parseInt(m[1], 10);
+      const month = parseInt(m[2], 10);
+      const day = parseInt(m[3], 10);
+      if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+        if (m[4] && m[5]) {
+          hour = parseInt(m[4], 10);
+          minute = parseInt(m[5], 10);
+        }
+        return fromParts(month, day, year);
+      }
+    }
+
+    // "3/15" / "03.15" (연도 없음, new Date()에 그대로 넘기면 조용히 2001년 등으로 잘못 파싱됨)
+    m = text.match(/(?<!\d)(\d{1,2})\s*[./]\s*(\d{1,2})(?!\d)/);
+    if (m) {
+      const first = parseInt(m[1], 10);
+      const second = parseInt(m[2], 10);
+      if (first >= 1 && first <= 12) return fromParts(first, second);
+    }
+
+    // 마지막 수단: 네이티브 Date 파서 (예: "March 15, 2026")
+    const parsed = new Date(text);
+    if (!isNaN(parsed.getTime())) {
+      return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}T${pad(parsed.getHours())}:${pad(parsed.getMinutes())}`;
+    }
+
+    return null;
   };
 
   // 원문 날짜를 못 알아들었을 때의 대체값(오늘 23:59) — 목록에서 바로 확인할 수 있도록 course에 원문을 남깁니다.
