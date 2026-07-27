@@ -29,6 +29,7 @@ import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
+import { LoadingText } from '@/components/loading-text';
 import {
   detectLens,
   type LensId,
@@ -1883,7 +1884,7 @@ export default function HomePage() {
                   </button>
                 </form>
                 <p className="text-[11px] text-[#857C93] mt-2">
-                  파일이나 사진을 여기로 끌어다 놓아도 첨부돼요. 첨부한 내용은 이 대화 동안 계속 참조돼요.
+                  {isAttachingChatFile ? <LoadingText /> : '파일이나 사진을 여기로 끌어다 놓아도 첨부돼요. 첨부한 내용은 이 대화 동안 계속 참조돼요.'}
                 </p>
               </div>
 
@@ -1923,8 +1924,8 @@ export default function HomePage() {
                 <div className="mt-4 bg-[#1C1922] rounded-2xl border border-[#332D3B] p-5 sm:p-6">
                   {lensStage === 'analyzing' && (
                     <div className="flex items-center gap-2 text-sm text-[#C9C0D6]">
-                      <Loader2 className="w-4 h-4 animate-spin text-[#F4679B]" strokeWidth={2} />
-                      분석하는 중이에요...
+                      <Loader2 className="w-4 h-4 animate-spin text-[#F4679B] shrink-0" strokeWidth={2} />
+                      <LoadingText />
                     </div>
                   )}
                   {lensStage === 'error' && (
@@ -2357,8 +2358,14 @@ export default function HomePage() {
                         : 'bg-[#F4679B] hover:bg-[#D1477F] text-white cursor-pointer'
                     }`}
                   >
-                    {isUploadingProfessorDoc ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                    <span>파일 선택</span>
+                    {isUploadingProfessorDoc ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                        <LoadingText />
+                      </>
+                    ) : (
+                      <span>파일 선택</span>
+                    )}
                     <input
                       type="file"
                       multiple
@@ -2494,8 +2501,8 @@ export default function HomePage() {
                             : 'bg-[#2A2632] hover:bg-[#332D3B] border border-[#423B4C] text-[#F5F2F7] cursor-pointer'
                         }`}
                       >
-                        {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
-                        자료 올리기
+                        {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <UploadCloud className="w-3.5 h-3.5" />}
+                        {isUploadingProfessorDoc ? <LoadingText /> : '자료 올리기'}
                         <input
                           type="file"
                           multiple
@@ -2581,8 +2588,14 @@ export default function HomePage() {
                   onClick={() => recomputeProfessorAnalysis(professor.id)}
                   className="inline-flex items-center gap-2 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[#2A2632] disabled:text-[#857C93] disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                 >
-                  {isAnalyzingProfessor && <Loader2 className="w-4 h-4 animate-spin" />}
-                  이 교수님 분석
+                  {isAnalyzingProfessor ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                      <LoadingText />
+                    </>
+                  ) : (
+                    '이 교수님 분석'
+                  )}
                 </button>
 
                 {professorAnalysisError && (
@@ -2631,8 +2644,8 @@ export default function HomePage() {
                               : 'bg-[#2A2632] hover:bg-[#332D3B] border border-[#423B4C] text-[#F5F2F7] cursor-pointer'
                           }`}
                         >
-                          {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
-                          바로 파일 올리기
+                          {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <UploadCloud className="w-3.5 h-3.5" />}
+                          {isUploadingProfessorDoc ? <LoadingText /> : '바로 파일 올리기'}
                           <input
                             type="file"
                             multiple
