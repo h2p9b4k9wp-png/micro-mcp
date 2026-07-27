@@ -317,6 +317,10 @@ export default function HomePage() {
   const [command, setCommand] = useState('');
   const [streamingLog, setStreamingLog] = useState(IDLE_CONSOLE_MESSAGE);
   const [isExecuting, setIsExecuting] = useState(false);
+  // 💡 [신규] /api/chat 요청을 보내고 첫 글자가 도착하기 전까지만 true — 이 구간엔 아직 보여줄
+  // 실제 텍스트가 없어서 <LoadingText />(재밌는 로딩 문구)를 보여줍니다. 스트리밍이 시작되면
+  // (첫 청크 도착) 바로 false로 바꿔서 실제 답변으로 자연스럽게 넘어갑니다.
+  const [isAwaitingChatResponse, setIsAwaitingChatResponse] = useState(false);
 
   // 💡 [신규] 물어보기 채팅창 첨부 — 이 대화(세션) 동안 계속 참조되고, 매번 다시 올릴 필요 없음.
   const [chatAttachments, setChatAttachments] = useState<ChatAttachment[]>([]);
@@ -1111,7 +1115,8 @@ export default function HomePage() {
     let aiAnswer = '';
     const header = `${currentCommand}\n\n`;
 
-    setStreamingLog(`${currentCommand}\n\n답변을 준비하고 있어요...`);
+    setStreamingLog(header);
+    setIsAwaitingChatResponse(true);
 
     try {
       const res = await fetch('/api/chat', {
@@ -1134,17 +1139,18 @@ export default function HomePage() {
         const errData = await res.json().catch(() => ({ error: '알 수 없는 오류가 발생했습니다.' }));
         aiAnswer = `죄송해요, 요청을 처리하지 못했어요: ${errData.error}`;
         setStreamingLog(header + aiAnswer);
+        setIsAwaitingChatResponse(false);
       } else if (res.body) {
         // 💡 [속도 개선] 답변을 다 기다리지 않고, 도착하는 대로 바로바로 화면에 이어붙입니다.
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
-        setStreamingLog(header);
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           aiAnswer += decoder.decode(value, { stream: true });
           setStreamingLog(header + aiAnswer);
+          setIsAwaitingChatResponse(false); // 첫 청크가 도착하면(빈 청크라도) 로딩 문구를 내림
         }
 
         // 💡 [신규] 회의·강의 노트 정리 블록이 덧붙인 할 일(마감일 포함) JSON 블록을 추출합니다.
@@ -1176,6 +1182,7 @@ export default function HomePage() {
     }
 
     setIsExecuting(false);
+    setIsAwaitingChatResponse(false); // 안전망 — 위 분기 어디서든 못 내렸으면 여기서 확실히 내림
 
     try {
       const { data, error } = await supabase
@@ -1908,6 +1915,11 @@ export default function HomePage() {
 
                 <div className="p-4 sm:p-5 text-[14px] leading-[1.8] font-medium text-[#FBE4EE] whitespace-pre-wrap min-h-[150px]">
                   {streamingLog}
+                  {isAwaitingChatResponse && (
+                    <span className="text-[#C9C0D6] font-normal">
+                      <LoadingText />
+                    </span>
+                  )}
                   {streamingLog === IDLE_CONSOLE_MESSAGE && (
                     <div className="mt-4 flex flex-wrap gap-2">
                       {EXAMPLE_PROMPTS.map((example) => (
