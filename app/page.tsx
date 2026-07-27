@@ -59,6 +59,14 @@ interface LogItem {
   content: string;
   response?: string;
   created_at: string;
+  folder_id: string | null;
+}
+
+// 💡 [신규] "지난 대화"를 분류하는 폴더 — conversation_folders 테이블과 1:1 대응.
+interface ConversationFolder {
+  id: string;
+  name: string;
+  created_at: string;
 }
 
 interface FileItem {
@@ -354,6 +362,11 @@ export default function HomePage() {
   const [isGraphPreferencesLoaded, setIsGraphPreferencesLoaded] = useState(false);
 
   const [logs, setLogs] = useState<LogItem[]>([]);
+  // 💡 [신규] 대화 폴더 — "전체"/"미분류"/각 폴더 이름으로 지난 대화를 걸러 봅니다.
+  const [conversationFolders, setConversationFolders] = useState<ConversationFolder[]>([]);
+  const [logFolderFilter, setLogFolderFilter] = useState<'all' | 'unfiled' | string>('all');
+  const [newFolderName, setNewFolderName] = useState('');
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isFilesLoaded, setIsFilesLoaded] = useState(false);
 
@@ -487,11 +500,13 @@ export default function HomePage() {
         fetchLogs(retrySession.user.id);
         fetchDocumentUploads(retrySession.user.id);
         fetchProfessorsAndDocuments(retrySession.user.id);
+        fetchConversationFolders(retrySession.user.id);
       } else {
         setUser(session.user);
         fetchLogs(session.user.id);
         fetchDocumentUploads(session.user.id);
         fetchProfessorsAndDocuments(session.user.id);
+        fetchConversationFolders(session.user.id);
       }
 
       setLoading(false);
@@ -511,6 +526,16 @@ export default function HomePage() {
     if (data && data.length > 0) {
       setLogs(data);
     }
+  };
+
+  // 💡 [신규] 대화 폴더 목록 조회.
+  const fetchConversationFolders = async (userId: string) => {
+    const { data } = await supabase
+      .from('conversation_folders')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    setConversationFolders(data || []);
   };
 
   // 💡 [신규] 문서 업로드 이력 조회 (DB 기준 — 기기 무관하게 '나의 기록'에 동일하게 표시됨)
@@ -1197,6 +1222,38 @@ export default function HomePage() {
     } catch (err: any) {
       alert(`로그 삭제 중 오류가 발생했어요: ${err.message || err}`);
     }
+  };
+
+  // 💡 [신규] 대화 폴더 만들기 — 개수 제한 없음.
+  const handleCreateFolder = async () => {
+    const name = newFolderName.trim();
+    if (!name || !user) return;
+    setIsCreatingFolder(true);
+    try {
+      const { data, error } = await supabase
+        .from('conversation_folders')
+        .insert({ user_id: user.id, name })
+        .select()
+        .single();
+      if (error || !data) {
+        alert(`폴더를 만들지 못했어요: ${error?.message || '알 수 없는 오류'}`);
+        return;
+      }
+      setConversationFolders(prev => [data, ...prev]);
+      setNewFolderName('');
+    } finally {
+      setIsCreatingFolder(false);
+    }
+  };
+
+  // 💡 [신규] 대화를 폴더로 옮기기(또는 미분류로 되돌리기, folderId === null).
+  const handleMoveLogToFolder = async (logId: string, folderId: string | null) => {
+    const { error } = await supabase.from('logs').update({ folder_id: folderId }).eq('id', logId);
+    if (error) {
+      alert(`대화를 폴더로 옮기지 못했어요: ${error.message}`);
+      return;
+    }
+    setLogs(prev => prev.map(log => (log.id === logId ? { ...log, folder_id: folderId } : log)));
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2678,13 +2735,80 @@ export default function HomePage() {
                 </p>
               </div>
 
+              {/* 💡 [신규] 폴더 목록 — 전체/미분류/각 폴더로 지난 대화를 걸러 봅니다. */}
+              <div className="flex flex-wrap items-center gap-2 mb-5">
+                <button
+                  type="button"
+                  onClick={() => setLogFolderFilter('all')}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                    logFolderFilter === 'all'
+                      ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
+                      : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
+                  }`}
+                >
+                  전체 ({logs.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLogFolderFilter('unfiled')}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                    logFolderFilter === 'unfiled'
+                      ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
+                      : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
+                  }`}
+                >
+                  미분류 ({logs.filter((l) => !l.folder_id).length})
+                </button>
+                {conversationFolders.map((folder) => (
+                  <button
+                    key={folder.id}
+                    type="button"
+                    onClick={() => setLogFolderFilter(folder.id)}
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                      logFolderFilter === folder.id
+                        ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
+                        : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
+                    }`}
+                  >
+                    {folder.name} ({logs.filter((l) => l.folder_id === folder.id).length})
+                  </button>
+                ))}
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleCreateFolder(); }}
+                  className="flex items-center gap-1.5"
+                >
+                  <input
+                    type="text"
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    placeholder="+ 새 폴더"
+                    className="w-24 bg-[#15131A] border border-[#423B4C] rounded-full px-3 py-1.5 text-[#F5F2F7] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!newFolderName.trim() || isCreatingFolder}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#2A2632] hover:bg-[#332D3B] text-[#F5F2F7] border border-[#423B4C] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                  >
+                    만들기
+                  </button>
+                </form>
+              </div>
+
               <div className="flex flex-col gap-3">
-                {logs.length === 0 && (
-                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
-                    저장된 대화가 없습니다. 물어보기에서 질문을 보내보세요!
-                  </div>
-                )}
-                {logs.map((log) => {
+                {(() => {
+                  const filteredLogs = logs.filter((log) => {
+                    if (logFolderFilter === 'all') return true;
+                    if (logFolderFilter === 'unfiled') return !log.folder_id;
+                    return log.folder_id === logFolderFilter;
+                  });
+                  if (filteredLogs.length === 0) {
+                    return (
+                      <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
+                        {logs.length === 0 ? '저장된 대화가 없습니다. 물어보기에서 질문을 보내보세요!' : '이 폴더에는 대화가 없어요.'}
+                      </div>
+                    );
+                  }
+                  return filteredLogs.map((log) => {
                   const isExpanded = expandedLogId === log.id;
                   return (
                     <div key={log.id} className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-4 flex flex-col gap-3 shadow-sm">
@@ -2694,6 +2818,17 @@ export default function HomePage() {
                           <span className="font-semibold text-[#F5F2F7]">{log.content}</span>
                         </div>
                         <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                          <select
+                            value={log.folder_id || ''}
+                            onChange={(e) => handleMoveLogToFolder(log.id, e.target.value || null)}
+                            aria-label="폴더로 옮기기"
+                            className="bg-[#15131A] border border-[#322D3B] rounded-lg px-2 py-1.5 text-[#AFA6BD] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 cursor-pointer"
+                          >
+                            <option value="">미분류</option>
+                            {conversationFolders.map((folder) => (
+                              <option key={folder.id} value={folder.id}>{folder.name}</option>
+                            ))}
+                          </select>
                           {log.response && (
                             <button
                               onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
@@ -2720,7 +2855,8 @@ export default function HomePage() {
                       )}
                     </div>
                   );
-                })}
+                  });
+                })()}
               </div>
             </div>
           )}
