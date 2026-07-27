@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import {
   Sparkles,
   Archive,
   AlarmClock,
-  Puzzle,
   LineChart,
   ScrollText,
   Search,
@@ -134,6 +133,14 @@ const EXAMPLE_PROMPTS = [
   { icon: NotebookPen, prompt: '방금 붙여넣은 회의 노트 정리해줘' },
 ];
 
+// 채팅 입력창 위 미니 전선에서 고를 수 있는 답변 종류. 'none' = 그냥 대화(관점 분석 없이 평소처럼).
+const CHAT_LENS_CHOICES: { id: LensId | 'none'; label: string }[] = [
+  { id: 'deadlines', label: '마감 뽑기' },
+  { id: 'questions', label: '예상 질문' },
+  { id: 'digest', label: '핵심 정리' },
+  { id: 'none', label: '그냥 대화' },
+];
+
 export default function HomePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -168,15 +175,16 @@ export default function HomePage() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isFilesLoaded, setIsFilesLoaded] = useState(false);
 
-  // 💡 [신규] "MCP 블록 매니저" 탭 — 문서를 올리면 /api/extract로 글자를 뽑고 detectLens로 관점을
-  // 자동으로 고른 뒤 회로도를 그리고 /api/analyze 결과를 보여줍니다. 뽑아낸 글자(lensText)는 화면에
-  // 들고 있다가, 아래 관점 전환 버튼을 누르면 재추출 없이 그 글자로 바로 다시 분석합니다.
-  const [lensFileName, setLensFileName] = useState<string | null>(null);
-  const [lensText, setLensText] = useState<string | null>(null);
+  // 💡 [신규] 채팅에 첨부한 문서(chatAttachments)를 물어보기 입력창 위 미니 전선에서 바로 분석합니다.
+  // /api/extract로 글자를 뽑는 건 첨부 시점(handleChatAttachmentFiles)에 이미 끝나 있고, 여기서는
+  // 그 결과(latestTextAttachment)로 detectLens → /api/analyze만 담당합니다.
   const [lensId, setLensId] = useState<LensId | null>(null);
-  const [lensStage, setLensStage] = useState<'idle' | 'extracting' | 'analyzing' | 'done' | 'error'>('idle');
+  const [lensStage, setLensStage] = useState<'idle' | 'analyzing' | 'done' | 'error'>('idle');
   const [lensResult, setLensResult] = useState<DeadlinesResult | QuestionsResult | DigestResult | null>(null);
   const [lensError, setLensError] = useState<string | null>(null);
+
+  // 채팅 입력창 위 미니 전선에서 직접 고른 관점. null = 아직 안 골랐으니 detectLens 자동 판단을 씁니다.
+  const [chatLensChoice, setChatLensChoice] = useState<LensId | 'none' | null>(null);
 
   // 💡 [신규] 문서 업로드 이력 (DB 저장 — 기기가 바뀌어도 '나의 기록'에서 동일하게 보임)
   const [documentUploads, setDocumentUploads] = useState<DocumentUploadRecord[]>([]);
@@ -257,6 +265,17 @@ export default function HomePage() {
       saveUserScopedItem(user.id, 'mcp_deadlines', deadlines);
     }
   }, [deadlines, isDeadlinesLoaded, user]);
+
+  // 텍스트 첨부가 하나도 안 남으면 미니 전선/관점 선택 자체가 의미 없으니 초기화합니다.
+  useEffect(() => {
+    if (!chatAttachments.some((a) => a.kind === 'text')) {
+      setChatLensChoice(null);
+      setLensId(null);
+      setLensStage('idle');
+      setLensResult(null);
+      setLensError(null);
+    }
+  }, [chatAttachments]);
 
   useEffect(() => {
     const initApp = async () => {
@@ -368,18 +387,40 @@ export default function HomePage() {
     }
   };
 
-  // 💡 [신규] "MCP 블록 매니저" 탭에서 업로드한 문서로 그리는 회로도 — this_doc(source) → 고른 관점(lens)
-  // 두 노드뿐인 최소 그래프입니다. 분석 중엔 lens 노드가 running, 끝나면 done/error로 바뀝니다.
-  const lensGraph: CircuitGraphState | null = useMemo(() => {
-    if (!lensId) return null;
-    return {
-      nodes: [
-        { id: 'this_doc', layer: 'source', status: 'done' },
-        { id: lensId, layer: 'lens', status: lensStage === 'analyzing' ? 'running' : lensStage === 'error' ? 'error' : 'done' },
-      ],
-      edges: [{ from: 'this_doc', to: lensId }],
-    };
-  }, [lensId, lensStage]);
+  // 💡 [신규] 채팅에 첨부한 문서 중 가장 최근 텍스트 첨부 하나를 미니 전선의 대상으로 삼습니다
+  // (기존 "파일 분석" 탭과 같은 단일 문서 모델). 직접 관점을 안 골랐으면 detectLens가 자동으로 고릅니다.
+  const latestTextAttachment = [...chatAttachments].reverse().find((a) => a.kind === 'text');
+  const effectiveChatLens: LensId | 'none' = chatLensChoice
+    ?? (latestTextAttachment ? detectLens(latestTextAttachment.text || '', latestTextAttachment.name) : 'none');
+
+  // this_doc(source) → 고른 관점(lens) 두 노드뿐인 최소 그래프. 아직 실행 전이면 lens는 idle,
+  // 실행 중/후엔 lensStage를 그대로 반영합니다(이 관점으로 실제로 돌린 결과일 때만).
+  const chatLensGraph: CircuitGraphState | null = !latestTextAttachment
+    ? null
+    : effectiveChatLens === 'none'
+      ? { nodes: [{ id: 'this_doc', layer: 'source', status: 'done' }], edges: [] }
+      : {
+          nodes: [
+            { id: 'this_doc', layer: 'source', status: 'done' },
+            {
+              id: effectiveChatLens,
+              layer: 'lens',
+              status: lensId !== effectiveChatLens
+                ? 'idle'
+                : lensStage === 'analyzing' ? 'running' : lensStage === 'error' ? 'error' : lensStage === 'done' ? 'done' : 'idle',
+            },
+          ],
+          edges: [{ from: 'this_doc', to: effectiveChatLens }],
+        };
+
+  const handleSelectChatLens = (choice: LensId | 'none') => {
+    setChatLensChoice((prev) => (prev === choice ? null : choice));
+    if (choice === 'none') {
+      setLensStage('idle');
+      setLensResult(null);
+      setLensError(null);
+    }
+  };
 
   // 💡 [신규] 고른 관점(lensId)에 맞춰 /api/analyze 결과(lensResult)를 렌더링합니다.
   // 💡 결과 카드 글자 크기·여백은 모바일 기준을 기본값으로 하고(폰에서 컴퓨터 기준 크기가 답답했음),
@@ -568,7 +609,18 @@ export default function HomePage() {
 
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!command.trim() || !user) return;
+    // 💡 [신규] 미니 전선에서 관점을 골라둔 상태(그냥 대화가 아님)면 프롬프트가 비어 있어도 보낼 수
+    // 있습니다 — "이 문서 마감 뽑아줘"라고 굳이 안 적어도 전선이 이미 그 의도를 표현하고 있어서요.
+    const hasActiveChatLens = Boolean(latestTextAttachment) && effectiveChatLens !== 'none';
+    if ((!command.trim() && !hasActiveChatLens) || !user) return;
+
+    // 💡 [신규] 관점이 활성화돼 있으면 자유 채팅(/api/chat) 대신 구조화된 분석(/api/analyze)으로
+    // 보냅니다. 결과는 기존 "파일 분석" 탭에서 쓰던 renderLensResult()를 그대로 재사용해서 보여줍니다.
+    if (hasActiveChatLens && latestTextAttachment) {
+      setCommand('');
+      await runLensAnalyze(latestTextAttachment.text || '', effectiveChatLens as LensId, latestTextAttachment.name);
+      return;
+    }
 
     setIsExecuting(true);
     const currentCommand = command;
@@ -739,8 +791,8 @@ export default function HomePage() {
     }
   };
 
-  // 💡 [신규] 이미 뽑아둔 lensText로 지정한 관점(lens)만 다시 분석합니다. 관점 전환 버튼과
-  // 최초 업로드 직후 자동 분석이 공유하는 경로라, 재추출 없이 항상 이 함수만 거칩니다.
+  // 💡 [신규] 채팅에 첨부된 문서(latestTextAttachment)의 글자로 지정한 관점(lens)을 분석합니다.
+  // 관점 전환 버튼과 "전송" 버튼(handleExecute)이 공유하는 경로입니다.
   const runLensAnalyze = async (text: string, lens: LensId, fileName?: string) => {
     setLensId(lens);
     setLensStage('analyzing');
@@ -764,70 +816,8 @@ export default function HomePage() {
     }
   };
 
-  const handleLensFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 10 * 1024 * 1024) {
-      alert('파일 용량이 너무 큽니다 (10MB 초과).');
-      e.target.value = '';
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const result = event.target?.result as string;
-      const commaIndex = result.indexOf(',');
-      const base64Content = commaIndex !== -1 ? result.substring(commaIndex + 1) : result;
-      e.target.value = '';
-
-      setLensFileName(file.name);
-      setLensText(null);
-      setLensResult(null);
-      setLensError(null);
-      setLensStage('extracting');
-
-      try {
-        const extractRes = await fetch('/api/extract', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fileName: file.name, mimeType: file.type, content: base64Content }),
-        });
-        const extractData = await extractRes.json();
-        if (!extractRes.ok) throw new Error(extractData.error || '파일에서 글자를 뽑지 못했어요.');
-
-        const text: string = extractData.text || '';
-        setLensText(text);
-
-        const detected = detectLens(text, file.name);
-        await runLensAnalyze(text, detected, file.name);
-      } catch (err: any) {
-        setLensError(err.message || '파일 처리 중 오류가 발생했어요.');
-        setLensStage('error');
-      }
-    };
-
-    try {
-      reader.readAsDataURL(file);
-    } catch (err) {
-      alert('이 파일 형식은 브라우저에서 직접 읽기 어렵습니다.');
-      e.target.value = '';
-    }
-  };
-
-  const resetLensFlow = () => {
-    setLensFileName(null);
-    setLensText(null);
-    setLensId(null);
-    setLensStage('idle');
-    setLensResult(null);
-    setLensError(null);
-    setRegisteredDeadlineIndexes(new Set());
-  };
-
-  // 💡 [신규] 관점 전환 버튼 + "다른 문서 올리기" — 데스크톱에서는 결과 카드 아래 그대로,
-  // 모바일에서는 엄지가 닿는 화면 하단 고정 바에도 같은 버튼을 띄웁니다(둘 다 같은 상태를 공유).
-  const lensActionsRow = lensId && (
+  // 💡 [신규] 관점 전환 버튼 — 이미 분석한 문서를 재추출 없이 다른 관점으로 다시 봅니다.
+  const chatLensActionsRow = lensId && lensStage !== 'idle' && (
     <div className="flex flex-wrap items-center gap-2">
       {(['deadlines', 'questions', 'digest'] as LensId[])
         .filter((id) => id !== lensId)
@@ -837,8 +827,11 @@ export default function HomePage() {
             <button
               key={id}
               type="button"
-              disabled={lensStage === 'analyzing' || !lensText}
-              onClick={() => lensText && runLensAnalyze(lensText, id, lensFileName ?? undefined)}
+              disabled={lensStage === 'analyzing' || !latestTextAttachment}
+              onClick={() => {
+                setChatLensChoice(id);
+                if (latestTextAttachment) runLensAnalyze(latestTextAttachment.text || '', id, latestTextAttachment.name);
+              }}
               className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-[13px] sm:text-xs font-medium px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
             >
               {meta && <meta.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />}
@@ -846,14 +839,6 @@ export default function HomePage() {
             </button>
           );
         })}
-
-      <button
-        type="button"
-        onClick={resetLensFlow}
-        className="text-[13px] sm:text-xs text-[#857C93] hover:text-[#C9C0D6] underline underline-offset-2 cursor-pointer sm:ml-auto"
-      >
-        다른 문서 올리기
-      </button>
     </div>
   );
 
@@ -1054,7 +1039,6 @@ export default function HomePage() {
     { id: 'workspace', label: '물어보기', icon: Sparkles },
     { id: 'records', label: '나의 기록', icon: Archive },
     { id: 'deadlines', label: '마감일', icon: AlarmClock },
-    { id: 'mcp', label: '파일 분석', icon: Puzzle },
     { id: 'monitoring', label: '내 파일', icon: LineChart },
     { id: 'logs', label: '지난 대화', icon: ScrollText },
   ];
@@ -1226,6 +1210,28 @@ export default function HomePage() {
                   </div>
                 )}
 
+                {chatLensGraph && (
+                  <div className="bg-[#0D0B11] rounded-xl border border-[#2A2632] p-2 mb-3">
+                    <CircuitBoard graph={chatLensGraph} onNodeClick={handleNodeClick} compact />
+                    <div className="flex flex-wrap gap-1.5 justify-center mt-1.5">
+                      {CHAT_LENS_CHOICES.map((choice) => (
+                        <button
+                          key={choice.id}
+                          type="button"
+                          onClick={() => handleSelectChatLens(choice.id)}
+                          className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                            effectiveChatLens === choice.id
+                              ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
+                              : 'bg-[#15131A] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
+                          }`}
+                        >
+                          {choice.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <form onSubmit={handleExecute} className="flex flex-col sm:flex-row gap-3">
                   <label
                     className={`shrink-0 flex items-center justify-center w-11 sm:w-auto sm:px-3.5 h-11 sm:h-auto rounded-lg border transition-colors ${
@@ -1300,6 +1306,29 @@ export default function HomePage() {
                   <div ref={terminalEndRef} />
                 </div>
               </div>
+
+              {lensStage !== 'idle' && (
+                <div className="mt-4 bg-[#1C1922] rounded-2xl border border-[#332D3B] p-5 sm:p-6">
+                  {lensStage === 'analyzing' && (
+                    <div className="flex items-center gap-2 text-sm text-[#C9C0D6]">
+                      <Loader2 className="w-4 h-4 animate-spin text-[#F4679B]" strokeWidth={2} />
+                      분석하는 중이에요...
+                    </div>
+                  )}
+                  {lensStage === 'error' && (
+                    <p className="flex items-center gap-1.5 text-sm text-[#FF7A6B]">
+                      <AlertTriangle className="w-4 h-4 shrink-0" strokeWidth={2} />
+                      {lensError}
+                    </p>
+                  )}
+                  {lensStage === 'done' && (
+                    <>
+                      {renderLensResult()}
+                      {chatLensActionsRow && <div className="mt-4">{chatLensActionsRow}</div>}
+                    </>
+                  )}
+                </div>
+              )}
 
               {detectedActionItems.length > 0 && (
                 <div className="mt-4 bg-[#211E28] rounded-2xl border border-[#F4679B]/40 p-5 shadow-sm">
@@ -1465,10 +1494,10 @@ export default function HomePage() {
                     <span>파일을 올려서 일정을 뽑아보세요</span>
                     <button
                       type="button"
-                      onClick={() => setActiveTab('mcp')}
+                      onClick={() => setActiveTab('workspace')}
                       className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-xs font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                     >
-                      파일 분석 탭으로 가기
+                      채팅 탭으로 가기
                     </button>
                   </div>
                 ) : (
@@ -1638,115 +1667,6 @@ export default function HomePage() {
             </div>
           )}
 
-          {activeTab === 'mcp' && (
-            <>
-              {/* 모바일에서 하단 고정 액션 바에 콘텐츠가 가려지지 않도록 여백을 둡니다. */}
-              <div className="pb-24 sm:pb-0">
-                <div className="mb-6">
-                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                    파일 분석
-                  </h1>
-                  <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                    파일을 올리면 알아서 읽고 정리해드려요.
-                  </p>
-                </div>
-
-                {!lensId ? (
-                  <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-8 sm:p-16 flex flex-col items-center justify-center text-center gap-4 min-h-[50vh] sm:min-h-0">
-                    <label
-                      htmlFor="lens-file-input"
-                      className={`flex flex-col items-center gap-3 ${lensStage === 'extracting' ? 'cursor-wait opacity-70' : 'cursor-pointer'}`}
-                    >
-                      <span className="w-16 h-16 sm:w-14 sm:h-14 rounded-2xl bg-[#211E28] border border-[#322D3B] flex items-center justify-center">
-                        {lensStage === 'extracting' ? (
-                          <Loader2 className="w-7 h-7 sm:w-6 sm:h-6 text-[#F4679B] animate-spin" strokeWidth={2} />
-                        ) : (
-                          <UploadCloud className="w-7 h-7 sm:w-6 sm:h-6 text-[#F4679B]" strokeWidth={2} />
-                        )}
-                      </span>
-                      <span className="text-base sm:text-sm font-semibold text-[#F5F2F7]">
-                        {lensStage === 'extracting' ? '글자를 뽑는 중이에요...' : '문서를 올려서 시작하세요'}
-                      </span>
-                      <span className="text-sm sm:text-xs text-[#857C93]">텍스트(.txt), 캘린더(.ics), CSV 파일을 지원해요</span>
-                      <input
-                        id="lens-file-input"
-                        type="file"
-                        className="hidden"
-                        onChange={handleLensFileUpload}
-                        disabled={lensStage === 'extracting'}
-                      />
-                    </label>
-
-                    {lensError && (
-                      <p className="flex items-center gap-1.5 text-sm sm:text-xs text-[#FF7A6B]">
-                        <AlertTriangle className="w-4 h-4 sm:w-3.5 sm:h-3.5 shrink-0" strokeWidth={2} />
-                        {lensError}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    <CircuitBoard graph={lensGraph!} onNodeClick={handleNodeClick} />
-
-                    <div className="mt-6 bg-[#1C1922] rounded-2xl border border-[#332D3B] p-5 sm:p-6">
-                      {lensStage === 'analyzing' && (
-                        <div className="flex items-center gap-2 text-base sm:text-sm text-[#C9C0D6]">
-                          <Loader2 className="w-5 h-5 sm:w-4 sm:h-4 animate-spin text-[#F4679B]" strokeWidth={2} />
-                          분석하는 중이에요...
-                        </div>
-                      )}
-
-                      {lensStage === 'error' && (
-                        <p className="flex items-center gap-1.5 text-base sm:text-sm text-[#FF7A6B]">
-                          <AlertTriangle className="w-5 h-5 sm:w-4 sm:h-4 shrink-0" strokeWidth={2} />
-                          {lensError}
-                        </p>
-                      )}
-
-                      {lensStage === 'done' && renderLensResult()}
-                    </div>
-
-                    {/* 데스크톱: 결과 카드 바로 아래에 인라인으로 표시 (모바일용은 하단 고정 바로 따로 렌더링) */}
-                    <div className="hidden sm:block mt-4">{lensActionsRow}</div>
-                  </>
-                )}
-              </div>
-
-              {/* 💡 모바일 전용 하단 고정 액션 바 — 엄지가 자연스럽게 닿는 화면 아래쪽에 핵심 동작(업로드,
-                  관점 전환, 다른 문서 올리기)을 항상 띄워둡니다. 위쪽까지 스크롤하거나 손을 뻗을 필요가 없게. */}
-              <div
-                className="sm:hidden fixed bottom-0 inset-x-0 z-30 bg-[#15131A]/95 backdrop-blur border-t border-[#322D3B] px-4 pt-3"
-                style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
-              >
-                {!lensId ? (
-                  <label
-                    htmlFor="lens-file-input-mobile"
-                    className={`flex items-center justify-center gap-2 w-full rounded-xl px-4 py-3.5 text-base font-semibold transition-colors ${
-                      lensStage === 'extracting'
-                        ? 'bg-[#211E28] text-[#857C93] cursor-wait'
-                        : 'bg-[#F4679B] text-white cursor-pointer active:bg-[#D1477F]'
-                    }`}
-                  >
-                    {lensStage === 'extracting' ? (
-                      <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2} />
-                    ) : (
-                      <UploadCloud className="w-5 h-5" strokeWidth={2} />
-                    )}
-                    {lensStage === 'extracting' ? '글자를 뽑는 중이에요...' : '문서 올리기'}
-                    <input
-                      id="lens-file-input-mobile"
-                      type="file"
-                      className="hidden"
-                      onChange={handleLensFileUpload}
-                      disabled={lensStage === 'extracting'}
-                    />
-                  </label>
-                ) : (
-                  lensActionsRow
-                )}
-              </div>
-            </>
-          )}
 
           {activeTab === 'monitoring' && (
             <div>

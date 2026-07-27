@@ -18,13 +18,20 @@ import { PannableCanvas } from '@/components/circuit/pannable-canvas';
 interface CircuitBoardProps {
   graph: CircuitGraphState;
   onNodeClick: (nodeId: NodeId) => void;
+  // 채팅 입력창 위처럼 좁은 자리에 끼워 넣을 때 쓰는 축소 모드 — 제목/열 구분선/팬·줌 없이
+  // source·lens 영역만 크롭해서 세로 200px 정도로 표시합니다. 배선·글로우·스파크 로직은 동일합니다.
+  compact?: boolean;
 }
 
-type Orientation = 'horizontal' | 'vertical';
+type Orientation = 'horizontal' | 'vertical' | 'compact';
 
 const LAYERS: NodeLayer[] = ['source', 'lens', 'action'];
 const LAYER_TITLES: Record<NodeLayer, string> = { source: '파일', lens: '분석', action: '결과' };
 const edgeKey = (edge: GraphEdge) => `${edge.from}->${edge.to}`;
+
+// compact 모드는 가로 배치(CIRCUIT_VIEWBOX)와 같은 좌표계를 쓰되, source·lens 열만 보이도록
+// SVG viewBox로 화면을 크롭합니다 — 위치 계산 로직을 새로 만들 필요가 없습니다.
+const COMPACT_VIEWBOX = { x: 60, y: 160, width: 520, height: 240 };
 
 function getNodeMeta(id: NodeId) {
   return NODE_REGISTRY.find((n) => n.id === id);
@@ -43,7 +50,7 @@ function getStatusVisual(status: NodeStatus) {
   }
 }
 
-export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
+export function CircuitBoard({ graph, onNodeClick, compact = false }: CircuitBoardProps) {
   const [revealedEdges, setRevealedEdges] = useState<Set<string>>(() => new Set());
   const [sparkGeneration, setSparkGeneration] = useState(0);
   const [gatedTooltipId, setGatedTooltipId] = useState<NodeId | null>(null);
@@ -52,6 +59,7 @@ export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
   const nodesByLayer: Record<NodeLayer, typeof graph.nodes> = { source: [], lens: [], action: [] };
   graph.nodes.forEach((n) => nodesByLayer[n.layer].push(n));
 
+  // compact는 가로 배치와 같은 좌표계를 쓰므로(크롭만 다름) 'horizontal'과 동일하게 계산합니다.
   const positionOf = (nodeId: NodeId, orientation: Orientation) => {
     for (const layer of LAYERS) {
       const idx = nodesByLayer[layer].findIndex((n) => n.id === nodeId);
@@ -62,6 +70,17 @@ export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
       }
     }
     return null;
+  };
+
+  const toPercent = (value: number, axis: 'x' | 'y', orientation: Orientation) => {
+    if (orientation === 'compact') {
+      const origin = axis === 'x' ? COMPACT_VIEWBOX.x : COMPACT_VIEWBOX.y;
+      const size = axis === 'x' ? COMPACT_VIEWBOX.width : COMPACT_VIEWBOX.height;
+      return ((value - origin) / size) * 100;
+    }
+    const vb = orientation === 'vertical' ? CIRCUIT_VIEWBOX_VERTICAL : CIRCUIT_VIEWBOX;
+    const size = axis === 'x' ? vb.width : vb.height;
+    return (value / size) * 100;
   };
 
   // 스파크는 실행 중 source → lens → action 순서로 순차 재생됩니다(구간 사이 150ms).
@@ -96,27 +115,34 @@ export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
     return () => timers.forEach(clearTimeout);
   }, [graph]);
 
-  // 가로/세로 배치가 공유하는 다이어그램 본체 — viewBox·좌표 계산·경로 생성 함수만 방향별로 갈아 끼웁니다.
+  // 가로/세로/축소 배치가 공유하는 다이어그램 본체 — viewBox·좌표 계산·경로 생성 함수만 방향별로 갈아 끼웁니다.
   function renderDiagram(orientation: Orientation) {
-    const viewBox = orientation === 'vertical' ? CIRCUIT_VIEWBOX_VERTICAL : CIRCUIT_VIEWBOX;
-    const buildPath = orientation === 'vertical' ? buildCircuitTracePathVertical : buildCircuitTracePath;
+    const isCompact = orientation === 'compact';
+    const isVertical = orientation === 'vertical';
+    const viewBox = isVertical ? CIRCUIT_VIEWBOX_VERTICAL : CIRCUIT_VIEWBOX;
+    const viewBoxStr = isCompact
+      ? `${COMPACT_VIEWBOX.x} ${COMPACT_VIEWBOX.y} ${COMPACT_VIEWBOX.width} ${COMPACT_VIEWBOX.height}`
+      : `0 0 ${viewBox.width} ${viewBox.height}`;
+    const buildPath = isVertical ? buildCircuitTracePathVertical : buildCircuitTracePath;
+    const posOrientation: Orientation = isVertical ? 'vertical' : 'horizontal';
+
+    const containerStyle = isCompact
+      ? { height: 200, aspectRatio: `${COMPACT_VIEWBOX.width} / ${COMPACT_VIEWBOX.height}` }
+      : {
+          aspectRatio: `${viewBox.width} / ${viewBox.height}`,
+          ...(isVertical ? { maxWidth: 420 } : { maxWidth: 720, minWidth: 480 }),
+        };
 
     return (
-      <div
-        className="relative mx-auto w-full"
-        style={{
-          aspectRatio: `${viewBox.width} / ${viewBox.height}`,
-          ...(orientation === 'vertical' ? { maxWidth: 420 } : { maxWidth: 720, minWidth: 480 }),
-        }}
-      >
+      <div className={`relative mx-auto ${isCompact ? '' : 'w-full'}`} style={containerStyle}>
         <svg
-          viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
+          viewBox={viewBoxStr}
           className="absolute inset-0 w-full h-full overflow-visible"
           aria-hidden="true"
         >
           {graph.edges.map((edge) => {
-            const from = positionOf(edge.from, orientation);
-            const to = positionOf(edge.to, orientation);
+            const from = positionOf(edge.from, posOrientation);
+            const to = positionOf(edge.to, posOrientation);
             if (!from || !to) return null;
             const d = buildPath(from.x, from.y, to.x, to.y);
             return (
@@ -134,7 +160,7 @@ export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
         {graph.nodes.map((node) => {
           const meta = getNodeMeta(node.id);
           if (!meta) return null;
-          const pos = positionOf(node.id, orientation);
+          const pos = positionOf(node.id, posOrientation);
           if (!pos) return null;
 
           const isLens = node.layer === 'lens';
@@ -162,12 +188,12 @@ export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
                 isLens ? 'rounded-full' : 'rounded-2xl'
               }`}
               style={{
-                left: `${(pos.x / viewBox.width) * 100}%`,
-                top: `${(pos.y / viewBox.height) * 100}%`,
+                left: `${toPercent(pos.x, 'x', orientation)}%`,
+                top: `${toPercent(pos.y, 'y', orientation)}%`,
                 transform: 'translate(-50%, -50%)',
-                width: isLens ? 'clamp(84px, 15vw, 128px)' : 'clamp(76px, 13vw, 108px)',
-                height: isLens ? 'clamp(84px, 15vw, 128px)' : undefined,
-                padding: isLens ? undefined : '10px 8px',
+                width: isLens ? (isCompact ? '60px' : 'clamp(84px, 15vw, 128px)') : isCompact ? '52px' : 'clamp(76px, 13vw, 108px)',
+                height: isLens ? (isCompact ? '60px' : 'clamp(84px, 15vw, 128px)') : undefined,
+                padding: isLens ? undefined : isCompact ? '6px 4px' : '10px 8px',
                 border: `2px solid ${isGated ? '#322D3B' : status.borderColor}`,
                 background: isGated
                   ? '#1C1922'
@@ -203,22 +229,25 @@ export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
               {/* lens 노드는 어떤 lens든 항상 Cpu(로봇 캐릭터, 기존 AI 코어와 동일)를 보여주고,
                   나머지 노드는 각자 자신의 아이콘(NODE_REGISTRY)을 보여줍니다. */}
               {isLens ? (
-                <Cpu className={`w-6 h-6 sm:w-7 sm:h-7 ${isGated ? 'text-[#5B5566]' : 'text-[#F4679B]'}`} strokeWidth={1.75} />
+                <Cpu
+                  className={`${isCompact ? 'w-5 h-5' : 'w-6 h-6 sm:w-7 sm:h-7'} ${isGated ? 'text-[#5B5566]' : 'text-[#F4679B]'}`}
+                  strokeWidth={1.75}
+                />
               ) : (
                 <meta.icon
-                  className={`w-5 h-5 sm:w-6 sm:h-6 ${isGated ? 'text-[#5B5566]' : 'text-[#F5F2F7]'}`}
+                  className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5 sm:w-6 sm:h-6'} ${isGated ? 'text-[#5B5566]' : 'text-[#F5F2F7]'}`}
                   strokeWidth={2}
                 />
               )}
               <span
-                className={`text-[10px] sm:text-[11px] font-semibold text-center leading-tight ${
+                className={`${isCompact ? 'text-[9px]' : 'text-[10px] sm:text-[11px]'} font-semibold text-center leading-tight ${
                   isGated ? 'text-[#5B5566]' : 'text-[#F5F2F7]'
                 }`}
               >
                 {meta.label}
               </span>
 
-              {!isLens && (
+              {!isLens && !isCompact && (
                 <span className="absolute bottom-1 right-1.5 text-[9px] text-[#5B5566]">
                   ~{meta.estimatedSeconds}초
                 </span>
@@ -235,6 +264,14 @@ export function CircuitBoard({ graph, onNodeClick }: CircuitBoardProps) {
             </button>
           );
         })}
+      </div>
+    );
+  }
+
+  if (compact) {
+    return (
+      <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-2">
+        {renderDiagram('compact')}
       </div>
     );
   }
