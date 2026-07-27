@@ -33,6 +33,8 @@ File parsing in `/api/chat` is dispatched by extension/mimetype: `.xlsx/.xls/.cs
 
 Both AI-facing prompts explicitly instruct the model to treat file/search/log content as untrusted data and ignore any embedded instructions — preserve this prompt-injection guard when editing either system prompt.
 
+[lib/lenses.ts](lib/lenses.ts)'s `COMMON_RULES` (shared anti-hallucination rules prepended to every lens's `systemPrompt`, requiring an `evidence` field — a verbatim source quote — on every array item, dropping items that can't cite one) is written as prose with an explicit "don't second-guess content that's actually there" framing rather than a flat bullet checklist. This isn't a style choice: an earlier bullet-list version of the same rules made `gpt-4.1-mini` collapse to refusing the entire `digest` lens (`summary: "자료에 없습니다"` with empty arrays) on ~20% of calls even when the source text plainly had content — stacking that many independent hedging rules as parallel bullets was enough to trigger self-censorship. The prose version fixed it (0/20 in testing). Don't reflatten this into a bullet list without re-running that kind of repeated-call test.
+
 ### Auth
 
 Supabase Auth (email/password + Google OAuth) gates the whole app via [middleware.ts](middleware.ts): any request that isn't `/login` or `/auth/*` requires a session, redirecting to `/login` (or returning a 401 JSON for `/api/*`). Because middleware already enforces this, the API routes under `app/api/` do **not** re-check auth themselves (see the comment at the top of each route) — don't add redundant auth checks there, but also don't remove the middleware gate without adding auth to those routes.

@@ -603,7 +603,7 @@ export default function HomePage() {
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm sm:text-xs text-[#E4DEEA] italic leading-loose">&quot;{item.excerpt}&quot;</p>
+                  <p className="text-sm sm:text-xs text-[#E4DEEA] italic leading-loose">&quot;{item.evidence}&quot;</p>
                   <div className="mt-2.5 sm:mt-2 h-1.5 sm:h-1 rounded-full bg-[#2A2632] overflow-hidden">
                     <div
                       className="h-full bg-[#6EE7B7]"
@@ -641,17 +641,26 @@ export default function HomePage() {
       <div className="flex flex-col gap-5 sm:gap-4">
         <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] leading-relaxed">{result.summary}</p>
         {result.keyPoints.length > 0 && (
-          <ul className="flex flex-col gap-2 sm:gap-1.5 list-disc list-inside">
+          <ul className="flex flex-col gap-2 sm:gap-1.5">
             {result.keyPoints.map((point, i) => (
-              <li key={i} className="text-sm sm:text-xs text-[#E4DEEA] leading-loose">{point}</li>
+              <li key={i} className="text-sm sm:text-xs text-[#E4DEEA] leading-loose list-disc list-inside">
+                {point.text}
+                {point.evidence && (
+                  <span className="block text-xs sm:text-[11px] text-[#857C93] italic mt-0.5 pl-4">&quot;{point.evidence}&quot;</span>
+                )}
+              </li>
             ))}
           </ul>
         )}
         {result.terms.length > 0 && (
           <div className="flex flex-wrap gap-2 sm:gap-1.5">
             {result.terms.map((term, i) => (
-              <span key={i} className="bg-[#2A2632] border border-[#332D3B] text-[#E4DEEA] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
-                {term}
+              <span
+                key={i}
+                title={term.evidence}
+                className="bg-[#2A2632] border border-[#332D3B] text-[#E4DEEA] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full"
+              >
+                {term.text}
               </span>
             ))}
           </div>
