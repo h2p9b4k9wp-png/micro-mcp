@@ -39,6 +39,32 @@ function getExtension(fileName: string): string {
   return idx === -1 ? '' : fileName.slice(idx + 1).toLowerCase();
 }
 
+const KNOWN_EXTENSIONS = new Set(['pdf', 'docx', 'xlsx', 'xls', 'csv', 'pptx', 'hwpx', 'hwp', 'txt', 'ics', 'ical', 'ppt', 'doc']);
+
+// 파일명의 확장자만으로는 판별이 안 될 때(확장자가 없거나 못 알아보는 확장자) MIME 타입으로
+// 한 번 더 추정합니다. 모바일 브라우저의 공유 시트·클라우드 연동 파일 선택기가 원본 파일명을
+// 그대로 안 넘기고 임시 이름(확장자 없음/다른 확장자)을 붙이는 경우가 있는데, 그럴 때도
+// File 객체의 MIME 타입(file.type)은 대체로 정확하게 남아있어서 이걸로 구제합니다.
+const MIME_TO_EXT: Record<string, string> = {
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'application/pdf': 'pdf',
+  'application/vnd.ms-excel': 'xls',
+  'text/csv': 'csv',
+  'application/vnd.ms-powerpoint': 'ppt',
+  'application/msword': 'doc',
+};
+
+// /api/extract뿐 아니라 /api/chat의 파일 파싱 분기도 이 함수로 "실제로 다뤄야 할 확장자"를
+// 판별합니다 — 파일명 확장자 판별 규칙을 두 곳에 따로 두지 않기 위함입니다.
+export function resolveFileExtension(fileName: string, mimeType?: string): string {
+  const ext = getExtension(fileName);
+  if (KNOWN_EXTENSIONS.has(ext)) return ext;
+  if (mimeType && MIME_TO_EXT[mimeType]) return MIME_TO_EXT[mimeType];
+  return ext;
+}
+
 // XML 태그를 걷어내고 텍스트 노드만 남깁니다 (pptx/hwpx가 공유하는 "압축 풀고 XML에서 글자만 뽑기" 로직).
 function extractTextFromXml(xml: string): string {
   const withoutTags = xml.replace(/<[^>]*>/g, '\n');
@@ -224,7 +250,7 @@ export async function extractFileText(
     throw new FileExtractError('파일이 너무 큽니다 (20MB 초과).');
   }
 
-  const ext = getExtension(fileName);
+  const ext = resolveFileExtension(fileName, mimeType);
 
   try {
     if (ext === 'hwp') {

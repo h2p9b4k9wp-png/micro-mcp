@@ -234,6 +234,11 @@ function chunkText(text: string, maxChars = 1500): string[] {
 
 const CHAT_IMAGE_MAX_EDGE = 1568; // GPT-4.1 mini 비전이 내부적으로 다운스케일하는 기준과 맞춰, 그 이상은 보내봐야 비용만 늘고 품질 이득이 없습니다.
 
+// OpenAI 비전이 실제로 받는 이미지 형식. 아이폰 기본 사진 형식인 HEIC/HEIF는 목록에 없음 —
+// 브라우저가 대신 변환해주지 않는 경우, 그대로 보내면 비전 모델이 못 읽어서 "분석이 안 되는데
+// 이유를 알 수 없는" 상황이 됩니다. 업로드 시점에 걸러서 바로 안내합니다.
+const SUPPORTED_CHAT_IMAGE_MIME_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+
 // 💡 [신규] 폰으로 찍은 사진처럼 큰 이미지를 GPT-4.1 mini에 보내기 전에 긴 변 기준
 // CHAT_IMAGE_MAX_EDGE로 줄여서 base64 용량(=토큰 비용)을 낮춥니다. 이미 그보다 작으면(대부분의
 // 스크린샷) 원본 포맷을 그대로 유지 — 리사이즈 과정에서 JPEG로 다시 인코딩되면 투명 배경이 깨질
@@ -744,6 +749,12 @@ export default function HomePage() {
           continue;
         }
 
+        const isImage = file.type.startsWith('image/');
+        if (isImage && !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
+          alert(`"${file.name}"은(는) AI가 읽을 수 없는 이미지 형식이에요(${file.type || '알 수 없음'}). 아이폰 사진이라면 설정에서 "호환성 우선(JPEG)"으로 바꾸거나, JPG/PNG로 다시 저장해서 올려주세요.`);
+          continue;
+        }
+
         const dataUrl: string = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result as string);
@@ -751,7 +762,6 @@ export default function HomePage() {
           reader.readAsDataURL(file);
         });
 
-        const isImage = file.type.startsWith('image/');
         const commaIndex = dataUrl.indexOf(',');
         const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
 
@@ -762,6 +772,7 @@ export default function HomePage() {
             ...prev,
             { id: `${Date.now()}-${file.name}`, name: file.name, kind: 'image', mimeType: resizedMimeType, dataUrl: resizedDataUrl },
           ]);
+          recordDocumentUpload(file.name, resizedMimeType);
           continue;
         }
 
@@ -784,6 +795,7 @@ export default function HomePage() {
             ...prev,
             { id: `${Date.now()}-${file.name}`, name: file.name, kind: 'text', text: data.text || '' },
           ]);
+          recordDocumentUpload(file.name, file.type);
         } catch (err: any) {
           alert(`"${file.name}" 처리 중 오류가 발생했어요: ${err.message || err}`);
         }
@@ -943,6 +955,7 @@ export default function HomePage() {
           }
           setProfessorDocuments(prev => [inserted, ...prev]);
           newlyInserted.push(inserted);
+          recordDocumentUpload(file.name, file.type);
 
           const chunks = chunkText(text);
           if (chunks.length > 0) {
