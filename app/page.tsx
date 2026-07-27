@@ -21,6 +21,8 @@ import {
   Paperclip,
   ImageIcon,
   X,
+  GraduationCap,
+  ArrowLeft,
 } from 'lucide-react';
 import type { NodeId, CircuitGraphState } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
@@ -93,6 +95,31 @@ interface DocumentUploadRecord {
   created_at: string;
 }
 
+// 💡 [신규] 교수님 단위로 자료를 모아 분석하는 기능 — professors/documents 테이블과 1:1 대응.
+// documents는 추출된 텍스트(content)까지 들고 있어서, 분석할 때마다 파일을 다시 올릴 필요가 없습니다.
+interface Professor {
+  id: string;
+  name: string;
+  school: string | null;
+  department: string | null;
+  created_at: string;
+}
+
+interface ProfessorDocument {
+  id: string;
+  professor_id: string | null;
+  file_name: string;
+  format: string;
+  content: string;
+  created_at: string;
+}
+
+interface ProfessorAnalysisResult {
+  topics: string[];
+  examStyle: string[];
+  assignmentStyle: string[];
+}
+
 // 파일명/MIME 타입으로 문서 형식을 분류합니다 (/api/chat의 파일 파싱 분기와 동일한 기준).
 function getFileFormatKey(name: string, mimeType?: string): string {
   const lowerName = name.toLowerCase();
@@ -104,6 +131,17 @@ function getFileFormatKey(name: string, mimeType?: string): string {
   if (mimeType && mimeType.startsWith('image/')) return 'image';
   return 'etc';
 }
+
+// getFileFormatKey가 뱉는 키에 대응하는 표시용 이모지 — '나의 기록' 탭 표기와 통일.
+const FORMAT_ICONS: Record<string, string> = {
+  excel: '📊',
+  hwp: '📃',
+  ppt: '📽️',
+  word: '📝',
+  pdf: '📕',
+  image: '🖼️',
+  etc: '📄',
+};
 
 // 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
@@ -141,6 +179,17 @@ const CHAT_LENS_CHOICES: { id: LensId | 'none'; label: string }[] = [
   { id: 'none', label: '그냥 대화' },
 ];
 
+// 💡 [신규] 교수님 분석 결과 아래 "더 올리면 알 수 있는 것" 유도 칸에 항상 보여주는 예시 항목 —
+// 자료가 몇 개든 상관없이 늘 더 세밀해질 수 있는 관찰이라 회색으로 고정 노출합니다(개수로 막지 않음).
+const PROFESSOR_TEASER_ITEMS = ['시험 문제 유형', '채점 기준의 엄격함', '선호하는 과제 형식'];
+
+// 자료 개수에 따라 분석 결과 위에 붙는 한 줄 — 개수가 많아질수록 신뢰도가 올라간다는 걸 보여줍니다.
+function getProfessorAnalysisFramingLine(count: number): string {
+  if (count <= 1) return '자료 1개로 본 첫인상이에요';
+  if (count <= 3) return `자료 ${count}개 기준 — 꽤 잡히기 시작했어요`;
+  return `자료 ${count}개 기준 — 패턴이 뚜렷해요`;
+}
+
 export default function HomePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -157,6 +206,23 @@ export default function HomePage() {
 
   const [activeTab, setActiveTab] = useState('workspace');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 💡 [신규] 교수님 단위 자료 모음 — professors 목록과 그 아래 모든 자료(documents)를 한 번에 들고
+  // 있다가 화면에서 professor_id로 걸러서 씁니다. 다른 사용자와 공유하지 않는, 이 계정 전용 데이터입니다.
+  const [professors, setProfessors] = useState<Professor[]>([]);
+  const [professorDocuments, setProfessorDocuments] = useState<ProfessorDocument[]>([]);
+  const [isProfessorsLoaded, setIsProfessorsLoaded] = useState(false);
+  const [selectedProfessorId, setSelectedProfessorId] = useState<string | null>(null);
+
+  const [isUploadingProfessorDoc, setIsUploadingProfessorDoc] = useState(false);
+  const [uploadProfessorChoice, setUploadProfessorChoice] = useState('');
+  const [newProfessorName, setNewProfessorName] = useState('');
+  const [newProfessorSchool, setNewProfessorSchool] = useState('');
+  const [newProfessorDepartment, setNewProfessorDepartment] = useState('');
+
+  const [professorAnalysis, setProfessorAnalysis] = useState<ProfessorAnalysisResult | null>(null);
+  const [isAnalyzingProfessor, setIsAnalyzingProfessor] = useState(false);
+  const [professorAnalysisError, setProfessorAnalysisError] = useState<string | null>(null);
 
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
@@ -277,6 +343,12 @@ export default function HomePage() {
     }
   }, [chatAttachments]);
 
+  // 교수님을 바꿔서 볼 때마다 이전 교수님의 분석 결과가 잠깐이라도 보이지 않도록 초기화합니다.
+  useEffect(() => {
+    setProfessorAnalysis(null);
+    setProfessorAnalysisError(null);
+  }, [selectedProfessorId]);
+
   useEffect(() => {
     const initApp = async () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -292,10 +364,12 @@ export default function HomePage() {
         setUser(retrySession.user);
         fetchLogs(retrySession.user.id);
         fetchDocumentUploads(retrySession.user.id);
+        fetchProfessorsAndDocuments(retrySession.user.id);
       } else {
         setUser(session.user);
         fetchLogs(session.user.id);
         fetchDocumentUploads(session.user.id);
+        fetchProfessorsAndDocuments(session.user.id);
       }
 
       setLoading(false);
@@ -327,6 +401,21 @@ export default function HomePage() {
 
     setDocumentUploads(data || []);
     setIsDocumentUploadsLoaded(true);
+  };
+
+  // 💡 [신규] 교수님 목록 + 그 아래 모든 자료를 함께 조회합니다 (자료는 professor_id로 화면에서 걸러 씁니다).
+  const fetchProfessorsAndDocuments = async (userId: string) => {
+    const [{ data: professorsData }, { data: documentsData }] = await Promise.all([
+      supabase.from('professors').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+      supabase
+        .from('documents')
+        .select('id, professor_id, file_name, format, content, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false }),
+    ]);
+    setProfessors(professorsData || []);
+    setProfessorDocuments(documentsData || []);
+    setIsProfessorsLoaded(true);
   };
 
   // 💡 [신규] 기존에 localStorage에만 있던 첨부 파일 이력을 DB로 1회 이전 (신규 마이그레이션 직후, 기록이 0개인 사용자 한정)
@@ -605,6 +694,135 @@ export default function HomePage() {
 
   const removeChatAttachment = (id: string) => {
     setChatAttachments(prev => prev.filter(a => a.id !== id));
+  };
+
+  // 💡 [신규] 교수님 새로 등록. 성공하면 새 교수님의 id를 반환합니다(같은 흐름에서 바로 파일을 올릴 수 있게).
+  const handleCreateProfessor = async (name: string, school: string, department: string): Promise<string | null> => {
+    if (!user || !name.trim()) return null;
+    const { data, error } = await supabase
+      .from('professors')
+      .insert({ user_id: user.id, name: name.trim(), school: school.trim() || null, department: department.trim() || null })
+      .select()
+      .single();
+    if (error || !data) {
+      alert(`교수님을 등록하지 못했어요: ${error?.message || '알 수 없는 오류'}`);
+      return null;
+    }
+    setProfessors(prev => [data, ...prev]);
+    return data.id;
+  };
+
+  // 💡 [신규] 파일에서 글자를 뽑아(/api/extract) documents 테이블에 저장합니다. 텍스트를 못 뽑는
+  // 형식(예: 이미지)은 안내만 하고 건너뜁니다 — /api/extract는 텍스트 추출 전용입니다.
+  const handleUploadProfessorFiles = async (fileList: FileList | File[], professorId: string) => {
+    const filesToUpload = Array.from(fileList);
+    if (filesToUpload.length === 0 || !user) return;
+
+    setIsUploadingProfessorDoc(true);
+    try {
+      for (const file of filesToUpload) {
+        if (file.size > 10 * 1024 * 1024) {
+          alert(`"${file.name}"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.`);
+          continue;
+        }
+
+        const dataUrl: string = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error('파일을 읽는 중 문제가 발생했어요.'));
+          reader.readAsDataURL(file);
+        });
+        const commaIndex = dataUrl.indexOf(',');
+        const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
+
+        try {
+          const res = await fetch('/api/extract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileName: file.name,
+              mimeType: file.type || 'application/octet-stream',
+              content: base64Content,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            alert(`"${file.name}"에서 글자를 뽑지 못했어요: ${data.error}`);
+            continue;
+          }
+
+          const format = getFileFormatKey(file.name, file.type);
+          const { data: inserted, error } = await supabase
+            .from('documents')
+            .insert({ user_id: user.id, professor_id: professorId, file_name: file.name, format, content: data.text || '' })
+            .select()
+            .single();
+          if (error || !inserted) {
+            alert(`"${file.name}"을 저장하지 못했어요: ${error?.message || '알 수 없는 오류'}`);
+            continue;
+          }
+          setProfessorDocuments(prev => [inserted, ...prev]);
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          alert(`"${file.name}" 처리 중 오류가 발생했어요: ${message}`);
+        }
+      }
+    } finally {
+      setIsUploadingProfessorDoc(false);
+    }
+  };
+
+  // 💡 [신규] 교수님 목록 화면의 "자료 올리기" 패널 전용 — 기존 교수님을 고르거나, "새 교수님 등록"을
+  // 고른 뒤 이름을 입력하면 그 자리에서 등록하고 바로 그 교수님에게 파일을 올립니다.
+  const handleProfessorUploadPanelFiles = async (fileList: FileList) => {
+    if (fileList.length === 0) return;
+
+    let professorId = uploadProfessorChoice;
+    if (professorId === '__new__') {
+      if (!newProfessorName.trim()) {
+        alert('교수님 이름을 입력해주세요.');
+        return;
+      }
+      const createdId = await handleCreateProfessor(newProfessorName, newProfessorSchool, newProfessorDepartment);
+      if (!createdId) return;
+      professorId = createdId;
+      setUploadProfessorChoice(createdId);
+      setNewProfessorName('');
+      setNewProfessorSchool('');
+      setNewProfessorDepartment('');
+    }
+    if (!professorId) {
+      alert('먼저 교수님을 선택하거나 새로 등록해주세요.');
+      return;
+    }
+    await handleUploadProfessorFiles(fileList, professorId);
+  };
+
+  // 💡 [신규] 이 교수님에게 쌓인 자료 전체(documents.content)를 모아 /api/analyze-professor로 분석합니다.
+  const handleAnalyzeProfessor = async (professorId: string) => {
+    const docs = professorDocuments.filter(d => d.professor_id === professorId);
+    if (docs.length === 0) return;
+
+    setIsAnalyzingProfessor(true);
+    setProfessorAnalysisError(null);
+    try {
+      const res = await fetch('/api/analyze-professor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documents: docs.map(d => ({ fileName: d.file_name, text: d.content })) }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setProfessorAnalysisError(data.error || '분석에 실패했어요.');
+        return;
+      }
+      setProfessorAnalysis(data.result);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setProfessorAnalysisError(message);
+    } finally {
+      setIsAnalyzingProfessor(false);
+    }
   };
 
   const handleExecute = async (e: React.FormEvent) => {
@@ -1039,6 +1257,7 @@ export default function HomePage() {
     { id: 'workspace', label: '물어보기', icon: Sparkles },
     { id: 'records', label: '나의 기록', icon: Archive },
     { id: 'deadlines', label: '마감일', icon: AlarmClock },
+    { id: 'professors', label: '교수님', icon: GraduationCap },
     { id: 'monitoring', label: '내 파일', icon: LineChart },
     { id: 'logs', label: '지난 대화', icon: ScrollText },
   ];
@@ -1667,6 +1886,294 @@ export default function HomePage() {
             </div>
           )}
 
+          {activeTab === 'professors' && !selectedProfessorId && (
+            <div>
+              <div className="mb-6">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                  교수님
+                </h1>
+                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                  교수님별로 자료를 모아두면, 자주 강조하는 주제나 문제 내는 방식을 한눈에 볼 수 있어요.
+                </p>
+              </div>
+
+              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7] mb-4">자료 올리기</h3>
+
+                <div className="flex flex-col gap-3">
+                  <select
+                    value={uploadProfessorChoice}
+                    onChange={(e) => setUploadProfessorChoice(e.target.value)}
+                    className="bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
+                  >
+                    <option value="">교수님 선택</option>
+                    {professors.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                    <option value="__new__">+ 새 교수님 등록</option>
+                  </select>
+
+                  {uploadProfessorChoice === '__new__' && (
+                    <div className="flex flex-col gap-2 bg-[#15131A] border border-[#322D3B] rounded-lg p-3.5">
+                      <input
+                        type="text"
+                        placeholder="이름 (필수)"
+                        value={newProfessorName}
+                        onChange={(e) => setNewProfessorName(e.target.value)}
+                        className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                      />
+                      <input
+                        type="text"
+                        placeholder="학교 (선택)"
+                        value={newProfessorSchool}
+                        onChange={(e) => setNewProfessorSchool(e.target.value)}
+                        className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                      />
+                      <input
+                        type="text"
+                        placeholder="학과 (선택)"
+                        value={newProfessorDepartment}
+                        onChange={(e) => setNewProfessorDepartment(e.target.value)}
+                        className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                      />
+                    </div>
+                  )}
+
+                  <label
+                    className={`inline-flex self-start items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                      isUploadingProfessorDoc || !uploadProfessorChoice
+                        ? 'bg-[#2A2632] text-[#857C93] cursor-wait'
+                        : 'bg-[#F4679B] hover:bg-[#D1477F] text-white cursor-pointer'
+                    }`}
+                  >
+                    {isUploadingProfessorDoc ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    <span>파일 선택</span>
+                    <input
+                      type="file"
+                      multiple
+                      className="hidden"
+                      disabled={isUploadingProfessorDoc || !uploadProfessorChoice}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          handleProfessorUploadPanelFiles(e.target.files);
+                        }
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                {!isProfessorsLoaded ? (
+                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
+                    불러오는 중...
+                  </div>
+                ) : professors.length === 0 ? (
+                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
+                    아직 등록된 교수님이 없어요. 위에서 자료를 올리며 등록해보세요.
+                  </div>
+                ) : (
+                  professors.map((p) => {
+                    const count = professorDocuments.filter((d) => d.professor_id === p.id).length;
+                    const subtitle = [p.school, p.department].filter(Boolean).join(' · ');
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setSelectedProfessorId(p.id)}
+                        className="bg-[#211E28] hover:bg-[#2A2632] rounded-2xl border border-[#322D3B] p-4 flex items-center justify-between gap-3 shadow-sm transition-colors text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="shrink-0 w-9 h-9 rounded-full bg-[#331F29] border border-[#5C3A4A] flex items-center justify-center text-[#F4679B]">
+                            <GraduationCap className="w-4 h-4" strokeWidth={2} />
+                          </span>
+                          <div className="min-w-0">
+                            <div className="text-sm font-semibold text-[#F5F2F7] truncate">{p.name}</div>
+                            {subtitle && <div className="text-xs text-[#857C93] mt-0.5 truncate">{subtitle}</div>}
+                          </div>
+                        </div>
+                        <span className="shrink-0 text-xs font-semibold text-[#AFA6BD] bg-[#15131A] border border-[#322D3B] px-2.5 py-1 rounded-full tabular-nums">
+                          자료 {count}개
+                        </span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'professors' && selectedProfessorId && (() => {
+            const professor = professors.find((p) => p.id === selectedProfessorId);
+            if (!professor) return null;
+            const docs = professorDocuments.filter((d) => d.professor_id === selectedProfessorId);
+            const subtitle = [professor.school, professor.department].filter(Boolean).join(' · ');
+
+            return (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProfessorId(null)}
+                  className="inline-flex items-center gap-1.5 text-xs text-[#AFA6BD] hover:text-[#F5F2F7] mb-4 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  교수님 목록으로
+                </button>
+
+                <div className="mb-6">
+                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">{professor.name}</h1>
+                  <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                    {subtitle || '학교/학과 정보 없음'}
+                  </p>
+                </div>
+
+                <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7]">자료 목록 ({docs.length}개)</h3>
+                    <label
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                        isUploadingProfessorDoc
+                          ? 'bg-[#15131A] border border-[#322D3B] text-[#857C93] cursor-wait'
+                          : 'bg-[#2A2632] hover:bg-[#332D3B] border border-[#423B4C] text-[#F5F2F7] cursor-pointer'
+                      }`}
+                    >
+                      {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
+                      자료 올리기
+                      <input
+                        type="file"
+                        multiple
+                        className="hidden"
+                        disabled={isUploadingProfessorDoc}
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            handleUploadProfessorFiles(e.target.files, professor.id);
+                          }
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {docs.length === 0 ? (
+                    <p className="text-sm text-[#857C93] text-center py-4">아직 올린 자료가 없어요.</p>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      {docs.map((d) => (
+                        <div key={d.id} className="flex items-center justify-between gap-3 bg-[#15131A] p-3 rounded-lg border border-[#322D3B] text-sm">
+                          <span className="text-[#F5F2F7] truncate flex items-center gap-2">
+                            <span>{FORMAT_ICONS[d.format] || '📄'}</span>
+                            {d.file_name}
+                          </span>
+                          <span className="shrink-0 text-xs text-[#857C93]">
+                            {new Date(d.created_at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={docs.length === 0 || isAnalyzingProfessor}
+                  onClick={() => handleAnalyzeProfessor(professor.id)}
+                  className="inline-flex items-center gap-2 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[#2A2632] disabled:text-[#857C93] disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                >
+                  {isAnalyzingProfessor && <Loader2 className="w-4 h-4 animate-spin" />}
+                  이 교수님 분석
+                </button>
+
+                {professorAnalysisError && (
+                  <p className="text-sm text-[#FF7A6B] mt-3">{professorAnalysisError}</p>
+                )}
+
+                {professorAnalysis && (
+                  <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mt-5 shadow-sm">
+                    <p className="text-xs sm:text-sm font-semibold text-[#F4679B] mb-4">
+                      {getProfessorAnalysisFramingLine(docs.length)}
+                    </p>
+
+                    <div className="flex flex-col gap-5 sm:gap-4">
+                      <div>
+                        <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2">자주 강조하는 주제</h4>
+                        {professorAnalysis.topics.length === 0 ? (
+                          <p className="text-sm text-[#857C93]">아직 뚜렷하게 반복되는 주제를 찾지 못했어요.</p>
+                        ) : (
+                          <div className="flex flex-wrap gap-2 sm:gap-1.5">
+                            {professorAnalysis.topics.map((topic, i) => (
+                              <span key={i} className="bg-[#2A2632] border border-[#332D3B] text-[#E4DEEA] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
+                                {topic}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2">문제 내는 방식</h4>
+                        {professorAnalysis.examStyle.length === 0 ? (
+                          <p className="text-sm text-[#857C93]">아직 문제 스타일을 판단할 근거가 부족해요.</p>
+                        ) : (
+                          <ul className="flex flex-col gap-1.5 list-disc list-inside">
+                            {professorAnalysis.examStyle.map((item, i) => (
+                              <li key={i} className="text-sm sm:text-xs text-[#E4DEEA] leading-loose">{item}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2">과제 요구 스타일</h4>
+                        {professorAnalysis.assignmentStyle.length === 0 ? (
+                          <p className="text-sm text-[#857C93]">아직 과제 스타일을 판단할 근거가 부족해요.</p>
+                        ) : (
+                          <ul className="flex flex-col gap-1.5 list-disc list-inside">
+                            {professorAnalysis.assignmentStyle.map((item, i) => (
+                              <li key={i} className="text-sm sm:text-xs text-[#E4DEEA] leading-loose">{item}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-5 border-t border-[#322D3B]">
+                      <h4 className="text-sm font-bold text-[#F5F2F7] mb-2.5">자료를 더 올리면 이런 걸 알 수 있어요</h4>
+                      <div className="flex flex-wrap gap-2 sm:gap-1.5 mb-4">
+                        {PROFESSOR_TEASER_ITEMS.map((item) => (
+                          <span key={item} className="bg-[#15131A] border border-[#322D3B] text-[#5B5566] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                      <label
+                        className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                          isUploadingProfessorDoc
+                            ? 'bg-[#15131A] border border-[#322D3B] text-[#857C93] cursor-wait'
+                            : 'bg-[#2A2632] hover:bg-[#332D3B] border border-[#423B4C] text-[#F5F2F7] cursor-pointer'
+                        }`}
+                      >
+                        {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
+                        바로 파일 올리기
+                        <input
+                          type="file"
+                          multiple
+                          className="hidden"
+                          disabled={isUploadingProfessorDoc}
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files.length > 0) {
+                              handleUploadProfessorFiles(e.target.files, professor.id);
+                            }
+                            e.target.value = '';
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {activeTab === 'monitoring' && (
             <div>
