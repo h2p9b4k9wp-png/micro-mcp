@@ -695,6 +695,9 @@ export default function HomePage() {
               <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] mb-2 sm:mb-1.5 leading-relaxed">Q. {item.question}</p>
               <p className="text-sm sm:text-xs text-[#F4679B] mb-2 sm:mb-1.5 leading-loose">약점: {item.targetWeakness}</p>
               <p className="text-sm sm:text-xs text-[#E4DEEA] leading-loose">A. {item.draftAnswer}</p>
+              {item.source_quote && (
+                <p className="text-xs sm:text-[11px] text-[#857C93] italic leading-loose mt-1.5">근거: &quot;{item.source_quote}&quot;</p>
+              )}
             </li>
           ))}
         </ul>
