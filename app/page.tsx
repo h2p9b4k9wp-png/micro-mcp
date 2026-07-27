@@ -111,6 +111,7 @@ interface ProfessorDocument {
   file_name: string;
   format: string;
   content: string;
+  doc_type: string;
   created_at: string;
 }
 
@@ -127,6 +128,7 @@ interface ProfessorAnalysisResult {
   assignmentStyle: ProfessorAnalysisCategory;
   examQuestionTypes: ProfessorAnalysisCategory;
   gradingStrictness: ProfessorAnalysisCategory;
+  researchInterests: ProfessorAnalysisCategory;
 }
 
 // professor_analysis 테이블 한 행 — 교수님 1명당 최신 분석 결과 하나(upsert).
@@ -159,6 +161,16 @@ const FORMAT_ICONS: Record<string, string> = {
   image: '🖼️',
   etc: '📄',
 };
+
+// 💡 교수님 자료의 "종류" — 파일 형식(FORMAT_ICONS)과는 다른 축입니다. 논문(paper)은
+// /api/analyze-professor가 "이 교수님의 연구 관심사" 카테고리의 유일한 근거로 삼습니다.
+const DOC_TYPE_DEFS: { key: string; label: string }[] = [
+  { key: 'lecture', label: '강의자료' },
+  { key: 'exam', label: '시험지' },
+  { key: 'assignment', label: '과제' },
+  { key: 'paper', label: '논문' },
+];
+const DOC_TYPE_LABELS: Record<string, string> = Object.fromEntries(DOC_TYPE_DEFS.map((d) => [d.key, d.label]));
 
 // 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
@@ -205,6 +217,7 @@ const PROFESSOR_CATEGORY_DEFS: { key: keyof ProfessorAnalysisResult; label: stri
   { key: 'assignmentStyle', label: '과제 요구 스타일' },
   { key: 'examQuestionTypes', label: '시험 문제 유형' },
   { key: 'gradingStrictness', label: '채점 기준의 엄격함' },
+  { key: 'researchInterests', label: '연구 관심사' },
 ];
 
 // 문서를 일정 길이로 쪼갭니다(doc_chunks 저장용). 지금은 분석에서 안 쓰이지만, 업로드 시점에
@@ -255,6 +268,12 @@ export default function HomePage() {
   const [newProfessorName, setNewProfessorName] = useState('');
   const [newProfessorSchool, setNewProfessorSchool] = useState('');
   const [newProfessorDepartment, setNewProfessorDepartment] = useState('');
+  // 💡 [신규] 직전에 등록한 교수님의 학교/학과를 기억해뒀다가, 다음 교수님 등록 폼에 기본값으로
+  // 채워줍니다(같은 학교 학생이 여러 교수님을 등록하는 경우를 가정) — 물론 그 자리에서 수정 가능합니다.
+  const [professorFormDefaults, setProfessorFormDefaults] = useState<{ school: string; department: string } | null>(null);
+  // 💡 [신규] 자료 업로드 시 함께 지정하는 자료 종류(강의자료/시험지/과제/논문) — 목록 화면 패널과
+  // 교수님 상세 화면의 두 업로드 버튼이 공유하는 단일 선택 상태입니다.
+  const [uploadDocType, setUploadDocType] = useState('lecture');
 
   // 💡 [수정] 교수님별 최신 분석 결과(professor_analysis 테이블과 동기화) — professor_id로 찾아 씁니다.
   // 로컬 전용 단일 상태가 아니라 서버에 upsert된 값을 그대로 반영하므로, 자료 추가/삭제 후
@@ -371,6 +390,12 @@ export default function HomePage() {
     }
   }, [deadlines, isDeadlinesLoaded, user]);
 
+  // 💡 [신규] 직전에 등록한 교수님의 학교/학과 기본값 불러오기 — "새 교수님 등록" 폼을 열 때 미리 채워줍니다.
+  useEffect(() => {
+    if (!user) return;
+    setProfessorFormDefaults(loadUserScopedItem<{ school: string; department: string }>(user.id, 'mcp_professor_defaults'));
+  }, [user]);
+
   // 텍스트 첨부가 하나도 안 남으면 미니 전선/관점 선택 자체가 의미 없으니 초기화합니다.
   useEffect(() => {
     if (!chatAttachments.some((a) => a.kind === 'text')) {
@@ -449,7 +474,7 @@ export default function HomePage() {
       supabase.from('professors').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
       supabase
         .from('documents')
-        .select('id, professor_id, file_name, format, content, created_at')
+        .select('id, professor_id, file_name, format, content, doc_type, created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: false }),
       supabase
@@ -750,12 +775,21 @@ export default function HomePage() {
     setChatAttachments(prev => prev.filter(a => a.id !== id));
   };
 
-  // 💡 [신규] 교수님 새로 등록. 성공하면 새 교수님의 id를 반환합니다(같은 흐름에서 바로 파일을 올릴 수 있게).
+  // 💡 [신규] 교수님 새로 등록. 학교/학과는 필수이고, 성공하면 다음 등록 폼의 기본값으로 기억해둡니다
+  // (전공 용어·출제 관행 해석에 학교/학과 맥락이 꼭 필요해서 — recomputeProfessorAnalysis 참고).
+  // 성공하면 새 교수님의 id를 반환합니다(같은 흐름에서 바로 파일을 올릴 수 있게).
   const handleCreateProfessor = async (name: string, school: string, department: string): Promise<string | null> => {
     if (!user || !name.trim()) return null;
+    const trimmedSchool = school.trim();
+    const trimmedDepartment = department.trim();
+    if (!trimmedSchool || !trimmedDepartment) {
+      alert('학교와 학과를 입력해주세요.');
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('professors')
-      .insert({ user_id: user.id, name: name.trim(), school: school.trim() || null, department: department.trim() || null })
+      .insert({ user_id: user.id, name: name.trim(), school: trimmedSchool, department: trimmedDepartment })
       .select()
       .single();
     if (error || !data) {
@@ -763,6 +797,11 @@ export default function HomePage() {
       return null;
     }
     setProfessors(prev => [data, ...prev]);
+
+    const defaults = { school: trimmedSchool, department: trimmedDepartment };
+    setProfessorFormDefaults(defaults);
+    saveUserScopedItem(user.id, 'mcp_professor_defaults', defaults);
+
     return data.id;
   };
 
@@ -773,6 +812,7 @@ export default function HomePage() {
   const recomputeProfessorAnalysis = async (professorId: string, docsOverride?: ProfessorDocument[]) => {
     const docs = docsOverride ?? professorDocuments.filter(d => d.professor_id === professorId);
     if (!user || docs.length === 0) return;
+    const professor = professors.find(p => p.id === professorId);
 
     setIsAnalyzingProfessor(true);
     setProfessorAnalysisError(null);
@@ -780,7 +820,10 @@ export default function HomePage() {
       const res = await fetch('/api/analyze-professor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ documents: docs.map(d => ({ fileName: d.file_name, text: d.content })) }),
+        body: JSON.stringify({
+          documents: docs.map(d => ({ fileName: d.file_name, text: d.content, docType: d.doc_type })),
+          professor: professor ? { school: professor.school, department: professor.department } : undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -812,7 +855,7 @@ export default function HomePage() {
   // 💡 [신규] 파일에서 글자를 뽑아(/api/extract) documents 테이블에 저장하고, doc_chunks로도 쪼개
   // 저장합니다. 텍스트를 못 뽑는 형식(예: 이미지)은 안내만 하고 건너뜁니다. 하나라도 성공하면
   // 이 교수님 분석을 자동으로 다시 계산해 예전 결과가 남아있지 않게 합니다.
-  const handleUploadProfessorFiles = async (fileList: FileList | File[], professorId: string) => {
+  const handleUploadProfessorFiles = async (fileList: FileList | File[], professorId: string, docType: string) => {
     const filesToUpload = Array.from(fileList);
     if (filesToUpload.length === 0 || !user) return;
 
@@ -854,7 +897,7 @@ export default function HomePage() {
           const text = data.text || '';
           const { data: inserted, error } = await supabase
             .from('documents')
-            .insert({ user_id: user.id, professor_id: professorId, file_name: file.name, format, content: text })
+            .insert({ user_id: user.id, professor_id: professorId, file_name: file.name, format, content: text, doc_type: docType })
             .select()
             .single();
           if (error || !inserted) {
@@ -914,7 +957,7 @@ export default function HomePage() {
       alert('먼저 교수님을 선택하거나 새로 등록해주세요.');
       return;
     }
-    await handleUploadProfessorFiles(fileList, professorId);
+    await handleUploadProfessorFiles(fileList, professorId, uploadDocType);
   };
 
   // 💡 [신규] 자료 삭제 — documents에서 지우면 doc_chunks는 on delete cascade로 함께 지워집니다.
@@ -2016,7 +2059,14 @@ export default function HomePage() {
                 <div className="flex flex-col gap-3">
                   <select
                     value={uploadProfessorChoice}
-                    onChange={(e) => setUploadProfessorChoice(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setUploadProfessorChoice(value);
+                      if (value === '__new__' && professorFormDefaults) {
+                        setNewProfessorSchool(professorFormDefaults.school);
+                        setNewProfessorDepartment(professorFormDefaults.department);
+                      }
+                    }}
                     className="bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                   >
                     <option value="">교수님 선택</option>
@@ -2037,20 +2087,31 @@ export default function HomePage() {
                       />
                       <input
                         type="text"
-                        placeholder="학교 (선택)"
+                        placeholder="학교 (필수)"
                         value={newProfessorSchool}
                         onChange={(e) => setNewProfessorSchool(e.target.value)}
                         className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                       />
                       <input
                         type="text"
-                        placeholder="학과 (선택)"
+                        placeholder="학과 (필수)"
                         value={newProfessorDepartment}
                         onChange={(e) => setNewProfessorDepartment(e.target.value)}
                         className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                       />
+                      <p className="text-[11px] text-[#857C93]">학교·학과 정보는 전공 용어와 출제 관행을 더 정확히 해석하는 데 쓰여요.</p>
                     </div>
                   )}
+
+                  <select
+                    value={uploadDocType}
+                    onChange={(e) => setUploadDocType(e.target.value)}
+                    className="bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
+                  >
+                    {DOC_TYPE_DEFS.map((def) => (
+                      <option key={def.key} value={def.key}>{def.label}</option>
+                    ))}
+                  </select>
 
                   <label
                     className={`inline-flex self-start items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
@@ -2074,6 +2135,7 @@ export default function HomePage() {
                       }}
                     />
                   </label>
+                  <p className="text-xs text-[#857C93]">교수님 논문을 올리면 관심 분야와 강조하는 관점을 훨씬 정확히 파악해요.</p>
                 </div>
               </div>
 
@@ -2146,31 +2208,43 @@ export default function HomePage() {
                 </div>
 
                 <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                  <div className="flex items-center justify-between gap-3 mb-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                     <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7]">자료 목록 ({docs.length}개)</h3>
-                    <label
-                      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
-                        isUploadingProfessorDoc
-                          ? 'bg-[#15131A] border border-[#322D3B] text-[#857C93] cursor-wait'
-                          : 'bg-[#2A2632] hover:bg-[#332D3B] border border-[#423B4C] text-[#F5F2F7] cursor-pointer'
-                      }`}
-                    >
-                      {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
-                      자료 올리기
-                      <input
-                        type="file"
-                        multiple
-                        className="hidden"
-                        disabled={isUploadingProfessorDoc}
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files.length > 0) {
-                            handleUploadProfessorFiles(e.target.files, professor.id);
-                          }
-                          e.target.value = '';
-                        }}
-                      />
-                    </label>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <select
+                        value={uploadDocType}
+                        onChange={(e) => setUploadDocType(e.target.value)}
+                        className="bg-[#15131A] border border-[#423B4C] rounded-lg px-2.5 py-2 text-[#F5F2F7] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
+                      >
+                        {DOC_TYPE_DEFS.map((def) => (
+                          <option key={def.key} value={def.key}>{def.label}</option>
+                        ))}
+                      </select>
+                      <label
+                        className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
+                          isUploadingProfessorDoc
+                            ? 'bg-[#15131A] border border-[#322D3B] text-[#857C93] cursor-wait'
+                            : 'bg-[#2A2632] hover:bg-[#332D3B] border border-[#423B4C] text-[#F5F2F7] cursor-pointer'
+                        }`}
+                      >
+                        {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
+                        자료 올리기
+                        <input
+                          type="file"
+                          multiple
+                          className="hidden"
+                          disabled={isUploadingProfessorDoc}
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files.length > 0) {
+                              handleUploadProfessorFiles(e.target.files, professor.id, uploadDocType);
+                            }
+                            e.target.value = '';
+                          }}
+                        />
+                      </label>
+                    </div>
                   </div>
+                  <p className="text-[11px] text-[#857C93] mb-4">교수님 논문을 올리면 관심 분야와 강조하는 관점을 훨씬 정확히 파악해요.</p>
 
                   {docs.length === 0 ? (
                     <p className="text-sm text-[#857C93] text-center py-4">아직 올린 자료가 없어요.</p>
@@ -2181,6 +2255,9 @@ export default function HomePage() {
                           <span className="text-[#F5F2F7] truncate flex items-center gap-2 min-w-0">
                             <span className="shrink-0">{FORMAT_ICONS[d.format] || '📄'}</span>
                             <span className="truncate">{d.file_name}</span>
+                            <span className="shrink-0 text-[10px] font-semibold text-[#AFA6BD] bg-[#2A2632] border border-[#332D3B] px-2 py-0.5 rounded-full">
+                              {DOC_TYPE_LABELS[d.doc_type] || d.doc_type}
+                            </span>
                           </span>
                           <div className="shrink-0 flex items-center gap-2.5">
                             <span className="text-xs text-[#857C93]">
@@ -2266,7 +2343,7 @@ export default function HomePage() {
                             disabled={isUploadingProfessorDoc}
                             onChange={(e) => {
                               if (e.target.files && e.target.files.length > 0) {
-                                handleUploadProfessorFiles(e.target.files, professor.id);
+                                handleUploadProfessorFiles(e.target.files, professor.id, uploadDocType);
                               }
                               e.target.value = '';
                             }}
