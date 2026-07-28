@@ -2105,9 +2105,9 @@ export default function HomePage() {
                     <h3 className="text-sm font-bold text-[#F5F2F7]">분석한 문서</h3>
                   </div>
                   <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
-                    {files.length}<span className="text-xs font-medium text-[#857C93] ml-1">개</span>
+                    {documentUploads.length}<span className="text-xs font-medium text-[#857C93] ml-1">개</span>
                   </div>
-                  {files.length === 0 ? (
+                  {documentUploads.length === 0 ? (
                     <p className="text-xs text-[#857C93]">아직 첨부한 문서가 없어요.</p>
                   ) : (
                     <div className="flex flex-col gap-1.5">
