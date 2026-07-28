@@ -13,6 +13,12 @@ import { extractFileText, FileExtractError, resolveFileExtension } from '@/lib/f
 // 💡 [속도 개선] 스트리밍 응답이 중간에 버퍼링되지 않도록, 이 라우트를 항상 동적으로 실행되게 강제합니다.
 export const dynamic = 'force-dynamic';
 
+// 💡 [신규] app/page.tsx가 첨부 시점에 10MB 초과 파일을 걸러내고 있지만, 그건 클라이언트
+// 쪽 안내일 뿐 서버가 직접 강제하지는 않았습니다 — 수정된 클라이언트나 API를 직접 호출하면
+// 임의 크기 파일이 그대로 파싱/OCR/OpenAI 호출로 이어질 수 있어, 클라이언트가 안내하는 것과
+// 같은 10MB 기준을 서버에서도 그대로 강제합니다.
+const MAX_CHAT_FILE_BYTES = 10 * 1024 * 1024;
+
 // 💡 [신규] "물어보기" 채팅창에서 직접 첨부한 파일/사진의 요청 body 형태 (app/page.tsx의 ChatAttachment와 대응).
 interface ChatAttachmentPayload {
   name: string;
@@ -141,6 +147,14 @@ export async function POST(req: Request) {
     let fileTextSummary = "";
     if (files && files.length > 0) {
       for (const f of files) {
+        // base64 길이만으로 대략적인 바이트 수를 먼저 걸러냅니다(lib/file-text-extract.ts의
+        // extractFileText와 동일한 방식) — 과도하게 큰 페이로드를 굳이 디코딩하지 않고 빠르게 건너뜁니다.
+        const approxBytes = (f.content.length * 3) / 4;
+        if (approxBytes > MAX_CHAT_FILE_BYTES) {
+          fileTextSummary += `[첨부 파일: ${f.name}]\n(파일이 너무 커서(10MB 초과) 처리하지 못했습니다. 더 작은 파일로 다시 시도해주세요.)\n\n`;
+          continue;
+        }
+
         // 💡 [수정] 파일명 확장자만 보고 분기하면, 모바일 브라우저의 공유 시트·클라우드 연동
         // 파일 선택기가 원본 파일명을 그대로 안 넘기고 확장자 없는 임시 이름을 붙이는 경우
         // 전부 "지원하지 않는 형식"으로 잘못 거부됩니다. MIME 타입도 함께 참고해서 판별합니다.
