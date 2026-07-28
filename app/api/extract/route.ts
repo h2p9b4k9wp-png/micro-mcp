@@ -3,7 +3,7 @@ import { extractFileText, FileExtractError } from '@/lib/file-text-extract';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { MAX_UPLOAD_BYTES } from '@/lib/upload-limits';
-import { getPlanLimits, getMonthStartISOString } from '@/lib/plan-limits';
+import { checkFileQuota } from '@/lib/plan-limits';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 // 파일 하나를 받아 텍스트만 뽑아 돌려줍니다. 실제 파일 판별·파싱은 lib/file-text-extract.ts를 씁니다.
@@ -19,27 +19,14 @@ export async function POST(req: Request) {
       );
     }
 
-    // 💡 [신규] 유료 전환 준비 — 월간 파일 처리 한도(무료/Pro). document_uploads 테이블은
-    // 이미 이 계정이 성공적으로 추가한 파일/사진 이력을 담고 있어(app/page.tsx의
-    // recordDocumentUpload 참고) 이번 달 몫만 세면 됩니다. 이 라우트가 텍스트 파일 첨부의
-    // 공용 관문이라 여기서 검사합니다 — 채팅 이미지 첨부처럼 이 라우트를 거치지 않는 경로는
-    // 이 한도의 적용을 받지 않습니다(범위 밖).
+    // 💡 [신규] 유료 전환 준비 — 월간 파일 처리 한도(무료/Pro). checkFileQuota를
+    // /api/upload-quota와 공유합니다 — 채팅 이미지 첨부처럼 이 라우트를 거치지 않는 경로는
+    // 그쪽에서 같은 함수로 검사합니다.
     if (userId) {
-      const [{ data: profile }, { count: monthlyCount }] = await Promise.all([
-        supabase.from('profiles').select('is_pro').eq('id', userId).single(),
-        supabase
-          .from('document_uploads')
-          .select('id', { count: 'exact', head: true })
-          .gte('created_at', getMonthStartISOString()),
-      ]);
-      const limits = getPlanLimits(Boolean(profile?.is_pro));
-      if (monthlyCount !== null && monthlyCount >= limits.filesPerMonth) {
+      const quota = await checkFileQuota(supabase, userId);
+      if (!quota.ok) {
         return NextResponse.json(
-          {
-            error: `이번 달 파일 처리 한도(${limits.filesPerMonth}회)에 도달했어요.`,
-            limitReached: true,
-            limitType: 'file',
-          },
+          { error: quota.error, limitReached: true, limitType: 'file' },
           { status: 403 }
         );
       }

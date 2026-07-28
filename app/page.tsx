@@ -859,6 +859,25 @@ export default function HomePage() {
         const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
 
         if (isImage) {
+          // 💡 [신규] 이미지는 /api/extract를 거치지 않아 월간 파일 처리 한도가 적용되지
+          // 않는 구멍이었습니다 — 첨부 직전에 /api/upload-quota로 서버측 한도를 확인합니다.
+          // 이 확인 요청 자체가 실패(네트워크 오류 등)하면 첨부까지 막지는 않고 그냥
+          // 넘어갑니다(부가 기능 하나의 오류로 핵심 첨부 기능이 막히지 않도록).
+          try {
+            const quotaRes = await fetch('/api/upload-quota');
+            const quotaData = await quotaRes.json();
+            if (!quotaRes.ok) {
+              if (quotaData.limitReached) {
+                openUpgradeModal(quotaData.error);
+                break;
+              }
+              alert(quotaData.error || '한도를 확인하지 못했어요.');
+              continue;
+            }
+          } catch (quotaErr) {
+            console.error('업로드 한도 확인 실패:', quotaErr);
+          }
+
           const resizedDataUrl = await resizeImageDataUrl(dataUrl);
           const resizedMimeType = resizedDataUrl === dataUrl ? file.type : 'image/jpeg';
           setChatAttachments(prev => [
