@@ -98,6 +98,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '분석할 자료가 없습니다.' }, { status: 400 });
     }
 
+    // 💡 [신규] 클라이언트(app/page.tsx)가 교수님 1명당 자료 개수를 50개로 제한하지만, API를
+    // 직접 호출하면 우회될 수 있습니다 — 매 호출마다 documents 전체를 프롬프트에 실어 보내는
+    // 이 라우트가 실질적인 비용 발생 지점이라 여기서도 동일한 상한을 강제합니다.
+    if (documents.length > 50) {
+      return NextResponse.json(
+        { error: '한 번에 분석할 수 있는 자료는 최대 50개입니다.' },
+        { status: 400 }
+      );
+    }
+
     // 💡 [신규] 답변 언어는 BASE_SYSTEM_PROMPT(고정 프리픽스)가 아니라 매 요청마다 달라지는 user
     // 메시지 쪽에 넣습니다 — lib/lenses.ts COMMON_RULES와 같은 이유(캐싱 프리픽스 보존).
     const languageDirective = locale === 'en'

@@ -266,6 +266,11 @@ function chunkText(text: string, maxChars = 1500): string[] {
 
 const CHAT_IMAGE_MAX_EDGE = 1568; // GPT-4.1 mini 비전이 내부적으로 다운스케일하는 기준과 맞춰, 그 이상은 보내봐야 비용만 늘고 품질 이득이 없습니다.
 
+// 💡 [신규] 교수님 1명당 누적 가능한 자료 개수 상한. recomputeProfessorAnalysis가 자료를
+// 추가할 때마다 그 교수님의 전체 누적 자료를 다시 전송해 재분석하므로, 상한이 없으면 자료가
+// 쌓일수록 업로드 1건당 비용(전송 토큰 수)이 계속 커집니다.
+const MAX_PROFESSOR_DOCUMENTS = 50;
+
 // OpenAI 비전이 실제로 받는 이미지 형식. 아이폰 기본 사진 형식인 HEIC/HEIF는 목록에 없음 —
 // 브라우저가 대신 변환해주지 않는 경우, 그대로 보내면 비전 모델이 못 읽어서 "분석이 안 되는데
 // 이유를 알 수 없는" 상황이 됩니다. 업로드 시점에 걸러서 바로 안내합니다.
@@ -968,6 +973,12 @@ export default function HomePage() {
   const handleUploadProfessorFiles = async (fileList: FileList | File[], professorId: string, docType: string) => {
     const filesToUpload = Array.from(fileList);
     if (filesToUpload.length === 0 || !user) return;
+
+    const existingCount = professorDocuments.filter(d => d.professor_id === professorId).length;
+    if (existingCount + filesToUpload.length > MAX_PROFESSOR_DOCUMENTS) {
+      alert(`이 교수님에게는 최대 ${MAX_PROFESSOR_DOCUMENTS}개까지만 자료를 등록할 수 있어요(현재 ${existingCount}개). 필요 없는 자료를 먼저 삭제해주세요.`);
+      return;
+    }
 
     setIsUploadingProfessorDoc(true);
     const newlyInserted: ProfessorDocument[] = [];
