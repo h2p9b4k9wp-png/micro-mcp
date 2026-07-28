@@ -28,6 +28,7 @@ import type { NodeId, CircuitGraphState, GraphNode } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
+import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -805,6 +806,11 @@ export default function HomePage() {
   const handleChatAttachmentFiles = async (fileList: FileList | File[]) => {
     const filesToAttach = Array.from(fileList);
     if (filesToAttach.length === 0) return;
+
+    if (chatAttachments.length + filesToAttach.length > MAX_CHAT_ATTACHMENTS) {
+      alert(`한 번에 첨부할 수 있는 파일/이미지는 최대 ${MAX_CHAT_ATTACHMENTS}개예요(현재 ${chatAttachments.length}개). 파일 수를 줄이거나 이미 첨부한 걸 지우고 다시 시도해주세요.`);
+      return;
+    }
 
     setIsAttachingChatFile(true);
     try {
