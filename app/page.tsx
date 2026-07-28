@@ -1103,6 +1103,24 @@ export default function HomePage() {
     await recomputeProfessorAnalysis(professorId, remaining);
   };
 
+  // 💡 [신규] 교수님 자체를 삭제 — documents/doc_chunks/professor_analysis는 모두 professor_id에
+  // on delete cascade로 걸려있어 DB에서 함께 정리됩니다(supabase/migrations/20260727_...,
+  // 20260728_...). 되돌릴 수 없는 작업이라(등록된 자료가 전부 함께 사라짐) 확인을 한 번 거칩니다.
+  const handleDeleteProfessor = async (professorId: string, professorName: string) => {
+    if (!window.confirm(`"${professorName}" 교수님과 등록된 자료를 모두 삭제할까요? 이 작업은 되돌릴 수 없어요.`)) {
+      return;
+    }
+    const { error } = await supabase.from('professors').delete().eq('id', professorId);
+    if (error) {
+      alert(`교수님을 삭제하지 못했어요: ${error.message}`);
+      return;
+    }
+    setProfessors(prev => prev.filter(p => p.id !== professorId));
+    setProfessorDocuments(prev => prev.filter(d => d.professor_id !== professorId));
+    setProfessorAnalyses(prev => prev.filter(a => a.professor_id !== professorId));
+    setSelectedProfessorId(null);
+  };
+
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
     // 💡 [신규] 미니 전선에서 관점을 골라둔 상태(그냥 대화가 아님)면 프롬프트가 비어 있어도 보낼 수
@@ -2504,14 +2522,23 @@ export default function HomePage() {
 
             return (
               <div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedProfessorId(null)}
-                  className="inline-flex items-center gap-1.5 text-xs text-[#AFA6BD] hover:text-[#F5F2F7] mb-4 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
-                  교수님 목록으로
-                </button>
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProfessorId(null)}
+                    className="inline-flex items-center gap-1.5 text-xs text-[#AFA6BD] hover:text-[#F5F2F7] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
+                    교수님 목록으로
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteProfessor(professor.id, professor.name)}
+                    className="text-xs text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B] rounded px-2 py-1"
+                  >
+                    교수님 삭제
+                  </button>
+                </div>
 
                 <div className="mb-6">
                   <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">{professor.name}</h1>
