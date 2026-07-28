@@ -53,7 +53,6 @@ Supabase Auth (email/password + Google OAuth) gates the whole app via [middlewar
 
 - [app/login/page.tsx](app/login/page.tsx) and [app/page.tsx](app/page.tsx) both construct their own `createBrowserClient` from `@supabase/ssr` using `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - [app/auth/callback/route.ts](app/auth/callback/route.ts) exchanges the OAuth `code` for a session server-side (`createServerClient`) and redirects to `/`.
-- [app/api/v1/[username]/[slug]/route.ts](app/api/v1/[username]/[slug]/route.ts) is a separate public-ish REST endpoint (get/set a named `prompts` row for a `profiles.username`) that uses the Supabase **service role** key directly, bypassing RLS — it relies entirely on the middleware auth gate rather than per-row auth, so any authenticated user can currently read/write any username's prompt at a given slug. Be careful before extending this route's surface.
 
 ### Data model (Supabase)
 
@@ -75,7 +74,6 @@ None of the above migrations are auto-applied — the app only holds the anon/se
 
 Required at runtime (not committed; see `.env.local` locally):
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — used client- and server-side
-- `SUPABASE_SERVICE_ROLE_KEY` — server-only, used by the `/api/v1/[username]/[slug]` route
 - `OPENAI_API_KEY` — required by `/api/chat`, `/api/analyze`, and `/api/analyze-professor` (model: `gpt-4.1-mini`); routes return a clean JSON error if missing rather than throwing
 - `TAVILY_API_KEY` — optional; if unset, the search block degrades gracefully (tells the model to say so rather than guess)
 
