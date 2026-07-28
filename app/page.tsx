@@ -1864,9 +1864,9 @@ export default function HomePage() {
                           type="button"
                           onClick={() => removeChatAttachment(a.id)}
                           aria-label={t('workspace.removeAttachment', { name: a.name })}
-                          className="shrink-0 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[#2A2632] text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+                          className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[#2A2632] text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
                         >
-                          <X className="w-3 h-3" strokeWidth={2.5} />
+                          <X className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
                       </span>
                     ))}
