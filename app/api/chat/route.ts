@@ -277,7 +277,17 @@ export async function POST(req: Request) {
       chatAttachments
         .filter((a) => a && a.kind === 'image' && typeof a.dataUrl === 'string')
         .forEach((a) => {
-          chatImageParts.push({ type: 'image_url', image_url: { url: a.dataUrl as string } });
+          const dataUrl = a.dataUrl as string;
+          // 💡 [신규] 클라이언트가 첨부 시점에 10MB 초과 이미지를 걸러 안내하지만, 서버는
+          // 지금까지 검증 없이 dataUrl을 그대로 vision API로 넘겼습니다 — files 배열과
+          // 동일한 기준(10MB)을 base64 payload 길이로 여기서도 강제합니다.
+          const base64Payload = dataUrl.includes(',') ? dataUrl.slice(dataUrl.indexOf(',') + 1) : dataUrl;
+          const approxBytes = (base64Payload.length * 3) / 4;
+          if (approxBytes > MAX_CHAT_FILE_BYTES) {
+            chatAttachmentTextSummary += `[첨부 이미지: ${a.name}]\n(이미지가 너무 커서(10MB 초과) 처리하지 못했습니다.)\n\n`;
+            return;
+          }
+          chatImageParts.push({ type: 'image_url', image_url: { url: dataUrl } });
         });
     }
 
