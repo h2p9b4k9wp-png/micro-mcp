@@ -43,13 +43,17 @@ export async function POST(req: Request) {
     const text = await extractFileText(fileName, mimeType, content);
 
     return NextResponse.json({ fileName, text });
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof FileExtractError) {
+      // FileExtractError는 lib/file-text-extract.ts가 형식별 실패 원인을 직접 한국어로
+      // 작성해 던지는 것이라(암호화된 hwp, 지원하지 않는 버전 등) 그대로 보여줘도 안전합니다.
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+    // 💡 [수정] 그 외의 예상 못한 예외는 하위 라이브러리의 영어 에러 원문이 그대로 노출될 수
+    // 있어 고정된 한국어 안내 문구로 바꾸고, 상세 내용은 서버 로그에만 남깁니다.
     console.error('파일 텍스트 추출 중 오류 발생:', error);
     return NextResponse.json(
-      { error: error.message || '서버 통신 중 오류가 발생했습니다.' },
+      { error: '파일을 처리하지 못했어요. 잠시 후 다시 시도해주세요.' },
       { status: 500 }
     );
   }

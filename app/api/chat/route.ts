@@ -419,10 +419,13 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
     return new Response(readableStream, {
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
-  } catch (error: any) {
+  } catch (error) {
+    // 💡 [수정] error.message를 그대로 응답에 담으면 하위 라이브러리의 영어 에러 원문이
+    // 사용자에게 그대로 노출될 수 있어, 고정된 한국어 안내 문구로 바꾸고 상세 내용은 서버
+    // 로그에만 남깁니다.
     console.error("API 호출 중 에러 발생:", error);
     return NextResponse.json(
-      { error: error.message || "서버 통신 중 오류가 발생했습니다." },
+      { error: "요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요." },
       { status: 500 }
     );
   }
