@@ -1293,6 +1293,24 @@ export default function HomePage() {
     }
   };
 
+  // 💡 [신규] 폴더 삭제 — 폴더 안의 대화는 지워지지 않고 미분류로 돌아갑니다(DB의
+  // logs.folder_id on delete set null과 동일하게, 화면에도 즉시 반영되도록 로컬 logs
+  // state의 folder_id를 직접 null로 갱신합니다). 지금 이 폴더로 필터링 중이었다면 "전체"로
+  // 되돌립니다 — 안 그러면 존재하지 않는 폴더로 필터링된 빈 화면이 남습니다.
+  const handleDeleteFolder = async (folderId: string, folderName: string) => {
+    if (!window.confirm(`"${folderName}" 폴더를 삭제할까요? 폴더 안의 대화는 삭제되지 않고 미분류로 이동해요.`)) {
+      return;
+    }
+    const { error } = await supabase.from('conversation_folders').delete().eq('id', folderId);
+    if (error) {
+      alert(`폴더를 삭제하지 못했어요: ${error.message}`);
+      return;
+    }
+    setConversationFolders(prev => prev.filter(f => f.id !== folderId));
+    setLogs(prev => prev.map(log => (log.folder_id === folderId ? { ...log, folder_id: null } : log)));
+    setLogFolderFilter(prev => (prev === folderId ? 'all' : prev));
+  };
+
   // 💡 [신규] 대화를 폴더로 옮기기(또는 미분류로 되돌리기, folderId === null).
   const handleMoveLogToFolder = async (logId: string, folderId: string | null) => {
     const { error } = await supabase.from('logs').update({ folder_id: folderId }).eq('id', logId);
@@ -2839,18 +2857,30 @@ export default function HomePage() {
                   미분류 ({logs.filter((l) => !l.folder_id).length})
                 </button>
                 {conversationFolders.map((folder) => (
-                  <button
+                  <span
                     key={folder.id}
-                    type="button"
-                    onClick={() => setLogFolderFilter(folder.id)}
-                    className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                    className={`inline-flex items-center gap-1 rounded-full border pl-3 pr-1.5 py-1 transition-colors ${
                       logFolderFilter === folder.id
                         ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
-                        : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
+                        : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B]'
                     }`}
                   >
-                    {folder.name} ({logs.filter((l) => l.folder_id === folder.id).length})
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setLogFolderFilter(folder.id)}
+                      className="text-xs font-semibold cursor-pointer hover:text-[#F5F2F7] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+                    >
+                      {folder.name} ({logs.filter((l) => l.folder_id === folder.id).length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteFolder(folder.id, folder.name)}
+                      aria-label={`${folder.name} 폴더 삭제`}
+                      className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[#2A2632] text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+                    >
+                      <X className="w-3 h-3" strokeWidth={2.5} />
+                    </button>
+                  </span>
                 ))}
                 <form
                   onSubmit={(e) => { e.preventDefault(); handleCreateFolder(); }}
