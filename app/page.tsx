@@ -267,10 +267,12 @@ function chunkText(text: string, maxChars = 1500): string[] {
 
 const CHAT_IMAGE_MAX_EDGE = 1568; // GPT-4.1 mini 비전이 내부적으로 다운스케일하는 기준과 맞춰, 그 이상은 보내봐야 비용만 늘고 품질 이득이 없습니다.
 
-// 💡 [신규] 교수님 1명당 누적 가능한 자료 개수 상한. recomputeProfessorAnalysis가 자료를
-// 추가할 때마다 그 교수님의 전체 누적 자료를 다시 전송해 재분석하므로, 상한이 없으면 자료가
-// 쌓일수록 업로드 1건당 비용(전송 토큰 수)이 계속 커집니다.
-const MAX_PROFESSOR_DOCUMENTS = 50;
+// 💡 [수정] 교수님 1명당 누적 가능한 자료 개수 상한. 자료 추가는 이제 기존 분석 요약 + 새
+// 자료만 보내는 증분 업데이트라 개수가 늘어나도 업로드 1건당 비용은 크게 늘지 않지만, 자료
+// 삭제 시에는 여전히 전체 자료를 다시 보내 재분석하므로(recomputeProfessorAnalysisFull)
+// 상한 자체는 유지합니다. app/api/analyze-professor/route.ts의 MAX_PROFESSOR_DOCUMENTS와
+// 같은 값으로 맞춰주세요.
+const MAX_PROFESSOR_DOCUMENTS = 30;
 
 // OpenAI 비전이 실제로 받는 이미지 형식. 아이폰 기본 사진 형식인 HEIC/HEIF는 목록에 없음 —
 // 브라우저가 대신 변환해주지 않는 경우, 그대로 보내면 비전 모델이 못 읽어서 "분석이 안 되는데
@@ -896,7 +898,7 @@ export default function HomePage() {
   };
 
   // 💡 [신규] 교수님 새로 등록. 학교/학과는 필수이고, 성공하면 다음 등록 폼의 기본값으로 기억해둡니다
-  // (전공 용어·출제 관행 해석에 학교/학과 맥락이 꼭 필요해서 — recomputeProfessorAnalysis 참고).
+  // (전공 용어·출제 관행 해석에 학교/학과 맥락이 꼭 필요해서 — runProfessorAnalysis 참고).
   // 성공하면 새 교수님의 id를 반환합니다(같은 흐름에서 바로 파일을 올릴 수 있게).
   const handleCreateProfessor = async (name: string, school: string, department: string): Promise<string | null> => {
     if (!user || !name.trim()) return null;
@@ -925,52 +927,120 @@ export default function HomePage() {
     return data.id;
   };
 
-  // 💡 [신규] 이 교수님에게 쌓인 자료 전체를 모아 /api/analyze-professor로 다시 분석하고,
-  // professor_analysis에 upsert합니다 — 자료가 추가/삭제될 때마다 자동으로 호출되어(handleUploadProfessorFiles,
-  // handleDeleteProfessorDocument 참고) 예전 결과가 그대로 남아있지 않게 합니다.
-  // docsOverride는 삭제 직후처럼 professorDocuments state가 아직 최신 반영 전일 때 정확한 자료 목록을 넘기기 위함입니다.
-  const recomputeProfessorAnalysis = async (professorId: string, docsOverride?: ProfessorDocument[]) => {
-    const docs = docsOverride ?? professorDocuments.filter(d => d.professor_id === professorId);
-    if (!user || docs.length === 0) return;
+  // 💡 [신규] /api/analyze-professor 호출 + professor_analysis upsert + 에러 처리를 담당하는
+  // 공용 헬퍼 — 전체 분석(recomputeProfessorAnalysisFull)과 증분 업데이트
+  // (recomputeProfessorAnalysisIncremental)가 이 함수를 공유합니다. documentCountAfter는
+  // 이번 분석이 반영하는 시점의 실제 총 자료 개수로, 성공 시 그대로 DB에 기록됩니다.
+  //
+  // 실패(네트워크 오류·429·OpenAI 오류 등) 시 document_count가 실제 자료 개수와 어긋난 채
+  // 조용히 남지 않도록, 한 번 자동으로 재시도하고 그래도 실패하면 화면에 에러를 표시하면서
+  // alert로도 즉시 알립니다(자료 올리기는 "교수님" 목록 화면에서도 시작될 수 있어, 상세
+  // 화면의 인라인 에러 문구만으로는 그 화면에 있지 않은 사용자가 놓칠 수 있어서입니다).
+  const runProfessorAnalysis = async (
+    professorId: string,
+    requestBody: Record<string, unknown>,
+    documentCountAfter: number
+  ) => {
+    if (!user) return;
     const professor = professors.find(p => p.id === professorId);
 
     setIsAnalyzingProfessor(true);
     setProfessorAnalysisError(null);
-    try {
-      const res = await fetch('/api/analyze-professor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          documents: docs.map(d => ({ fileName: d.file_name, text: d.content, docType: d.doc_type })),
+
+    let lastErrorMessage: string | null = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const res = await fetch('/api/analyze-professor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '분석 갱신에 실패했어요.');
+
+        const { data: upserted, error } = await supabase
+          .from('professor_analysis')
+          .upsert(
+            { user_id: user.id, professor_id: professorId, result: data.result, document_count: documentCountAfter, updated_at: new Date().toISOString() },
+            { onConflict: 'professor_id' }
+          )
+          .select('professor_id, result, document_count, updated_at')
+          .single();
+        if (error || !upserted) throw new Error(error?.message || '분석 결과를 저장하지 못했어요.');
+
+        setProfessorAnalyses(prev => [upserted, ...prev.filter(a => a.professor_id !== professorId)]);
+        setIsAnalyzingProfessor(false);
+        return;
+      } catch (err) {
+        lastErrorMessage = err instanceof Error ? err.message : String(err);
+      }
+    }
+
+    setIsAnalyzingProfessor(false);
+    setProfessorAnalysisError(lastErrorMessage);
+    alert(
+      `"${professor?.name ?? '이 교수님'}" 분석 갱신에 실패했어요: ${lastErrorMessage}\n` +
+      '자료 개수와 분석 결과가 실제와 잠시 어긋나 있을 수 있어요 — 교수님 상세 화면의 "이 교수님 분석" 버튼으로 다시 시도해주세요.'
+    );
+  };
+
+  // 💡 [신규] 자료가 추가됐을 때 씁니다. 이미 분석 결과가 있으면 "기존 분석 결과 요약 + 새로
+  // 추가된 자료"만 보내 업데이트합니다(전체 자료를 매번 다시 보내지 않아 자료가 쌓일수록
+  // 비용이 커지던 문제를 해결). 아직 분석 결과가 없는 교수님(첫 업로드)은 새 자료 자체가
+  // 곧 전체 자료이므로 자연스럽게 전체 분석과 동일하게 동작합니다.
+  //
+  // 💡 이전 시도가 실패해서 professor_analysis.document_count가 실제 자료 개수와 어긋나
+  // 있으면(예: "기존 분석 결과"에 반영된 자료 수 ≠ 지금 이 자료를 뺀 나머지 자료 수) 그 위에
+  // 증분 업데이트를 쌓지 않고 전체 재분석으로 자동 전환합니다 — 사용자가 수동으로 "이 교수님
+  // 분석" 버튼을 누르지 않아도 다음 업로드에서 스스로 어긋남이 바로잡힙니다.
+  const recomputeProfessorAnalysisIncremental = async (professorId: string, newDocs: ProfessorDocument[]) => {
+    if (newDocs.length === 0) return;
+    const existingAnalysis = professorAnalyses.find(a => a.professor_id === professorId);
+    const newDocIds = new Set(newDocs.map(d => d.id));
+    const previousDocsCount = professorDocuments.filter(
+      d => d.professor_id === professorId && !newDocIds.has(d.id)
+    ).length;
+
+    if (existingAnalysis && existingAnalysis.document_count === previousDocsCount) {
+      const professor = professors.find(p => p.id === professorId);
+      await runProfessorAnalysis(
+        professorId,
+        {
+          previousResult: existingAnalysis.result,
+          newDocuments: newDocs.map(d => ({ fileName: d.file_name, text: d.content, docType: d.doc_type })),
           professor: professor ? { school: professor.school, department: professor.department } : undefined,
           locale,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setProfessorAnalysisError(data.error || '분석에 실패했어요.');
-        return;
-      }
-
-      const { data: upserted, error } = await supabase
-        .from('professor_analysis')
-        .upsert(
-          { user_id: user.id, professor_id: professorId, result: data.result, document_count: docs.length, updated_at: new Date().toISOString() },
-          { onConflict: 'professor_id' }
-        )
-        .select('professor_id, result, document_count, updated_at')
-        .single();
-      if (error || !upserted) {
-        setProfessorAnalysisError(error?.message || '분석 결과를 저장하지 못했어요.');
-        return;
-      }
-      setProfessorAnalyses(prev => [upserted, ...prev.filter(a => a.professor_id !== professorId)]);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      setProfessorAnalysisError(message);
-    } finally {
-      setIsAnalyzingProfessor(false);
+        },
+        existingAnalysis.document_count + newDocs.length
+      );
+      return;
     }
+
+    // 분석 결과가 아예 없거나(첫 업로드), 있어도 자료 수가 어긋나 있으면(이전 실패 흔적)
+    // 안전하게 전체 자료로 다시 분석합니다.
+    await recomputeProfessorAnalysisFull(professorId);
+  };
+
+  // 💡 [수정] 자료를 삭제했을 때, 또는 회로도/버튼에서 수동으로 다시 분석할 때 씁니다. 이
+  // 교수님의 자료 전체를 처음부터 다시 분석합니다 — 삭제는 "빼는" 방향이라 증분 업데이트로는
+  // 정확히 반영하기 어렵고(어떤 근거가 삭제된 자료에서 나온 건지 모델이 구분할 수 없음),
+  // 수동 재분석은 증분 업데이트가 실패로 쌓여 어긋났을 때 되돌릴 수 있는 복구 수단이기도
+  // 합니다. docsOverride는 삭제 직후처럼 professorDocuments state가 아직 최신 반영 전일 때
+  // 정확한 자료 목록을 넘기기 위함입니다.
+  const recomputeProfessorAnalysisFull = async (professorId: string, docsOverride?: ProfessorDocument[]) => {
+    const docs = docsOverride ?? professorDocuments.filter(d => d.professor_id === professorId);
+    if (docs.length === 0) return;
+    const professor = professors.find(p => p.id === professorId);
+
+    await runProfessorAnalysis(
+      professorId,
+      {
+        documents: docs.map(d => ({ fileName: d.file_name, text: d.content, docType: d.doc_type })),
+        professor: professor ? { school: professor.school, department: professor.department } : undefined,
+        locale,
+      },
+      docs.length
+    );
   };
 
   // 💡 [신규] 파일에서 글자를 뽑아(/api/extract) documents 테이블에 저장하고, doc_chunks로도 쪼개
@@ -1057,8 +1127,7 @@ export default function HomePage() {
     }
 
     if (newlyInserted.length > 0) {
-      const existing = professorDocuments.filter(d => d.professor_id === professorId);
-      await recomputeProfessorAnalysis(professorId, [...newlyInserted, ...existing]);
+      await recomputeProfessorAnalysisIncremental(professorId, newlyInserted);
     }
   };
 
@@ -1106,7 +1175,7 @@ export default function HomePage() {
       setProfessorAnalysisError(null);
       return;
     }
-    await recomputeProfessorAnalysis(professorId, remaining);
+    await recomputeProfessorAnalysisFull(professorId, remaining);
   };
 
   // 💡 [신규] 교수님 자체를 삭제 — documents/doc_chunks/professor_analysis는 모두 professor_id에
@@ -2540,7 +2609,7 @@ export default function HomePage() {
             const handleProfessorCircuitNodeClick = (nodeId: NodeId) => {
               if (nodeId === 'professor_docs' || nodeId === 'professor_ai_core') {
                 if (docs.length === 0 || isAnalyzingProfessor) return;
-                recomputeProfessorAnalysis(professor.id);
+                recomputeProfessorAnalysisFull(professor.id);
               }
             };
 
@@ -2675,7 +2744,7 @@ export default function HomePage() {
                 <button
                   type="button"
                   disabled={docs.length === 0 || isAnalyzingProfessor}
-                  onClick={() => recomputeProfessorAnalysis(professor.id)}
+                  onClick={() => recomputeProfessorAnalysisFull(professor.id)}
                   className="inline-flex items-center gap-2 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[#2A2632] disabled:text-[#857C93] disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                 >
                   {isAnalyzingProfessor ? (
