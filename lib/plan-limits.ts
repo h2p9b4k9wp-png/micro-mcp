@@ -24,6 +24,11 @@ export function getPlanLimits(isPro: boolean) {
   return isPro ? PRO_LIMITS : FREE_LIMITS;
 }
 
+// 💡 [신규] 무료 등급 대화 기록 보관 기간(app/privacy 페이지에 적힌 문구와 실제 삭제
+// 동작이 어긋나지 않도록, app/api/cron/cleanup-logs/route.ts가 이 값을 그대로 씁니다).
+// Pro는 보관 기간 제한이 없고(계정 삭제 시까지), 이 상수는 무료 등급에만 적용됩니다.
+export const FREE_LOG_RETENTION_DAYS = 30;
+
 // 월간 한도 집계 기준 시점(UTC 월 1일 00:00). 정산 정밀도가 필요한 결제 연동 전 단계라
 // KST 기준으로 정교하게 맞추지 않고 단순하게 UTC 월 경계를 씁니다.
 export function getMonthStartISOString(): string {

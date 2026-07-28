@@ -1,0 +1,117 @@
+import Link from 'next/link';
+
+export const metadata = {
+  title: 'Privacy Policy — Micro-MCP',
+  description: 'How Micro-MCP collects, uses, and stores your data.',
+};
+
+// 💡 [신규] 로그인 없이도 봐야 하는 공개 법적 페이지라 next-intl(ko/en 전환)을 거치지 않고
+// 영어로 고정된 정적 텍스트를 씁니다(요청대로). middleware.ts의 isPublicRoute에 '/privacy'가
+// 추가돼 있어야 로그인 안 한 방문자도 접근할 수 있습니다.
+export default function PrivacyPage() {
+  return (
+    <div className="min-h-screen bg-[#15131A] text-[#E4DEEA]">
+      <div className="max-w-2xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
+        <Link
+          href="/"
+          className="text-sm text-[#AFA6BD] hover:text-[#F5F2F7] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+        >
+          ← Back to Micro-MCP
+        </Link>
+
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] mt-6 mb-2 tracking-tight">
+          Privacy Policy
+        </h1>
+        <p className="text-sm text-[#857C93] mb-10">Last updated: July 2026</p>
+
+        <div className="flex flex-col gap-8 text-[15px] leading-relaxed">
+          <section>
+            <p>
+              Micro-MCP (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the service&rdquo;) is a personal AI work
+              assistant. This page explains what information we collect when you use it, why we
+              collect it, who we share it with, how long we keep it, and what rights you have
+              over it.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Information we collect</h2>
+            <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B]">
+              <li>
+                <span className="font-semibold text-[#F5F2F7]">Your email address</span>, used to
+                create and identify your account.
+              </li>
+              <li>
+                <span className="font-semibold text-[#F5F2F7]">The content of files you upload</span>{' '}
+                — documents, lecture materials, and images you attach or add to the service —
+                including the text extracted from them.
+              </li>
+              <li>
+                <span className="font-semibold text-[#F5F2F7]">Your conversation history</span> —
+                the prompts you send and the responses you receive.
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Why we collect it</h2>
+            <p>We use this information to:</p>
+            <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B] mt-2">
+              <li>Provide and operate the service — authenticate you, save your files and
+                deadlines, and keep your conversation history available across devices.</li>
+              <li>Generate AI-powered analysis you request — summarizing documents, extracting
+                deadlines, drafting answers to expected questions, and similar features.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Who we share it with</h2>
+            <p>We do not sell your data. We share it only with the service providers that make Micro-MCP work:</p>
+            <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B] mt-2">
+              <li>
+                <span className="font-semibold text-[#F5F2F7]">OpenAI</span> — receives the text of
+                your prompts, attached documents, and images so it can generate the AI analysis
+                and responses you ask for.
+              </li>
+              <li>
+                <span className="font-semibold text-[#F5F2F7]">Supabase</span> — our database and
+                authentication provider, used to store your account, files, and conversation
+                history.
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">How long we keep it</h2>
+            <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B]">
+              <li>Your account data (email, files, deadlines) is kept until you delete your account.</li>
+              <li>On the free plan, conversation history is kept for 30 days and then automatically deleted. Pro accounts have no automatic deletion — conversation history is kept until account deletion, same as everything else.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Your rights</h2>
+            <p>
+              You can request a copy of the data we hold about you, or request that we delete it,
+              at any time by emailing us at the address below. We&rsquo;ll respond as soon as we can.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Contact</h2>
+            <p>
+              Questions about this policy, or requests to access or delete your data, can be sent to{' '}
+              <a
+                href="mailto:kcw022@naver.com"
+                className="text-[#F4679B] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+              >
+                kcw022@naver.com
+              </a>
+              .
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
