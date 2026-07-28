@@ -199,24 +199,27 @@ function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
   );
 }
 
-// AI 콘솔이 아직 아무 대화도 시작하지 않았을 때 보여주는 인사말
-const IDLE_CONSOLE_MESSAGE = '안녕하세요! 무엇이든 물어보세요!';
+// AI 콘솔이 아직 아무 대화도 시작하지 않았을 때의 상태를 나타내는 내부 식별자(sentinel) — 실제
+// 표시 문구는 messages/*.json의 workspace.idleMessage로 지역화되어 렌더링 시점에 t()로 가져옵니다.
+const IDLE_CONSOLE_SENTINEL = '__idle__';
 
 // 콘솔이 비어있을 때 채워주는 예시 프롬프트 — 5가지 MCP 블록과 하나씩 매칭됩니다.
-const EXAMPLE_PROMPTS = [
-  { icon: Search, prompt: '요즘 이 분야 최신 트렌드가 뭔지 검색해서 알려줘' },
-  { icon: FileText, prompt: '첨부한 문서 핵심만 요약해줘' },
-  { icon: CalendarClock, prompt: '이번 주에 뭐부터 처리해야 하는지 정리해줘' },
-  { icon: PenLine, prompt: '기한 연장 요청 메일 초안 써줘' },
-  { icon: NotebookPen, prompt: '방금 붙여넣은 회의 노트 정리해줘' },
+// 실제 문구는 messages/*.json의 workspace.examplePrompts.{key}에서 지역화되어 렌더링 시점에 가져옵니다.
+const EXAMPLE_PROMPT_DEFS = [
+  { icon: Search, key: 'searchTrend' },
+  { icon: FileText, key: 'summarizeDoc' },
+  { icon: CalendarClock, key: 'weeklyPlan' },
+  { icon: PenLine, key: 'extensionEmail' },
+  { icon: NotebookPen, key: 'meetingNotes' },
 ];
 
 // 채팅 입력창 위 미니 전선에서 고를 수 있는 답변 종류. 'none' = 그냥 대화(관점 분석 없이 평소처럼).
-const CHAT_LENS_CHOICES: { id: LensId | 'none'; label: string }[] = [
-  { id: 'deadlines', label: '마감 뽑기' },
-  { id: 'questions', label: '예상 질문' },
-  { id: 'digest', label: '핵심 정리' },
-  { id: 'none', label: '그냥 대화' },
+// 라벨은 messages/*.json의 workspace.lensChoices.{key}에서 지역화되어 렌더링 시점에 가져옵니다.
+const CHAT_LENS_CHOICE_DEFS: { id: LensId | 'none'; key: string }[] = [
+  { id: 'deadlines', key: 'deadlines' },
+  { id: 'questions', key: 'questions' },
+  { id: 'digest', key: 'digest' },
+  { id: 'none', key: 'none' },
 ];
 
 // 💡 교수님 분석 결과의 5개 카테고리 — ProfessorAnalysisResult의 키와 1:1 대응.
@@ -315,7 +318,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('connecting');
   const [command, setCommand] = useState('');
-  const [streamingLog, setStreamingLog] = useState(IDLE_CONSOLE_MESSAGE);
+  const [streamingLog, setStreamingLog] = useState(IDLE_CONSOLE_SENTINEL);
   const [isExecuting, setIsExecuting] = useState(false);
   // 💡 [신규] /api/chat 요청을 보내고 첫 글자가 도착하기 전까지만 true — 이 구간엔 아직 보여줄
   // 실제 텍스트가 없어서 <LoadingText />(재밌는 로딩 문구)를 보여줍니다. 스트리밍이 시작되면
@@ -684,7 +687,7 @@ export default function HomePage() {
     if (lensId === 'deadlines') {
       const result = lensResult as DeadlinesResult;
       if (result.items.length === 0) {
-        return <p className="text-base sm:text-sm text-[#C9C0D6] leading-relaxed">기한이 있는 항목을 찾지 못했어요.</p>;
+        return <p className="text-base sm:text-sm text-[#C9C0D6] leading-relaxed">{t('workspace.lens.noDeadlinesFound')}</p>;
       }
       const allRegistered = result.items.every((_, i) => registeredDeadlineIndexes.has(i));
       return (
@@ -696,7 +699,7 @@ export default function HomePage() {
               onClick={() => registerAllDeadlineItems(result.items)}
               className="inline-flex items-center gap-1.5 bg-[#2A2632] hover:bg-[#332D3B] border border-[#5C3A4A] text-[#F4679B] text-sm sm:text-xs font-semibold px-4 sm:px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-[#332D3B] disabled:text-[#857C93] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
             >
-              {allRegistered ? '전체 등록됨' : '전체 등록'}
+              {allRegistered ? t('workspace.lens.registerAllDone') : t('workspace.lens.registerAll')}
             </button>
           </div>
           <ul className="flex flex-col gap-4 sm:gap-3">
@@ -718,7 +721,7 @@ export default function HomePage() {
                             : 'bg-[#2A2632] hover:bg-[#332D3B] text-[#F4679B] border-[#5C3A4A] cursor-pointer'
                         }`}
                       >
-                        {isRegistered ? '등록됨' : '등록'}
+                        {isRegistered ? t('workspace.lens.registered') : t('workspace.lens.register')}
                       </button>
                     </div>
                   </div>
@@ -740,17 +743,17 @@ export default function HomePage() {
     if (lensId === 'questions') {
       const result = lensResult as QuestionsResult;
       if (result.items.length === 0) {
-        return <p className="text-base sm:text-sm text-[#C9C0D6] leading-relaxed">예상 질문을 뽑지 못했어요.</p>;
+        return <p className="text-base sm:text-sm text-[#C9C0D6] leading-relaxed">{t('workspace.lens.noQuestionsFound')}</p>;
       }
       return (
         <ul className="flex flex-col gap-4 sm:gap-3">
           {result.items.map((item, i) => (
             <li key={i} className="border border-[#332D3B] rounded-xl p-4 sm:p-3.5">
               <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] mb-2 sm:mb-1.5 leading-relaxed">Q. {item.question}</p>
-              <p className="text-sm sm:text-xs text-[#F4679B] mb-2 sm:mb-1.5 leading-loose">약점: {item.targetWeakness}</p>
+              <p className="text-sm sm:text-xs text-[#F4679B] mb-2 sm:mb-1.5 leading-loose">{t('workspace.lens.weakness', { text: item.targetWeakness })}</p>
               <p className="text-sm sm:text-xs text-[#E4DEEA] leading-loose">A. {item.draftAnswer}</p>
               {item.source_quote && (
-                <p className="text-xs sm:text-[11px] text-[#857C93] italic leading-loose mt-1.5">근거: &quot;{item.source_quote}&quot;</p>
+                <p className="text-xs sm:text-[11px] text-[#857C93] italic leading-loose mt-1.5">{t('workspace.lens.evidencePrefix')}: &quot;{item.source_quote}&quot;</p>
               )}
             </li>
           ))}
@@ -802,20 +805,20 @@ export default function HomePage() {
     try {
       for (const file of filesToAttach) {
         if (file.size > 10 * 1024 * 1024) {
-          alert(`"${file.name}"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.`);
+          alert(t('workspace.errors.fileTooLarge', { fileName: file.name }));
           continue;
         }
 
         const isImage = file.type.startsWith('image/');
         if (isImage && !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
-          alert(`"${file.name}"은(는) AI가 읽을 수 없는 이미지 형식이에요(${file.type || '알 수 없음'}). 아이폰 사진이라면 설정에서 "호환성 우선(JPEG)"으로 바꾸거나, JPG/PNG로 다시 저장해서 올려주세요.`);
+          alert(t('workspace.errors.unsupportedImage', { fileName: file.name, mimeType: file.type || t('workspace.errors.unknownFormat') }));
           continue;
         }
 
         const dataUrl: string = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject(new Error('파일을 읽는 중 문제가 발생했어요.'));
+          reader.onerror = () => reject(new Error(t('workspace.errors.fileReadFailed')));
           reader.readAsDataURL(file);
         });
 
@@ -845,7 +848,7 @@ export default function HomePage() {
           });
           const data = await res.json();
           if (!res.ok) {
-            alert(`"${file.name}"에서 글자를 뽑지 못했어요: ${data.error}`);
+            alert(t('workspace.errors.extractFailed', { fileName: file.name, error: data.error }));
             continue;
           }
           setChatAttachments(prev => [
@@ -854,7 +857,7 @@ export default function HomePage() {
           ]);
           recordDocumentUpload(file.name, file.type);
         } catch (err: any) {
-          alert(`"${file.name}" 처리 중 오류가 발생했어요: ${err.message || err}`);
+          alert(t('workspace.errors.attachProcessingFailed', { fileName: file.name, error: err.message || err }));
         }
       }
     } finally {
@@ -1136,8 +1139,8 @@ export default function HomePage() {
 
       if (!res.ok) {
         // 에러 응답은 이전처럼 JSON 형태로 옵니다.
-        const errData = await res.json().catch(() => ({ error: '알 수 없는 오류가 발생했습니다.' }));
-        aiAnswer = `죄송해요, 요청을 처리하지 못했어요: ${errData.error}`;
+        const errData = await res.json().catch(() => ({ error: t('workspace.errors.unknownError') }));
+        aiAnswer = t('workspace.errors.requestFailed', { error: errData.error });
         setStreamingLog(header + aiAnswer);
         setIsAwaitingChatResponse(false);
       } else if (res.body) {
@@ -1177,7 +1180,7 @@ export default function HomePage() {
         }
       }
     } catch (err: any) {
-      aiAnswer = `죄송해요, 네트워크 오류가 발생했어요: ${err.message || err}`;
+      aiAnswer = t('workspace.errors.networkError', { error: err.message || err });
       setStreamingLog(header + aiAnswer);
     }
 
@@ -1323,12 +1326,12 @@ export default function HomePage() {
         body: JSON.stringify({ text, fileName, lens, locale }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || '분석에 실패했어요.');
+      if (!res.ok) throw new Error(data.error || t('workspace.errors.analyzeFailed'));
 
       setLensResult(data.result);
       setLensStage('done');
     } catch (err: any) {
-      setLensError(err.message || '분석 중 오류가 발생했어요.');
+      setLensError(err.message || t('workspace.errors.analyzeErrorFallback'));
       setLensStage('error');
     }
   };
@@ -1775,7 +1778,7 @@ export default function HomePage() {
                   Live AI Playground
                 </h1>
                 <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  활성화된 MCP 블록 맥락 및 첨부된 문서 내용을 바탕으로 AI가 실제 답변을 도출합니다.
+                  {t('workspace.subtitle')}
                 </p>
               </div>
 
@@ -1789,7 +1792,7 @@ export default function HomePage() {
               >
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
                   <div className="text-sm font-semibold text-[#F5F2F7]">
-                    AI 프롬프트 전송
+                    {t('workspace.promptSectionLabel')}
                   </div>
                   <div className="flex items-center gap-1.5 bg-[#15131A] px-3 py-1 rounded-full border border-[#322D3B] text-xs text-[#AFA6BD] max-w-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#6EE7B7] animate-pulse shrink-0"></span>
@@ -1813,7 +1816,7 @@ export default function HomePage() {
                         <button
                           type="button"
                           onClick={() => removeChatAttachment(a.id)}
-                          aria-label={`${a.name} 첨부 삭제`}
+                          aria-label={t('workspace.removeAttachment', { name: a.name })}
                           className="shrink-0 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[#2A2632] text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
                         >
                           <X className="w-3 h-3" strokeWidth={2.5} />
@@ -1827,7 +1830,7 @@ export default function HomePage() {
                   <div className="bg-[#0D0B11] rounded-xl border border-[#2A2632] p-2 mb-3">
                     <CircuitBoard graph={chatLensGraph} onNodeClick={handleNodeClick} compact />
                     <div className="flex flex-wrap gap-1.5 justify-center mt-1.5">
-                      {CHAT_LENS_CHOICES.map((choice) => (
+                      {CHAT_LENS_CHOICE_DEFS.map((choice) => (
                         <button
                           key={choice.id}
                           type="button"
@@ -1838,7 +1841,7 @@ export default function HomePage() {
                               : 'bg-[#15131A] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
                           }`}
                         >
-                          {choice.label}
+                          {t(`workspace.lensChoices.${choice.key}`)}
                         </button>
                       ))}
                     </div>
@@ -1852,7 +1855,7 @@ export default function HomePage() {
                         ? 'bg-[#15131A] border-[#322D3B] text-[#857C93] cursor-wait'
                         : 'bg-[#211E28] hover:bg-[#2A2632] border-[#423B4C] text-[#C9C0D6] hover:text-[#F5F2F7] cursor-pointer'
                     }`}
-                    aria-label="파일/사진 첨부"
+                    aria-label={t('workspace.attachFile')}
                   >
                     {isAttachingChatFile ? (
                       <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
@@ -1871,8 +1874,8 @@ export default function HomePage() {
                     type="button"
                     onClick={() => setIsSearchActive((prev) => !prev)}
                     aria-pressed={isSearchActive}
-                    aria-label="웹 검색 켜기/끄기"
-                    title={isSearchActive ? '웹 검색 켜짐 — 느리고 비용이 들어요' : '웹 검색 꺼짐 — 최신 정보가 필요할 때 켜세요'}
+                    aria-label={t('workspace.webSearchToggle')}
+                    title={isSearchActive ? t('workspace.webSearchOnTitle') : t('workspace.webSearchOffTitle')}
                     className={`shrink-0 flex items-center justify-center gap-1.5 w-11 sm:w-auto sm:px-3.5 h-11 sm:h-auto rounded-lg border transition-colors cursor-pointer ${
                       isSearchActive
                         ? 'bg-[#331F29] hover:bg-[#3D2733] border-[#F4679B] text-[#F4679B]'
@@ -1881,7 +1884,7 @@ export default function HomePage() {
                   >
                     <Search className="w-4 h-4" strokeWidth={2} />
                     <span className="hidden sm:inline text-xs font-semibold">
-                      웹 검색 {isSearchActive ? 'ON' : 'OFF'}
+                      {t('workspace.webSearchLabel', { state: isSearchActive ? 'ON' : 'OFF' })}
                     </span>
                   </button>
                   <input
@@ -1889,7 +1892,7 @@ export default function HomePage() {
                     type="text"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
-                    placeholder="예: 첨부된 일정표를 바탕으로 이번 주 계획을 정리해줘..."
+                    placeholder={t('workspace.promptPlaceholder')}
                     className="flex-1 bg-[#211E28] border border-[#423B4C] rounded-lg px-4 py-3 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#857C93]"
                   />
                   <button
@@ -1901,7 +1904,7 @@ export default function HomePage() {
                   </button>
                 </form>
                 <p className="text-[11px] text-[#857C93] mt-2">
-                  {isAttachingChatFile ? <LoadingText /> : '파일이나 사진을 여기로 끌어다 놓아도 첨부돼요. 첨부한 내용은 이 대화 동안 계속 참조돼요.'}
+                  {isAttachingChatFile ? <LoadingText /> : t('workspace.dropHint')}
                 </p>
               </div>
 
@@ -1909,33 +1912,36 @@ export default function HomePage() {
                 <div className="bg-[#17141D] px-4 py-3 flex items-center gap-2 border-b border-[#2A2632]">
                   <MessageCircle className="w-4 h-4 text-[#F4679B]" strokeWidth={2} />
                   <span className="text-[13px] font-semibold text-[#F5F2F7]">
-                    AI 응답
+                    {t('workspace.aiResponseLabel')}
                   </span>
                 </div>
 
                 <div className="p-4 sm:p-5 text-[14px] leading-[1.8] font-medium text-[#FBE4EE] whitespace-pre-wrap min-h-[150px]">
-                  {streamingLog}
+                  {streamingLog === IDLE_CONSOLE_SENTINEL ? t('workspace.idleMessage') : streamingLog}
                   {isAwaitingChatResponse && (
                     <span className="text-[#C9C0D6] font-normal">
                       <LoadingText />
                     </span>
                   )}
-                  {streamingLog === IDLE_CONSOLE_MESSAGE && (
+                  {streamingLog === IDLE_CONSOLE_SENTINEL && (
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {EXAMPLE_PROMPTS.map((example) => (
-                        <button
-                          key={example.prompt}
-                          type="button"
-                          onClick={() => {
-                            setCommand(example.prompt);
-                            commandInputRef.current?.focus();
-                          }}
-                          className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-xs font-medium pl-2.5 pr-3.5 py-2 rounded-full transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                        >
-                          <example.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />
-                          {example.prompt}
-                        </button>
-                      ))}
+                      {EXAMPLE_PROMPT_DEFS.map((example) => {
+                        const promptText = t(`workspace.examplePrompts.${example.key}`);
+                        return (
+                          <button
+                            key={example.key}
+                            type="button"
+                            onClick={() => {
+                              setCommand(promptText);
+                              commandInputRef.current?.focus();
+                            }}
+                            className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-xs font-medium pl-2.5 pr-3.5 py-2 rounded-full transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                          >
+                            <example.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />
+                            {promptText}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                   <div ref={terminalEndRef} />
@@ -1967,7 +1973,7 @@ export default function HomePage() {
 
               {detectedActionItems.length > 0 && (
                 <div className="mt-4 bg-[#211E28] rounded-2xl border border-[#F4679B]/40 p-5 shadow-sm">
-                  <h3 className="text-sm font-bold text-[#F4679B] mb-3">✨ 날짜가 있는 할 일을 발견했어요</h3>
+                  <h3 className="text-sm font-bold text-[#F4679B] mb-3">{t('workspace.actionItemsFound')}</h3>
                   <div className="flex flex-col gap-2.5">
                     {detectedActionItems.map((item, idx) => (
                       <div
@@ -1984,7 +1990,7 @@ export default function HomePage() {
                           onClick={() => handleAddDetectedDeadline(item)}
                           className="shrink-0 bg-[#F4679B] hover:bg-[#D1477F] text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
                         >
-                          마감일로 등록하기
+                          {t('workspace.registerAsDeadline')}
                         </button>
                       </div>
                     ))}

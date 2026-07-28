@@ -15,5 +15,57 @@
     "sending": "전송 중...",
     "delete": "삭제",
     "create": "만들기"
+  },
+  "workspace": {
+    "subtitle": "활성화된 MCP 블록 맥락 및 첨부된 문서 내용을 바탕으로 AI가 실제 답변을 도출합니다.",
+    "promptSectionLabel": "AI 프롬프트 전송",
+    "removeAttachment": "{name} 첨부 삭제",
+    "attachFile": "파일/사진 첨부",
+    "webSearchToggle": "웹 검색 켜기/끄기",
+    "webSearchOnTitle": "웹 검색 켜짐 — 느리고 비용이 들어요",
+    "webSearchOffTitle": "웹 검색 꺼짐 — 최신 정보가 필요할 때 켜세요",
+    "webSearchLabel": "웹 검색 {state}",
+    "promptPlaceholder": "예: 첨부된 일정표를 바탕으로 이번 주 계획을 정리해줘...",
+    "dropHint": "파일이나 사진을 여기로 끌어다 놓아도 첨부돼요. 첨부한 내용은 이 대화 동안 계속 참조돼요.",
+    "aiResponseLabel": "AI 응답",
+    "idleMessage": "안녕하세요! 무엇이든 물어보세요!",
+    "actionItemsFound": "✨ 날짜가 있는 할 일을 발견했어요",
+    "registerAsDeadline": "마감일로 등록하기",
+    "examplePrompts": {
+      "searchTrend": "요즘 이 분야 최신 트렌드가 뭔지 검색해서 알려줘",
+      "summarizeDoc": "첨부한 문서 핵심만 요약해줘",
+      "weeklyPlan": "이번 주에 뭐부터 처리해야 하는지 정리해줘",
+      "extensionEmail": "기한 연장 요청 메일 초안 써줘",
+      "meetingNotes": "방금 붙여넣은 회의 노트 정리해줘"
+    },
+    "lensChoices": {
+      "deadlines": "마감 뽑기",
+      "questions": "예상 질문",
+      "digest": "핵심 정리",
+      "none": "그냥 대화"
+    },
+    "lens": {
+      "noDeadlinesFound": "기한이 있는 항목을 찾지 못했어요.",
+      "registerAll": "전체 등록",
+      "registerAllDone": "전체 등록됨",
+      "register": "등록",
+      "registered": "등록됨",
+      "noQuestionsFound": "예상 질문을 뽑지 못했어요.",
+      "weakness": "약점: {text}",
+      "evidencePrefix": "근거"
+    },
+    "errors": {
+      "fileTooLarge": "\"{fileName}\"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.",
+      "unsupportedImage": "\"{fileName}\"은(는) AI가 읽을 수 없는 이미지 형식이에요({mimeType}). 아이폰 사진이라면 설정에서 \"호환성 우선(JPEG)\"으로 바꾸거나, JPG/PNG로 다시 저장해서 올려주세요.",
+      "unknownFormat": "알 수 없음",
+      "fileReadFailed": "파일을 읽는 중 문제가 발생했어요.",
+      "extractFailed": "\"{fileName}\"에서 글자를 뽑지 못했어요: {error}",
+      "attachProcessingFailed": "\"{fileName}\" 처리 중 오류가 발생했어요: {error}",
+      "unknownError": "알 수 없는 오류가 발생했습니다.",
+      "requestFailed": "죄송해요, 요청을 처리하지 못했어요: {error}",
+      "networkError": "죄송해요, 네트워크 오류가 발생했어요: {error}",
+      "analyzeFailed": "분석에 실패했어요.",
+      "analyzeErrorFallback": "분석 중 오류가 발생했어요."
+    }
   }
 }

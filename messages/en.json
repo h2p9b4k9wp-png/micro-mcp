@@ -15,5 +15,57 @@
     "sending": "Sending...",
     "delete": "Delete",
     "create": "Create"
+  },
+  "workspace": {
+    "subtitle": "The AI generates answers based on the active MCP block context and any attached document content.",
+    "promptSectionLabel": "Send AI Prompt",
+    "removeAttachment": "Remove attachment {name}",
+    "attachFile": "Attach file/photo",
+    "webSearchToggle": "Toggle web search",
+    "webSearchOnTitle": "Web search on — slower and costs more",
+    "webSearchOffTitle": "Web search off — turn on when you need up-to-date info",
+    "webSearchLabel": "Web Search {state}",
+    "promptPlaceholder": "e.g. Summarize this week's plan based on the attached schedule...",
+    "dropHint": "You can also drop files or photos here to attach them. Attachments stay available for the rest of this conversation.",
+    "aiResponseLabel": "AI Response",
+    "idleMessage": "Hi! Ask me anything!",
+    "actionItemsFound": "✨ Found to-dos with dates",
+    "registerAsDeadline": "Register as deadline",
+    "examplePrompts": {
+      "searchTrend": "Search for the latest trends in this field and tell me",
+      "summarizeDoc": "Summarize the key points of the attached document",
+      "weeklyPlan": "Organize what I need to handle first this week",
+      "extensionEmail": "Draft an email requesting a deadline extension",
+      "meetingNotes": "Organize the meeting notes I just pasted"
+    },
+    "lensChoices": {
+      "deadlines": "Extract Deadlines",
+      "questions": "Expected Questions",
+      "digest": "Key Summary",
+      "none": "Just Chat"
+    },
+    "lens": {
+      "noDeadlinesFound": "Couldn't find any items with a due date.",
+      "registerAll": "Register All",
+      "registerAllDone": "All Registered",
+      "register": "Register",
+      "registered": "Registered",
+      "noQuestionsFound": "Couldn't come up with expected questions.",
+      "weakness": "Weakness: {text}",
+      "evidencePrefix": "Evidence"
+    },
+    "errors": {
+      "fileTooLarge": "\"{fileName}\" is too large (over 10MB). Please try a smaller file.",
+      "unsupportedImage": "\"{fileName}\" is an image format the AI can't read ({mimeType}). If it's an iPhone photo, switch to \"Most Compatible (JPEG)\" in Settings, or re-save it as JPG/PNG before uploading.",
+      "unknownFormat": "unknown",
+      "fileReadFailed": "There was a problem reading the file.",
+      "extractFailed": "Couldn't extract text from \"{fileName}\": {error}",
+      "attachProcessingFailed": "An error occurred while processing \"{fileName}\": {error}",
+      "unknownError": "An unknown error occurred.",
+      "requestFailed": "Sorry, we couldn't process your request: {error}",
+      "networkError": "Sorry, a network error occurred: {error}",
+      "analyzeFailed": "Analysis failed.",
+      "analyzeErrorFallback": "An error occurred during analysis."
+    }
   }
 }
