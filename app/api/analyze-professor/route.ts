@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { getSessionUserId } from '@/lib/auth/session';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 
@@ -73,6 +75,16 @@ export async function POST(req: Request) {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: '[ERROR] OPENAI_API_KEY가 설정되지 않았습니다.' }, { status: 500 });
+    }
+
+    // 💡 [신규] 매 호출마다 유료 OpenAI 요청이 나가므로 /api/chat과 동일하게 1분당 호출
+    // 횟수를 제한합니다 — 계정 탈취·자동화 남용으로 인한 비용 폭주 방지.
+    const userId = await getSessionUserId();
+    if (userId && !checkRateLimit(`analyze-professor:${userId}`, 10, 60_000)) {
+      return NextResponse.json(
+        { error: '요청이 너무 많아요. 잠시 후(1분 뒤) 다시 시도해주세요.' },
+        { status: 429 }
+      );
     }
 
     const body = await req.json();
