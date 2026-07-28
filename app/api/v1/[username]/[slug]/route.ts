@@ -3,9 +3,18 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+// 💡 [수정] 예전엔 이 클라이언트를 모듈 최상단에서 바로 생성했습니다 — env var가 비어있으면
+// 요청 핸들러의 try/catch에 들어가기도 전에(모듈 로드 단계에서) 예외가 던져져, Next.js
+// 기본 에러 페이지(운영 환경에서도 500/스택트레이스)가 그대로 노출될 수 있었습니다. 각
+// 핸들러의 try 블록 안에서 호출하도록 함수로 감싸 그 실패도 정상적으로 catch되게 합니다.
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('서버 설정이 올바르지 않습니다.');
+  }
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 type RouteParams = {
   params: Promise<{
@@ -41,6 +50,7 @@ async function getSessionUserId(): Promise<string | null> {
 // [1] 데이터 조회 기능 (GET)
 export async function GET(request: Request, props: RouteParams) {
   try {
+    const supabase = getSupabaseAdmin();
     const resolvedParams = await props.params;
     const { username, slug } = resolvedParams;
 
@@ -84,6 +94,7 @@ export async function GET(request: Request, props: RouteParams) {
 // [2] 데이터 저장 및 수정 기능 (POST)
 export async function POST(request: Request, props: RouteParams) {
   try {
+    const supabase = getSupabaseAdmin();
     const resolvedParams = await props.params;
     const { username, slug } = resolvedParams;
 
