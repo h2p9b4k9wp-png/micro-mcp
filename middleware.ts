@@ -29,10 +29,18 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isApiRoute = path.startsWith('/api/');
-  // 💡 [수정] /privacy는 로그인 없이도 봐야 하는 공개 법적 페이지입니다(앱 심사·가입 전
+  // 💡 [수정] /privacy·/pricing은 로그인 없이도 봐야 하는 공개 페이지입니다(앱 심사·가입 전
   // 방문자 등). /api/cron/*는 세션 쿠키가 아니라 자체 CRON_SECRET으로 인증하는 Vercel
   // Cron 전용 라우트라, 여기서 세션을 요구하면 Cron 호출 자체가 401로 막힙니다.
-  const isPublicRoute = path === '/login' || path.startsWith('/auth/') || path === '/privacy' || path.startsWith('/api/cron/');
+  // /api/public-analyze는 로그인 없이 파일 1개를 체험 분석해보는 전용 라우트로, 자체적으로
+  // IP 기반 하루 1회 제한을 두고 있어(app/api/public-analyze/route.ts) 세션이 없어도 됩니다.
+  const isPublicRoute =
+    path === '/login' ||
+    path.startsWith('/auth/') ||
+    path === '/privacy' ||
+    path === '/pricing' ||
+    path.startsWith('/api/cron/') ||
+    path === '/api/public-analyze';
 
   if (!user && !isPublicRoute) {
     if (isApiRoute) {

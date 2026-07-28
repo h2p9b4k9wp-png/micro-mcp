@@ -7,7 +7,7 @@ import { OfficeParser } from 'officeparser'; // 💡 PPT/워드/PDF 텍스트 �
 import { extractFileText, FileExtractError, resolveFileExtension } from '@/lib/file-text-extract'; // 💡 .hwpx(zip 기반) 텍스트 추출 — hwpjs는 .hwp 전용이라 별도 처리
 import { MAX_UPLOAD_BYTES, MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { truncateForPrompt } from '@/lib/truncate-text';
-import { getPlanLimits, getMonthStartISOString } from '@/lib/plan-limits';
+import { getPlanLimits, getMonthStartISOString, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 // 💡 tesseract.js(이미지 OCR)는 이미지가 실제로 첨부됐을 때만 동적으로 불러옵니다.
 // 파일 상단에서 정적으로 import하면, Vercel 번들에서 워커 스크립트를 못 찾을 경우
 // 이미지 첨부 여부와 무관하게 이 라우트로 오는 모든 요청이 모듈 로드 단계에서 죽어버립니다.
@@ -146,7 +146,7 @@ export async function POST(req: Request) {
       if (monthlyLogsCountResult.count !== null && monthlyLogsCountResult.count >= limits.chatsPerMonth) {
         return NextResponse.json(
           {
-            error: `이번 달 채팅 한도(${limits.chatsPerMonth}회)에 도달했어요.`,
+            error: `이번 달 채팅 한도(${limits.chatsPerMonth}회)에 도달했어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`,
             limitReached: true,
             limitType: 'chat',
           },

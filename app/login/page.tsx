@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
+import type { LensId, DeadlinesResult, QuestionsResult, DigestResult } from '@/lib/lenses';
+import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 
 // 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 대시보드와 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
@@ -31,6 +33,61 @@ function GoogleIcon() {
   );
 }
 
+// 💡 [신규] 로그인 없이 체험해본 분석 결과를 보여주는 간단한 렌더러 — app/page.tsx의
+// renderLensResult()와 달리 "등록" 같은 저장 액션은 없습니다(로그인 전이라 저장할 계정이
+// 없음). 결과를 읽어볼 수만 있고, 실제로 저장하려면 아래 "로그인하고 저장하기" 버튼을
+// 눌러야 합니다.
+function renderTrialResult(lens: LensId, result: DeadlinesResult | QuestionsResult | DigestResult) {
+  if (lens === 'deadlines') {
+    const r = result as DeadlinesResult;
+    if (r.items.length === 0) {
+      return <p className="text-sm text-[#C9C0D6]">Couldn&apos;t find any items with a due date.</p>;
+    }
+    return (
+      <ul className="flex flex-col gap-2.5">
+        {r.items.map((item, i) => (
+          <li key={i} className="border border-[#332D3B] rounded-lg p-3">
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <span className="text-sm font-semibold text-[#F5F2F7]">{item.title}</span>
+              <span className="text-xs font-semibold text-[#F4679B] shrink-0">{item.date}</span>
+            </div>
+            <p className="text-xs text-[#AFA6BD] italic">&quot;{item.evidence}&quot;</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (lens === 'questions') {
+    const r = result as QuestionsResult;
+    if (r.items.length === 0) {
+      return <p className="text-sm text-[#C9C0D6]">Couldn&apos;t come up with expected questions.</p>;
+    }
+    return (
+      <ul className="flex flex-col gap-2.5">
+        {r.items.map((item, i) => (
+          <li key={i} className="border border-[#332D3B] rounded-lg p-3">
+            <p className="text-sm font-semibold text-[#F5F2F7] mb-1">Q. {item.question}</p>
+            <p className="text-xs text-[#E4DEEA]">A. {item.draftAnswer}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  const r = result as DigestResult;
+  return (
+    <div className="flex flex-col gap-2.5">
+      <p className="text-sm font-semibold text-[#F5F2F7]">{r.summary}</p>
+      {r.keyPoints.length > 0 && (
+        <ul className="flex flex-col gap-1.5">
+          {r.keyPoints.map((p, i) => (
+            <li key={i} className="text-xs text-[#E4DEEA] list-disc list-inside ml-1">{p.text}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -38,6 +95,17 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'error' | 'success' } | null>(null);
+
+  // 💡 [신규] "로그인 없이 체험하기" — 로그인/회원가입 폼 대신 이 패널을 보여줍니다.
+  const [showTrial, setShowTrial] = useState(false);
+  const [isTrialAnalyzing, setIsTrialAnalyzing] = useState(false);
+  const [trialError, setTrialError] = useState<string | null>(null);
+  const [trialResult, setTrialResult] = useState<{
+    fileName: string;
+    text: string;
+    lens: LensId;
+    result: DeadlinesResult | QuestionsResult | DigestResult;
+  } | null>(null);
 
   // 💡 [신규] PWA 서비스워커 등록 (홈 화면에 앱으로 설치 가능하게 해줍니다)
   useEffect(() => {
@@ -62,12 +130,25 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw error;
-        setMessage({ text: '회원가입 확인 이메일을 발송했습니다! 이메일을 확인해 주세요.', type: 'success' });
+
+        // 💡 [신규] "이메일 인증은 나중에, 가입 즉시 쓸 수 있게" — Supabase 프로젝트의
+        // Authentication 설정에서 "Confirm email"이 꺼져 있으면 signUp()이 바로 세션을
+        // 돌려줍니다. 그 경우 "이메일을 확인해주세요" 안내로 붙잡아두지 않고 곧장 앱으로
+        // 들여보내고, 확인 메일 자체는 Supabase가 백그라운드로 계속 보냅니다. 반대로
+        // "Confirm email"이 켜져 있으면 Supabase가 세션을 주지 않으므로(이건 앱 코드가
+        // 아니라 Supabase 프로젝트 설정이라 여기서 우회할 수 없음) 기존처럼 안내만 하고
+        // 기다립니다.
+        if (data.session) {
+          router.push('/');
+          router.refresh();
+        } else {
+          setMessage({ text: '회원가입 확인 이메일을 발송했습니다! 이메일을 확인해 주세요.', type: 'success' });
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -99,6 +180,70 @@ export default function LoginPage() {
     } catch (err: any) {
       setMessage({ text: err.message || '소셜 로그인 실패', type: 'error' });
     }
+  };
+
+  // 💡 [신규] 로그인 없이 파일 1개를 분석해보는 체험. 서버(app/api/public-analyze)가
+  // IP당 하루 1회·3MB 상한을 강제하므로, 여기서는 사용자에게 보여줄 에러 메시지 처리와
+  // 결과 상태 관리만 담당합니다.
+  const handleTrialFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    if (file.size > 3 * 1024 * 1024) {
+      setTrialError('Files up to 3MB can be analyzed without an account.');
+      return;
+    }
+
+    setIsTrialAnalyzing(true);
+    setTrialError(null);
+    setTrialResult(null);
+    try {
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('Could not read the file.'));
+        reader.readAsDataURL(file);
+      });
+      const commaIndex = dataUrl.indexOf(',');
+      const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
+
+      const res = await fetch('/api/public-analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          content: base64Content,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setTrialError(data.error || 'Could not analyze this file.');
+        return;
+      }
+      setTrialResult({ fileName: data.fileName, text: data.text, lens: data.lens, result: data.result });
+    } catch (err) {
+      setTrialError(err instanceof Error ? err.message : 'Something went wrong.');
+    } finally {
+      setIsTrialAnalyzing(false);
+    }
+  };
+
+  // 💡 [신규] "다시 올리게 하면 안 돼" — 이미 뽑아둔 텍스트+분석 결과를 localStorage에
+  // 잠깐 담아두고 로그인 폼으로 전환합니다. app/page.tsx가 로그인 성공 직후 이 값을 읽어
+  // 파일을 다시 요청하지 않고 그대로 저장합니다.
+  const handleSaveTrialResult = () => {
+    if (!trialResult) return;
+    const payload: PendingTrialResult = { ...trialResult, savedAt: new Date().toISOString() };
+    try {
+      localStorage.setItem(PENDING_TRIAL_RESULT_KEY, JSON.stringify(payload));
+    } catch (err) {
+      console.error('체험 결과 임시 저장 실패:', err);
+    }
+    setShowTrial(false);
+    setIsSignUp(false);
+    setMessage({ text: 'Log in and the result you just saw will be saved automatically.', type: 'success' });
   };
 
   return (
@@ -168,88 +313,172 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
-            {isSignUp ? '새 계정 만들기' : '다시 만나서 반가워요'}
-          </h2>
-          <p className="text-[#AFA6BD] text-sm text-center md:text-left mb-7">
-            {isSignUp ? '새 계정을 생성하여 시작하세요' : '서비스 이용을 위해 로그인해 주세요'}
-          </p>
+          {!showTrial ? (
+            <>
+              <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
+                {isSignUp ? '새 계정 만들기' : '다시 만나서 반가워요'}
+              </h2>
+              <p className="text-[#AFA6BD] text-sm text-center md:text-left mb-7">
+                {isSignUp ? '새 계정을 생성하여 시작하세요' : '서비스 이용을 위해 로그인해 주세요'}
+              </p>
 
-          {message && (
-            <div
-              className={`px-4 py-3 rounded-lg text-sm mb-5 border ${
-                message.type === 'error'
-                  ? 'bg-[#35201D] text-[#FF9585] border-[#63392F]'
-                  : 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D]'
-              }`}
-            >
-              {message.text}
-            </div>
+              {message && (
+                <div
+                  className={`px-4 py-3 rounded-lg text-sm mb-5 border ${
+                    message.type === 'error'
+                      ? 'bg-[#35201D] text-[#FF9585] border-[#63392F]'
+                      : 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D]'
+                  }`}
+                >
+                  {message.text}
+                </div>
+              )}
+
+              <form onSubmit={handleAuth} className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
+                    이메일 주소
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93] transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
+                    비밀번호
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93] transition-colors"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-2.5 mt-1 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
+                >
+                  {loading ? '처리 중...' : isSignUp ? '회원가입' : '로그인'}
+                </button>
+              </form>
+
+              <div className="my-6 flex items-center gap-3">
+                <hr className="flex-1 border-[#322D3B]" />
+                <span className="text-xs text-[#857C93]">간편 로그인</span>
+                <hr className="flex-1 border-[#322D3B]" />
+              </div>
+
+              <button
+                onClick={() => handleOAuthLogin('google')}
+                className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-medium cursor-pointer flex items-center justify-center gap-2.5 hover:bg-[#15131A] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              >
+                <GoogleIcon />
+                Google로 계속하기
+              </button>
+
+              <div className="mt-6 flex flex-col items-center gap-3">
+                <button
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setMessage(null);
+                  }}
+                  className="bg-transparent border-none text-[#F4679B] text-[13px] font-medium cursor-pointer hover:underline focus:outline-none"
+                >
+                  {isSignUp ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowTrial(true);
+                    setMessage(null);
+                  }}
+                  className="bg-transparent border-none text-[#857C93] text-[13px] font-medium cursor-pointer hover:text-[#C9C0D6] hover:underline focus:outline-none"
+                >
+                  또는, 로그인 없이 파일 하나 체험해보기 →
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
+                Try it without an account
+              </h2>
+              <p className="text-[#AFA6BD] text-sm text-center md:text-left mb-7">
+                Analyze one file for free — no sign-up needed. (Up to 3MB, once per day.)
+              </p>
+
+              {!trialResult && (
+                <label
+                  className={`flex flex-col items-center justify-center gap-2 border border-dashed rounded-xl py-10 px-4 text-center transition-colors ${
+                    isTrialAnalyzing
+                      ? 'border-[#322D3B] cursor-wait'
+                      : 'border-[#423B4C] hover:border-[#F4679B]/50 cursor-pointer'
+                  }`}
+                >
+                  <span className="text-2xl">📄</span>
+                  <span className="text-sm font-medium text-[#C9C0D6]">
+                    {isTrialAnalyzing ? 'Analyzing your file…' : 'Click to choose a file'}
+                  </span>
+                  <span className="text-xs text-[#5B5566]">PDF, Word, PPT, Excel, HWP — up to 3MB</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    disabled={isTrialAnalyzing}
+                    onChange={handleTrialFileChange}
+                  />
+                </label>
+              )}
+
+              {trialError && (
+                <div className="px-4 py-3 rounded-lg text-sm mt-4 border bg-[#35201D] text-[#FF9585] border-[#63392F]">
+                  {trialError}
+                </div>
+              )}
+
+              {trialResult && (
+                <div className="flex flex-col gap-4">
+                  <div className="bg-[#15131A] border border-[#322D3B] rounded-xl p-4">
+                    <p className="text-xs text-[#857C93] mb-3 truncate">{trialResult.fileName}</p>
+                    {renderTrialResult(trialResult.lens, trialResult.result)}
+                  </div>
+
+                  <div className="bg-[#331F29] border border-[#F4679B]/40 rounded-xl p-4 text-center">
+                    <p className="text-sm text-[#F5F2F7] font-semibold mb-3">
+                      Log in to save this result
+                    </p>
+                    <button
+                      onClick={handleSaveTrialResult}
+                      className="w-full py-2.5 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
+                    >
+                      Log in and save
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => {
+                    setShowTrial(false);
+                    setTrialError(null);
+                    setTrialResult(null);
+                  }}
+                  className="bg-transparent border-none text-[#857C93] text-[13px] font-medium cursor-pointer hover:text-[#C9C0D6] hover:underline focus:outline-none"
+                >
+                  ← Back to login
+                </button>
+              </div>
+            </>
           )}
-
-          <form onSubmit={handleAuth} className="flex flex-col gap-4">
-            <div>
-              <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
-                이메일 주소
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93] transition-colors"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
-                비밀번호
-              </label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93] transition-colors"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 mt-1 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
-            >
-              {loading ? '처리 중...' : isSignUp ? '회원가입' : '로그인'}
-            </button>
-          </form>
-
-          <div className="my-6 flex items-center gap-3">
-            <hr className="flex-1 border-[#322D3B]" />
-            <span className="text-xs text-[#857C93]">간편 로그인</span>
-            <hr className="flex-1 border-[#322D3B]" />
-          </div>
-
-          <button
-            onClick={() => handleOAuthLogin('google')}
-            className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-medium cursor-pointer flex items-center justify-center gap-2.5 hover:bg-[#15131A] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-          >
-            <GoogleIcon />
-            Google로 계속하기
-          </button>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => {
-                setIsSignUp(!isSignUp);
-                setMessage(null);
-              }}
-              className="bg-transparent border-none text-[#F4679B] text-[13px] font-medium cursor-pointer hover:underline focus:outline-none"
-            >
-              {isSignUp ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입'}
-            </button>
-          </div>
         </div>
       </div>
     </div>

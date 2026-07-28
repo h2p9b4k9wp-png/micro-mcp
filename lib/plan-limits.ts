@@ -24,6 +24,11 @@ export function getPlanLimits(isPro: boolean) {
   return isPro ? PRO_LIMITS : FREE_LIMITS;
 }
 
+// 💡 [신규] Pro 가격 — /pricing 페이지, 한도 초과 안내(채팅·파일·교수님·자료), 업그레이드
+// 모달이 전부 이 상수 하나를 참조합니다. 가격이 바뀌면 여기만 고치면 됩니다.
+export const PRO_PRICE_USD = 4.99;
+export const PRO_PRICE_LABEL = `$${PRO_PRICE_USD}/month`;
+
 // 💡 [신규] 무료 등급 대화 기록 보관 기간(app/privacy 페이지에 적힌 문구와 실제 삭제
 // 동작이 어긋나지 않도록, app/api/cron/cleanup-logs/route.ts가 이 값을 그대로 씁니다).
 // Pro는 보관 기간 제한이 없고(계정 삭제 시까지), 이 상수는 무료 등급에만 적용됩니다.
@@ -59,7 +64,7 @@ export async function checkFileQuota(supabase: SupabaseClient, userId: string): 
   if (monthlyCount !== null && monthlyCount >= limits.filesPerMonth) {
     return {
       ok: false,
-      error: `이번 달 파일 처리 한도(${limits.filesPerMonth}회)에 도달했어요.`,
+      error: `이번 달 파일 처리 한도(${limits.filesPerMonth}회)에 도달했어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`,
       limit: limits.filesPerMonth,
     };
   }

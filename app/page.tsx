@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   Sparkles,
   Archive,
@@ -29,7 +30,8 @@ import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
-import { getPlanLimits } from '@/lib/plan-limits';
+import { getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -457,6 +459,41 @@ export default function HomePage() {
     setFiles(savedFiles || []);
     setIsFilesLoaded(true);
   }, [user]);
+
+  // 💡 [신규] 로그인 없이 체험(app/login/page.tsx)한 뒤 "로그인하고 저장하기"를 눌러
+  // localStorage에 잠깐 담아둔 분석 결과를 로그인 성공 직후 자동으로 저장합니다 — 파일을
+  // 다시 올리게 하지 않는 게 목적이라, 이미 뽑아둔 텍스트를 "내 파일"에 추가하고 렌즈
+  // 결과도 그대로 복원합니다. isFilesLoaded가 true인 뒤에 실행해야 위 effect(로컬 파일
+  // 목록 불러오기)가 이 추가 내용을 덮어쓰지 않습니다.
+  useEffect(() => {
+    if (!user || !isFilesLoaded) return;
+
+    let pending: PendingTrialResult | null = null;
+    try {
+      const raw = localStorage.getItem(PENDING_TRIAL_RESULT_KEY);
+      if (raw) pending = JSON.parse(raw);
+    } catch (err) {
+      console.error('체험 결과 불러오기 실패:', err);
+    }
+    if (!pending) return;
+    localStorage.removeItem(PENDING_TRIAL_RESULT_KEY);
+
+    const newFile: FileItem = {
+      id: Date.now().toString(),
+      name: pending.fileName,
+      size: `${(pending.text.length / 1024).toFixed(1)} KB`,
+      content: pending.text,
+      mimeType: 'text/plain',
+      date: new Date().toISOString().split('T')[0],
+    };
+    setFiles((prev) => [newFile, ...prev]);
+    recordDocumentUpload(pending.fileName, 'text/plain');
+
+    setLensId(pending.lens);
+    setLensResult(pending.result);
+    setLensStage('done');
+    setActiveTab('workspace');
+  }, [user, isFilesLoaded]);
 
   // 💡 [신규] 그래프 선호 설정 불러오기 + 예전 블록 모델(v1, mcp_blocks_state) 정리.
   // "마운트 시"는 실제로는 user.id를 알아야 계정별 키를 다룰 수 있어서, 계정이 확정된 시점을 뜻합니다.
@@ -991,7 +1028,7 @@ export default function HomePage() {
     // 여기서 클라이언트측으로 검사합니다.
     const limits = getPlanLimits(isPro);
     if (professors.length >= limits.maxProfessors) {
-      openUpgradeModal(`무료 등급은 교수님을 ${limits.maxProfessors}명까지만 등록할 수 있어요.`);
+      openUpgradeModal(`무료 등급은 교수님을 ${limits.maxProfessors}명까지만 등록할 수 있어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`);
       return null;
     }
 
@@ -1143,7 +1180,7 @@ export default function HomePage() {
     const existingCount = professorDocuments.filter(d => d.professor_id === professorId).length;
     const limits = getPlanLimits(isPro);
     if (existingCount + filesToUpload.length > limits.maxDocumentsPerProfessor) {
-      openUpgradeModal(`무료 등급은 교수님 한 분당 자료를 ${limits.maxDocumentsPerProfessor}개까지만 등록할 수 있어요.`);
+      openUpgradeModal(`무료 등급은 교수님 한 분당 자료를 ${limits.maxDocumentsPerProfessor}개까지만 등록할 수 있어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`);
       return;
     }
     if (existingCount + filesToUpload.length > MAX_PROFESSOR_DOCUMENTS) {
@@ -1993,6 +2030,13 @@ export default function HomePage() {
             )}
           </div>
         </div>
+
+        <Link
+          href="/pricing"
+          className="block px-4 py-3 border-t border-[#322D3B] text-xs text-[#857C93] hover:text-[#F4679B] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-inset"
+        >
+          Pricing
+        </Link>
       </div>
 
       {/* 메인 콘텐츠 영역 */}
@@ -3199,6 +3243,7 @@ export default function HomePage() {
           ) : (
             <>
               <h3 className="text-base font-bold text-[#F5F2F7] mb-1.5">Pro로 업그레이드하기</h3>
+              <p className="text-sm font-bold text-[#F4679B] mb-3">Upgrade to Pro — {PRO_PRICE_LABEL}</p>
               <p className="text-xs text-[#AFA6BD] mb-4 leading-relaxed">
                 {upgradeContext || '연락처를 남겨주시면 Pro 이용 안내를 도와드릴게요.'}
               </p>
