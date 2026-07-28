@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { LENSES, detectLens, type LensId } from '@/lib/lenses';
 import { getSessionUserId } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { truncateForPrompt } from '@/lib/truncate-text';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 
@@ -35,10 +36,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '분석할 텍스트가 없습니다.' }, { status: 400 });
     }
 
-    const lensId: LensId = lens && lens in LENSES ? lens : detectLens(text, fileName);
+    const truncatedText = truncateForPrompt(text);
+    const lensId: LensId = lens && lens in LENSES ? lens : detectLens(truncatedText, fileName);
     const lensDef = LENSES[lensId];
 
-    const openai = new OpenAI({ apiKey });
+    const openai = new OpenAI({ apiKey, maxRetries: 1 });
 
     // 💡 [신규] 답변 언어는 lensDef.systemPrompt(COMMON_RULES 포함, 모든 요청에 동일한 고정 문자열
     // — OpenAI가 프롬프트 캐싱하는 부분)에 넣지 않고, 요청마다 어차피 매번 달라지는 user 메시지
@@ -47,7 +49,7 @@ export async function POST(req: Request) {
     const languageDirective = locale === 'en'
       ? '[Answer language: English — you must answer in English regardless of the document\'s language.]\n\n'
       : '';
-    const userContent = `${languageDirective}${text}`;
+    const userContent = `${languageDirective}${truncatedText}`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4.1-mini',

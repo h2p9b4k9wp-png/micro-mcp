@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { getSessionUserId } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { truncateForPrompt } from '@/lib/truncate-text';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 
@@ -114,19 +115,19 @@ export async function POST(req: Request) {
       ? '[Answer language: English — you must answer in English regardless of the documents\' language.]\n\n'
       : '';
 
-    const combinedText = languageDirective + documents
+    const combinedText = languageDirective + truncateForPrompt(documents
       .map((doc) => {
         const typeLabel = DOC_TYPE_LABELS[doc.docType || ''] || '강의자료';
         return `[문서: ${doc.fileName}] [종류: ${typeLabel}]\n${doc.text}`;
       })
-      .join('\n\n---\n\n');
+      .join('\n\n---\n\n'));
 
     const affiliation = [professor?.school, professor?.department].filter(Boolean).join(' ');
     const systemPrompt = affiliation
       ? `${BASE_SYSTEM_PROMPT}\n\n이 교수님은 ${affiliation} 소속입니다. 전공 용어, 출제 관행, 강조하는 개념을 해석할 때 이 소속 맥락을 참고하세요.`
       : BASE_SYSTEM_PROMPT;
 
-    const openai = new OpenAI({ apiKey });
+    const openai = new OpenAI({ apiKey, maxRetries: 1 });
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4.1-mini',
