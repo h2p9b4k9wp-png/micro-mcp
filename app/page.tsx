@@ -35,7 +35,7 @@ import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import {
   detectLens,
   type LensId,
@@ -277,6 +277,30 @@ const CHAT_IMAGE_MAX_EDGE = 1568; // GPT-4.1 mini 비전이 내부적으로 다�
 // 같은 값으로 맞춰주세요.
 const MAX_PROFESSOR_DOCUMENTS = 30;
 
+// 💡 [신규] AI 답변 언어 설정 드롭다운에 기본으로 보여줄 후보들 — 브라우저가 이 목록에 없는
+// 언어를 감지해서 반환하면(예: Intl.DisplayNames가 "Swahili"를 반환) 그 값도 옵션에 그대로
+// 끼워 넣습니다(아래 responseLanguageOptions 계산 참고), 이 목록은 어디까지나 자주 쓰이는
+// 후보를 빠르게 고를 수 있게 하는 용도일 뿐 지원 언어를 제한하지 않습니다.
+const COMMON_RESPONSE_LANGUAGES = [
+  'Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German',
+  'Portuguese', 'Vietnamese', 'Thai', 'Indonesian', 'Russian', 'Arabic', 'Hindi',
+];
+
+// 브라우저 언어(navigator.language, 예: "ko-KR")를 영어 언어 이름(예: "Korean")으로 변환합니다.
+// /api/chat 등에 보내는 responseLanguage 값은 프롬프트에 그대로 꽂혀 들어가므로("Respond
+// entirely in {language}") 사람이 읽는 영어 이름이어야 모델이 정확히 해석합니다.
+function detectBrowserLanguageName(): string {
+  if (typeof navigator === 'undefined') return 'English';
+  try {
+    const tag = navigator.language || 'en';
+    const base = tag.split('-')[0];
+    const displayNames = new Intl.DisplayNames(['en'], { type: 'language' });
+    return displayNames.of(base) || 'English';
+  } catch {
+    return 'English';
+  }
+}
+
 // OpenAI 비전이 실제로 받는 이미지 형식. 아이폰 기본 사진 형식인 HEIC/HEIF는 목록에 없음 —
 // 브라우저가 대신 변환해주지 않는 경우, 그대로 보내면 비전 모델이 못 읽어서 "분석이 안 되는데
 // 이유를 알 수 없는" 상황이 됩니다. 업로드 시점에 걸러서 바로 안내합니다.
@@ -324,7 +348,6 @@ export default function HomePage() {
   // 💡 [신규] 다국어 지원 스캐폴딩 — 지금은 사이드바 메뉴·전송 버튼·로딩 문구 등 핵심 UI 일부만
   // 번역했고(messages/ko.json, en.json), 나머지 화면 문자열은 다음 단계에서 이어서 이관합니다.
   const t = useTranslations();
-  const locale = useLocale();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('connecting');
@@ -382,6 +405,13 @@ export default function HomePage() {
   const [upgradeMemo, setUpgradeMemo] = useState('');
   const [isSubmittingUpgradeRequest, setIsSubmittingUpgradeRequest] = useState(false);
   const [upgradeRequestSubmitted, setUpgradeRequestSubmitted] = useState(false);
+
+  // 💡 [신규] AI 답변 언어 — /api/chat, /api/analyze, /api/analyze-professor에 보내는
+  // responseLanguage 값. 화면 고정 글자(메뉴·버튼)의 ko/en 로케일(useLocale())과는 별개의
+  // 설정입니다 — 저건 next-intl UI 번역이 딱 두 언어뿐이라 그대로 두고, 이건 브라우저 언어를
+  // 감지해 훨씬 다양한 언어를 기본값으로 잡습니다. 사용자가 설정에서 직접 바꾸면 그 값을
+  // 계정별로 기억합니다(loadUserScopedItem/saveUserScopedItem, key mcp_response_language).
+  const [responseLanguage, setResponseLanguageState] = useState('English');
 
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
@@ -536,6 +566,20 @@ export default function HomePage() {
     if (!user) return;
     setProfessorFormDefaults(loadUserScopedItem<{ school: string; department: string }>(user.id, 'mcp_professor_defaults'));
   }, [user]);
+
+  // 💡 [신규] AI 답변 언어 — 저장해둔 값이 있으면 그걸 쓰고, 없으면(처음 로그인) 브라우저
+  // 언어를 감지해 기본값으로 씁니다.
+  useEffect(() => {
+    if (!user) return;
+    const saved = loadUserScopedItem<string>(user.id, 'mcp_response_language');
+    setResponseLanguageState(saved || detectBrowserLanguageName());
+  }, [user]);
+
+  // 💡 설정에서 직접 바꿀 때 씁니다 — 상태 변경과 동시에 계정별로 저장합니다.
+  const setResponseLanguage = (lang: string) => {
+    setResponseLanguageState(lang);
+    if (user) saveUserScopedItem(user.id, 'mcp_response_language', lang);
+  };
 
   // 텍스트 첨부가 하나도 안 남으면 미니 전선/관점 선택 자체가 의미 없으니 초기화합니다.
   useEffect(() => {
@@ -1132,7 +1176,7 @@ export default function HomePage() {
           previousResult: existingAnalysis.result,
           newDocuments: newDocs.map(d => ({ fileName: d.file_name, text: d.content, docType: d.doc_type })),
           professor: professor ? { school: professor.school, department: professor.department } : undefined,
-          locale,
+          responseLanguage,
         },
         existingAnalysis.document_count + newDocs.length
       );
@@ -1160,7 +1204,7 @@ export default function HomePage() {
       {
         documents: docs.map(d => ({ fileName: d.file_name, text: d.content, docType: d.doc_type })),
         professor: professor ? { school: professor.school, department: professor.department } : undefined,
-        locale,
+        responseLanguage,
       },
       docs.length
     );
@@ -1373,7 +1417,8 @@ export default function HomePage() {
           files,
           deadlines,
           chatAttachments,
-          token
+          token,
+          responseLanguage
         }),
       });
 
@@ -1586,7 +1631,7 @@ export default function HomePage() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, fileName, lens, locale }),
+        body: JSON.stringify({ text, fileName, lens, responseLanguage }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t('workspace.errors.analyzeFailed'));
@@ -2029,6 +2074,24 @@ export default function HomePage() {
               })
             )}
           </div>
+        </div>
+
+        {/* 💡 [신규] AI 답변 언어 설정 — 브라우저 언어로 자동 감지된 값을 기본으로 쓰고,
+            여기서 바꾸면 계정별로 기억됩니다(handleExecute/runLensAnalyze/
+            recomputeProfessorAnalysis*가 이 값을 responseLanguage로 API에 보냅니다). */}
+        <div className="px-4 py-3 border-t border-[#322D3B]">
+          <label className="block text-[10px] font-semibold text-[#857C93] uppercase tracking-wide mb-1.5">
+            AI 답변 언어
+          </label>
+          <select
+            value={responseLanguage}
+            onChange={(e) => setResponseLanguage(e.target.value)}
+            className="w-full bg-[#15131A] border border-[#322D3B] rounded-md px-2 py-1.5 text-xs text-[#C9C0D6] outline-none focus:border-[#F4679B] cursor-pointer"
+          >
+            {Array.from(new Set([responseLanguage, ...COMMON_RESPONSE_LANGUAGES])).map((lang) => (
+              <option key={lang} value={lang}>{lang}</option>
+            ))}
+          </select>
         </div>
 
         <Link

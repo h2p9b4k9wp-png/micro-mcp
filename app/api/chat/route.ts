@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!apiKey) {
-      return NextResponse.json({ error: "[ERROR] OPENAI_API_KEY가 설정되지 않았습니다." }, { status: 500 });
+      return NextResponse.json({ error: "OpenAI API key is not configured." }, { status: 500 });
     }
 
     const body = await (req as Request).json();
@@ -56,6 +56,7 @@ export async function POST(req: Request) {
       files,
       deadlines,
       token,
+      responseLanguage,
     } = body;
     const chatAttachments: ChatAttachmentPayload[] | undefined = body.chatAttachments;
 
@@ -69,7 +70,7 @@ export async function POST(req: Request) {
         const approxBytes = ((f?.content ?? '') as string).length * 3 / 4;
         if (approxBytes > MAX_UPLOAD_BYTES) {
           return NextResponse.json(
-            { error: `"${f?.name || '파일'}"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 다시 시도해주세요.` },
+            { error: `"${f?.name || 'file'}" is too large (over 10MB). Please try a smaller file.` },
             { status: 413 }
           );
         }
@@ -78,7 +79,7 @@ export async function POST(req: Request) {
     if (Array.isArray(chatAttachments)) {
       if (chatAttachments.length > MAX_CHAT_ATTACHMENTS) {
         return NextResponse.json(
-          { error: `한 번에 첨부할 수 있는 파일/이미지는 최대 ${MAX_CHAT_ATTACHMENTS}개입니다.` },
+          { error: `You can attach at most ${MAX_CHAT_ATTACHMENTS} files/images at once.` },
           { status: 400 }
         );
       }
@@ -88,7 +89,7 @@ export async function POST(req: Request) {
         const approxBytes = (base64Payload.length * 3) / 4;
         if (approxBytes > MAX_UPLOAD_BYTES) {
           return NextResponse.json(
-            { error: `"${a?.name || '이미지'}"의 용량이 너무 큽니다 (10MB 초과). 더 작은 이미지로 다시 시도해주세요.` },
+            { error: `"${a?.name || 'image'}" is too large (over 10MB). Please try a smaller image.` },
             { status: 413 }
           );
         }
@@ -134,7 +135,7 @@ export async function POST(req: Request) {
       // 💡 간단한 속도 제한 — 1분에 10회 넘게 요청하면 차단 (계정 탈취·자동화 남용 방지)
       if (rateLimitResult.count !== null && rateLimitResult.count >= 10) {
         return NextResponse.json(
-          { error: '요청이 너무 많아요. 잠시 후(1분 뒤) 다시 시도해주세요.' },
+          { error: 'Too many requests. Please try again in a minute.' },
           { status: 429 }
         );
       }
@@ -146,7 +147,7 @@ export async function POST(req: Request) {
       if (monthlyLogsCountResult.count !== null && monthlyLogsCountResult.count >= limits.chatsPerMonth) {
         return NextResponse.json(
           {
-            error: `이번 달 채팅 한도(${limits.chatsPerMonth}회)에 도달했어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`,
+            error: `You've reached this month's chat limit (${limits.chatsPerMonth}). Upgrade to Pro — ${PRO_PRICE_LABEL}`,
             limitReached: true,
             limitType: 'chat',
           },
@@ -402,11 +403,21 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
 
     const openai = new OpenAI({ apiKey, maxRetries: 1 });
 
+    // 💡 [신규] 답변 언어 지정 — systemInstruction(위, 매 요청마다 날짜·컨텍스트가 달라 애초에
+    // 캐싱 대상이 아님)이 아니라 여기 user 메시지 쪽에 붙입니다. lib/lenses.ts의 COMMON_RULES
+    // 처럼 여러 요청이 공유하는 고정 프리픽스는 아니지만, /api/analyze·/api/analyze-professor와
+    // 같은 원칙(요청마다 달라지는 값은 user 메시지에)을 이 라우트에도 동일하게 적용합니다.
+    // Tavily 검색 질의(prompt)는 그대로 두고, OpenAI로 보내는 내용에만 붙입니다.
+    const languageDirective = responseLanguage
+      ? `Respond entirely in ${responseLanguage}. This overrides the document's language.\n\n`
+      : '';
+    const promptWithLanguage = `${languageDirective}${prompt}`;
+
     // 채팅창에 첨부한 사진이 있으면 GPT-4.1 mini 비전에 이미지를 함께 전달합니다 (없으면 기존과 동일하게 문자열 그대로).
     const userMessageContent =
       chatImageParts.length > 0
-        ? [{ type: 'text' as const, text: prompt }, ...chatImageParts]
-        : prompt;
+        ? [{ type: 'text' as const, text: promptWithLanguage }, ...chatImageParts]
+        : promptWithLanguage;
 
     // 💡 [속도 개선] 답변이 완성될 때까지 기다리지 않고, 생성되는 대로 바로바로 흘려보냅니다.
     const stream = await openai.chat.completions.create({
@@ -446,7 +457,7 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
     // 로그에만 남깁니다.
     console.error("API 호출 중 에러 발생:", error);
     return NextResponse.json(
-      { error: "요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요." },
+      { error: "Couldn't process your request. Please try again in a moment." },
       { status: 500 }
     );
   }

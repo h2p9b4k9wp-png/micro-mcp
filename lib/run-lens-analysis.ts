@@ -9,7 +9,7 @@ export interface RunLensAnalysisParams {
   text: string;
   fileName?: string;
   lens?: LensId;
-  locale?: string;
+  responseLanguage?: string;
 }
 
 export interface RunLensAnalysisResult {
@@ -27,7 +27,7 @@ export async function runLensAnalysis({
   text,
   fileName,
   lens,
-  locale,
+  responseLanguage,
 }: RunLensAnalysisParams): Promise<RunLensAnalysisResult> {
   const truncatedText = truncateForPrompt(text);
   const lensId: LensId = lens && lens in LENSES ? lens : detectLens(truncatedText, fileName);
@@ -37,10 +37,10 @@ export async function runLensAnalysis({
 
   // 💡 답변 언어는 lensDef.systemPrompt(COMMON_RULES 포함, 모든 요청에 동일한 고정 문자열
   // — OpenAI가 프롬프트 캐싱하는 부분)에 넣지 않고, 요청마다 어차피 매번 달라지는 user 메시지
-  // 앞에 붙입니다. 고정 프리픽스에 넣으면 언어가 바뀔 때마다(혹은 로케일별로) 캐시가 갈라져서
+  // 앞에 붙입니다. 고정 프리픽스에 넣으면 사용자마다 언어가 달라질 때 캐시가 갈라져서
   // 캐싱 이득이 사라집니다.
-  const languageDirective = locale === 'en'
-    ? '[Answer language: English — you must answer in English regardless of the document\'s language.]\n\n'
+  const languageDirective = responseLanguage
+    ? `Respond entirely in ${responseLanguage}. This overrides the document's language.\n\n`
     : '';
   const userContent = `${languageDirective}${truncatedText}`;
 
@@ -67,7 +67,7 @@ export async function runLensAnalysis({
     result = JSON.parse(raw);
   } catch {
     console.error('AI 응답 파싱 실패:', raw);
-    throw new LensAnalysisParseError('AI가 분석 결과를 정리하는 데 실패했어요. 다시 시도해주세요.');
+    throw new LensAnalysisParseError('The AI had trouble organizing the analysis result. Please try again.');
   }
 
   return { lensId, result };

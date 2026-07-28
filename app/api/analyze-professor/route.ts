@@ -70,7 +70,7 @@ const CATEGORY_INSTRUCTIONS = `각 문서 앞에는 [문서: 파일명] [종류:
 
 각 항목은 짧고 구체적인 한 문장으로 작성하세요.
 
-출력은 다른 설명, 인사말, 마크다운 코드블록 없이 오직 JSON 객체만, 문서가 한국어로 작성되어 있다면 한국어로 작성하세요.`;
+출력은 다른 설명, 인사말, 마크다운 코드블록 없이 오직 JSON 객체만, 사용자가 지정한 언어를 따르세요.`;
 
 // 💡 lib/lenses.ts의 COMMON_RULES와 같은 이유로, "정상 케이스(문서에 실제 내용이 있음)"를 먼저
 // 못 박고 예외 규칙을 뒤에 붙이는 서술형으로 씁니다. 단순 불릿 체크리스트로 hedging 규칙을 여러 개
@@ -111,7 +111,7 @@ export async function POST(req: Request) {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: '[ERROR] OPENAI_API_KEY가 설정되지 않았습니다.' }, { status: 500 });
+      return NextResponse.json({ error: 'OpenAI API key is not configured.' }, { status: 500 });
     }
 
     // 💡 [신규] 매 호출마다 유료 OpenAI 요청이 나가므로 /api/chat과 동일하게 1분당 호출
@@ -119,25 +119,25 @@ export async function POST(req: Request) {
     const userId = await getSessionUserId();
     if (userId && !checkRateLimit(`analyze-professor:${userId}`, 10, 60_000)) {
       return NextResponse.json(
-        { error: '요청이 너무 많아요. 잠시 후(1분 뒤) 다시 시도해주세요.' },
+        { error: 'Too many requests. Please try again in a minute.' },
         { status: 429 }
       );
     }
 
     const body = await req.json();
-    const { documents, previousResult, newDocuments, professor, locale } = body as {
+    const { documents, previousResult, newDocuments, professor, responseLanguage } = body as {
       documents?: DocPayload[];
       previousResult?: unknown;
       newDocuments?: DocPayload[];
       professor?: { school?: string | null; department?: string | null };
-      locale?: string;
+      responseLanguage?: string;
     };
 
     // 💡 previousResult + newDocuments가 함께 오면 증분 업데이트, documents만 오면 전체 분석.
     const isIncremental = Boolean(previousResult && newDocuments && newDocuments.length > 0);
 
     if (!isIncremental && (!documents || documents.length === 0)) {
-      return NextResponse.json({ error: '분석할 자료가 없습니다.' }, { status: 400 });
+      return NextResponse.json({ error: 'No documents to analyze.' }, { status: 400 });
     }
 
     // 💡 [신규] 클라이언트(app/page.tsx)가 교수님 1명당 자료 개수를 30개로 제한하지만, API를
@@ -146,7 +146,7 @@ export async function POST(req: Request) {
     const docCountForCap = isIncremental ? (newDocuments as DocPayload[]).length : (documents as DocPayload[]).length;
     if (docCountForCap > MAX_PROFESSOR_DOCUMENTS) {
       return NextResponse.json(
-        { error: `한 번에 분석할 수 있는 자료는 최대 ${MAX_PROFESSOR_DOCUMENTS}개입니다.` },
+        { error: `You can analyze at most ${MAX_PROFESSOR_DOCUMENTS} documents at once.` },
         { status: 400 }
       );
     }
@@ -154,8 +154,8 @@ export async function POST(req: Request) {
     // 💡 [신규] 답변 언어는 BASE_SYSTEM_PROMPT/INCREMENTAL_SYSTEM_PROMPT(고정 프리픽스)가
     // 아니라 매 요청마다 달라지는 user 메시지 쪽에 넣습니다 — lib/lenses.ts COMMON_RULES와
     // 같은 이유(캐싱 프리픽스 보존).
-    const languageDirective = locale === 'en'
-      ? '[Answer language: English — you must answer in English regardless of the documents\' language.]\n\n'
+    const languageDirective = responseLanguage
+      ? `Respond entirely in ${responseLanguage}. This overrides the documents' language.\n\n`
       : '';
 
     const combinedText = isIncremental
@@ -196,7 +196,7 @@ export async function POST(req: Request) {
     } catch {
       console.error('AI 응답 파싱 실패:', raw);
       return NextResponse.json(
-        { error: 'AI가 분석 결과를 정리하는 데 실패했어요. 다시 시도해주세요.' },
+        { error: 'The AI had trouble organizing the analysis result. Please try again.' },
         { status: 500 }
       );
     }
@@ -208,7 +208,7 @@ export async function POST(req: Request) {
     // 로그에만 남깁니다.
     console.error('교수님 자료 분석 중 오류 발생:', error);
     return NextResponse.json(
-      { error: '분석 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.' },
+      { error: 'Something went wrong during analysis. Please try again in a moment.' },
       { status: 500 }
     );
   }
