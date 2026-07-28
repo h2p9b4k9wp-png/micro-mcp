@@ -7,6 +7,7 @@ import { OfficeParser } from 'officeparser'; // 💡 PPT/워드/PDF 텍스트 �
 import { extractFileText, FileExtractError, resolveFileExtension } from '@/lib/file-text-extract'; // 💡 .hwpx(zip 기반) 텍스트 추출 — hwpjs는 .hwp 전용이라 별도 처리
 import { MAX_UPLOAD_BYTES, MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { truncateForPrompt } from '@/lib/truncate-text';
+import { getPlanLimits, getMonthStartISOString } from '@/lib/plan-limits';
 // 💡 tesseract.js(이미지 OCR)는 이미지가 실제로 첨부됐을 때만 동적으로 불러옵니다.
 // 파일 상단에서 정적으로 import하면, Vercel 번들에서 워커 스크립트를 못 찾을 경우
 // 이미지 첨부 여부와 무관하게 이 라우트로 오는 모든 요청이 모듈 로드 단계에서 죽어버립니다.
@@ -111,7 +112,7 @@ export async function POST(req: Request) {
     if (supabase) {
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
-      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult] = await Promise.all([
+      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, monthlyLogsCountResult] = await Promise.all([
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
@@ -123,6 +124,11 @@ export async function POST(req: Request) {
           .limit(3),
         supabase.from('professors').select('id, name, school, department'),
         supabase.from('documents').select('professor_id, file_name, content'),
+        supabase.from('profiles').select('is_pro').single(),
+        supabase
+          .from('logs')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', getMonthStartISOString()),
       ]);
 
       // 💡 간단한 속도 제한 — 1분에 10회 넘게 요청하면 차단 (계정 탈취·자동화 남용 방지)
@@ -130,6 +136,21 @@ export async function POST(req: Request) {
         return NextResponse.json(
           { error: '요청이 너무 많아요. 잠시 후(1분 뒤) 다시 시도해주세요.' },
           { status: 429 }
+        );
+      }
+
+      // 💡 [신규] 유료 전환 준비 — 월간 채팅 한도(무료/Pro). 결제 시스템은 아직 없고
+      // profiles.is_pro 플래그로만 구분합니다. 위 1분당 속도 제한과는 별개의, 월 단위
+      // 사용량 한도입니다.
+      const limits = getPlanLimits(Boolean(profileResult.data?.is_pro));
+      if (monthlyLogsCountResult.count !== null && monthlyLogsCountResult.count >= limits.chatsPerMonth) {
+        return NextResponse.json(
+          {
+            error: `이번 달 채팅 한도(${limits.chatsPerMonth}회)에 도달했어요.`,
+            limitReached: true,
+            limitType: 'chat',
+          },
+          { status: 403 }
         );
       }
 

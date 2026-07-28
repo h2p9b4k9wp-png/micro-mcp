@@ -29,6 +29,7 @@ import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
+import { getPlanLimits } from '@/lib/plan-limits';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -370,6 +371,16 @@ export default function HomePage() {
   const [isAnalyzingProfessor, setIsAnalyzingProfessor] = useState(false);
   const [professorAnalysisError, setProfessorAnalysisError] = useState<string | null>(null);
 
+  // 💡 [신규] 유료 전환 준비 — 결제 시스템은 아직 없고 profiles.is_pro만 봅니다(기본 false).
+  // "Pro로 업그레이드하기" 배지/한도 도달 시 열리는 요청 폼 공용 상태.
+  const [isPro, setIsPro] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [upgradeContext, setUpgradeContext] = useState<string | null>(null);
+  const [upgradeEmail, setUpgradeEmail] = useState('');
+  const [upgradeMemo, setUpgradeMemo] = useState('');
+  const [isSubmittingUpgradeRequest, setIsSubmittingUpgradeRequest] = useState(false);
+  const [upgradeRequestSubmitted, setUpgradeRequestSubmitted] = useState(false);
+
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const commandInputRef = useRef<HTMLInputElement>(null);
@@ -523,12 +534,14 @@ export default function HomePage() {
         fetchDocumentUploads(retrySession.user.id);
         fetchProfessorsAndDocuments(retrySession.user.id);
         fetchConversationFolders(retrySession.user.id);
+        fetchIsPro(retrySession.user.id);
       } else {
         setUser(session.user);
         fetchLogs(session.user.id);
         fetchDocumentUploads(session.user.id);
         fetchProfessorsAndDocuments(session.user.id);
         fetchConversationFolders(session.user.id);
+        fetchIsPro(session.user.id);
       }
 
       setLoading(false);
@@ -548,6 +561,13 @@ export default function HomePage() {
     if (data && data.length > 0) {
       setLogs(data);
     }
+  };
+
+  // 💡 [신규] 유료 전환 준비 — profiles.is_pro 조회. 프로필 행이 아직 없거나(가입 직후 등)
+  // 조회에 실패해도 무료 등급(false)으로 안전하게 취급합니다.
+  const fetchIsPro = async (userId: string) => {
+    const { data } = await supabase.from('profiles').select('is_pro').eq('id', userId).single();
+    setIsPro(Boolean(data?.is_pro));
   };
 
   // 💡 [신규] 대화 폴더 목록 조회.
@@ -861,6 +881,10 @@ export default function HomePage() {
           });
           const data = await res.json();
           if (!res.ok) {
+            if (data.limitReached) {
+              openUpgradeModal(data.error);
+              break;
+            }
             alert(t('workspace.errors.extractFailed', { fileName: file.name, error: data.error }));
             continue;
           }
@@ -897,6 +921,40 @@ export default function HomePage() {
     setChatAttachments(prev => prev.filter(a => a.id !== id));
   };
 
+  // 💡 [신규] 유료 전환 준비 — 무료/Pro 한도에 도달했을 때 그냥 막지 않고 "Pro로
+  // 업그레이드하기" 요청 폼을 엽니다. contextMessage는 어떤 한도 때문에 열렸는지 보여주고,
+  // 그대로 요청 메모 초안으로도 채워집니다(사용자가 그대로 보내도 되고, 고쳐도 됩니다).
+  const openUpgradeModal = (contextMessage?: string) => {
+    setUpgradeContext(contextMessage ?? null);
+    setUpgradeMemo(contextMessage ?? '');
+    setUpgradeRequestSubmitted(false);
+    setIsUpgradeModalOpen(true);
+  };
+
+  const closeUpgradeModal = () => {
+    setIsUpgradeModalOpen(false);
+  };
+
+  const handleSubmitUpgradeRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !upgradeEmail.trim()) return;
+    setIsSubmittingUpgradeRequest(true);
+    try {
+      const { error } = await supabase.from('pro_requests').insert({
+        user_id: user.id,
+        email: upgradeEmail.trim(),
+        memo: upgradeMemo.trim() || null,
+      });
+      if (error) {
+        alert(`요청을 보내지 못했어요: ${error.message}`);
+        return;
+      }
+      setUpgradeRequestSubmitted(true);
+    } finally {
+      setIsSubmittingUpgradeRequest(false);
+    }
+  };
+
   // 💡 [신규] 교수님 새로 등록. 학교/학과는 필수이고, 성공하면 다음 등록 폼의 기본값으로 기억해둡니다
   // (전공 용어·출제 관행 해석에 학교/학과 맥락이 꼭 필요해서 — runProfessorAnalysis 참고).
   // 성공하면 새 교수님의 id를 반환합니다(같은 흐름에서 바로 파일을 올릴 수 있게).
@@ -906,6 +964,15 @@ export default function HomePage() {
     const trimmedDepartment = department.trim();
     if (!trimmedSchool || !trimmedDepartment) {
       alert('학교와 학과를 입력해주세요.');
+      return null;
+    }
+
+    // 💡 [신규] 유료 전환 준비 — 무료 등급은 교수님 1명까지만 등록 가능. 이 액션은
+    // professors 테이블에 클라이언트가 직접 insert하는 구조라(서버 라우트를 거치지 않음)
+    // 여기서 클라이언트측으로 검사합니다.
+    const limits = getPlanLimits(isPro);
+    if (professors.length >= limits.maxProfessors) {
+      openUpgradeModal(`무료 등급은 교수님을 ${limits.maxProfessors}명까지만 등록할 수 있어요.`);
       return null;
     }
 
@@ -1050,7 +1117,16 @@ export default function HomePage() {
     const filesToUpload = Array.from(fileList);
     if (filesToUpload.length === 0 || !user) return;
 
+    // 💡 [신규] 유료 전환 준비 — 무료 등급은 교수님 1명당 자료 개수도 제한됩니다. 이 값이
+    // 아래 기술적 상한(MAX_PROFESSOR_DOCUMENTS, 비용 보호용)보다 작으므로 무료 등급은
+    // 이 검사에 먼저 걸립니다. Pro는 무제한(Infinity)이라 이 검사를 통과하고 기술적
+    // 상한만 적용됩니다.
     const existingCount = professorDocuments.filter(d => d.professor_id === professorId).length;
+    const limits = getPlanLimits(isPro);
+    if (existingCount + filesToUpload.length > limits.maxDocumentsPerProfessor) {
+      openUpgradeModal(`무료 등급은 교수님 한 분당 자료를 ${limits.maxDocumentsPerProfessor}개까지만 등록할 수 있어요.`);
+      return;
+    }
     if (existingCount + filesToUpload.length > MAX_PROFESSOR_DOCUMENTS) {
       alert(`이 교수님에게는 최대 ${MAX_PROFESSOR_DOCUMENTS}개까지만 자료를 등록할 수 있어요(현재 ${existingCount}개). 필요 없는 자료를 먼저 삭제해주세요.`);
       return;
@@ -1086,6 +1162,10 @@ export default function HomePage() {
           });
           const data = await res.json();
           if (!res.ok) {
+            if (data.limitReached) {
+              openUpgradeModal(data.error);
+              break;
+            }
             alert(`"${file.name}"에서 글자를 뽑지 못했어요: ${data.error}`);
             continue;
           }
@@ -1247,6 +1327,11 @@ export default function HomePage() {
         aiAnswer = t('workspace.errors.requestFailed', { error: errData.error });
         setStreamingLog(header + aiAnswer);
         setIsAwaitingChatResponse(false);
+        // 💡 [신규] 유료 전환 준비 — 월간 채팅 한도 도달은 그냥 막지 않고 업그레이드 요청
+        // 폼을 바로 띄웁니다.
+        if (errData.limitReached) {
+          openUpgradeModal(errData.error);
+        }
       } else if (res.body) {
         // 💡 [속도 개선] 답변을 다 기다리지 않고, 도착하는 대로 바로바로 화면에 이어붙입니다.
         const reader = res.body.getReader();
@@ -1773,6 +1858,7 @@ export default function HomePage() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-[#15131A] text-[#F5F2F7] flex flex-col md:flex-row">
       <style jsx global>{`
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
@@ -1807,7 +1893,16 @@ export default function HomePage() {
 
       {/* 모바일 상단 바 */}
       <div className="md:hidden flex items-center justify-between bg-[#211E28] border-b border-[#322D3B] px-4 py-3.5">
-        <span className="font-extrabold text-[15px] text-[#F5F2F7] tracking-tight">Micro-MCP</span>
+        <div className="flex items-center gap-2">
+          <span className="font-extrabold text-[15px] text-[#F5F2F7] tracking-tight">Micro-MCP</span>
+          <button
+            type="button"
+            onClick={() => openUpgradeModal()}
+            className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+          >
+            {isPro ? 'PRO' : 'Pro'}
+          </button>
+        </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="메뉴 열기"
@@ -1827,6 +1922,13 @@ export default function HomePage() {
           <div className="flex items-center gap-2.5 text-[#F4679B]">
             <Logomark className="w-7 h-7" />
             <span className="text-[16px] font-extrabold text-[#F5F2F7] tracking-tight">Micro-MCP</span>
+            <button
+              type="button"
+              onClick={() => openUpgradeModal()}
+              className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+            >
+              {isPro ? 'PRO' : 'Pro'}
+            </button>
           </div>
           <LocaleSwitcher />
         </div>
@@ -3048,5 +3150,83 @@ export default function HomePage() {
         </div>
       </div>
     </div>
+
+    {/* 💡 [신규] 유료 전환 준비 — 한도 도달 시 자동으로 열리거나, "Pro" 배지를 눌러 언제든
+        열 수 있는 업그레이드 요청 폼. 결제는 아직 연결하지 않고 이메일/메모만 pro_requests에
+        저장합니다. 이 앱에서 처음 쓰는 오버레이 모달이라 좁은 화면에서도 잘리지 않도록
+        max-h-[90vh] overflow-y-auto로 감쌉니다. */}
+    {isUpgradeModalOpen && (
+      <div
+        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+        onClick={closeUpgradeModal}
+      >
+        <div
+          className="bg-[#211E28] border border-[#322D3B] rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {upgradeRequestSubmitted ? (
+            <div className="flex flex-col items-center text-center gap-3 py-4">
+              <span className="text-3xl">✨</span>
+              <h3 className="text-base font-bold text-[#F5F2F7]">요청이 접수됐어요</h3>
+              <p className="text-sm text-[#C9C0D6] leading-relaxed">곧 연락드릴게요!</p>
+              <button
+                type="button"
+                onClick={closeUpgradeModal}
+                className="mt-2 bg-[#F4679B] hover:bg-[#D1477F] text-white text-sm font-semibold px-5 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              >
+                닫기
+              </button>
+            </div>
+          ) : (
+            <>
+              <h3 className="text-base font-bold text-[#F5F2F7] mb-1.5">Pro로 업그레이드하기</h3>
+              <p className="text-xs text-[#AFA6BD] mb-4 leading-relaxed">
+                {upgradeContext || '연락처를 남겨주시면 Pro 이용 안내를 도와드릴게요.'}
+              </p>
+              <form onSubmit={handleSubmitUpgradeRequest} className="flex flex-col gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">이메일</label>
+                  <input
+                    type="email"
+                    required
+                    value={upgradeEmail}
+                    onChange={(e) => setUpgradeEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">메모 (선택)</label>
+                  <textarea
+                    value={upgradeMemo}
+                    onChange={(e) => setUpgradeMemo(e.target.value)}
+                    rows={3}
+                    placeholder="궁금한 점이나 필요한 기능을 적어주세요"
+                    className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566] resize-none"
+                  />
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <button
+                    type="button"
+                    onClick={closeUpgradeModal}
+                    className="flex-1 bg-[#15131A] hover:bg-[#0D0B11] text-[#C9C0D6] border border-[#322D3B] text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#857C93]"
+                  >
+                    닫기
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingUpgradeRequest || !upgradeEmail.trim()}
+                    className="flex-1 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[#2A2632] disabled:text-[#857C93] disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                  >
+                    {isSubmittingUpgradeRequest ? '보내는 중...' : '요청 보내기'}
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
+    )}
+    </>
   );
 }
