@@ -141,5 +141,59 @@
       "in2Weeks": "Over 2 weken",
       "in3PlusWeeks": "3+ weken"
     }
+  },
+  "professors": {
+    "title": "Docenten",
+    "subtitle": "Verzamel materiaal per docent om in één oogopslag te zien welke onderwerpen ze benadrukken en hun manier van vragen stellen.",
+    "uploadPanel": {
+      "title": "Materiaal uploaden",
+      "selectProfessor": "Docent selecteren",
+      "registerNew": "+ Nieuwe docent registreren",
+      "namePlaceholder": "Naam (verplicht)",
+      "schoolPlaceholder": "School (verplicht)",
+      "departmentPlaceholder": "Afdeling (verplicht)",
+      "schoolDeptHint": "School-/afdelingsinformatie helpt bij het nauwkeuriger interpreteren van vakspecifieke terminologie en beoordelingsconventies.",
+      "chooseFile": "Bestand kiezen",
+      "paperHint": "Het uploaden van de papers van de docent helpt om onderzoeksinteresses en nadruk veel nauwkeuriger vast te stellen."
+    },
+    "loading": "Laden...",
+    "noneRegistered": "Nog geen docenten geregistreerd. Upload hierboven materiaal om er een te registreren.",
+    "documentCount": "{count} bestanden",
+    "docType": {
+      "lecture": "Collegemateriaal",
+      "exam": "Examen",
+      "assignment": "Opdracht",
+      "paper": "Paper"
+    },
+    "backToList": "Terug naar docenten",
+    "deleteProfessor": "Docent verwijderen",
+    "noSchoolDept": "Geen school-/afdelingsinformatie",
+    "documentListTitle": "Materiaal ({count})",
+    "noDocumentsYet": "Nog geen materiaal geüpload.",
+    "deleteDocumentAria": "{fileName} verwijderen",
+    "circuitHint": "Klik op de AI-kern om het materiaal van deze docent te analyseren",
+    "notConfidentYet": "Nog niet zeker genoeg om te beoordelen",
+    "analyzeButton": "Analyseer deze docent",
+    "notEnoughData": "Nog niet genoeg materiaal om met vertrouwen te beoordelen.",
+    "teaserTitle": "Upload meer om dit te ontgrendelen",
+    "uploadDirectly": "Nu bestanden uploaden",
+    "category": {
+      "topics": "Vaak benadrukte onderwerpen",
+      "examStyle": "Vraagstijl",
+      "assignmentStyle": "Stijl van opdrachten",
+      "examQuestionTypes": "Soorten examenvragen",
+      "gradingStrictness": "Strengheid van beoordeling",
+      "researchInterests": "Onderzoeksinteresses"
+    },
+    "circuit": {
+      "expected_questions": "Verwachte vragen",
+      "assignment_direction": "Richting van de opdracht",
+      "study_method": "Studiemethode"
+    },
+    "framing": {
+      "first": "Eerste indruk op basis van 1 document",
+      "some": "Gebaseerd op {count} documenten — er begint een patroon te ontstaan",
+      "clear": "Gebaseerd op {count} documenten — het patroon is duidelijk"
+    }
   }
 }

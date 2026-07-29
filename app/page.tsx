@@ -179,13 +179,9 @@ const FORMAT_ICONS: Record<string, string> = {
 
 // 💡 교수님 자료의 "종류" — 파일 형식(FORMAT_ICONS)과는 다른 축입니다. 논문(paper)은
 // /api/analyze-professor가 "이 교수님의 연구 관심사" 카테고리의 유일한 근거로 삼습니다.
-const DOC_TYPE_DEFS: { key: string; label: string }[] = [
-  { key: 'lecture', label: '강의자료' },
-  { key: 'exam', label: '시험지' },
-  { key: 'assignment', label: '과제' },
-  { key: 'paper', label: '논문' },
-];
-const DOC_TYPE_LABELS: Record<string, string> = Object.fromEntries(DOC_TYPE_DEFS.map((d) => [d.key, d.label]));
+// 라벨이 번역돼야 해서(t() 필요) 컴포넌트 안의 docTypeDefs/docTypeLabels로 계산합니다 —
+// 이 목록에서는 키(DOC_TYPE_KEYS)만 갖고 있습니다.
+const DOC_TYPE_KEYS = ['lecture', 'exam', 'assignment', 'paper'] as const;
 
 // 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
@@ -226,25 +222,22 @@ const CHAT_LENS_CHOICE_DEFS: { id: LensId | 'none'; key: string }[] = [
   { id: 'none', key: 'none' },
 ];
 
-// 💡 교수님 분석 결과의 5개 카테고리 — ProfessorAnalysisResult의 키와 1:1 대응.
-// 각 카테고리는 AI가 반환한 confident 값에 따라 화면에서 실제 결과(위)로 올라가거나
-// "더 올리면 알 수 있는 것"(아래, 회색)으로 내려갑니다 — 고정된 목록이 아니라 매 분석마다 갈립니다.
-const PROFESSOR_CATEGORY_DEFS: { key: keyof ProfessorAnalysisResult; label: string }[] = [
-  { key: 'topics', label: '자주 강조하는 주제' },
-  { key: 'examStyle', label: '문제 내는 방식' },
-  { key: 'assignmentStyle', label: '과제 요구 스타일' },
-  { key: 'examQuestionTypes', label: '시험 문제 유형' },
-  { key: 'gradingStrictness', label: '채점 기준의 엄격함' },
-  { key: 'researchInterests', label: '연구 관심사' },
+// 💡 교수님 분석 결과의 6개 카테고리 — ProfessorAnalysisResult의 키와 1:1 대응. 라벨이
+// 번역돼야 해서(t() 필요) 컴포넌트 안의 professorCategoryDefs로 계산합니다 — 여기서는
+// 순서와 키만 고정해둡니다. 각 카테고리는 AI가 반환한 confident 값에 따라 화면에서 실제
+// 결과(위)로 올라가거나 "더 올리면 알 수 있는 것"(아래, 회색)으로 내려갑니다.
+const PROFESSOR_CATEGORY_KEYS: (keyof ProfessorAnalysisResult)[] = [
+  'topics', 'examStyle', 'assignmentStyle', 'examQuestionTypes', 'gradingStrictness', 'researchInterests',
 ];
 
 // 💡 [신규] 교수님 상세 화면 회로도의 action 노드 3개 — 이미 계산된 6개 카테고리 결과를 재활용해서
 // 매핑합니다(별도 API 호출 없음). "공부 방식"은 어느 카테고리와도 정확히 대응되지 않아서, 자주
-// 강조되는 주제(topics)를 "무엇을 중점적으로 공부해야 하는지"로 재해석해서 씁니다.
-const PROFESSOR_CIRCUIT_DEFS: { nodeId: Extract<NodeId, 'expected_questions' | 'assignment_direction' | 'study_method'>; label: string; keys: (keyof ProfessorAnalysisResult)[] }[] = [
-  { nodeId: 'expected_questions', label: '예상 문제', keys: ['examStyle', 'examQuestionTypes'] },
-  { nodeId: 'assignment_direction', label: '과제 방향', keys: ['assignmentStyle'] },
-  { nodeId: 'study_method', label: '공부 방식', keys: ['topics'] },
+// 강조되는 주제(topics)를 "무엇을 중점적으로 공부해야 하는지"로 재해석해서 씁니다. 라벨은
+// professorCircuitDefs(컴포넌트 안)에서 t()로 계산합니다.
+const PROFESSOR_CIRCUIT_NODE_DEFS: { nodeId: Extract<NodeId, 'expected_questions' | 'assignment_direction' | 'study_method'>; keys: (keyof ProfessorAnalysisResult)[] }[] = [
+  { nodeId: 'expected_questions', keys: ['examStyle', 'examQuestionTypes'] },
+  { nodeId: 'assignment_direction', keys: ['assignmentStyle'] },
+  { nodeId: 'study_method', keys: ['topics'] },
 ];
 
 function getProfessorCircuitCardData(result: ProfessorAnalysisResult | undefined, keys: (keyof ProfessorAnalysisResult)[]) {
@@ -337,12 +330,6 @@ function resizeImageDataUrl(dataUrl: string, maxEdge = CHAT_IMAGE_MAX_EDGE): Pro
 }
 
 // 자료 개수에 따라 분석 결과 위에 붙는 한 줄 — 개수가 많아질수록 신뢰도가 올라간다는 걸 보여줍니다.
-function getProfessorAnalysisFramingLine(count: number): string {
-  if (count <= 1) return '자료 1개로 본 첫인상이에요';
-  if (count <= 3) return `자료 ${count}개 기준 — 꽤 잡히기 시작했어요`;
-  return `자료 ${count}개 기준 — 패턴이 뚜렷해요`;
-}
-
 export default function HomePage() {
   const router = useRouter();
   // 💡 [신규] 다국어 지원 — 10개 로케일(messages/{locale}.json)로 확장됐습니다. locale은
@@ -1986,6 +1973,20 @@ export default function HomePage() {
   ].map((f) => ({ ...f, count: fileFormatCounts[f.key] || 0 }));
   const etcFileCount = fileFormatCounts['etc'] || 0;
 
+  const docTypeDefs = DOC_TYPE_KEYS.map((key) => ({ key, label: t(`professors.docType.${key}`) }));
+  const docTypeLabels: Record<string, string> = Object.fromEntries(docTypeDefs.map((d) => [d.key, d.label]));
+
+  const professorCategoryDefs = PROFESSOR_CATEGORY_KEYS.map((key) => ({ key, label: t(`professors.category.${key}`) }));
+  const professorCircuitDefs = PROFESSOR_CIRCUIT_NODE_DEFS.map((def) => ({
+    ...def,
+    label: t(`professors.circuit.${def.nodeId}`),
+  }));
+  const getProfessorAnalysisFramingLine = (count: number): string => {
+    if (count <= 1) return t('professors.framing.first');
+    if (count <= 3) return t('professors.framing.some', { count });
+    return t('professors.framing.clear', { count });
+  };
+
   const NAV_ITEMS = [
     { id: 'workspace', label: t('nav.workspace'), icon: Sparkles },
     { id: 'records', label: t('nav.records'), icon: Archive },
@@ -2726,15 +2727,15 @@ export default function HomePage() {
             <div>
               <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  교수님
+                  {t('professors.title')}
                 </h1>
                 <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  교수님별로 자료를 모아두면, 자주 강조하는 주제나 문제 내는 방식을 한눈에 볼 수 있어요.
+                  {t('professors.subtitle')}
                 </p>
               </div>
 
               <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7] mb-4">자료 올리기</h3>
+                <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7] mb-4">{t('professors.uploadPanel.title')}</h3>
 
                 <div className="flex flex-col gap-3">
                   <select
@@ -2749,37 +2750,37 @@ export default function HomePage() {
                     }}
                     className="bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                   >
-                    <option value="">교수님 선택</option>
+                    <option value="">{t('professors.uploadPanel.selectProfessor')}</option>
                     {professors.map((p) => (
                       <option key={p.id} value={p.id}>{p.name}</option>
                     ))}
-                    <option value="__new__">+ 새 교수님 등록</option>
+                    <option value="__new__">{t('professors.uploadPanel.registerNew')}</option>
                   </select>
 
                   {uploadProfessorChoice === '__new__' && (
                     <div className="flex flex-col gap-2 bg-[#15131A] border border-[#322D3B] rounded-lg p-3.5">
                       <input
                         type="text"
-                        placeholder="이름 (필수)"
+                        placeholder={t('professors.uploadPanel.namePlaceholder')}
                         value={newProfessorName}
                         onChange={(e) => setNewProfessorName(e.target.value)}
                         className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                       />
                       <input
                         type="text"
-                        placeholder="학교 (필수)"
+                        placeholder={t('professors.uploadPanel.schoolPlaceholder')}
                         value={newProfessorSchool}
                         onChange={(e) => setNewProfessorSchool(e.target.value)}
                         className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                       />
                       <input
                         type="text"
-                        placeholder="학과 (필수)"
+                        placeholder={t('professors.uploadPanel.departmentPlaceholder')}
                         value={newProfessorDepartment}
                         onChange={(e) => setNewProfessorDepartment(e.target.value)}
                         className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                       />
-                      <p className="text-[11px] text-[#857C93]">학교·학과 정보는 전공 용어와 출제 관행을 더 정확히 해석하는 데 쓰여요.</p>
+                      <p className="text-[11px] text-[#857C93]">{t('professors.uploadPanel.schoolDeptHint')}</p>
                     </div>
                   )}
 
@@ -2788,7 +2789,7 @@ export default function HomePage() {
                     onChange={(e) => setUploadDocType(e.target.value)}
                     className="bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                   >
-                    {DOC_TYPE_DEFS.map((def) => (
+                    {docTypeDefs.map((def) => (
                       <option key={def.key} value={def.key}>{def.label}</option>
                     ))}
                   </select>
@@ -2806,7 +2807,7 @@ export default function HomePage() {
                         <LoadingText />
                       </>
                     ) : (
-                      <span>파일 선택</span>
+                      <span>{t('professors.uploadPanel.chooseFile')}</span>
                     )}
                     <input
                       type="file"
@@ -2821,18 +2822,18 @@ export default function HomePage() {
                       }}
                     />
                   </label>
-                  <p className="text-xs text-[#857C93]">교수님 논문을 올리면 관심 분야와 강조하는 관점을 훨씬 정확히 파악해요.</p>
+                  <p className="text-xs text-[#857C93]">{t('professors.uploadPanel.paperHint')}</p>
                 </div>
               </div>
 
               <div className="flex flex-col gap-2.5">
                 {!isProfessorsLoaded ? (
                   <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
-                    불러오는 중...
+                    {t('professors.loading')}
                   </div>
                 ) : professors.length === 0 ? (
                   <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
-                    아직 등록된 교수님이 없어요. 위에서 자료를 올리며 등록해보세요.
+                    {t('professors.noneRegistered')}
                   </div>
                 ) : (
                   professors.map((p) => {
@@ -2855,7 +2856,7 @@ export default function HomePage() {
                           </div>
                         </div>
                         <span className="shrink-0 text-xs font-semibold text-[#AFA6BD] bg-[#15131A] border border-[#322D3B] px-2.5 py-1 rounded-full tabular-nums">
-                          자료 {count}개
+                          {t('professors.documentCount', { count })}
                         </span>
                       </button>
                     );
@@ -2872,8 +2873,8 @@ export default function HomePage() {
             const subtitle = [professor.school, professor.department].filter(Boolean).join(' · ');
             const analysisRow = professorAnalyses.find((a) => a.professor_id === selectedProfessorId);
             const result = analysisRow?.result;
-            const confidentDefs = result ? PROFESSOR_CATEGORY_DEFS.filter((def) => result[def.key].confident) : [];
-            const unconfidentDefs = result ? PROFESSOR_CATEGORY_DEFS.filter((def) => !result[def.key].confident) : [];
+            const confidentDefs = result ? professorCategoryDefs.filter((def) => result[def.key].confident) : [];
+            const unconfidentDefs = result ? professorCategoryDefs.filter((def) => !result[def.key].confident) : [];
 
             // 💡 [신규] 왼쪽 "이 교수님 자료" → 중앙 AI 코어 → 오른쪽 예상 문제/과제 방향/공부 방식
             // 3갈래. 기존 물어보기 미니 전선(chatLensGraph)과 같은 방식으로 매 렌더마다 새로 계산해서
@@ -2886,7 +2887,7 @@ export default function HomePage() {
                   layer: 'lens',
                   status: isAnalyzingProfessor ? 'running' : analysisRow ? 'done' : 'idle',
                 },
-                ...PROFESSOR_CIRCUIT_DEFS.map((def) => ({
+                ...professorCircuitDefs.map((def) => ({
                   id: def.nodeId,
                   layer: 'action' as const,
                   status: (getProfessorCircuitCardData(result, def.keys).confident ? 'done' : 'idle') as GraphNode['status'],
@@ -2894,7 +2895,7 @@ export default function HomePage() {
               ],
               edges: [
                 { from: 'professor_docs', to: 'professor_ai_core' },
-                ...PROFESSOR_CIRCUIT_DEFS.map((def) => ({ from: 'professor_ai_core' as NodeId, to: def.nodeId as NodeId })),
+                ...professorCircuitDefs.map((def) => ({ from: 'professor_ai_core' as NodeId, to: def.nodeId as NodeId })),
               ],
             };
 
@@ -2914,34 +2915,34 @@ export default function HomePage() {
                     className="inline-flex items-center gap-1.5 text-xs text-[#AFA6BD] hover:text-[#F5F2F7] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
-                    교수님 목록으로
+                    {t('professors.backToList')}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDeleteProfessor(professor.id, professor.name)}
                     className="text-xs text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B] rounded px-2 py-1"
                   >
-                    교수님 삭제
+                    {t('professors.deleteProfessor')}
                   </button>
                 </div>
 
                 <div className="mb-6">
                   <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">{professor.name}</h1>
                   <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                    {subtitle || '학교/학과 정보 없음'}
+                    {subtitle || t('professors.noSchoolDept')}
                   </p>
                 </div>
 
                 <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                    <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7]">자료 목록 ({docs.length}개)</h3>
+                    <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7]">{t('professors.documentListTitle', { count: docs.length })}</h3>
                     <div className="flex items-center gap-2 shrink-0">
                       <select
                         value={uploadDocType}
                         onChange={(e) => setUploadDocType(e.target.value)}
                         className="bg-[#15131A] border border-[#423B4C] rounded-lg px-2.5 py-2 text-[#F5F2F7] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                       >
-                        {DOC_TYPE_DEFS.map((def) => (
+                        {docTypeDefs.map((def) => (
                           <option key={def.key} value={def.key}>{def.label}</option>
                         ))}
                       </select>
@@ -2953,7 +2954,7 @@ export default function HomePage() {
                         }`}
                       >
                         {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <UploadCloud className="w-3.5 h-3.5" />}
-                        {isUploadingProfessorDoc ? <LoadingText /> : '자료 올리기'}
+                        {isUploadingProfessorDoc ? <LoadingText /> : t('professors.uploadPanel.chooseFile')}
                         <input
                           type="file"
                           multiple
@@ -2969,10 +2970,10 @@ export default function HomePage() {
                       </label>
                     </div>
                   </div>
-                  <p className="text-[11px] text-[#857C93] mb-4">교수님 논문을 올리면 관심 분야와 강조하는 관점을 훨씬 정확히 파악해요.</p>
+                  <p className="text-[11px] text-[#857C93] mb-4">{t('professors.uploadPanel.paperHint')}</p>
 
                   {docs.length === 0 ? (
-                    <p className="text-sm text-[#857C93] text-center py-4">아직 올린 자료가 없어요.</p>
+                    <p className="text-sm text-[#857C93] text-center py-4">{t('professors.noDocumentsYet')}</p>
                   ) : (
                     <div className="flex flex-col gap-2">
                       {docs.map((d) => (
@@ -2981,17 +2982,17 @@ export default function HomePage() {
                             <span className="shrink-0">{FORMAT_ICONS[d.format] || '📄'}</span>
                             <span className="truncate">{d.file_name}</span>
                             <span className="shrink-0 text-[10px] font-semibold text-[#AFA6BD] bg-[#2A2632] border border-[#332D3B] px-2 py-0.5 rounded-full">
-                              {DOC_TYPE_LABELS[d.doc_type] || d.doc_type}
+                              {docTypeLabels[d.doc_type] || d.doc_type}
                             </span>
                           </span>
                           <div className="shrink-0 flex items-center gap-2.5">
                             <span className="text-xs text-[#857C93]">
-                              {new Date(d.created_at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                              {new Date(d.created_at).toLocaleDateString(locale, { month: 'long', day: 'numeric' })}
                             </span>
                             <button
                               type="button"
                               onClick={() => handleDeleteProfessorDocument(d.id, professor.id)}
-                              aria-label={`${d.file_name} 삭제`}
+                              aria-label={t('professors.deleteDocumentAria', { fileName: d.file_name })}
                               className="w-6 h-6 flex items-center justify-center rounded-full text-[#857C93] hover:text-[#FF7A6B] hover:bg-[#2A2632] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
                             >
                               <X className="w-3.5 h-3.5" strokeWidth={2.5} />
@@ -3004,11 +3005,11 @@ export default function HomePage() {
                 </div>
 
                 <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 sm:p-6 mb-6 shadow-sm">
-                  <p className="text-xs text-[#857C93] text-center mb-3">AI 코어를 클릭하면 이 교수님 자료를 분석해요</p>
+                  <p className="text-xs text-[#857C93] text-center mb-3">{t('professors.circuitHint')}</p>
                   <CircuitBoard graph={professorCircuitGraph} onNodeClick={handleProfessorCircuitNodeClick} />
                   {result && (
                     <div key={analysisRow?.updated_at} className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                      {PROFESSOR_CIRCUIT_DEFS.map((def, i) => {
+                      {professorCircuitDefs.map((def, i) => {
                         const card = getProfessorCircuitCardData(result, def.keys);
                         return (
                           <div
@@ -3024,7 +3025,7 @@ export default function HomePage() {
                                 ))}
                               </ul>
                             ) : (
-                              <p className="text-xs text-[#5B5566]">아직 확신 있게 판단하지 못했어요</p>
+                              <p className="text-xs text-[#5B5566]">{t('professors.notConfidentYet')}</p>
                             )}
                           </div>
                         );
@@ -3045,7 +3046,7 @@ export default function HomePage() {
                       <LoadingText />
                     </>
                   ) : (
-                    '이 교수님 분석'
+                    t('professors.analyzeButton')
                   )}
                 </button>
 
@@ -3060,7 +3061,7 @@ export default function HomePage() {
                     </p>
 
                     {confidentDefs.length === 0 ? (
-                      <p className="text-sm text-[#857C93]">아직 확신 있게 판단할 만큼 자료가 쌓이지 않았어요.</p>
+                      <p className="text-sm text-[#857C93]">{t('professors.notEnoughData')}</p>
                     ) : (
                       <div className="flex flex-col gap-5 sm:gap-4">
                         {confidentDefs.map((def) => (
@@ -3080,7 +3081,7 @@ export default function HomePage() {
 
                     {unconfidentDefs.length > 0 && (
                       <div className="mt-6 pt-5 border-t border-[#322D3B]">
-                        <h4 className="text-sm font-bold text-[#F5F2F7] mb-2.5">자료를 더 올리면 이런 걸 알 수 있어요</h4>
+                        <h4 className="text-sm font-bold text-[#F5F2F7] mb-2.5">{t('professors.teaserTitle')}</h4>
                         <div className="flex flex-wrap gap-2 sm:gap-1.5 mb-4">
                           {unconfidentDefs.map((def) => (
                             <span key={def.key} className="bg-[#15131A] border border-[#322D3B] text-[#5B5566] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
@@ -3096,7 +3097,7 @@ export default function HomePage() {
                           }`}
                         >
                           {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <UploadCloud className="w-3.5 h-3.5" />}
-                          {isUploadingProfessorDoc ? <LoadingText /> : '바로 파일 올리기'}
+                          {isUploadingProfessorDoc ? <LoadingText /> : t('professors.uploadDirectly')}
                           <input
                             type="file"
                             multiple

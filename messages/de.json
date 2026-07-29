@@ -141,5 +141,59 @@
       "in2Weeks": "In 2 Wochen",
       "in3PlusWeeks": "3+ Wochen"
     }
+  },
+  "professors": {
+    "title": "Professoren",
+    "subtitle": "Sammle Materialien pro Professor, um auf einen Blick zu sehen, welche Themen sie betonen und wie sie Fragen stellen.",
+    "uploadPanel": {
+      "title": "Materialien hochladen",
+      "selectProfessor": "Professor auswählen",
+      "registerNew": "+ Neuen Professor registrieren",
+      "namePlaceholder": "Name (erforderlich)",
+      "schoolPlaceholder": "Hochschule (erforderlich)",
+      "departmentPlaceholder": "Fachbereich (erforderlich)",
+      "schoolDeptHint": "Angaben zu Hochschule/Fachbereich helfen, Fachterminologie und Bewertungsgepflogenheiten genauer zu interpretieren.",
+      "chooseFile": "Datei auswählen",
+      "paperHint": "Das Hochladen der Paper des Professors hilft, Forschungsinteressen und Schwerpunkte viel genauer zu erfassen."
+    },
+    "loading": "Wird geladen...",
+    "noneRegistered": "Noch keine Professoren registriert. Lade oben Materialien hoch, um einen zu registrieren.",
+    "documentCount": "{count} Dateien",
+    "docType": {
+      "lecture": "Vorlesungsunterlagen",
+      "exam": "Prüfung",
+      "assignment": "Aufgabe",
+      "paper": "Paper"
+    },
+    "backToList": "Zurück zu Professoren",
+    "deleteProfessor": "Professor löschen",
+    "noSchoolDept": "Keine Angaben zu Hochschule/Fachbereich",
+    "documentListTitle": "Materialien ({count})",
+    "noDocumentsYet": "Noch keine Materialien hochgeladen.",
+    "deleteDocumentAria": "{fileName} löschen",
+    "circuitHint": "Klicke auf den KI-Kern, um die Materialien dieses Professors zu analysieren",
+    "notConfidentYet": "Noch nicht sicher genug für eine Einschätzung",
+    "analyzeButton": "Diesen Professor analysieren",
+    "notEnoughData": "Noch nicht genug Material für eine sichere Einschätzung.",
+    "teaserTitle": "Lade mehr hoch, um Folgendes freizuschalten",
+    "uploadDirectly": "Jetzt Dateien hochladen",
+    "category": {
+      "topics": "Häufig betonte Themen",
+      "examStyle": "Fragestil",
+      "assignmentStyle": "Stil der Aufgabenstellung",
+      "examQuestionTypes": "Arten von Prüfungsfragen",
+      "gradingStrictness": "Strenge der Bewertung",
+      "researchInterests": "Forschungsinteressen"
+    },
+    "circuit": {
+      "expected_questions": "Erwartete Fragen",
+      "assignment_direction": "Ausrichtung der Aufgaben",
+      "study_method": "Lernmethode"
+    },
+    "framing": {
+      "first": "Erster Eindruck aus 1 Dokument",
+      "some": "Basierend auf {count} Dokumenten — ein Muster zeichnet sich ab",
+      "clear": "Basierend auf {count} Dokumenten — das Muster ist klar"
+    }
   }
 }

@@ -141,5 +141,59 @@
       "in2Weeks": "Sau 2 tuần",
       "in3PlusWeeks": "3+ tuần"
     }
+  },
+  "professors": {
+    "title": "Giáo sư",
+    "subtitle": "Gom tài liệu theo từng giáo sư giúp bạn thấy ngay các chủ đề hay được nhấn mạnh và cách ra đề của họ.",
+    "uploadPanel": {
+      "title": "Tải tài liệu lên",
+      "selectProfessor": "Chọn giáo sư",
+      "registerNew": "+ Đăng ký giáo sư mới",
+      "namePlaceholder": "Tên (bắt buộc)",
+      "schoolPlaceholder": "Trường (bắt buộc)",
+      "departmentPlaceholder": "Khoa (bắt buộc)",
+      "schoolDeptHint": "Thông tin trường/khoa giúp diễn giải thuật ngữ chuyên ngành và cách chấm điểm chính xác hơn.",
+      "chooseFile": "Chọn tệp",
+      "paperHint": "Tải bài báo nghiên cứu của giáo sư lên giúp xác định chính xác hơn lĩnh vực quan tâm và trọng tâm của họ."
+    },
+    "loading": "Đang tải...",
+    "noneRegistered": "Chưa có giáo sư nào được đăng ký. Hãy tải tài liệu lên ở trên để đăng ký.",
+    "documentCount": "{count} tài liệu",
+    "docType": {
+      "lecture": "Tài liệu giảng dạy",
+      "exam": "Đề thi",
+      "assignment": "Bài tập",
+      "paper": "Bài báo"
+    },
+    "backToList": "Về danh sách giáo sư",
+    "deleteProfessor": "Xóa giáo sư",
+    "noSchoolDept": "Không có thông tin trường/khoa",
+    "documentListTitle": "Danh sách tài liệu ({count})",
+    "noDocumentsYet": "Chưa có tài liệu nào được tải lên.",
+    "deleteDocumentAria": "Xóa {fileName}",
+    "circuitHint": "Nhấp vào lõi AI để phân tích tài liệu của giáo sư này",
+    "notConfidentYet": "Chưa đủ tự tin để đánh giá",
+    "analyzeButton": "Phân tích giáo sư này",
+    "notEnoughData": "Chưa đủ tài liệu để đánh giá một cách tự tin.",
+    "teaserTitle": "Tải thêm tài liệu để biết thêm những điều này",
+    "uploadDirectly": "Tải tệp lên ngay",
+    "category": {
+      "topics": "Chủ đề thường được nhấn mạnh",
+      "examStyle": "Phong cách ra đề",
+      "assignmentStyle": "Phong cách yêu cầu bài tập",
+      "examQuestionTypes": "Loại câu hỏi thi",
+      "gradingStrictness": "Mức độ nghiêm khắc khi chấm điểm",
+      "researchInterests": "Lĩnh vực nghiên cứu quan tâm"
+    },
+    "circuit": {
+      "expected_questions": "Câu hỏi dự kiến",
+      "assignment_direction": "Định hướng bài tập",
+      "study_method": "Phương pháp học"
+    },
+    "framing": {
+      "first": "Ấn tượng đầu tiên từ 1 tài liệu",
+      "some": "Dựa trên {count} tài liệu — bắt đầu thấy rõ hơn",
+      "clear": "Dựa trên {count} tài liệu — mô hình đã rõ ràng"
+    }
   }
 }

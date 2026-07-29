@@ -141,5 +141,59 @@
       "in2Weeks": "2週間後",
       "in3PlusWeeks": "3週間以上"
     }
+  },
+  "professors": {
+    "title": "教授",
+    "subtitle": "教授ごとに資料をまとめておくと、よく強調するテーマや出題傾向を一目で把握できます。",
+    "uploadPanel": {
+      "title": "資料をアップロード",
+      "selectProfessor": "教授を選択",
+      "registerNew": "+ 新しい教授を登録",
+      "namePlaceholder": "名前（必須）",
+      "schoolPlaceholder": "学校（必須）",
+      "departmentPlaceholder": "学科（必須）",
+      "schoolDeptHint": "学校・学科の情報は、専門用語や出題傾向をより正確に解釈するために使われます。",
+      "chooseFile": "ファイルを選択",
+      "paperHint": "教授の論文をアップロードすると、研究分野や重視する観点をより正確に把握できます。"
+    },
+    "loading": "読み込み中...",
+    "noneRegistered": "まだ登録された教授がいません。上から資料をアップロードして登録しましょう。",
+    "documentCount": "資料{count}件",
+    "docType": {
+      "lecture": "講義資料",
+      "exam": "試験問題",
+      "assignment": "課題",
+      "paper": "論文"
+    },
+    "backToList": "教授一覧へ",
+    "deleteProfessor": "教授を削除",
+    "noSchoolDept": "学校・学科情報なし",
+    "documentListTitle": "資料一覧（{count}件）",
+    "noDocumentsYet": "まだアップロードされた資料がありません。",
+    "deleteDocumentAria": "{fileName}を削除",
+    "circuitHint": "AIコアをクリックすると、この教授の資料を分析します",
+    "notConfidentYet": "まだ確信を持って判断できていません",
+    "analyzeButton": "この教授を分析",
+    "notEnoughData": "確信を持って判断できるほど資料がまだ蓄積されていません。",
+    "teaserTitle": "資料を追加すると、こんなことがわかります",
+    "uploadDirectly": "今すぐファイルをアップロード",
+    "category": {
+      "topics": "よく強調されるテーマ",
+      "examStyle": "出題の傾向",
+      "assignmentStyle": "課題の要求スタイル",
+      "examQuestionTypes": "試験問題の種類",
+      "gradingStrictness": "採点基準の厳しさ",
+      "researchInterests": "研究関心"
+    },
+    "circuit": {
+      "expected_questions": "想定問題",
+      "assignment_direction": "課題の方向性",
+      "study_method": "勉強法"
+    },
+    "framing": {
+      "first": "資料1件から見た第一印象です",
+      "some": "資料{count}件を基準 — だんだん見えてきました",
+      "clear": "資料{count}件を基準 — パターンがはっきりしています"
+    }
   }
 }

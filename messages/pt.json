@@ -141,5 +141,59 @@
       "in2Weeks": "Em 2 semanas",
       "in3PlusWeeks": "3+ semanas"
     }
+  },
+  "professors": {
+    "title": "Professores",
+    "subtitle": "Reúna materiais por professor para ver rapidamente os temas que mais enfatizam e o estilo com que elaboram questões.",
+    "uploadPanel": {
+      "title": "Enviar materiais",
+      "selectProfessor": "Selecionar professor",
+      "registerNew": "+ Registrar novo professor",
+      "namePlaceholder": "Nome (obrigatório)",
+      "schoolPlaceholder": "Instituição (obrigatório)",
+      "departmentPlaceholder": "Departamento (obrigatório)",
+      "schoolDeptHint": "As informações de instituição/departamento ajudam a interpretar com mais precisão a terminologia da área e as convenções de avaliação.",
+      "chooseFile": "Escolher arquivo",
+      "paperHint": "Enviar os artigos do professor ajuda a identificar com muito mais precisão seus interesses de pesquisa e ênfases."
+    },
+    "loading": "Carregando...",
+    "noneRegistered": "Nenhum professor registrado ainda. Envie materiais acima para registrar um.",
+    "documentCount": "{count} arquivos",
+    "docType": {
+      "lecture": "Material de aula",
+      "exam": "Prova",
+      "assignment": "Trabalho",
+      "paper": "Artigo"
+    },
+    "backToList": "Voltar para professores",
+    "deleteProfessor": "Excluir professor",
+    "noSchoolDept": "Sem informações de instituição/departamento",
+    "documentListTitle": "Materiais ({count})",
+    "noDocumentsYet": "Nenhum material enviado ainda.",
+    "deleteDocumentAria": "Excluir {fileName}",
+    "circuitHint": "Clique no núcleo de IA para analisar os materiais deste professor",
+    "notConfidentYet": "Ainda sem confiança suficiente para avaliar",
+    "analyzeButton": "Analisar este professor",
+    "notEnoughData": "Ainda não há material suficiente para avaliar com confiança.",
+    "teaserTitle": "Envie mais materiais para desbloquear isto",
+    "uploadDirectly": "Enviar arquivos agora",
+    "category": {
+      "topics": "Temas frequentemente enfatizados",
+      "examStyle": "Estilo das questões",
+      "assignmentStyle": "Estilo dos trabalhos exigidos",
+      "examQuestionTypes": "Tipos de questões de prova",
+      "gradingStrictness": "Rigor na correção",
+      "researchInterests": "Interesses de pesquisa"
+    },
+    "circuit": {
+      "expected_questions": "Perguntas esperadas",
+      "assignment_direction": "Direção do trabalho",
+      "study_method": "Método de estudo"
+    },
+    "framing": {
+      "first": "Primeira impressão a partir de 1 documento",
+      "some": "Com base em {count} documentos — um padrão está começando a se formar",
+      "clear": "Com base em {count} documentos — o padrão está claro"
+    }
   }
 }

@@ -141,5 +141,59 @@
       "in2Weeks": "En 2 semanas",
       "in3PlusWeeks": "3+ semanas"
     }
+  },
+  "professors": {
+    "title": "Profesores",
+    "subtitle": "Reúne materiales por profesor para ver de un vistazo los temas que más enfatizan y su estilo al plantear preguntas.",
+    "uploadPanel": {
+      "title": "Subir materiales",
+      "selectProfessor": "Seleccionar profesor",
+      "registerNew": "+ Registrar nuevo profesor",
+      "namePlaceholder": "Nombre (obligatorio)",
+      "schoolPlaceholder": "Universidad (obligatorio)",
+      "departmentPlaceholder": "Departamento (obligatorio)",
+      "schoolDeptHint": "La información de universidad/departamento ayuda a interpretar con más precisión la terminología de la especialidad y las convenciones de calificación.",
+      "chooseFile": "Elegir archivo",
+      "paperHint": "Subir los artículos del profesor ayuda a identificar con mucha más precisión sus intereses de investigación y énfasis."
+    },
+    "loading": "Cargando...",
+    "noneRegistered": "Aún no hay profesores registrados. Sube materiales arriba para registrar uno.",
+    "documentCount": "{count} archivos",
+    "docType": {
+      "lecture": "Apuntes de clase",
+      "exam": "Examen",
+      "assignment": "Tarea",
+      "paper": "Artículo"
+    },
+    "backToList": "Volver a profesores",
+    "deleteProfessor": "Eliminar profesor",
+    "noSchoolDept": "Sin información de universidad/departamento",
+    "documentListTitle": "Materiales ({count})",
+    "noDocumentsYet": "Aún no se han subido materiales.",
+    "deleteDocumentAria": "Eliminar {fileName}",
+    "circuitHint": "Haz clic en el núcleo de IA para analizar los materiales de este profesor",
+    "notConfidentYet": "Aún no hay suficiente confianza para evaluar",
+    "analyzeButton": "Analizar a este profesor",
+    "notEnoughData": "Aún no hay suficiente material para evaluar con confianza.",
+    "teaserTitle": "Sube más materiales para descubrir esto",
+    "uploadDirectly": "Subir archivos ahora",
+    "category": {
+      "topics": "Temas frecuentemente enfatizados",
+      "examStyle": "Estilo de las preguntas",
+      "assignmentStyle": "Estilo de las tareas",
+      "examQuestionTypes": "Tipos de preguntas de examen",
+      "gradingStrictness": "Rigurosidad al calificar",
+      "researchInterests": "Intereses de investigación"
+    },
+    "circuit": {
+      "expected_questions": "Preguntas esperadas",
+      "assignment_direction": "Dirección de la tarea",
+      "study_method": "Método de estudio"
+    },
+    "framing": {
+      "first": "Primera impresión a partir de 1 documento",
+      "some": "Según {count} documentos — un patrón empieza a formarse",
+      "clear": "Según {count} documentos — el patrón es claro"
+    }
   }
 }

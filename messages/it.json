@@ -141,5 +141,59 @@
       "in2Weeks": "Tra 2 settimane",
       "in3PlusWeeks": "3+ settimane"
     }
+  },
+  "professors": {
+    "title": "Professori",
+    "subtitle": "Raccogli i materiali per professore per vedere a colpo d'occhio gli argomenti che enfatizzano di più e il loro stile nel porre domande.",
+    "uploadPanel": {
+      "title": "Carica materiali",
+      "selectProfessor": "Seleziona professore",
+      "registerNew": "+ Registra nuovo professore",
+      "namePlaceholder": "Nome (obbligatorio)",
+      "schoolPlaceholder": "Università (obbligatorio)",
+      "departmentPlaceholder": "Dipartimento (obbligatorio)",
+      "schoolDeptHint": "Le informazioni su università/dipartimento aiutano a interpretare con maggiore precisione la terminologia specifica e le convenzioni di valutazione.",
+      "chooseFile": "Scegli file",
+      "paperHint": "Caricare gli articoli del professore aiuta a individuare con molta più precisione i suoi interessi di ricerca e ciò che privilegia."
+    },
+    "loading": "Caricamento...",
+    "noneRegistered": "Nessun professore registrato finora. Carica materiali qui sopra per registrarne uno.",
+    "documentCount": "{count} file",
+    "docType": {
+      "lecture": "Materiale delle lezioni",
+      "exam": "Esame",
+      "assignment": "Compito",
+      "paper": "Articolo"
+    },
+    "backToList": "Torna ai professori",
+    "deleteProfessor": "Elimina professore",
+    "noSchoolDept": "Nessuna informazione su università/dipartimento",
+    "documentListTitle": "Materiali ({count})",
+    "noDocumentsYet": "Nessun materiale caricato finora.",
+    "deleteDocumentAria": "Elimina {fileName}",
+    "circuitHint": "Clicca sul nucleo IA per analizzare i materiali di questo professore",
+    "notConfidentYet": "Non ancora abbastanza sicuro per valutare",
+    "analyzeButton": "Analizza questo professore",
+    "notEnoughData": "Non c'è ancora abbastanza materiale per valutare con sicurezza.",
+    "teaserTitle": "Carica altri materiali per sbloccare questo",
+    "uploadDirectly": "Carica file ora",
+    "category": {
+      "topics": "Argomenti frequentemente enfatizzati",
+      "examStyle": "Stile delle domande",
+      "assignmentStyle": "Stile dei compiti richiesti",
+      "examQuestionTypes": "Tipi di domande d'esame",
+      "gradingStrictness": "Rigore nella valutazione",
+      "researchInterests": "Interessi di ricerca"
+    },
+    "circuit": {
+      "expected_questions": "Domande previste",
+      "assignment_direction": "Orientamento dei compiti",
+      "study_method": "Metodo di studio"
+    },
+    "framing": {
+      "first": "Prima impressione da 1 documento",
+      "some": "Basato su {count} documenti — si inizia a intravedere uno schema",
+      "clear": "Basato su {count} documenti — lo schema è chiaro"
+    }
   }
 }

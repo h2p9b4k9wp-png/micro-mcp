@@ -141,5 +141,59 @@
       "in2Weeks": "2주 후",
       "in3PlusWeeks": "3주+"
     }
+  },
+  "professors": {
+    "title": "교수님",
+    "subtitle": "교수님별로 자료를 모아두면, 자주 강조하는 주제나 문제 내는 방식을 한눈에 볼 수 있어요.",
+    "uploadPanel": {
+      "title": "자료 올리기",
+      "selectProfessor": "교수님 선택",
+      "registerNew": "+ 새 교수님 등록",
+      "namePlaceholder": "이름 (필수)",
+      "schoolPlaceholder": "학교 (필수)",
+      "departmentPlaceholder": "학과 (필수)",
+      "schoolDeptHint": "학교·학과 정보는 전공 용어와 출제 관행을 더 정확히 해석하는 데 쓰여요.",
+      "chooseFile": "파일 선택",
+      "paperHint": "교수님 논문을 올리면 관심 분야와 강조하는 관점을 훨씬 정확히 파악해요."
+    },
+    "loading": "불러오는 중...",
+    "noneRegistered": "아직 등록된 교수님이 없어요. 위에서 자료를 올리며 등록해보세요.",
+    "documentCount": "자료 {count}개",
+    "docType": {
+      "lecture": "강의자료",
+      "exam": "시험지",
+      "assignment": "과제",
+      "paper": "논문"
+    },
+    "backToList": "교수님 목록으로",
+    "deleteProfessor": "교수님 삭제",
+    "noSchoolDept": "학교/학과 정보 없음",
+    "documentListTitle": "자료 목록 ({count}개)",
+    "noDocumentsYet": "아직 올린 자료가 없어요.",
+    "deleteDocumentAria": "{fileName} 삭제",
+    "circuitHint": "AI 코어를 클릭하면 이 교수님 자료를 분석해요",
+    "notConfidentYet": "아직 확신 있게 판단하지 못했어요",
+    "analyzeButton": "이 교수님 분석",
+    "notEnoughData": "아직 확신 있게 판단할 만큼 자료가 쌓이지 않았어요.",
+    "teaserTitle": "자료를 더 올리면 이런 걸 알 수 있어요",
+    "uploadDirectly": "바로 파일 올리기",
+    "category": {
+      "topics": "자주 강조하는 주제",
+      "examStyle": "문제 내는 방식",
+      "assignmentStyle": "과제 요구 스타일",
+      "examQuestionTypes": "시험 문제 유형",
+      "gradingStrictness": "채점 기준의 엄격함",
+      "researchInterests": "연구 관심사"
+    },
+    "circuit": {
+      "expected_questions": "예상 문제",
+      "assignment_direction": "과제 방향",
+      "study_method": "공부 방식"
+    },
+    "framing": {
+      "first": "자료 1개로 본 첫인상이에요",
+      "some": "자료 {count}개 기준 — 꽤 잡히기 시작했어요",
+      "clear": "자료 {count}개 기준 — 패턴이 뚜렷해요"
+    }
   }
 }

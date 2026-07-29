@@ -141,5 +141,59 @@
       "in2Weeks": "Dans 2 semaines",
       "in3PlusWeeks": "3+ semaines"
     }
+  },
+  "professors": {
+    "title": "Professeurs",
+    "subtitle": "Regroupez les documents par professeur pour voir en un coup d'œil les sujets qu'ils privilégient et leur façon de poser des questions.",
+    "uploadPanel": {
+      "title": "Importer des documents",
+      "selectProfessor": "Sélectionner un professeur",
+      "registerNew": "+ Ajouter un nouveau professeur",
+      "namePlaceholder": "Nom (obligatoire)",
+      "schoolPlaceholder": "Établissement (obligatoire)",
+      "departmentPlaceholder": "Département (obligatoire)",
+      "schoolDeptHint": "Les informations sur l'établissement/le département aident à interpréter plus précisément la terminologie de la matière et les conventions de notation.",
+      "chooseFile": "Choisir un fichier",
+      "paperHint": "Importer les articles du professeur permet de cerner bien plus précisément ses centres d'intérêt de recherche et ce qu'il privilégie."
+    },
+    "loading": "Chargement...",
+    "noneRegistered": "Aucun professeur enregistré pour l'instant. Importez des documents ci-dessus pour en enregistrer un.",
+    "documentCount": "{count} documents",
+    "docType": {
+      "lecture": "Notes de cours",
+      "exam": "Examen",
+      "assignment": "Devoir",
+      "paper": "Article"
+    },
+    "backToList": "Retour aux professeurs",
+    "deleteProfessor": "Supprimer le professeur",
+    "noSchoolDept": "Pas d'info établissement/département",
+    "documentListTitle": "Documents ({count})",
+    "noDocumentsYet": "Aucun document importé pour l'instant.",
+    "deleteDocumentAria": "Supprimer {fileName}",
+    "circuitHint": "Cliquez sur le cœur IA pour analyser les documents de ce professeur",
+    "notConfidentYet": "Pas encore assez sûr pour se prononcer",
+    "analyzeButton": "Analyser ce professeur",
+    "notEnoughData": "Pas encore assez de documents pour se prononcer avec confiance.",
+    "teaserTitle": "Importez-en davantage pour débloquer ceci",
+    "uploadDirectly": "Importer des fichiers maintenant",
+    "category": {
+      "topics": "Sujets fréquemment mis en avant",
+      "examStyle": "Style de questions",
+      "assignmentStyle": "Style de devoirs demandé",
+      "examQuestionTypes": "Types de questions d'examen",
+      "gradingStrictness": "Rigueur de la notation",
+      "researchInterests": "Centres d'intérêt de recherche"
+    },
+    "circuit": {
+      "expected_questions": "Questions attendues",
+      "assignment_direction": "Orientation des devoirs",
+      "study_method": "Méthode d'étude"
+    },
+    "framing": {
+      "first": "Première impression basée sur 1 document",
+      "some": "Basé sur {count} documents — une tendance commence à se dessiner",
+      "clear": "Basé sur {count} documents — la tendance est claire"
+    }
   }
 }

@@ -141,5 +141,59 @@
       "in2Weeks": "In 2 Weeks",
       "in3PlusWeeks": "3+ Weeks"
     }
+  },
+  "professors": {
+    "title": "Professors",
+    "subtitle": "Collect materials by professor to see at a glance the topics they emphasize and how they tend to write questions.",
+    "uploadPanel": {
+      "title": "Upload Materials",
+      "selectProfessor": "Select Professor",
+      "registerNew": "+ Register New Professor",
+      "namePlaceholder": "Name (required)",
+      "schoolPlaceholder": "School (required)",
+      "departmentPlaceholder": "Department (required)",
+      "schoolDeptHint": "School/department info helps interpret major-specific terminology and grading conventions more accurately.",
+      "chooseFile": "Choose File",
+      "paperHint": "Uploading the professor's papers helps us pinpoint their research interests and emphasis much more accurately."
+    },
+    "loading": "Loading...",
+    "noneRegistered": "No professors registered yet. Upload materials above to register one.",
+    "documentCount": "{count} files",
+    "docType": {
+      "lecture": "Lecture Notes",
+      "exam": "Exam",
+      "assignment": "Assignment",
+      "paper": "Paper"
+    },
+    "backToList": "Back to Professors",
+    "deleteProfessor": "Delete Professor",
+    "noSchoolDept": "No school/department info",
+    "documentListTitle": "Materials ({count})",
+    "noDocumentsYet": "No materials uploaded yet.",
+    "deleteDocumentAria": "Delete {fileName}",
+    "circuitHint": "Click the AI core to analyze this professor's materials",
+    "notConfidentYet": "Not confident enough to judge yet",
+    "analyzeButton": "Analyze This Professor",
+    "notEnoughData": "Not enough material yet to judge with confidence.",
+    "teaserTitle": "Upload more to unlock these",
+    "uploadDirectly": "Upload Files Now",
+    "category": {
+      "topics": "Frequently Emphasized Topics",
+      "examStyle": "Question Style",
+      "assignmentStyle": "Assignment Style",
+      "examQuestionTypes": "Exam Question Types",
+      "gradingStrictness": "Grading Strictness",
+      "researchInterests": "Research Interests"
+    },
+    "circuit": {
+      "expected_questions": "Expected Questions",
+      "assignment_direction": "Assignment Direction",
+      "study_method": "Study Method"
+    },
+    "framing": {
+      "first": "First impression from 1 document",
+      "some": "Based on {count} documents — a pattern is starting to form",
+      "clear": "Based on {count} documents — the pattern is clear"
+    }
   }
 }
