@@ -195,5 +195,20 @@
       "some": "Based on {count} documents — a pattern is starting to form",
       "clear": "Based on {count} documents — the pattern is clear"
     }
+  },
+  "monitoring": {
+    "title": "Monitoring & Files (RAG Context)",
+    "subtitle": "Attach schedules, spreadsheets, documents, and images for the AI to reference.",
+    "uploadSectionTitle": "Attach Files & Schedules for AI Reference",
+    "attachButton": "Attach File or Calendar Event",
+    "orDivider": "Or Enter Text Directly",
+    "form": {
+      "titlePlaceholder": "Document title (e.g. May_Event_Schedule.txt)",
+      "contentPlaceholder": "Enter schedule details or notes for the AI to read...",
+      "submit": "Register Text"
+    },
+    "fileListTitle": "Registered Context Files",
+    "noFiles": "No files registered.",
+    "fileType": "Type: {mimeType}"
   }
 }

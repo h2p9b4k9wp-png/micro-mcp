@@ -195,5 +195,20 @@
       "some": "자료 {count}개 기준 — 꽤 잡히기 시작했어요",
       "clear": "자료 {count}개 기준 — 패턴이 뚜렷해요"
     }
+  },
+  "monitoring": {
+    "title": "모니터링 & 파일 (RAG 컨텍스트)",
+    "subtitle": "AI가 참고할 수 있도록 일정표, 엑셀, 문서, 이미지 등의 파일을 첨부하세요.",
+    "uploadSectionTitle": "AI 참조용 파일 및 일정표 첨부",
+    "attachButton": "파일 및 캘린더 일정 첨부하기",
+    "orDivider": "또는 텍스트 직접 입력",
+    "form": {
+      "titlePlaceholder": "문서 제목 (예: 5월_행사일정.txt)",
+      "contentPlaceholder": "AI가 읽을 일정 내용이나 메모를 입력하세요...",
+      "submit": "직접 입력해서 등록"
+    },
+    "fileListTitle": "등록된 컨텍스트 파일 목록",
+    "noFiles": "등록된 파일이 없습니다.",
+    "fileType": "타입: {mimeType}"
   }
 }

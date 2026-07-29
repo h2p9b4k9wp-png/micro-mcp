@@ -195,5 +195,20 @@
       "some": "Dựa trên {count} tài liệu — bắt đầu thấy rõ hơn",
       "clear": "Dựa trên {count} tài liệu — mô hình đã rõ ràng"
     }
+  },
+  "monitoring": {
+    "title": "Giám sát & Tệp (Ngữ cảnh RAG)",
+    "subtitle": "Đính kèm lịch trình, bảng tính, tài liệu, hình ảnh để AI có thể tham khảo.",
+    "uploadSectionTitle": "Đính kèm tệp & lịch trình cho AI tham khảo",
+    "attachButton": "Đính kèm tệp hoặc sự kiện lịch",
+    "orDivider": "Hoặc nhập văn bản trực tiếp",
+    "form": {
+      "titlePlaceholder": "Tiêu đề tài liệu (VD: Lich_su_kien_thang5.txt)",
+      "contentPlaceholder": "Nhập nội dung lịch trình hoặc ghi chú để AI đọc...",
+      "submit": "Nhập trực tiếp và đăng ký"
+    },
+    "fileListTitle": "Danh sách tệp ngữ cảnh đã đăng ký",
+    "noFiles": "Chưa có tệp nào được đăng ký.",
+    "fileType": "Loại: {mimeType}"
   }
 }

@@ -195,5 +195,20 @@
       "some": "Según {count} documentos — un patrón empieza a formarse",
       "clear": "Según {count} documentos — el patrón es claro"
     }
+  },
+  "monitoring": {
+    "title": "Monitoreo y archivos (Contexto RAG)",
+    "subtitle": "Adjunta horarios, hojas de cálculo, documentos e imágenes para que la IA los use como referencia.",
+    "uploadSectionTitle": "Adjuntar archivos y horarios para referencia de la IA",
+    "attachButton": "Adjuntar archivo o evento de calendario",
+    "orDivider": "O introduce texto directamente",
+    "form": {
+      "titlePlaceholder": "Título del documento (ej.: Horario_eventos_mayo.txt)",
+      "contentPlaceholder": "Introduce el contenido del horario o notas para que la IA los lea...",
+      "submit": "Registrar texto"
+    },
+    "fileListTitle": "Archivos de contexto registrados",
+    "noFiles": "No hay archivos registrados.",
+    "fileType": "Tipo: {mimeType}"
   }
 }

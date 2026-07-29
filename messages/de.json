@@ -195,5 +195,20 @@
       "some": "Basierend auf {count} Dokumenten — ein Muster zeichnet sich ab",
       "clear": "Basierend auf {count} Dokumenten — das Muster ist klar"
     }
+  },
+  "monitoring": {
+    "title": "Überwachung & Dateien (RAG-Kontext)",
+    "subtitle": "Füge Zeitpläne, Tabellen, Dokumente und Bilder hinzu, auf die die KI zugreifen kann.",
+    "uploadSectionTitle": "Dateien & Zeitpläne für die KI hinzufügen",
+    "attachButton": "Datei oder Kalendertermin anhängen",
+    "orDivider": "Oder Text direkt eingeben",
+    "form": {
+      "titlePlaceholder": "Dokumenttitel (z. B. Mai_Terminplan.txt)",
+      "contentPlaceholder": "Gib Termindetails oder Notizen ein, die die KI lesen soll...",
+      "submit": "Text registrieren"
+    },
+    "fileListTitle": "Registrierte Kontextdateien",
+    "noFiles": "Keine Dateien registriert.",
+    "fileType": "Typ: {mimeType}"
   }
 }

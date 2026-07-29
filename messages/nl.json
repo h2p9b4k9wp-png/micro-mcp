@@ -195,5 +195,20 @@
       "some": "Gebaseerd op {count} documenten — er begint een patroon te ontstaan",
       "clear": "Gebaseerd op {count} documenten — het patroon is duidelijk"
     }
+  },
+  "monitoring": {
+    "title": "Monitoring & bestanden (RAG-context)",
+    "subtitle": "Voeg roosters, spreadsheets, documenten en afbeeldingen toe waar de AI naar kan verwijzen.",
+    "uploadSectionTitle": "Bestanden & roosters toevoegen voor de AI",
+    "attachButton": "Bestand of agenda-item toevoegen",
+    "orDivider": "Of voer tekst rechtstreeks in",
+    "form": {
+      "titlePlaceholder": "Documenttitel (bijv. Mei_Evenementenrooster.txt)",
+      "contentPlaceholder": "Voer roosterdetails of notities in die de AI moet lezen...",
+      "submit": "Tekst registreren"
+    },
+    "fileListTitle": "Geregistreerde contextbestanden",
+    "noFiles": "Geen bestanden geregistreerd.",
+    "fileType": "Type: {mimeType}"
   }
 }

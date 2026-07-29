@@ -3123,19 +3123,19 @@ export default function HomePage() {
             <div>
               <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  모니터링 & 파일 (RAG 컨텍스트)
+                  {t('monitoring.title')}
                 </h1>
                 <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  AI가 참고할 수 있도록 일정표, 엑셀, 문서, 이미지 등의 파일을 첨부하세요.
+                  {t('monitoring.subtitle')}
                 </p>
               </div>
 
               <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#F5F2F7]">AI 참조용 파일 및 일정표 첨부</h3>
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#F5F2F7]">{t('monitoring.uploadSectionTitle')}</h3>
 
                 <div className="mb-5">
                   <label className="inline-flex bg-[#F4679B] hover:bg-[#D1477F] text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
-                    <span>파일 및 캘린더 일정 첨부하기</span>
+                    <span>{t('monitoring.attachButton')}</span>
                     <input
                       type="file"
                       onChange={handleFileUpload}
@@ -3146,42 +3146,42 @@ export default function HomePage() {
 
                 <div className="text-xs text-[#857C93] mb-5 flex items-center gap-3">
                   <hr className="flex-1 border-[#322D3B]" />
-                  <span>또는 텍스트 직접 입력</span>
+                  <span>{t('monitoring.orDivider')}</span>
                   <hr className="flex-1 border-[#322D3B]" />
                 </div>
 
                 <form onSubmit={handleAddFile} className="flex flex-col gap-3">
                   <input
                     type="text"
-                    placeholder="문서 제목 (예: 5월_행사일정.txt)"
+                    placeholder={t('monitoring.form.titlePlaceholder')}
                     value={newFileName}
                     onChange={(e) => setNewFileName(e.target.value)}
                     className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                   />
                   <textarea
-                    placeholder="AI가 읽을 일정 내용이나 메모를 입력하세요..."
+                    placeholder={t('monitoring.form.contentPlaceholder')}
                     value={newFileContent}
                     onChange={(e) => setNewFileContent(e.target.value)}
                     rows={3}
                     className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 resize-none placeholder:text-[#857C93]"
                   />
                   <button type="submit" className="self-end bg-[#211E28] hover:bg-[#15131A] text-[#F5F2F7] px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#423B4C] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]">
-                    직접 입력해서 등록
+                    {t('monitoring.form.submit')}
                   </button>
                 </form>
 
                 <div className="mt-8 flex flex-col gap-2">
-                  <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wider mb-1">등록된 컨텍스트 파일 목록</h4>
+                  <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wider mb-1">{t('monitoring.fileListTitle')}</h4>
                   {files.length === 0 && (
-                    <div className="text-sm text-[#857C93] text-center py-4">등록된 파일이 없습니다.</div>
+                    <div className="text-sm text-[#857C93] text-center py-4">{t('monitoring.noFiles')}</div>
                   )}
                   {files.map(file => (
                     <div key={file.id} className="flex flex-col bg-[#1C1922] p-3.5 rounded-lg border border-[#322D3B] text-sm gap-1">
                       <div className="flex justify-between items-center">
                         <span className="font-semibold text-[#F4679B]">📄 {file.name} <span className="text-xs text-[#857C93] font-normal">({file.size})</span></span>
-                        <button onClick={() => handleDeleteFile(file.id)} className="text-[#FF7A6B] hover:text-[#FF9585] text-xs px-2 py-1 bg-[#35201D] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]">삭제</button>
+                        <button onClick={() => handleDeleteFile(file.id)} className="text-[#FF7A6B] hover:text-[#FF9585] text-xs px-2 py-1 bg-[#35201D] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]">{t('common.delete')}</button>
                       </div>
-                      <p className="text-xs text-[#AFA6BD] truncate mt-1">타입: {file.mimeType || 'text/plain'}</p>
+                      <p className="text-xs text-[#AFA6BD] truncate mt-1">{t('monitoring.fileType', { mimeType: file.mimeType || 'text/plain' })}</p>
                     </div>
                   ))}
                 </div>

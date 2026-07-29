@@ -195,5 +195,20 @@
       "some": "Basato su {count} documenti — si inizia a intravedere uno schema",
       "clear": "Basato su {count} documenti — lo schema è chiaro"
     }
+  },
+  "monitoring": {
+    "title": "Monitoraggio e file (contesto RAG)",
+    "subtitle": "Allega programmi, fogli di calcolo, documenti e immagini come riferimento per l'IA.",
+    "uploadSectionTitle": "Allega file e programmi per l'IA",
+    "attachButton": "Allega file o evento del calendario",
+    "orDivider": "Oppure inserisci il testo direttamente",
+    "form": {
+      "titlePlaceholder": "Titolo del documento (es.: Programma_eventi_maggio.txt)",
+      "contentPlaceholder": "Inserisci il contenuto del programma o le note da far leggere all'IA...",
+      "submit": "Registra il testo"
+    },
+    "fileListTitle": "File di contesto registrati",
+    "noFiles": "Nessun file registrato.",
+    "fileType": "Tipo: {mimeType}"
   }
 }

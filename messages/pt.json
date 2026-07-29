@@ -195,5 +195,20 @@
       "some": "Com base em {count} documentos — um padrão está começando a se formar",
       "clear": "Com base em {count} documentos — o padrão está claro"
     }
+  },
+  "monitoring": {
+    "title": "Monitoramento e arquivos (contexto RAG)",
+    "subtitle": "Anexe cronogramas, planilhas, documentos e imagens para a IA usar como referência.",
+    "uploadSectionTitle": "Anexar arquivos e cronogramas para referência da IA",
+    "attachButton": "Anexar arquivo ou evento de calendário",
+    "orDivider": "Ou digite o texto diretamente",
+    "form": {
+      "titlePlaceholder": "Título do documento (ex.: Cronograma_eventos_maio.txt)",
+      "contentPlaceholder": "Digite o conteúdo do cronograma ou notas para a IA ler...",
+      "submit": "Registrar texto"
+    },
+    "fileListTitle": "Arquivos de contexto registrados",
+    "noFiles": "Nenhum arquivo registrado.",
+    "fileType": "Tipo: {mimeType}"
   }
 }

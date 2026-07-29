@@ -195,5 +195,20 @@
       "some": "資料{count}件を基準 — だんだん見えてきました",
       "clear": "資料{count}件を基準 — パターンがはっきりしています"
     }
+  },
+  "monitoring": {
+    "title": "モニタリング＆ファイル（RAGコンテキスト）",
+    "subtitle": "AIが参照できるように、スケジュール、Excel、文書、画像などのファイルを添付してください。",
+    "uploadSectionTitle": "AI参照用ファイル・スケジュールの添付",
+    "attachButton": "ファイル・カレンダー予定を添付",
+    "orDivider": "またはテキストを直接入力",
+    "form": {
+      "titlePlaceholder": "文書タイトル（例: 5月_イベント予定.txt）",
+      "contentPlaceholder": "AIに読ませたい予定内容やメモを入力してください...",
+      "submit": "直接入力して登録"
+    },
+    "fileListTitle": "登録されたコンテキストファイル一覧",
+    "noFiles": "登録されたファイルがありません。",
+    "fileType": "タイプ: {mimeType}"
   }
 }

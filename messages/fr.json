@@ -195,5 +195,20 @@
       "some": "Basé sur {count} documents — une tendance commence à se dessiner",
       "clear": "Basé sur {count} documents — la tendance est claire"
     }
+  },
+  "monitoring": {
+    "title": "Surveillance et fichiers (contexte RAG)",
+    "subtitle": "Joignez des emplois du temps, tableurs, documents et images pour que l'IA puisse s'y référer.",
+    "uploadSectionTitle": "Joindre des fichiers et emplois du temps pour l'IA",
+    "attachButton": "Joindre un fichier ou un événement de calendrier",
+    "orDivider": "Ou saisir du texte directement",
+    "form": {
+      "titlePlaceholder": "Titre du document (ex. : Planning_evenements_mai.txt)",
+      "contentPlaceholder": "Saisissez le contenu du planning ou des notes à lire par l'IA...",
+      "submit": "Enregistrer le texte"
+    },
+    "fileListTitle": "Fichiers de contexte enregistrés",
+    "noFiles": "Aucun fichier enregistré.",
+    "fileType": "Type : {mimeType}"
   }
 }
