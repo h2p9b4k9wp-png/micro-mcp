@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { LensId } from '@/lib/lenses';
-import { getSessionUserId } from '@/lib/auth/session';
+import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { getIsPro, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
 
     // 💡 [신규] 매 호출마다 유료 OpenAI 요청이 나가므로 /api/chat과 동일하게 1분당 호출
     // 횟수를 제한합니다 — 계정 탈취·자동화 남용으로 인한 비용 폭주 방지.
-    const userId = await getSessionUserId();
+    const { supabase, userId } = await getSessionSupabase();
     if (userId && !checkRateLimit(`analyze:${userId}`, 10, 60_000)) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again in a minute.' },
@@ -33,6 +34,25 @@ export async function POST(req: Request) {
 
     if (!text) {
       return NextResponse.json({ error: 'No text to analyze.' }, { status: 400 });
+    }
+
+    // 💡 [신규] 이 라우트는 파일이 아니라 이미 추출된 텍스트를 받기 때문에 /api/extract의
+    // 파일 크기 검증(무료 5MB/Pro 20MB)을 우회할 수 있었습니다 — 채팅 첨부문서를 붙여넣어
+    // 직접 호출하거나, 텍스트를 아주 크게 붙여넣는 식으로. 같은 상한을 텍스트 바이트 수에도
+    // 적용해 우회 경로를 막습니다.
+    const isPro = userId ? await getIsPro(supabase, userId) : false;
+    const maxUploadBytes = getPlanLimits(isPro).maxUploadBytes;
+    const textBytes = Buffer.byteLength(text, 'utf-8');
+    if (textBytes > maxUploadBytes) {
+      const maxMB = Math.round(maxUploadBytes / (1024 * 1024));
+      return NextResponse.json(
+        {
+          error: `Text is too large (over ${maxMB}MB). Please try a smaller document.${isPro ? '' : ` Upgrade to Pro — ${PRO_PRICE_LABEL}`}`,
+          limitReached: true,
+          limitType: 'file',
+        },
+        { status: 413 }
+      );
     }
 
     const { lensId, result } = await runLensAnalysis({ apiKey, text, fileName, lens, responseLanguage });

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { getSessionUserId } from '@/lib/auth/session';
+import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { getIsPro, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { truncateForPrompt } from '@/lib/truncate-text';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
@@ -116,7 +117,7 @@ export async function POST(req: Request) {
 
     // 💡 [신규] 매 호출마다 유료 OpenAI 요청이 나가므로 /api/chat과 동일하게 1분당 호출
     // 횟수를 제한합니다 — 계정 탈취·자동화 남용으로 인한 비용 폭주 방지.
-    const userId = await getSessionUserId();
+    const { supabase, userId } = await getSessionSupabase();
     if (userId && !checkRateLimit(`analyze-professor:${userId}`, 10, 60_000)) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again in a minute.' },
@@ -143,11 +144,30 @@ export async function POST(req: Request) {
     // 💡 [신규] 클라이언트(app/page.tsx)가 교수님 1명당 자료 개수를 30개로 제한하지만, API를
     // 직접 호출하면 우회될 수 있습니다 — 이 라우트가 실질적인 비용 발생 지점이라 여기서도
     // 동일한 상한을 강제합니다.
-    const docCountForCap = isIncremental ? (newDocuments as DocPayload[]).length : (documents as DocPayload[]).length;
-    if (docCountForCap > MAX_PROFESSOR_DOCUMENTS) {
+    const docsForCap = isIncremental ? (newDocuments as DocPayload[]) : (documents as DocPayload[]);
+    if (docsForCap.length > MAX_PROFESSOR_DOCUMENTS) {
       return NextResponse.json(
         { error: `You can analyze at most ${MAX_PROFESSOR_DOCUMENTS} documents at once.` },
         { status: 400 }
+      );
+    }
+
+    // 💡 [신규] 이 라우트도 /api/analyze와 같은 이유로 이번 호출에 실려 온 문서 텍스트의 총
+    // 바이트 수를 /api/extract와 같은 상한(무료 5MB/Pro 20MB)으로 검증합니다 — 파일 하나하나는
+    // /api/extract를 거쳐 이미 그 상한을 통과했더라도, 여러 파일을 한 번에(documents/
+    // newDocuments 배열) 보내면 합산 크기가 우회될 수 있어서입니다.
+    const isPro = userId ? await getIsPro(supabase, userId) : false;
+    const maxUploadBytes = getPlanLimits(isPro).maxUploadBytes;
+    const totalBytes = docsForCap.reduce((sum, doc) => sum + Buffer.byteLength(doc.text || '', 'utf-8'), 0);
+    if (totalBytes > maxUploadBytes) {
+      const maxMB = Math.round(maxUploadBytes / (1024 * 1024));
+      return NextResponse.json(
+        {
+          error: `Documents are too large in total (over ${maxMB}MB). Please try fewer or smaller documents at once.${isPro ? '' : ` Upgrade to Pro — ${PRO_PRICE_LABEL}`}`,
+          limitReached: true,
+          limitType: 'file',
+        },
+        { status: 413 }
       );
     }
 

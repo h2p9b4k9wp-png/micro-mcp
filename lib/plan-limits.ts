@@ -6,11 +6,16 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 // 개수/자료 개수 한도는 클라이언트(app/page.tsx)에서 검사합니다 — 후자는
 // professors/documents 테이블에 클라이언트가 직접(Supabase RLS로) insert하는 구조라
 // 서버 라우트를 거치지 않기 때문입니다.
+// 💡 [신규] 파일 하나(또는 /api/analyze·analyze-professor로 직접 보내는 텍스트 한 뭉치)의
+// 크기 상한 — 무료 5MB, Pro 20MB. app/api/extract·app/api/analyze·app/api/analyze-professor가
+// 이 값을 공유해 검증합니다(자세한 이유는 각 라우트 주석 참고). 위 filesPerMonth(월간 처리
+// "횟수" 한도)와는 별개의, 요청 1건당 크기 한도입니다.
 export const FREE_LIMITS = {
   filesPerMonth: 10,
   chatsPerMonth: 50,
   maxProfessors: 1,
   maxDocumentsPerProfessor: 10,
+  maxUploadBytes: 5 * 1024 * 1024,
 };
 
 export const PRO_LIMITS = {
@@ -18,6 +23,7 @@ export const PRO_LIMITS = {
   chatsPerMonth: 1000,
   maxProfessors: Infinity,
   maxDocumentsPerProfessor: Infinity,
+  maxUploadBytes: 20 * 1024 * 1024,
 };
 
 export function getPlanLimits(isPro: boolean) {
@@ -67,6 +73,9 @@ export interface FileQuotaResult {
   ok: boolean;
   error?: string;
   limit?: number;
+  // 💡 [신규] 호출부가 이 검사와 별도로 maxUploadBytes 같은 다른 tier별 한도를 마저 확인해야
+  // 할 때, profiles를 다시 조회하지 않도록 이미 조회한 is_pro를 함께 돌려줍니다.
+  isPro?: boolean;
 }
 
 // 💡 [신규] "이번 달 파일 처리 한도" 검사를 한 곳에 모아둡니다 — /api/extract(텍스트 파일)와
@@ -82,13 +91,24 @@ export async function checkFileQuota(supabase: SupabaseClient, userId: string): 
       .select('id', { count: 'exact', head: true })
       .gte('created_at', getMonthStartISOString()),
   ]);
-  const limits = getPlanLimits(Boolean(profile?.is_pro));
+  const isPro = Boolean(profile?.is_pro);
+  const limits = getPlanLimits(isPro);
   if (monthlyCount !== null && monthlyCount >= limits.filesPerMonth) {
     return {
       ok: false,
       error: `이번 달 파일 처리 한도(${limits.filesPerMonth}회)에 도달했어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`,
       limit: limits.filesPerMonth,
+      isPro,
     };
   }
-  return { ok: true };
+  return { ok: true, isPro };
+}
+
+// 💡 [신규] /api/analyze·/api/analyze-professor처럼 document_uploads 기반 월간 한도와는
+// 무관하게 "이 호출자가 Pro인지"만 필요한 라우트를 위한 최소 조회. checkFileQuota와 달리
+// document_uploads는 건드리지 않습니다 — 이 두 라우트는 파일 업로드 자체가 아니라 이미
+// 추출된 텍스트를 분석하는 라우트라 월간 파일 처리 횟수 한도와는 별개입니다.
+export async function getIsPro(supabase: SupabaseClient, userId: string): Promise<boolean> {
+  const { data } = await supabase.from('profiles').select('is_pro').eq('id', userId).single();
+  return Boolean(data?.is_pro);
 }
