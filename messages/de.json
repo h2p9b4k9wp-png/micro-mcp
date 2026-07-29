@@ -1,0 +1,71 @@
+{
+  "app": {
+    "loadingSession": "Wird geladen..."
+  },
+  "nav": {
+    "workspace": "KI fragen",
+    "records": "Meine Aufzeichnungen",
+    "deadlines": "Fristen",
+    "professors": "Professoren",
+    "monitoring": "Meine Dateien",
+    "logs": "Frühere Unterhaltungen"
+  },
+  "common": {
+    "send": "Prompt senden",
+    "sending": "Wird gesendet...",
+    "delete": "Löschen",
+    "create": "Erstellen"
+  },
+  "workspace": {
+    "subtitle": "Die KI erstellt Antworten basierend auf dem Kontext der aktiven MCP-Blöcke und dem Inhalt angehängter Dokumente.",
+    "promptSectionLabel": "KI-Prompt senden",
+    "removeAttachment": "Anhang {name} entfernen",
+    "attachFile": "Datei/Foto anhängen",
+    "webSearchToggle": "Websuche ein-/ausschalten",
+    "webSearchOnTitle": "Websuche aktiviert — langsamer und mit zusätzlichen Kosten",
+    "webSearchOffTitle": "Websuche deaktiviert — aktivieren, wenn aktuelle Infos benötigt werden",
+    "webSearchLabel": "Websuche {state}",
+    "promptPlaceholder": "z. B. Fasse den Plan dieser Woche anhand des angehängten Zeitplans zusammen...",
+    "dropHint": "Du kannst Dateien oder Fotos auch hierher ziehen, um sie anzuhängen. Anhänge bleiben für den Rest dieser Unterhaltung verfügbar.",
+    "aiResponseLabel": "KI-Antwort",
+    "idleMessage": "Hallo! Frag mich einfach etwas!",
+    "actionItemsFound": "✨ Aufgaben mit Datum gefunden",
+    "registerAsDeadline": "Als Frist registrieren",
+    "examplePrompts": {
+      "searchTrend": "Suche die neuesten Trends in diesem Bereich und sag sie mir",
+      "summarizeDoc": "Fasse die wichtigsten Punkte des angehängten Dokuments zusammen",
+      "weeklyPlan": "Sortiere, was ich diese Woche zuerst erledigen muss",
+      "extensionEmail": "Entwirf eine E-Mail, um eine Fristverlängerung zu beantragen",
+      "meetingNotes": "Ordne die Besprechungsnotizen, die ich gerade eingefügt habe"
+    },
+    "lensChoices": {
+      "deadlines": "Fristen extrahieren",
+      "questions": "Erwartete Fragen",
+      "digest": "Kernzusammenfassung",
+      "none": "Nur chatten"
+    },
+    "lens": {
+      "noDeadlinesFound": "Es wurden keine Einträge mit Fälligkeitsdatum gefunden.",
+      "registerAll": "Alle registrieren",
+      "registerAllDone": "Alle registriert",
+      "register": "Registrieren",
+      "registered": "Registriert",
+      "noQuestionsFound": "Es konnten keine erwarteten Fragen erstellt werden.",
+      "weakness": "Schwachstelle: {text}",
+      "evidencePrefix": "Beleg"
+    },
+    "errors": {
+      "fileTooLarge": "„{fileName}“ ist zu groß (über 10 MB). Bitte versuche es mit einer kleineren Datei.",
+      "unsupportedImage": "„{fileName}“ hat ein Bildformat, das die KI nicht lesen kann ({mimeType}). Falls es ein iPhone-Foto ist, wechsle in den Einstellungen zu „Am kompatibelsten (JPEG)“ oder speichere es vor dem Hochladen als JPG/PNG.",
+      "unknownFormat": "unbekannt",
+      "fileReadFailed": "Beim Lesen der Datei ist ein Problem aufgetreten.",
+      "extractFailed": "Text konnte nicht aus „{fileName}“ extrahiert werden: {error}",
+      "attachProcessingFailed": "Beim Verarbeiten von „{fileName}“ ist ein Fehler aufgetreten: {error}",
+      "unknownError": "Ein unbekannter Fehler ist aufgetreten.",
+      "requestFailed": "Entschuldigung, wir konnten deine Anfrage nicht verarbeiten: {error}",
+      "networkError": "Entschuldigung, es ist ein Netzwerkfehler aufgetreten: {error}",
+      "analyzeFailed": "Die Analyse ist fehlgeschlagen.",
+      "analyzeErrorFallback": "Bei der Analyse ist ein Fehler aufgetreten."
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "app": {
+    "loadingSession": "Laden..."
+  },
+  "nav": {
+    "workspace": "AI vragen",
+    "records": "Mijn overzicht",
+    "deadlines": "Deadlines",
+    "professors": "Docenten",
+    "monitoring": "Mijn bestanden",
+    "logs": "Eerdere gesprekken"
+  },
+  "common": {
+    "send": "Prompt versturen",
+    "sending": "Versturen...",
+    "delete": "Verwijderen",
+    "create": "Aanmaken"
+  },
+  "workspace": {
+    "subtitle": "De AI genereert antwoorden op basis van de context van actieve MCP-blokken en de inhoud van bijgevoegde documenten.",
+    "promptSectionLabel": "AI-prompt versturen",
+    "removeAttachment": "Bijlage {name} verwijderen",
+    "attachFile": "Bestand/foto bijvoegen",
+    "webSearchToggle": "Webzoeken aan/uit",
+    "webSearchOnTitle": "Webzoeken aan — trager en brengt extra kosten met zich mee",
+    "webSearchOffTitle": "Webzoeken uit — zet aan wanneer je actuele info nodig hebt",
+    "webSearchLabel": "Webzoeken {state}",
+    "promptPlaceholder": "Bijv.: Vat het plan van deze week samen op basis van het bijgevoegde schema...",
+    "dropHint": "Je kunt hier ook bestanden of foto's naartoe slepen om ze bij te voegen. Bijlagen blijven beschikbaar voor de rest van dit gesprek.",
+    "aiResponseLabel": "AI-antwoord",
+    "idleMessage": "Hoi! Vraag me alles!",
+    "actionItemsFound": "✨ Taken met datum gevonden",
+    "registerAsDeadline": "Registreren als deadline",
+    "examplePrompts": {
+      "searchTrend": "Zoek de nieuwste trends op dit gebied en vertel het me",
+      "summarizeDoc": "Vat de belangrijkste punten van het bijgevoegde document samen",
+      "weeklyPlan": "Zet op een rijtje wat ik deze week eerst moet doen",
+      "extensionEmail": "Stel een e-mail op om uitstel van de deadline te vragen",
+      "meetingNotes": "Orden de vergadernotities die ik net heb geplakt"
+    },
+    "lensChoices": {
+      "deadlines": "Deadlines ophalen",
+      "questions": "Verwachte vragen",
+      "digest": "Kernoverzicht",
+      "none": "Gewoon chatten"
+    },
+    "lens": {
+      "noDeadlinesFound": "Er zijn geen items met een deadline gevonden.",
+      "registerAll": "Alles registreren",
+      "registerAllDone": "Alles geregistreerd",
+      "register": "Registreren",
+      "registered": "Geregistreerd",
+      "noQuestionsFound": "Er konden geen verwachte vragen worden gegenereerd.",
+      "weakness": "Zwak punt: {text}",
+      "evidencePrefix": "Bewijs"
+    },
+    "errors": {
+      "fileTooLarge": "\"{fileName}\" is te groot (meer dan 10 MB). Probeer een kleiner bestand.",
+      "unsupportedImage": "\"{fileName}\" heeft een afbeeldingsformaat dat de AI niet kan lezen ({mimeType}). Is het een iPhone-foto? Schakel dan in Instellingen over naar \"Meest compatibel (JPEG)\", of sla het opnieuw op als JPG/PNG voordat je het uploadt.",
+      "unknownFormat": "onbekend",
+      "fileReadFailed": "Er is een probleem opgetreden bij het lezen van het bestand.",
+      "extractFailed": "Kon geen tekst uit \"{fileName}\" halen: {error}",
+      "attachProcessingFailed": "Er is een fout opgetreden bij het verwerken van \"{fileName}\": {error}",
+      "unknownError": "Er is een onbekende fout opgetreden.",
+      "requestFailed": "Sorry, we konden je verzoek niet verwerken: {error}",
+      "networkError": "Sorry, er is een netwerkfout opgetreden: {error}",
+      "analyzeFailed": "Analyse mislukt.",
+      "analyzeErrorFallback": "Er is een fout opgetreden tijdens de analyse."
+    }
+  }
+}

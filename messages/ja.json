@@ -1,0 +1,71 @@
+{
+  "app": {
+    "loadingSession": "読み込み中..."
+  },
+  "nav": {
+    "workspace": "AIに質問",
+    "records": "マイ履歴",
+    "deadlines": "締め切り",
+    "professors": "教授",
+    "monitoring": "マイファイル",
+    "logs": "過去の会話"
+  },
+  "common": {
+    "send": "プロンプト送信",
+    "sending": "送信中...",
+    "delete": "削除",
+    "create": "作成"
+  },
+  "workspace": {
+    "subtitle": "有効化されたMCPブロックのコンテキストと添付されたドキュメントの内容をもとに、AIが実際の回答を導き出します。",
+    "promptSectionLabel": "AIプロンプト送信",
+    "removeAttachment": "{name} の添付を削除",
+    "attachFile": "ファイル/写真を添付",
+    "webSearchToggle": "ウェブ検索のオン/オフ",
+    "webSearchOnTitle": "ウェブ検索オン — 遅くなり、コストもかかります",
+    "webSearchOffTitle": "ウェブ検索オフ — 最新情報が必要なときにオンにしてください",
+    "webSearchLabel": "ウェブ検索 {state}",
+    "promptPlaceholder": "例: 添付のスケジュールを基に今週の計画をまとめて...",
+    "dropHint": "ファイルや写真をここにドラッグ&ドロップして添付することもできます。添付内容はこの会話の間、参照され続けます。",
+    "aiResponseLabel": "AIの回答",
+    "idleMessage": "こんにちは！何でも聞いてください！",
+    "actionItemsFound": "✨ 日付付きのToDoが見つかりました",
+    "registerAsDeadline": "締め切りとして登録",
+    "examplePrompts": {
+      "searchTrend": "最近のこの分野の最新トレンドを検索して教えて",
+      "summarizeDoc": "添付した文書の要点だけ要約して",
+      "weeklyPlan": "今週まず何から手をつけるべきか整理して",
+      "extensionEmail": "締め切り延長を依頼するメールの下書きを書いて",
+      "meetingNotes": "今貼り付けた会議メモを整理して"
+    },
+    "lensChoices": {
+      "deadlines": "締め切り抽出",
+      "questions": "想定質問",
+      "digest": "要点まとめ",
+      "none": "ただ話す"
+    },
+    "lens": {
+      "noDeadlinesFound": "期限のある項目が見つかりませんでした。",
+      "registerAll": "全て登録",
+      "registerAllDone": "全て登録済み",
+      "register": "登録",
+      "registered": "登録済み",
+      "noQuestionsFound": "想定質問を作成できませんでした。",
+      "weakness": "弱点: {text}",
+      "evidencePrefix": "根拠"
+    },
+    "errors": {
+      "fileTooLarge": "「{fileName}」は大きすぎます（10MB超）。より小さいファイルでお試しください。",
+      "unsupportedImage": "「{fileName}」はAIが読み取れない画像形式です（{mimeType}）。iPhoneの写真の場合は設定で「互換性優先（JPEG）」に切り替えるか、JPG/PNGとして再保存してからアップロードしてください。",
+      "unknownFormat": "不明",
+      "fileReadFailed": "ファイルの読み込み中に問題が発生しました。",
+      "extractFailed": "「{fileName}」からテキストを抽出できませんでした: {error}",
+      "attachProcessingFailed": "「{fileName}」の処理中にエラーが発生しました: {error}",
+      "unknownError": "不明なエラーが発生しました。",
+      "requestFailed": "申し訳ありません、リクエストを処理できませんでした: {error}",
+      "networkError": "申し訳ありません、ネットワークエラーが発生しました: {error}",
+      "analyzeFailed": "分析に失敗しました。",
+      "analyzeErrorFallback": "分析中にエラーが発生しました。"
+    }
+  }
+}

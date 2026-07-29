@@ -1,0 +1,71 @@
+{
+  "app": {
+    "loadingSession": "Chargement..."
+  },
+  "nav": {
+    "workspace": "Demander à l'IA",
+    "records": "Mes historiques",
+    "deadlines": "Échéances",
+    "professors": "Professeurs",
+    "monitoring": "Mes fichiers",
+    "logs": "Conversations précédentes"
+  },
+  "common": {
+    "send": "Envoyer la requête",
+    "sending": "Envoi en cours...",
+    "delete": "Supprimer",
+    "create": "Créer"
+  },
+  "workspace": {
+    "subtitle": "L'IA génère des réponses en fonction du contexte des blocs MCP actifs et du contenu de tout document joint.",
+    "promptSectionLabel": "Envoyer une requête à l'IA",
+    "removeAttachment": "Supprimer la pièce jointe {name}",
+    "attachFile": "Joindre un fichier/une photo",
+    "webSearchToggle": "Activer/désactiver la recherche web",
+    "webSearchOnTitle": "Recherche web activée — plus lente et plus coûteuse",
+    "webSearchOffTitle": "Recherche web désactivée — activez-la quand vous avez besoin d'infos récentes",
+    "webSearchLabel": "Recherche web {state}",
+    "promptPlaceholder": "Ex. : Résume le plan de cette semaine à partir de l'emploi du temps joint...",
+    "dropHint": "Vous pouvez aussi glisser-déposer des fichiers ou des photos ici pour les joindre. Les pièces jointes restent disponibles pour le reste de cette conversation.",
+    "aiResponseLabel": "Réponse de l'IA",
+    "idleMessage": "Bonjour ! Posez-moi n'importe quelle question !",
+    "actionItemsFound": "✨ Tâches avec échéance trouvées",
+    "registerAsDeadline": "Enregistrer comme échéance",
+    "examplePrompts": {
+      "searchTrend": "Cherche les dernières tendances dans ce domaine et dis-le-moi",
+      "summarizeDoc": "Résume les points clés du document joint",
+      "weeklyPlan": "Organise ce que je dois traiter en premier cette semaine",
+      "extensionEmail": "Rédige un e-mail demandant une prolongation de délai",
+      "meetingNotes": "Organise les notes de réunion que je viens de coller"
+    },
+    "lensChoices": {
+      "deadlines": "Extraire les échéances",
+      "questions": "Questions attendues",
+      "digest": "Résumé clé",
+      "none": "Juste discuter"
+    },
+    "lens": {
+      "noDeadlinesFound": "Aucun élément avec échéance n'a été trouvé.",
+      "registerAll": "Tout enregistrer",
+      "registerAllDone": "Tout est enregistré",
+      "register": "Enregistrer",
+      "registered": "Enregistré",
+      "noQuestionsFound": "Impossible de générer des questions attendues.",
+      "weakness": "Point faible : {text}",
+      "evidencePrefix": "Preuve"
+    },
+    "errors": {
+      "fileTooLarge": "« {fileName} » est trop volumineux (plus de 10 Mo). Essayez un fichier plus petit.",
+      "unsupportedImage": "« {fileName} » est un format d'image que l'IA ne peut pas lire ({mimeType}). S'il s'agit d'une photo iPhone, passez à « Le plus compatible (JPEG) » dans les réglages, ou réenregistrez-la en JPG/PNG avant de l'envoyer.",
+      "unknownFormat": "inconnu",
+      "fileReadFailed": "Un problème est survenu lors de la lecture du fichier.",
+      "extractFailed": "Impossible d'extraire le texte de « {fileName} » : {error}",
+      "attachProcessingFailed": "Une erreur est survenue lors du traitement de « {fileName} » : {error}",
+      "unknownError": "Une erreur inconnue est survenue.",
+      "requestFailed": "Désolé, nous n'avons pas pu traiter votre demande : {error}",
+      "networkError": "Désolé, une erreur réseau est survenue : {error}",
+      "analyzeFailed": "L'analyse a échoué.",
+      "analyzeErrorFallback": "Une erreur est survenue pendant l'analyse."
+    }
+  }
+}

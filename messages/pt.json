@@ -1,0 +1,71 @@
+{
+  "app": {
+    "loadingSession": "Carregando..."
+  },
+  "nav": {
+    "workspace": "Perguntar à IA",
+    "records": "Meus registros",
+    "deadlines": "Prazos",
+    "professors": "Professores",
+    "monitoring": "Meus arquivos",
+    "logs": "Conversas anteriores"
+  },
+  "common": {
+    "send": "Enviar prompt",
+    "sending": "Enviando...",
+    "delete": "Excluir",
+    "create": "Criar"
+  },
+  "workspace": {
+    "subtitle": "A IA gera respostas com base no contexto dos blocos MCP ativos e no conteúdo de qualquer documento anexado.",
+    "promptSectionLabel": "Enviar prompt para a IA",
+    "removeAttachment": "Remover anexo {name}",
+    "attachFile": "Anexar arquivo/foto",
+    "webSearchToggle": "Ativar/desativar busca na web",
+    "webSearchOnTitle": "Busca na web ativada — mais lenta e com custo adicional",
+    "webSearchOffTitle": "Busca na web desativada — ative quando precisar de informações atualizadas",
+    "webSearchLabel": "Busca na web {state}",
+    "promptPlaceholder": "Ex.: Resuma o plano desta semana com base na agenda anexada...",
+    "dropHint": "Você também pode arrastar arquivos ou fotos até aqui para anexá-los. Os anexos ficam disponíveis pelo resto desta conversa.",
+    "aiResponseLabel": "Resposta da IA",
+    "idleMessage": "Olá! Pergunte-me qualquer coisa!",
+    "actionItemsFound": "✨ Tarefas com data encontradas",
+    "registerAsDeadline": "Registrar como prazo",
+    "examplePrompts": {
+      "searchTrend": "Pesquise as últimas tendências nesta área e me conte",
+      "summarizeDoc": "Resuma os pontos principais do documento anexado",
+      "weeklyPlan": "Organize o que devo priorizar esta semana",
+      "extensionEmail": "Redija um e-mail solicitando uma prorrogação de prazo",
+      "meetingNotes": "Organize as notas da reunião que acabei de colar"
+    },
+    "lensChoices": {
+      "deadlines": "Extrair prazos",
+      "questions": "Perguntas esperadas",
+      "digest": "Resumo principal",
+      "none": "Só conversar"
+    },
+    "lens": {
+      "noDeadlinesFound": "Nenhum item com prazo foi encontrado.",
+      "registerAll": "Registrar tudo",
+      "registerAllDone": "Tudo registrado",
+      "register": "Registrar",
+      "registered": "Registrado",
+      "noQuestionsFound": "Não foi possível gerar perguntas esperadas.",
+      "weakness": "Ponto fraco: {text}",
+      "evidencePrefix": "Evidência"
+    },
+    "errors": {
+      "fileTooLarge": "\"{fileName}\" é muito grande (mais de 10 MB). Tente um arquivo menor.",
+      "unsupportedImage": "\"{fileName}\" está em um formato de imagem que a IA não consegue ler ({mimeType}). Se for uma foto de iPhone, mude para \"Mais compatível (JPEG)\" nas Configurações, ou salve novamente como JPG/PNG antes de enviar.",
+      "unknownFormat": "desconhecido",
+      "fileReadFailed": "Ocorreu um problema ao ler o arquivo.",
+      "extractFailed": "Não foi possível extrair o texto de \"{fileName}\": {error}",
+      "attachProcessingFailed": "Ocorreu um erro ao processar \"{fileName}\": {error}",
+      "unknownError": "Ocorreu um erro desconhecido.",
+      "requestFailed": "Desculpe, não foi possível processar sua solicitação: {error}",
+      "networkError": "Desculpe, ocorreu um erro de rede: {error}",
+      "analyzeFailed": "A análise falhou.",
+      "analyzeErrorFallback": "Ocorreu um erro durante a análise."
+    }
+  }
+}

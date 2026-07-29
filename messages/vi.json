@@ -1,0 +1,71 @@
+{
+  "app": {
+    "loadingSession": "Đang tải..."
+  },
+  "nav": {
+    "workspace": "Hỏi AI",
+    "records": "Nhật ký của tôi",
+    "deadlines": "Hạn chót",
+    "professors": "Giáo sư",
+    "monitoring": "Tệp của tôi",
+    "logs": "Cuộc trò chuyện trước"
+  },
+  "common": {
+    "send": "Gửi lệnh",
+    "sending": "Đang gửi...",
+    "delete": "Xóa",
+    "create": "Tạo"
+  },
+  "workspace": {
+    "subtitle": "AI tạo câu trả lời dựa trên ngữ cảnh của các khối MCP đang bật và nội dung tài liệu đã đính kèm.",
+    "promptSectionLabel": "Gửi lệnh cho AI",
+    "removeAttachment": "Xóa tệp đính kèm {name}",
+    "attachFile": "Đính kèm tệp/ảnh",
+    "webSearchToggle": "Bật/tắt tìm kiếm web",
+    "webSearchOnTitle": "Tìm kiếm web đang bật — chậm hơn và tốn chi phí hơn",
+    "webSearchOffTitle": "Tìm kiếm web đang tắt — bật khi cần thông tin mới nhất",
+    "webSearchLabel": "Tìm kiếm web {state}",
+    "promptPlaceholder": "VD: Tóm tắt kế hoạch tuần này dựa trên lịch đã đính kèm...",
+    "dropHint": "Bạn cũng có thể kéo thả tệp hoặc ảnh vào đây để đính kèm. Tệp đính kèm sẽ được giữ lại trong suốt cuộc trò chuyện này.",
+    "aiResponseLabel": "Phản hồi của AI",
+    "idleMessage": "Xin chào! Hãy hỏi tôi bất cứ điều gì!",
+    "actionItemsFound": "✨ Đã tìm thấy việc cần làm có ngày hạn",
+    "registerAsDeadline": "Đăng ký làm hạn chót",
+    "examplePrompts": {
+      "searchTrend": "Tìm xu hướng mới nhất trong lĩnh vực này và cho tôi biết",
+      "summarizeDoc": "Tóm tắt những điểm chính của tài liệu đính kèm",
+      "weeklyPlan": "Sắp xếp việc cần xử lý trước trong tuần này",
+      "extensionEmail": "Soạn email xin gia hạn thời hạn",
+      "meetingNotes": "Sắp xếp lại ghi chú cuộc họp tôi vừa dán vào"
+    },
+    "lensChoices": {
+      "deadlines": "Trích xuất hạn chót",
+      "questions": "Câu hỏi dự kiến",
+      "digest": "Tóm tắt chính",
+      "none": "Chỉ trò chuyện"
+    },
+    "lens": {
+      "noDeadlinesFound": "Không tìm thấy mục nào có hạn chót.",
+      "registerAll": "Đăng ký tất cả",
+      "registerAllDone": "Đã đăng ký tất cả",
+      "register": "Đăng ký",
+      "registered": "Đã đăng ký",
+      "noQuestionsFound": "Không thể tạo câu hỏi dự kiến.",
+      "weakness": "Điểm yếu: {text}",
+      "evidencePrefix": "Bằng chứng"
+    },
+    "errors": {
+      "fileTooLarge": "\"{fileName}\" quá lớn (vượt quá 10MB). Vui lòng thử tệp nhỏ hơn.",
+      "unsupportedImage": "\"{fileName}\" là định dạng ảnh mà AI không đọc được ({mimeType}). Nếu là ảnh chụp từ iPhone, hãy chuyển sang \"Tương thích nhất (JPEG)\" trong Cài đặt, hoặc lưu lại dưới dạng JPG/PNG trước khi tải lên.",
+      "unknownFormat": "không xác định",
+      "fileReadFailed": "Đã xảy ra sự cố khi đọc tệp.",
+      "extractFailed": "Không thể trích xuất văn bản từ \"{fileName}\": {error}",
+      "attachProcessingFailed": "Đã xảy ra lỗi khi xử lý \"{fileName}\": {error}",
+      "unknownError": "Đã xảy ra lỗi không xác định.",
+      "requestFailed": "Xin lỗi, chúng tôi không thể xử lý yêu cầu của bạn: {error}",
+      "networkError": "Xin lỗi, đã xảy ra lỗi mạng: {error}",
+      "analyzeFailed": "Phân tích thất bại.",
+      "analyzeErrorFallback": "Đã xảy ra lỗi trong quá trình phân tích."
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "app": {
+    "loadingSession": "Caricamento..."
+  },
+  "nav": {
+    "workspace": "Chiedi all'IA",
+    "records": "I miei archivi",
+    "deadlines": "Scadenze",
+    "professors": "Professori",
+    "monitoring": "I miei file",
+    "logs": "Conversazioni precedenti"
+  },
+  "common": {
+    "send": "Invia richiesta",
+    "sending": "Invio in corso...",
+    "delete": "Elimina",
+    "create": "Crea"
+  },
+  "workspace": {
+    "subtitle": "L'IA genera risposte in base al contesto dei blocchi MCP attivi e al contenuto dei documenti allegati.",
+    "promptSectionLabel": "Invia richiesta all'IA",
+    "removeAttachment": "Rimuovi l'allegato {name}",
+    "attachFile": "Allega file/foto",
+    "webSearchToggle": "Attiva/disattiva la ricerca web",
+    "webSearchOnTitle": "Ricerca web attiva — più lenta e con costi aggiuntivi",
+    "webSearchOffTitle": "Ricerca web disattivata — attivala quando serve un'informazione aggiornata",
+    "webSearchLabel": "Ricerca web {state}",
+    "promptPlaceholder": "Es.: Riassumi il piano di questa settimana in base al programma allegato...",
+    "dropHint": "Puoi anche trascinare qui file o foto per allegarli. Gli allegati restano disponibili per il resto di questa conversazione.",
+    "aiResponseLabel": "Risposta dell'IA",
+    "idleMessage": "Ciao! Chiedimi pure quello che vuoi!",
+    "actionItemsFound": "✨ Trovate attività con scadenza",
+    "registerAsDeadline": "Registra come scadenza",
+    "examplePrompts": {
+      "searchTrend": "Cerca le ultime tendenze in questo campo e dimmele",
+      "summarizeDoc": "Riassumi i punti chiave del documento allegato",
+      "weeklyPlan": "Organizza cosa devo affrontare per primo questa settimana",
+      "extensionEmail": "Scrivi una bozza di email per richiedere una proroga della scadenza",
+      "meetingNotes": "Organizza gli appunti della riunione che ho appena incollato"
+    },
+    "lensChoices": {
+      "deadlines": "Estrai scadenze",
+      "questions": "Domande previste",
+      "digest": "Sintesi chiave",
+      "none": "Solo chattare"
+    },
+    "lens": {
+      "noDeadlinesFound": "Non è stato trovato alcun elemento con scadenza.",
+      "registerAll": "Registra tutto",
+      "registerAllDone": "Tutto registrato",
+      "register": "Registra",
+      "registered": "Registrato",
+      "noQuestionsFound": "Non è stato possibile generare domande previste.",
+      "weakness": "Punto debole: {text}",
+      "evidencePrefix": "Prova"
+    },
+    "errors": {
+      "fileTooLarge": "\"{fileName}\" è troppo grande (oltre 10 MB). Prova con un file più piccolo.",
+      "unsupportedImage": "\"{fileName}\" ha un formato immagine che l'IA non riesce a leggere ({mimeType}). Se è una foto di iPhone, passa a \"Più compatibile (JPEG)\" nelle Impostazioni, oppure salvala di nuovo come JPG/PNG prima di caricarla.",
+      "unknownFormat": "sconosciuto",
+      "fileReadFailed": "Si è verificato un problema durante la lettura del file.",
+      "extractFailed": "Impossibile estrarre il testo da \"{fileName}\": {error}",
+      "attachProcessingFailed": "Si è verificato un errore durante l'elaborazione di \"{fileName}\": {error}",
+      "unknownError": "Si è verificato un errore sconosciuto.",
+      "requestFailed": "Siamo spiacenti, non è stato possibile elaborare la tua richiesta: {error}",
+      "networkError": "Siamo spiacenti, si è verificato un errore di rete: {error}",
+      "analyzeFailed": "Analisi non riuscita.",
+      "analyzeErrorFallback": "Si è verificato un errore durante l'analisi."
+    }
+  }
+}
