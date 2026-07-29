@@ -11,6 +11,8 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@ohah/hwpjs": "^0.1.0-rc.10",
+    "@polar-sh/nextjs": "^0.9.6",
+    "@polar-sh/sdk": "^0.49.0",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.7",
     "cfb": "^1.2.2",

@@ -29,6 +29,28 @@ export function getPlanLimits(isPro: boolean) {
 export const PRO_PRICE_USD = 4.99;
 export const PRO_PRICE_LABEL = `$${PRO_PRICE_USD}/month`;
 
+// 💡 [신규] Polar 결제 연동 — 대시보드에서 미리 만들어둔 정적 Checkout Link. 동적으로
+// checkout session을 만드는 대신 이 URL 하나로 고정하고, 우리 쪽 user_id는 Polar가
+// 공식 지원하는 reference_id 쿼리 파라미터로 붙입니다(Polar 문서: 이 값이 그대로 생성되는
+// Checkout Session의 metadata에 실려서 결제 완료 웹훅(app/api/webhooks/polar)까지 전달됨).
+// 이 값 자체는 비밀이 아니라(누구나 브라우저에서 접근 가능한 결제 페이지 URL) 환경변수로
+// 뺄 필요가 없습니다 — 상품/가격을 바꿔서 링크가 바뀌면 여기만 고치면 됩니다.
+export const POLAR_CHECKOUT_URL = 'https://buy.polar.sh/polar_cl_z6HksogJhVZGBpr8uZ9v4kwkqigJxT0RpycVz2EARUc';
+
+// 💡 [신규] 로그인한 사용자를 위 Checkout Link로 보낼 때 쓰는 URL 빌더. reference_id에
+// user.id를 실어 보내면 결제 완료 시 웹훅 payload의 metadata.reference_id로 그대로
+// 돌아옵니다 — 이게 app/api/webhooks/polar가 어느 계정의 profiles.is_pro를 켤지 찾는
+// 유일한 단서입니다. customer_email은 필수는 아니지만 Polar 결제 폼의 이메일 입력을
+// 미리 채워 사용자 손이 덜 가게 하는 용도로 함께 붙입니다.
+export function getPolarCheckoutUrl(userId: string, email?: string | null): string {
+  const url = new URL(POLAR_CHECKOUT_URL);
+  url.searchParams.set('reference_id', userId);
+  if (email) {
+    url.searchParams.set('customer_email', email);
+  }
+  return url.toString();
+}
+
 // 💡 [신규] 무료 등급 대화 기록 보관 기간(app/privacy 페이지에 적힌 문구와 실제 삭제
 // 동작이 어긋나지 않도록, app/api/cron/cleanup-logs/route.ts가 이 값을 그대로 씁니다).
 // Pro는 보관 기간 제한이 없고(계정 삭제 시까지), 이 상수는 무료 등급에만 적용됩니다.

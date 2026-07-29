@@ -30,7 +30,7 @@ import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
-import { getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { getPlanLimits, getPolarCheckoutUrl, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
@@ -3308,8 +3308,25 @@ export default function HomePage() {
               <h3 className="text-base font-bold text-[#F5F2F7] mb-1.5">Pro로 업그레이드하기</h3>
               <p className="text-sm font-bold text-[#F4679B] mb-3">Upgrade to Pro — {PRO_PRICE_LABEL}</p>
               <p className="text-xs text-[#AFA6BD] mb-4 leading-relaxed">
-                {upgradeContext || '연락처를 남겨주시면 Pro 이용 안내를 도와드릴게요.'}
+                {upgradeContext || '결제를 완료하면 Pro 혜택이 바로 적용돼요.'}
               </p>
+              {/* 💡 [신규] Polar 결제 연동 — 실제 결제는 이 링크 하나로 끝. reference_id로
+                  실어 보낸 user.id가 웹훅(app/api/webhooks/polar)을 통해 profiles.is_pro를
+                  자동으로 켭니다. 새 탭으로 열어서 결제 중에도 앱 상태(입력 중이던 내용 등)가
+                  날아가지 않게 합니다. */}
+              <a
+                href={user ? getPolarCheckoutUrl(user.id, user.email) : '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center bg-[#F4679B] hover:bg-[#D1477F] text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              >
+                Pro 결제하러 가기
+              </a>
+              <div className="flex items-center gap-2 my-4">
+                <div className="flex-1 h-px bg-[#322D3B]" />
+                <span className="text-[10px] text-[#5B5566]">또는 문의 남기기</span>
+                <div className="flex-1 h-px bg-[#322D3B]" />
+              </div>
               <form onSubmit={handleSubmitUpgradeRequest} className="flex flex-col gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">이메일</label>
