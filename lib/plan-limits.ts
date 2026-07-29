@@ -32,7 +32,7 @@ export function getPlanLimits(isPro: boolean) {
 
 // 💡 [신규] Pro 가격 — /pricing 페이지, 한도 초과 안내(채팅·파일·교수님·자료), 업그레이드
 // 모달이 전부 이 상수 하나를 참조합니다. 가격이 바뀌면 여기만 고치면 됩니다.
-export const PRO_PRICE_USD = 4.99;
+export const PRO_PRICE_USD = 6.99;
 export const PRO_PRICE_LABEL = `$${PRO_PRICE_USD}/month`;
 
 // 💡 [신규] Polar 결제 연동 — 대시보드에서 미리 만들어둔 정적 Checkout Link. 동적으로
