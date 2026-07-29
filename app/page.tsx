@@ -35,7 +35,7 @@ import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   detectLens,
   type LensId,
@@ -345,9 +345,13 @@ function getProfessorAnalysisFramingLine(count: number): string {
 
 export default function HomePage() {
   const router = useRouter();
-  // 💡 [신규] 다국어 지원 스캐폴딩 — 지금은 사이드바 메뉴·전송 버튼·로딩 문구 등 핵심 UI 일부만
-  // 번역했고(messages/ko.json, en.json), 나머지 화면 문자열은 다음 단계에서 이어서 이관합니다.
+  // 💡 [신규] 다국어 지원 — 10개 로케일(messages/{locale}.json)로 확장됐습니다. locale은
+  // toLocaleDateString 등 날짜 포맷팅에도 씁니다 — UI 언어를 영어로 봐도 날짜가 여전히
+  // "7월 15일" 같은 한국어 포맷으로 굳어 있으면 어색해서, 번역을 새로 추가하는 화면부터는
+  // 하드코딩된 'ko-KR' 대신 이 값을 씁니다(기존에 이미 하드코딩된 곳까지 전부 훑어 고치진
+  // 않았습니다 — 범위가 너무 커서 이번엔 새로 손대는 화면 위주로 반영).
   const t = useTranslations();
+  const locale = useLocale();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('connecting');
@@ -1956,7 +1960,7 @@ export default function HomePage() {
 
   const courseBreakdown = Object.entries(
     deadlines.reduce((acc, d) => {
-      const key = d.course?.trim() || '카테고리 없음';
+      const key = d.course?.trim() || t('records.deadlinesCard.noCategory');
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {} as Record<string, number>)
@@ -1969,12 +1973,12 @@ export default function HomePage() {
     return acc;
   }, {} as Record<string, number>);
   const fileFormatBreakdown = [
-    { key: 'excel', label: '엑셀', icon: '📊' },
-    { key: 'hwp', label: 'HWP', icon: '📃' },
-    { key: 'ppt', label: 'PPT', icon: '📽️' },
-    { key: 'word', label: '워드', icon: '📝' },
-    { key: 'pdf', label: 'PDF', icon: '📕' },
-    { key: 'image', label: '이미지', icon: '🖼️' },
+    { key: 'excel', label: t('records.documentsCard.formats.excel'), icon: '📊' },
+    { key: 'hwp', label: t('records.documentsCard.formats.hwp'), icon: '📃' },
+    { key: 'ppt', label: t('records.documentsCard.formats.ppt'), icon: '📽️' },
+    { key: 'word', label: t('records.documentsCard.formats.word'), icon: '📝' },
+    { key: 'pdf', label: t('records.documentsCard.formats.pdf'), icon: '📕' },
+    { key: 'image', label: t('records.documentsCard.formats.image'), icon: '🖼️' },
   ].map((f) => ({ ...f, count: fileFormatCounts[f.key] || 0 }));
   const etcFileCount = fileFormatCounts['etc'] || 0;
 
@@ -2410,23 +2414,23 @@ export default function HomePage() {
             <div>
               <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  나의 기록
+                  {t('records.title')}
                 </h1>
                 <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  지금까지 Micro-MCP에 쌓인 내 데이터를 한눈에 확인해보세요.
+                  {t('records.subtitle')}
                 </p>
               </div>
 
               {/* 히어로 숫자 */}
               <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-6 sm:p-8 mb-5 shadow-sm text-center">
-                <p className="text-xs sm:text-sm text-[#AFA6BD] mb-3">Micro-MCP가 당신에 대해 알고 있는 것</p>
+                <p className="text-xs sm:text-sm text-[#AFA6BD] mb-3">{t('records.heroLabel')}</p>
                 <div className="text-5xl sm:text-6xl font-extrabold text-[#F4679B] tracking-tight leading-none">
                   {totalKnownCount}
-                  <span className="text-xl sm:text-2xl text-[#F5F2F7] ml-1.5 align-middle">개</span>
+                  <span className="text-xl sm:text-2xl text-[#F5F2F7] ml-1.5 align-middle">{t('records.unitSuffix')}</span>
                 </div>
                 {daysSinceJoin !== null && (
                   <p className="text-xs sm:text-sm text-[#857C93] mt-4">
-                    가입한 지 <span className="text-[#F5F2F7] font-semibold">{daysSinceJoin}일째</span> 함께하고 있어요
+                    {t('records.daysSinceJoin', { days: daysSinceJoin })}
                   </p>
                 )}
               </div>
@@ -2436,23 +2440,23 @@ export default function HomePage() {
                 <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">⏰</span>
-                    <h3 className="text-sm font-bold text-[#F5F2F7]">등록된 마감일</h3>
+                    <h3 className="text-sm font-bold text-[#F5F2F7]">{t('records.deadlinesCard.title')}</h3>
                   </div>
                   <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
-                    {deadlines.length}<span className="text-xs font-medium text-[#857C93] ml-1">개</span>
+                    {deadlines.length}<span className="text-xs font-medium text-[#857C93] ml-1">{t('records.unitSuffix')}</span>
                   </div>
                   {courseBreakdown.length === 0 ? (
-                    <p className="text-xs text-[#857C93]">아직 등록된 마감일이 없어요.</p>
+                    <p className="text-xs text-[#857C93]">{t('records.deadlinesCard.empty')}</p>
                   ) : (
                     <div className="flex flex-col gap-1.5">
                       {courseBreakdown.slice(0, 5).map((c) => (
                         <div key={c.course} className="flex items-center justify-between gap-2 text-xs">
                           <span className="text-[#AFA6BD] truncate">{c.course}</span>
-                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{c.count}개</span>
+                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{c.count}{t('records.unitSuffix')}</span>
                         </div>
                       ))}
                       {courseBreakdown.length > 5 && (
-                        <span className="text-[11px] text-[#857C93] mt-0.5">외 {courseBreakdown.length - 5}개 카테고리 더</span>
+                        <span className="text-[11px] text-[#857C93] mt-0.5">{t('records.deadlinesCard.moreCategories', { count: courseBreakdown.length - 5 })}</span>
                       )}
                     </div>
                   )}
@@ -2461,13 +2465,13 @@ export default function HomePage() {
                 <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">📁</span>
-                    <h3 className="text-sm font-bold text-[#F5F2F7]">분석한 문서</h3>
+                    <h3 className="text-sm font-bold text-[#F5F2F7]">{t('records.documentsCard.title')}</h3>
                   </div>
                   <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
-                    {documentUploads.length}<span className="text-xs font-medium text-[#857C93] ml-1">개</span>
+                    {documentUploads.length}<span className="text-xs font-medium text-[#857C93] ml-1">{t('records.unitSuffix')}</span>
                   </div>
                   {documentUploads.length === 0 ? (
-                    <p className="text-xs text-[#857C93]">아직 첨부한 문서가 없어요.</p>
+                    <p className="text-xs text-[#857C93]">{t('records.documentsCard.empty')}</p>
                   ) : (
                     <div className="flex flex-col gap-1.5">
                       {fileFormatBreakdown.map((f) => (
@@ -2475,13 +2479,13 @@ export default function HomePage() {
                           <span className="text-[#AFA6BD] flex items-center gap-1.5 truncate">
                             <span>{f.icon}</span>{f.label}
                           </span>
-                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{f.count}개</span>
+                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{f.count}{t('records.unitSuffix')}</span>
                         </div>
                       ))}
                       {etcFileCount > 0 && (
                         <div className="flex items-center justify-between gap-2 text-xs">
-                          <span className="text-[#AFA6BD] flex items-center gap-1.5 truncate"><span>📄</span>기타</span>
-                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{etcFileCount}개</span>
+                          <span className="text-[#AFA6BD] flex items-center gap-1.5 truncate"><span>📄</span>{t('records.documentsCard.etc')}</span>
+                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{etcFileCount}{t('records.unitSuffix')}</span>
                         </div>
                       )}
                     </div>
@@ -2491,16 +2495,16 @@ export default function HomePage() {
                 <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">📜</span>
-                    <h3 className="text-sm font-bold text-[#F5F2F7]">저장된 대화</h3>
+                    <h3 className="text-sm font-bold text-[#F5F2F7]">{t('records.logsCard.title')}</h3>
                   </div>
                   <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
-                    {logs.length}<span className="text-xs font-medium text-[#857C93] ml-1">개</span>
+                    {logs.length}<span className="text-xs font-medium text-[#857C93] ml-1">{t('records.unitSuffix')}</span>
                   </div>
                   {logs.length === 0 ? (
-                    <p className="text-xs text-[#857C93]">아직 저장된 대화가 없어요.</p>
+                    <p className="text-xs text-[#857C93]">{t('records.logsCard.empty')}</p>
                   ) : (
                     <p className="text-xs text-[#857C93]">
-                      가장 최근 대화: {new Date(logs[0].created_at).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                      {t('records.logsCard.mostRecent', { date: new Date(logs[0].created_at).toLocaleDateString(locale, { month: 'long', day: 'numeric' }) })}
                     </p>
                   )}
                 </div>

@@ -67,5 +67,36 @@
       "analyzeFailed": "A análise falhou.",
       "analyzeErrorFallback": "Ocorreu um erro durante a análise."
     }
+  },
+  "records": {
+    "title": "Meus registros",
+    "subtitle": "Veja rapidamente os dados que o Micro-MCP reuniu sobre você até agora.",
+    "heroLabel": "O que o Micro-MCP sabe sobre você",
+    "unitSuffix": "",
+    "daysSinceJoin": "Você está conosco há {days} dias",
+    "deadlinesCard": {
+      "title": "Prazos registrados",
+      "empty": "Ainda não há prazos registrados.",
+      "noCategory": "Sem categoria",
+      "moreCategories": "+{count} categorias adicionais"
+    },
+    "documentsCard": {
+      "title": "Documentos analisados",
+      "empty": "Ainda não há documentos anexados.",
+      "etc": "Outros",
+      "formats": {
+        "excel": "Excel",
+        "hwp": "HWP",
+        "ppt": "PPT",
+        "word": "Word",
+        "pdf": "PDF",
+        "image": "Imagem"
+      }
+    },
+    "logsCard": {
+      "title": "Conversas salvas",
+      "empty": "Ainda não há conversas salvas.",
+      "mostRecent": "Mais recente: {date}"
+    }
   }
 }

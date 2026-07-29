@@ -67,5 +67,36 @@
       "analyzeFailed": "Analysis failed.",
       "analyzeErrorFallback": "An error occurred during analysis."
     }
+  },
+  "records": {
+    "title": "My Records",
+    "subtitle": "See at a glance the data Micro-MCP has gathered about you so far.",
+    "heroLabel": "What Micro-MCP knows about you",
+    "unitSuffix": "",
+    "daysSinceJoin": "You've been with us for {days} days",
+    "deadlinesCard": {
+      "title": "Registered Deadlines",
+      "empty": "No deadlines registered yet.",
+      "noCategory": "No category",
+      "moreCategories": "+{count} more categories"
+    },
+    "documentsCard": {
+      "title": "Analyzed Documents",
+      "empty": "No documents attached yet.",
+      "etc": "Other",
+      "formats": {
+        "excel": "Excel",
+        "hwp": "HWP",
+        "ppt": "PPT",
+        "word": "Word",
+        "pdf": "PDF",
+        "image": "Image"
+      }
+    },
+    "logsCard": {
+      "title": "Saved Conversations",
+      "empty": "No conversations saved yet.",
+      "mostRecent": "Most recent: {date}"
+    }
   }
 }

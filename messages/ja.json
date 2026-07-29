@@ -67,5 +67,36 @@
       "analyzeFailed": "分析に失敗しました。",
       "analyzeErrorFallback": "分析中にエラーが発生しました。"
     }
+  },
+  "records": {
+    "title": "マイ履歴",
+    "subtitle": "これまでMicro-MCPに蓄積されたあなたのデータを一目で確認できます。",
+    "heroLabel": "Micro-MCPがあなたについて知っていること",
+    "unitSuffix": "件",
+    "daysSinceJoin": "登録から{days}日目です",
+    "deadlinesCard": {
+      "title": "登録済みの締め切り",
+      "empty": "まだ登録された締め切りがありません。",
+      "noCategory": "カテゴリなし",
+      "moreCategories": "他{count}カテゴリ"
+    },
+    "documentsCard": {
+      "title": "分析済みの文書",
+      "empty": "まだ添付された文書がありません。",
+      "etc": "その他",
+      "formats": {
+        "excel": "Excel",
+        "hwp": "HWP",
+        "ppt": "PPT",
+        "word": "Word",
+        "pdf": "PDF",
+        "image": "画像"
+      }
+    },
+    "logsCard": {
+      "title": "保存された会話",
+      "empty": "まだ保存された会話がありません。",
+      "mostRecent": "最新の会話: {date}"
+    }
   }
 }

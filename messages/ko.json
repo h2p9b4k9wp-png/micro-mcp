@@ -67,5 +67,36 @@
       "analyzeFailed": "분석에 실패했어요.",
       "analyzeErrorFallback": "분석 중 오류가 발생했어요."
     }
+  },
+  "records": {
+    "title": "나의 기록",
+    "subtitle": "지금까지 Micro-MCP에 쌓인 내 데이터를 한눈에 확인해보세요.",
+    "heroLabel": "Micro-MCP가 당신에 대해 알고 있는 것",
+    "unitSuffix": "개",
+    "daysSinceJoin": "가입한 지 {days}일째 함께하고 있어요",
+    "deadlinesCard": {
+      "title": "등록된 마감일",
+      "empty": "아직 등록된 마감일이 없어요.",
+      "noCategory": "카테고리 없음",
+      "moreCategories": "외 {count}개 카테고리 더"
+    },
+    "documentsCard": {
+      "title": "분석한 문서",
+      "empty": "아직 첨부한 문서가 없어요.",
+      "etc": "기타",
+      "formats": {
+        "excel": "엑셀",
+        "hwp": "HWP",
+        "ppt": "PPT",
+        "word": "워드",
+        "pdf": "PDF",
+        "image": "이미지"
+      }
+    },
+    "logsCard": {
+      "title": "저장된 대화",
+      "empty": "아직 저장된 대화가 없어요.",
+      "mostRecent": "가장 최근 대화: {date}"
+    }
   }
 }

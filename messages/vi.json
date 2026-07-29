@@ -67,5 +67,36 @@
       "analyzeFailed": "Phân tích thất bại.",
       "analyzeErrorFallback": "Đã xảy ra lỗi trong quá trình phân tích."
     }
+  },
+  "records": {
+    "title": "Nhật ký của tôi",
+    "subtitle": "Xem nhanh dữ liệu mà Micro-MCP đã thu thập về bạn cho đến nay.",
+    "heroLabel": "Những gì Micro-MCP biết về bạn",
+    "unitSuffix": "",
+    "daysSinceJoin": "Bạn đã đồng hành cùng chúng tôi được {days} ngày",
+    "deadlinesCard": {
+      "title": "Hạn chót đã đăng ký",
+      "empty": "Chưa có hạn chót nào được đăng ký.",
+      "noCategory": "Không có danh mục",
+      "moreCategories": "và {count} danh mục khác"
+    },
+    "documentsCard": {
+      "title": "Tài liệu đã phân tích",
+      "empty": "Chưa có tài liệu nào được đính kèm.",
+      "etc": "Khác",
+      "formats": {
+        "excel": "Excel",
+        "hwp": "HWP",
+        "ppt": "PPT",
+        "word": "Word",
+        "pdf": "PDF",
+        "image": "Hình ảnh"
+      }
+    },
+    "logsCard": {
+      "title": "Cuộc trò chuyện đã lưu",
+      "empty": "Chưa có cuộc trò chuyện nào được lưu.",
+      "mostRecent": "Gần đây nhất: {date}"
+    }
   }
 }

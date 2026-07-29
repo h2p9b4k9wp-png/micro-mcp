@@ -67,5 +67,36 @@
       "analyzeFailed": "Analyse mislukt.",
       "analyzeErrorFallback": "Er is een fout opgetreden tijdens de analyse."
     }
+  },
+  "records": {
+    "title": "Mijn overzicht",
+    "subtitle": "Bekijk in één oogopslag de gegevens die Micro-MCP tot nu toe over je heeft verzameld.",
+    "heroLabel": "Wat Micro-MCP over je weet",
+    "unitSuffix": "",
+    "daysSinceJoin": "Je bent al {days} dagen bij ons",
+    "deadlinesCard": {
+      "title": "Geregistreerde deadlines",
+      "empty": "Nog geen deadlines geregistreerd.",
+      "noCategory": "Geen categorie",
+      "moreCategories": "+{count} categorieën meer"
+    },
+    "documentsCard": {
+      "title": "Geanalyseerde documenten",
+      "empty": "Nog geen documenten bijgevoegd.",
+      "etc": "Overig",
+      "formats": {
+        "excel": "Excel",
+        "hwp": "HWP",
+        "ppt": "PPT",
+        "word": "Word",
+        "pdf": "PDF",
+        "image": "Afbeelding"
+      }
+    },
+    "logsCard": {
+      "title": "Opgeslagen gesprekken",
+      "empty": "Nog geen gesprekken opgeslagen.",
+      "mostRecent": "Meest recent: {date}"
+    }
   }
 }
