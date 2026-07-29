@@ -98,5 +98,48 @@
       "empty": "No conversations saved yet.",
       "mostRecent": "Most recent: {date}"
     }
+  },
+  "deadlines": {
+    "title": "Deadline Manager",
+    "subtitle": "Gather all your assignment and exam deadlines in one place, automatically sorted by urgency.",
+    "dashboardTitle": "📊 Dashboard — What We Know So Far",
+    "emptyHint": "Upload a file to extract deadlines",
+    "goToChatTab": "Go to Chat Tab",
+    "urgencyDistribution": "Urgency Distribution",
+    "timeline": "Upcoming Timeline",
+    "activeBlocksLabel": "Active MCP Blocks",
+    "noActiveBlocks": "No active blocks",
+    "recentFilesLabel": "Recent Attachments",
+    "noAttachedFiles": "No attached files",
+    "moreFiles": "+{count} more",
+    "addManually": "Add Manually",
+    "form": {
+      "titlePlaceholder": "Task (e.g. Database Assignment 3)",
+      "coursePlaceholder": "Subject/Category (optional)",
+      "submit": "Add"
+    },
+    "noDeadlinesYet": "No deadlines registered. Add your first deadline above!",
+    "kpi": {
+      "total": "Total Deadlines",
+      "thisWeek": "Due This Week",
+      "overdue": "Overdue",
+      "files": "Reference Files",
+      "activeBlocks": "Active MCP Blocks"
+    },
+    "urgency": {
+      "overdue": "Overdue",
+      "critical": "Due Today",
+      "high": "Urgent (within 3 days)",
+      "medium": "This Week (within 7 days)",
+      "low": "Later (after 7 days)"
+    },
+    "badgeOverdue": "Overdue",
+    "timelineBuckets": {
+      "overdue": "Overdue",
+      "thisWeek": "This Week",
+      "nextWeek": "Next Week",
+      "in2Weeks": "In 2 Weeks",
+      "in3PlusWeeks": "3+ Weeks"
+    }
   }
 }

@@ -98,5 +98,48 @@
       "empty": "まだ保存された会話がありません。",
       "mostRecent": "最新の会話: {date}"
     }
+  },
+  "deadlines": {
+    "title": "締め切りマネージャー",
+    "subtitle": "課題や試験の締め切りをひとまとめにして、緊急度の高い順に自動で並べ替えます。",
+    "dashboardTitle": "📊 ダッシュボード — 現在わかっていること",
+    "emptyHint": "ファイルをアップロードして予定を抽出しましょう",
+    "goToChatTab": "チャットタブへ移動",
+    "urgencyDistribution": "緊急度の分布",
+    "timeline": "今後の予定タイムライン",
+    "activeBlocksLabel": "有効なMCPブロック",
+    "noActiveBlocks": "有効なブロックがありません",
+    "recentFilesLabel": "最近の添付ファイル",
+    "noAttachedFiles": "添付されたファイルがありません",
+    "moreFiles": "他{count}件",
+    "addManually": "手動で追加",
+    "form": {
+      "titlePlaceholder": "タスク（例: データベース課題3）",
+      "coursePlaceholder": "科目・カテゴリ（任意）",
+      "submit": "追加"
+    },
+    "noDeadlinesYet": "登録された締め切りがありません。上から最初の締め切りを追加しましょう！",
+    "kpi": {
+      "total": "締め切り総数",
+      "thisWeek": "今週締め切り",
+      "overdue": "期限切れ",
+      "files": "参考ファイル",
+      "activeBlocks": "有効なMCPブロック"
+    },
+    "urgency": {
+      "overdue": "期限切れ",
+      "critical": "本日締め切り",
+      "high": "差し迫っている（3日以内）",
+      "medium": "今週（7日以内）",
+      "low": "余裕あり（7日以降）"
+    },
+    "badgeOverdue": "期限切れ",
+    "timelineBuckets": {
+      "overdue": "期限切れ",
+      "thisWeek": "今週",
+      "nextWeek": "来週",
+      "in2Weeks": "2週間後",
+      "in3PlusWeeks": "3週間以上"
+    }
   }
 }

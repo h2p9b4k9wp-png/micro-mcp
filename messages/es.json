@@ -98,5 +98,48 @@
       "empty": "Aún no hay conversaciones guardadas.",
       "mostRecent": "Más reciente: {date}"
     }
+  },
+  "deadlines": {
+    "title": "Gestor de plazos",
+    "subtitle": "Reúne todos tus plazos de tareas y exámenes en un solo lugar, ordenados automáticamente por urgencia.",
+    "dashboardTitle": "📊 Panel — Lo que sabemos hasta ahora",
+    "emptyHint": "Sube un archivo para extraer fechas límite",
+    "goToChatTab": "Ir a la pestaña de chat",
+    "urgencyDistribution": "Distribución de urgencia",
+    "timeline": "Cronología próxima",
+    "activeBlocksLabel": "Bloques MCP activos",
+    "noActiveBlocks": "No hay bloques activos",
+    "recentFilesLabel": "Archivos adjuntos recientes",
+    "noAttachedFiles": "No hay archivos adjuntos",
+    "moreFiles": "+{count} más",
+    "addManually": "Agregar manualmente",
+    "form": {
+      "titlePlaceholder": "Tarea (ej.: Trabajo de base de datos 3)",
+      "coursePlaceholder": "Materia/Categoría (opcional)",
+      "submit": "Agregar"
+    },
+    "noDeadlinesYet": "No hay plazos registrados. ¡Agrega tu primer plazo arriba!",
+    "kpi": {
+      "total": "Total de plazos",
+      "thisWeek": "Vencen esta semana",
+      "overdue": "Vencidos",
+      "files": "Archivos de referencia",
+      "activeBlocks": "Bloques MCP activos"
+    },
+    "urgency": {
+      "overdue": "Vencidos",
+      "critical": "Vence hoy",
+      "high": "Urgente (dentro de 3 días)",
+      "medium": "Esta semana (dentro de 7 días)",
+      "low": "Con tiempo (después de 7 días)"
+    },
+    "badgeOverdue": "Vencido",
+    "timelineBuckets": {
+      "overdue": "Vencidos",
+      "thisWeek": "Esta semana",
+      "nextWeek": "Próxima semana",
+      "in2Weeks": "En 2 semanas",
+      "in3PlusWeeks": "3+ semanas"
+    }
   }
 }

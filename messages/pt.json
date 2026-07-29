@@ -98,5 +98,48 @@
       "empty": "Ainda não há conversas salvas.",
       "mostRecent": "Mais recente: {date}"
     }
+  },
+  "deadlines": {
+    "title": "Gerenciador de prazos",
+    "subtitle": "Reúna todos os prazos de tarefas e provas em um só lugar, organizados automaticamente por urgência.",
+    "dashboardTitle": "📊 Painel — O que sabemos até agora",
+    "emptyHint": "Envie um arquivo para extrair prazos",
+    "goToChatTab": "Ir para a aba de chat",
+    "urgencyDistribution": "Distribuição de urgência",
+    "timeline": "Linha do tempo dos próximos prazos",
+    "activeBlocksLabel": "Blocos MCP ativos",
+    "noActiveBlocks": "Nenhum bloco ativo",
+    "recentFilesLabel": "Anexos recentes",
+    "noAttachedFiles": "Nenhum arquivo anexado",
+    "moreFiles": "+{count} mais",
+    "addManually": "Adicionar manualmente",
+    "form": {
+      "titlePlaceholder": "Tarefa (ex.: Trabalho de banco de dados 3)",
+      "coursePlaceholder": "Matéria/Categoria (opcional)",
+      "submit": "Adicionar"
+    },
+    "noDeadlinesYet": "Nenhum prazo registrado. Adicione seu primeiro prazo acima!",
+    "kpi": {
+      "total": "Total de prazos",
+      "thisWeek": "Vencem esta semana",
+      "overdue": "Vencidos",
+      "files": "Arquivos de referência",
+      "activeBlocks": "Blocos MCP ativos"
+    },
+    "urgency": {
+      "overdue": "Vencidos",
+      "critical": "Vence hoje",
+      "high": "Urgente (em até 3 dias)",
+      "medium": "Esta semana (em até 7 dias)",
+      "low": "Com tempo (após 7 dias)"
+    },
+    "badgeOverdue": "Vencido",
+    "timelineBuckets": {
+      "overdue": "Vencidos",
+      "thisWeek": "Esta semana",
+      "nextWeek": "Próxima semana",
+      "in2Weeks": "Em 2 semanas",
+      "in3PlusWeeks": "3+ semanas"
+    }
   }
 }

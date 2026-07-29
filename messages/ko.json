@@ -98,5 +98,48 @@
       "empty": "아직 저장된 대화가 없어요.",
       "mostRecent": "가장 최근 대화: {date}"
     }
+  },
+  "deadlines": {
+    "title": "마감일 매니저",
+    "subtitle": "과제와 시험 마감일을 한눈에 모아서, 가장 급한 것부터 자동으로 정렬해드려요.",
+    "dashboardTitle": "📊 대시보드 — 지금까지 알고 있는 것",
+    "emptyHint": "파일을 올려서 일정을 뽑아보세요",
+    "goToChatTab": "채팅 탭으로 가기",
+    "urgencyDistribution": "긴급도 분포",
+    "timeline": "다가오는 일정 타임라인",
+    "activeBlocksLabel": "활성화된 MCP 블록",
+    "noActiveBlocks": "활성화된 블록이 없어요",
+    "recentFilesLabel": "최근 첨부 파일",
+    "noAttachedFiles": "첨부된 파일이 없어요",
+    "moreFiles": "외 {count}개 더",
+    "addManually": "직접 입력해서 추가",
+    "form": {
+      "titlePlaceholder": "할 일 (예: 데이터베이스 과제 3)",
+      "coursePlaceholder": "과목/카테고리 (선택)",
+      "submit": "추가"
+    },
+    "noDeadlinesYet": "등록된 마감일이 없습니다. 위에서 첫 마감일을 추가해보세요!",
+    "kpi": {
+      "total": "전체 마감일",
+      "thisWeek": "이번 주 마감",
+      "overdue": "지연됨",
+      "files": "참고 파일",
+      "activeBlocks": "활성 MCP 블록"
+    },
+    "urgency": {
+      "overdue": "지연됨",
+      "critical": "오늘 마감",
+      "high": "임박 (3일 내)",
+      "medium": "이번 주 (7일 내)",
+      "low": "여유 (7일 후)"
+    },
+    "badgeOverdue": "마감됨",
+    "timelineBuckets": {
+      "overdue": "지연됨",
+      "thisWeek": "이번 주",
+      "nextWeek": "다음 주",
+      "in2Weeks": "2주 후",
+      "in3PlusWeeks": "3주+"
+    }
   }
 }

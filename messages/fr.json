@@ -98,5 +98,48 @@
       "empty": "Aucune conversation enregistrée pour l'instant.",
       "mostRecent": "Plus récente : {date}"
     }
+  },
+  "deadlines": {
+    "title": "Gestionnaire d'échéances",
+    "subtitle": "Regroupez toutes vos échéances de devoirs et d'examens en un seul endroit, triées automatiquement par urgence.",
+    "dashboardTitle": "📊 Tableau de bord — Ce que l'on sait jusqu'à présent",
+    "emptyHint": "Importez un fichier pour extraire des échéances",
+    "goToChatTab": "Aller à l'onglet Chat",
+    "urgencyDistribution": "Répartition de l'urgence",
+    "timeline": "Chronologie à venir",
+    "activeBlocksLabel": "Blocs MCP actifs",
+    "noActiveBlocks": "Aucun bloc actif",
+    "recentFilesLabel": "Pièces jointes récentes",
+    "noAttachedFiles": "Aucun fichier joint",
+    "moreFiles": "+{count} de plus",
+    "addManually": "Ajouter manuellement",
+    "form": {
+      "titlePlaceholder": "Tâche (ex. : Devoir de base de données 3)",
+      "coursePlaceholder": "Matière/Catégorie (facultatif)",
+      "submit": "Ajouter"
+    },
+    "noDeadlinesYet": "Aucune échéance enregistrée. Ajoutez votre première échéance ci-dessus !",
+    "kpi": {
+      "total": "Total des échéances",
+      "thisWeek": "Échéance cette semaine",
+      "overdue": "En retard",
+      "files": "Fichiers de référence",
+      "activeBlocks": "Blocs MCP actifs"
+    },
+    "urgency": {
+      "overdue": "En retard",
+      "critical": "Échéance aujourd'hui",
+      "high": "Urgent (sous 3 jours)",
+      "medium": "Cette semaine (sous 7 jours)",
+      "low": "Plus de temps (après 7 jours)"
+    },
+    "badgeOverdue": "En retard",
+    "timelineBuckets": {
+      "overdue": "En retard",
+      "thisWeek": "Cette semaine",
+      "nextWeek": "Semaine prochaine",
+      "in2Weeks": "Dans 2 semaines",
+      "in3PlusWeeks": "3+ semaines"
+    }
   }
 }

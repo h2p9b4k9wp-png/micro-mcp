@@ -98,5 +98,48 @@
       "empty": "Noch keine Unterhaltungen gespeichert.",
       "mostRecent": "Zuletzt: {date}"
     }
+  },
+  "deadlines": {
+    "title": "Fristen-Manager",
+    "subtitle": "Sammle alle Aufgaben- und Prüfungsfristen an einem Ort, automatisch nach Dringlichkeit sortiert.",
+    "dashboardTitle": "📊 Dashboard — Was wir bisher wissen",
+    "emptyHint": "Lade eine Datei hoch, um Fristen zu extrahieren",
+    "goToChatTab": "Zum Chat-Tab",
+    "urgencyDistribution": "Dringlichkeitsverteilung",
+    "timeline": "Bevorstehende Zeitleiste",
+    "activeBlocksLabel": "Aktive MCP-Blöcke",
+    "noActiveBlocks": "Keine aktiven Blöcke",
+    "recentFilesLabel": "Kürzliche Anhänge",
+    "noAttachedFiles": "Keine angehängten Dateien",
+    "moreFiles": "+{count} weitere",
+    "addManually": "Manuell hinzufügen",
+    "form": {
+      "titlePlaceholder": "Aufgabe (z. B. Datenbankaufgabe 3)",
+      "coursePlaceholder": "Fach/Kategorie (optional)",
+      "submit": "Hinzufügen"
+    },
+    "noDeadlinesYet": "Keine Fristen registriert. Füge oben deine erste Frist hinzu!",
+    "kpi": {
+      "total": "Fristen insgesamt",
+      "thisWeek": "Diese Woche fällig",
+      "overdue": "Überfällig",
+      "files": "Referenzdateien",
+      "activeBlocks": "Aktive MCP-Blöcke"
+    },
+    "urgency": {
+      "overdue": "Überfällig",
+      "critical": "Heute fällig",
+      "high": "Dringend (innerhalb von 3 Tagen)",
+      "medium": "Diese Woche (innerhalb von 7 Tagen)",
+      "low": "Noch Zeit (nach 7 Tagen)"
+    },
+    "badgeOverdue": "Überfällig",
+    "timelineBuckets": {
+      "overdue": "Überfällig",
+      "thisWeek": "Diese Woche",
+      "nextWeek": "Nächste Woche",
+      "in2Weeks": "In 2 Wochen",
+      "in3PlusWeeks": "3+ Wochen"
+    }
   }
 }

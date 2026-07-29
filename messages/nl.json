@@ -98,5 +98,48 @@
       "empty": "Nog geen gesprekken opgeslagen.",
       "mostRecent": "Meest recent: {date}"
     }
+  },
+  "deadlines": {
+    "title": "Deadlinebeheer",
+    "subtitle": "Verzamel al je opdracht- en examendeadlines op één plek, automatisch gesorteerd op urgentie.",
+    "dashboardTitle": "📊 Dashboard — Wat we tot nu toe weten",
+    "emptyHint": "Upload een bestand om deadlines te halen",
+    "goToChatTab": "Naar het chattabblad",
+    "urgencyDistribution": "Urgentieverdeling",
+    "timeline": "Aankomende tijdlijn",
+    "activeBlocksLabel": "Actieve MCP-blokken",
+    "noActiveBlocks": "Geen actieve blokken",
+    "recentFilesLabel": "Recente bijlagen",
+    "noAttachedFiles": "Geen bijgevoegde bestanden",
+    "moreFiles": "+{count} meer",
+    "addManually": "Handmatig toevoegen",
+    "form": {
+      "titlePlaceholder": "Taak (bijv. Database-opdracht 3)",
+      "coursePlaceholder": "Vak/Categorie (optioneel)",
+      "submit": "Toevoegen"
+    },
+    "noDeadlinesYet": "Nog geen deadlines geregistreerd. Voeg hierboven je eerste deadline toe!",
+    "kpi": {
+      "total": "Totaal aantal deadlines",
+      "thisWeek": "Deze week verschuldigd",
+      "overdue": "Te laat",
+      "files": "Referentiebestanden",
+      "activeBlocks": "Actieve MCP-blokken"
+    },
+    "urgency": {
+      "overdue": "Te laat",
+      "critical": "Vandaag verschuldigd",
+      "high": "Dringend (binnen 3 dagen)",
+      "medium": "Deze week (binnen 7 dagen)",
+      "low": "Ruim op tijd (na 7 dagen)"
+    },
+    "badgeOverdue": "Te laat",
+    "timelineBuckets": {
+      "overdue": "Te laat",
+      "thisWeek": "Deze week",
+      "nextWeek": "Volgende week",
+      "in2Weeks": "Over 2 weken",
+      "in3PlusWeeks": "3+ weken"
+    }
   }
 }

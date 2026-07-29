@@ -1879,7 +1879,7 @@ export default function HomePage() {
 
   const getDDayInfo = (dueAt: string) => {
     const diffMs = new Date(dueAt).getTime() - Date.now();
-    if (diffMs < 0) return { label: '마감됨', urgency: 'overdue' as const };
+    if (diffMs < 0) return { label: t('deadlines.badgeOverdue'), urgency: 'overdue' as const };
 
     const diffDays = getCalendarDayDiff(dueAt);
     if (diffDays <= 0) return { label: 'D-DAY', urgency: 'critical' as const };
@@ -1910,19 +1910,19 @@ export default function HomePage() {
   const activeBlocksCount = graph.nodes.length;
 
   const kpiTiles = [
-    { label: '전체 마감일', icon: '⏰', value: deadlines.length },
-    { label: '이번 주 마감', icon: '📅', value: upcomingWeekCount },
-    { label: '지연됨', icon: '⚠️', value: overdueDeadlinesCount, emphasize: overdueDeadlinesCount > 0 },
-    { label: '참고 파일', icon: '📁', value: files.length },
-    { label: '활성 MCP 블록', icon: '🧩', value: activeBlocksCount },
+    { label: t('deadlines.kpi.total'), icon: '⏰', value: deadlines.length },
+    { label: t('deadlines.kpi.thisWeek'), icon: '📅', value: upcomingWeekCount },
+    { label: t('deadlines.kpi.overdue'), icon: '⚠️', value: overdueDeadlinesCount, emphasize: overdueDeadlinesCount > 0 },
+    { label: t('deadlines.kpi.files'), icon: '📁', value: files.length },
+    { label: t('deadlines.kpi.activeBlocks'), icon: '🧩', value: activeBlocksCount },
   ];
 
   const urgencyBuckets = [
-    { key: 'overdue', label: '지연됨', color: '#857C93' },
-    { key: 'critical', label: '오늘 마감', color: '#FF7A6B' },
-    { key: 'high', label: '임박 (3일 내)', color: '#FFD97D' },
-    { key: 'medium', label: '이번 주 (7일 내)', color: '#F4679B' },
-    { key: 'low', label: '여유 (7일 후)', color: '#6EE7B7' },
+    { key: 'overdue', label: t('deadlines.urgency.overdue'), color: '#857C93' },
+    { key: 'critical', label: t('deadlines.urgency.critical'), color: '#FF7A6B' },
+    { key: 'high', label: t('deadlines.urgency.high'), color: '#FFD97D' },
+    { key: 'medium', label: t('deadlines.urgency.medium'), color: '#F4679B' },
+    { key: 'low', label: t('deadlines.urgency.low'), color: '#6EE7B7' },
   ];
   const urgencyCounts = deadlines.reduce((acc, d) => {
     const { urgency } = getDDayInfo(d.dueAt);
@@ -1931,22 +1931,26 @@ export default function HomePage() {
   }, {} as Record<string, number>);
   const maxUrgencyCount = Math.max(0, ...urgencyBuckets.map((b) => urgencyCounts[b.key] || 0));
 
-  const getTimelineBucketLabel = (dueAt: string) => {
-    if (new Date(dueAt).getTime() < nowTs) return '지연됨';
+  // 💡 [수정] 예전엔 번역된 라벨 문자열 자체를 그룹핑 키로 썼는데, 로케일마다 문자열이
+  // 달라지는 값을 키로 쓰는 건 불안정해서 안정적인 영어 키(overdue/thisWeek/...)로
+  // 분리했습니다 — 라벨은 timelineBuckets에서 그 키로 t()를 조회해 표시만 담당합니다.
+  const getTimelineBucketKey = (dueAt: string) => {
+    if (new Date(dueAt).getTime() < nowTs) return 'overdue';
     const diffDays = getCalendarDayDiff(dueAt);
-    if (diffDays <= 7) return '이번 주';
-    if (diffDays <= 14) return '다음 주';
-    if (diffDays <= 21) return '2주 후';
-    return '3주+';
+    if (diffDays <= 7) return 'thisWeek';
+    if (diffDays <= 14) return 'nextWeek';
+    if (diffDays <= 21) return 'in2Weeks';
+    return 'in3PlusWeeks';
   };
   const timelineCountMap = deadlines.reduce((acc, d) => {
-    const label = getTimelineBucketLabel(d.dueAt);
-    acc[label] = (acc[label] || 0) + 1;
+    const key = getTimelineBucketKey(d.dueAt);
+    acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-  const timelineBuckets = ['지연됨', '이번 주', '다음 주', '2주 후', '3주+'].map((label) => ({
-    label,
-    count: timelineCountMap[label] || 0,
+  const timelineBuckets = (['overdue', 'thisWeek', 'nextWeek', 'in2Weeks', 'in3PlusWeeks'] as const).map((key) => ({
+    key,
+    label: t(`deadlines.timelineBuckets.${key}`),
+    count: timelineCountMap[key] || 0,
   }));
   const maxTimelineCount = Math.max(0, ...timelineBuckets.map((b) => b.count));
 
@@ -2516,16 +2520,16 @@ export default function HomePage() {
             <div>
               <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  마감일 매니저
+                  {t('deadlines.title')}
                 </h1>
                 <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  과제와 시험 마감일을 한눈에 모아서, 가장 급한 것부터 자동으로 정렬해드려요.
+                  {t('deadlines.subtitle')}
                 </p>
               </div>
 
               {/* 대시보드 — 마감일 · 첨부 파일 · 활성 블록 데이터를 한눈에 요약 */}
               <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7] mb-4">📊 대시보드 — 지금까지 알고 있는 것</h3>
+                <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7] mb-4">{t('deadlines.dashboardTitle')}</h3>
 
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
                   {kpiTiles.map((tile) => (
@@ -2542,20 +2546,20 @@ export default function HomePage() {
 
                 {deadlines.length === 0 ? (
                   <div className="text-sm text-[#857C93] text-center py-8 bg-[#15131A] rounded-xl border border-[#322D3B] flex flex-col items-center gap-3">
-                    <span>파일을 올려서 일정을 뽑아보세요</span>
+                    <span>{t('deadlines.emptyHint')}</span>
                     <button
                       type="button"
                       onClick={() => setActiveTab('workspace')}
                       className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-xs font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                     >
-                      채팅 탭으로 가기
+                      {t('deadlines.goToChatTab')}
                     </button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* 긴급도 분포 */}
                     <div>
-                      <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-3">긴급도 분포</h4>
+                      <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-3">{t('deadlines.urgencyDistribution')}</h4>
                       <div className="flex flex-col gap-2.5">
                         {urgencyBuckets.map((bucket) => {
                           const count = urgencyCounts[bucket.key] || 0;
@@ -2580,12 +2584,12 @@ export default function HomePage() {
 
                     {/* 다가오는 일정 타임라인 */}
                     <div>
-                      <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-3">다가오는 일정 타임라인</h4>
+                      <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-3">{t('deadlines.timeline')}</h4>
                       <div className="flex items-end justify-between gap-2 h-[96px] border-b border-[#322D3B]">
                         {timelineBuckets.map((bucket) => {
                           const heightPct = maxTimelineCount > 0 ? (bucket.count / maxTimelineCount) * 100 : 0;
                           return (
-                            <div key={bucket.label} className="flex-1 flex flex-col items-center justify-end h-full gap-1.5">
+                            <div key={bucket.key} className="flex-1 flex flex-col items-center justify-end h-full gap-1.5">
                               <span className="text-[11px] font-semibold text-[#F5F2F7] tabular-nums h-4">{bucket.count > 0 ? bucket.count : ''}</span>
                               {bucket.count > 0 && (
                                 <div
@@ -2599,7 +2603,7 @@ export default function HomePage() {
                       </div>
                       <div className="flex justify-between gap-2 mt-1.5">
                         {timelineBuckets.map((bucket) => (
-                          <span key={bucket.label} className="flex-1 text-center text-[10px] text-[#857C93] truncate">{bucket.label}</span>
+                          <span key={bucket.key} className="flex-1 text-center text-[10px] text-[#857C93] truncate">{bucket.label}</span>
                         ))}
                       </div>
                     </div>
@@ -2608,10 +2612,10 @@ export default function HomePage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 pt-5 border-t border-[#322D3B]">
                   <div>
-                    <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">활성화된 MCP 블록</h4>
+                    <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">{t('deadlines.activeBlocksLabel')}</h4>
                     <div className="flex flex-wrap gap-1.5">
                       {graph.nodes.length === 0 ? (
-                        <span className="text-xs text-[#857C93] italic">활성화된 블록이 없어요</span>
+                        <span className="text-xs text-[#857C93] italic">{t('deadlines.noActiveBlocks')}</span>
                       ) : (
                         graph.nodes.map((n) => {
                           const meta = getNodeMeta(n.id);
@@ -2626,9 +2630,9 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">최근 첨부 파일</h4>
+                    <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">{t('deadlines.recentFilesLabel')}</h4>
                     {files.length === 0 ? (
-                      <span className="text-xs text-[#857C93] italic">첨부된 파일이 없어요</span>
+                      <span className="text-xs text-[#857C93] italic">{t('deadlines.noAttachedFiles')}</span>
                     ) : (
                       <div className="flex flex-col gap-1.5">
                         {files.slice(0, 3).map((f) => (
@@ -2638,7 +2642,7 @@ export default function HomePage() {
                           </div>
                         ))}
                         {files.length > 3 && (
-                          <span className="text-[11px] text-[#857C93]">외 {files.length - 3}개 더</span>
+                          <span className="text-[11px] text-[#857C93]">{t('deadlines.moreFiles', { count: files.length - 3 })}</span>
                         )}
                       </div>
                     )}
@@ -2647,19 +2651,19 @@ export default function HomePage() {
               </div>
 
               <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#F5F2F7]">직접 입력해서 추가</h3>
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#F5F2F7]">{t('deadlines.addManually')}</h3>
                 <form onSubmit={handleAddDeadline} className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr_auto] gap-3">
                   <input
                     type="text"
                     required
-                    placeholder="할 일 (예: 데이터베이스 과제 3)"
+                    placeholder={t('deadlines.form.titlePlaceholder')}
                     value={newDeadlineTitle}
                     onChange={(e) => setNewDeadlineTitle(e.target.value)}
                     className="px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                   />
                   <input
                     type="text"
-                    placeholder="과목/카테고리 (선택)"
+                    placeholder={t('deadlines.form.coursePlaceholder')}
                     value={newDeadlineCourse}
                     onChange={(e) => setNewDeadlineCourse(e.target.value)}
                     className="px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
@@ -2675,7 +2679,7 @@ export default function HomePage() {
                     type="submit"
                     className="bg-[#F4679B] hover:bg-[#D1477F] text-white rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
                   >
-                    추가
+                    {t('deadlines.form.submit')}
                   </button>
                 </form>
               </div>
@@ -2683,7 +2687,7 @@ export default function HomePage() {
               <div className="flex flex-col gap-2.5">
                 {sortedDeadlines.length === 0 && (
                   <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
-                    등록된 마감일이 없습니다. 위에서 첫 마감일을 추가해보세요!
+                    {t('deadlines.noDeadlinesYet')}
                   </div>
                 )}
                 {sortedDeadlines.map((deadline) => {
@@ -2701,7 +2705,7 @@ export default function HomePage() {
                           <div className="text-sm font-semibold text-[#F5F2F7] truncate">{deadline.title}</div>
                           <div className="text-xs text-[#857C93] mt-0.5">
                             {deadline.course && <span>{deadline.course} · </span>}
-                            {new Date(deadline.dueAt).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {new Date(deadline.dueAt).toLocaleString(locale, { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
                       </div>
@@ -2709,7 +2713,7 @@ export default function HomePage() {
                         onClick={() => handleDeleteDeadline(deadline.id)}
                         className="shrink-0 text-[#FF7A6B] hover:text-[#FF9585] text-xs px-2.5 py-1.5 bg-[#35201D] rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
                       >
-                        삭제
+                        {t('common.delete')}
                       </button>
                     </div>
                   );

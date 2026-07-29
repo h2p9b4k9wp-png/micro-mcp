@@ -98,5 +98,48 @@
       "empty": "Nessuna conversazione salvata finora.",
       "mostRecent": "Più recente: {date}"
     }
+  },
+  "deadlines": {
+    "title": "Gestore scadenze",
+    "subtitle": "Raccogli tutte le scadenze di compiti ed esami in un unico posto, ordinate automaticamente per urgenza.",
+    "dashboardTitle": "📊 Dashboard — Cosa sappiamo finora",
+    "emptyHint": "Carica un file per estrarre le scadenze",
+    "goToChatTab": "Vai alla scheda Chat",
+    "urgencyDistribution": "Distribuzione dell'urgenza",
+    "timeline": "Timeline delle prossime scadenze",
+    "activeBlocksLabel": "Blocchi MCP attivi",
+    "noActiveBlocks": "Nessun blocco attivo",
+    "recentFilesLabel": "Allegati recenti",
+    "noAttachedFiles": "Nessun file allegato",
+    "moreFiles": "+{count} altri",
+    "addManually": "Aggiungi manualmente",
+    "form": {
+      "titlePlaceholder": "Attività (es.: Compito di database 3)",
+      "coursePlaceholder": "Materia/Categoria (facoltativo)",
+      "submit": "Aggiungi"
+    },
+    "noDeadlinesYet": "Nessuna scadenza registrata. Aggiungi la tua prima scadenza qui sopra!",
+    "kpi": {
+      "total": "Scadenze totali",
+      "thisWeek": "In scadenza questa settimana",
+      "overdue": "Scadute",
+      "files": "File di riferimento",
+      "activeBlocks": "Blocchi MCP attivi"
+    },
+    "urgency": {
+      "overdue": "Scadute",
+      "critical": "Scade oggi",
+      "high": "Urgente (entro 3 giorni)",
+      "medium": "Questa settimana (entro 7 giorni)",
+      "low": "C'è tempo (dopo 7 giorni)"
+    },
+    "badgeOverdue": "Scaduta",
+    "timelineBuckets": {
+      "overdue": "Scadute",
+      "thisWeek": "Questa settimana",
+      "nextWeek": "Prossima settimana",
+      "in2Weeks": "Tra 2 settimane",
+      "in3PlusWeeks": "3+ settimane"
+    }
   }
 }

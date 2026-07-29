@@ -98,5 +98,48 @@
       "empty": "Chưa có cuộc trò chuyện nào được lưu.",
       "mostRecent": "Gần đây nhất: {date}"
     }
+  },
+  "deadlines": {
+    "title": "Quản lý hạn chót",
+    "subtitle": "Tổng hợp tất cả hạn chót bài tập và kỳ thi ở một nơi, tự động sắp xếp theo mức độ khẩn cấp.",
+    "dashboardTitle": "📊 Bảng điều khiển — Những gì đã biết đến giờ",
+    "emptyHint": "Tải tệp lên để trích xuất lịch trình",
+    "goToChatTab": "Đến tab Trò chuyện",
+    "urgencyDistribution": "Phân bố mức độ khẩn cấp",
+    "timeline": "Dòng thời gian sắp tới",
+    "activeBlocksLabel": "Khối MCP đang hoạt động",
+    "noActiveBlocks": "Không có khối nào đang hoạt động",
+    "recentFilesLabel": "Tệp đính kèm gần đây",
+    "noAttachedFiles": "Không có tệp đính kèm",
+    "moreFiles": "và {count} tệp khác",
+    "addManually": "Thêm thủ công",
+    "form": {
+      "titlePlaceholder": "Việc cần làm (VD: Bài tập cơ sở dữ liệu 3)",
+      "coursePlaceholder": "Môn học/Danh mục (không bắt buộc)",
+      "submit": "Thêm"
+    },
+    "noDeadlinesYet": "Chưa có hạn chót nào được đăng ký. Hãy thêm hạn chót đầu tiên ở trên!",
+    "kpi": {
+      "total": "Tổng số hạn chót",
+      "thisWeek": "Hạn chót tuần này",
+      "overdue": "Quá hạn",
+      "files": "Tệp tham khảo",
+      "activeBlocks": "Khối MCP đang hoạt động"
+    },
+    "urgency": {
+      "overdue": "Quá hạn",
+      "critical": "Hạn hôm nay",
+      "high": "Sắp đến hạn (trong 3 ngày)",
+      "medium": "Tuần này (trong 7 ngày)",
+      "low": "Còn thời gian (sau 7 ngày)"
+    },
+    "badgeOverdue": "Quá hạn",
+    "timelineBuckets": {
+      "overdue": "Quá hạn",
+      "thisWeek": "Tuần này",
+      "nextWeek": "Tuần sau",
+      "in2Weeks": "Sau 2 tuần",
+      "in3PlusWeeks": "3+ tuần"
+    }
   }
 }
