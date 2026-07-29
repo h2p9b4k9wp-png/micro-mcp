@@ -78,6 +78,12 @@ export default function PrivacyPage() {
                 authentication provider, used to store your account, files, and conversation
                 history.
               </li>
+              <li>
+                <span className="font-semibold text-[#F5F2F7]">Polar</span> — our payment processor,
+                used to handle Pro subscription checkout and billing. Polar receives the
+                information needed to process your payment (such as your email address); we do
+                not send them your files or conversation history.
+              </li>
             </ul>
           </section>
 

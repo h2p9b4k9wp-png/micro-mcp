@@ -406,6 +406,9 @@ export default function HomePage() {
   const [isSubmittingUpgradeRequest, setIsSubmittingUpgradeRequest] = useState(false);
   const [upgradeRequestSubmitted, setUpgradeRequestSubmitted] = useState(false);
 
+  // 💡 [신규] 계정 삭제 — handleDeleteAccount 진행 중 사이드바 버튼을 비활성화하는 데만 씁니다.
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
   // 💡 [신규] AI 답변 언어 — /api/chat, /api/analyze, /api/analyze-professor에 보내는
   // responseLanguage 값. 화면 고정 글자(메뉴·버튼)의 ko/en 로케일(useLocale())과는 별개의
   // 설정입니다 — 저건 next-intl UI 번역이 딱 두 언어뿐이라 그대로 두고, 이건 브라우저 언어를
@@ -1052,6 +1055,47 @@ export default function HomePage() {
       setUpgradeRequestSubmitted(true);
     } finally {
       setIsSubmittingUpgradeRequest(false);
+    }
+  };
+
+  // 💡 [신규] 계정 삭제 — 사이드바의 "계정 삭제" 버튼이 부릅니다. /privacy 페이지의 "삭제
+  // 요청" 권리를 실제로 실행하는 기능입니다. 확인 창은 한 번만(요청대로) 띄우고, 승인되면
+  // 이 계정이 소유한 모든 자료성 테이블을 지웁니다. professors→documents/professor_analysis,
+  // documents→doc_chunks는 모두 on delete cascade FK라 professors 하나만 지워도 나머지가
+  // 자동으로 따라 지워지지만, 여기서는 각 테이블을 명시적으로 병렬 삭제합니다 — 라이브
+  // DB에 마이그레이션이 정확히 반영돼 있다는 가정에 기대지 않고, 어떤 테이블이 비어 있는
+  // 상태로 남는지 실패 시 바로 알 수 있게 하기 위해서입니다. profiles(is_pro 등 계정
+  // 자체 정보)는 이 목록에 없으므로 건드리지 않습니다 — 로그인 계정 자체는 유지되고,
+  // 업로드한 자료·교수님·대화 기록·폴더만 전부 지워집니다.
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    const confirmed = window.confirm(
+      '정말로 계정 데이터를 삭제할까요?\n\n업로드한 모든 파일, 교수님 자료, 대화 기록, 대화 폴더가 영구적으로 삭제되며 되돌릴 수 없습니다.\n(로그인 계정 자체는 유지되며, 원하시면 다시 로그인해 새로 시작할 수 있어요.)'
+    );
+    if (!confirmed) return;
+
+    setIsDeletingAccount(true);
+    try {
+      const results = await Promise.all([
+        supabase.from('doc_chunks').delete().eq('user_id', user.id),
+        supabase.from('documents').delete().eq('user_id', user.id),
+        supabase.from('professor_analysis').delete().eq('user_id', user.id),
+        supabase.from('professors').delete().eq('user_id', user.id),
+        supabase.from('logs').delete().eq('user_id', user.id),
+        supabase.from('conversation_folders').delete().eq('user_id', user.id),
+      ]);
+      const firstError = results.find((r) => r.error)?.error;
+      if (firstError) {
+        alert(`계정 삭제 중 문제가 발생했어요: ${firstError.message}\n다시 시도해주세요.`);
+        return;
+      }
+
+      await supabase.auth.signOut();
+      router.push('/login');
+    } catch (error) {
+      alert(`계정 삭제 중 문제가 발생했어요: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setIsDeletingAccount(false);
     }
   };
 
@@ -2100,6 +2144,18 @@ export default function HomePage() {
         >
           Pricing
         </Link>
+
+        {/* 💡 [신규] 계정 삭제 — /privacy 페이지가 약속하는 "삭제 요청" 권리를 이메일 문의 없이
+            직접 실행할 수 있는 버튼. 실수로 누르는 걸 막기 위해 다른 사이드바 항목들과
+            시각적으로 분리(맨 아래, 위험 색상)해뒀습니다. */}
+        <button
+          type="button"
+          onClick={handleDeleteAccount}
+          disabled={isDeletingAccount}
+          className="block w-full text-left px-4 py-3 border-t border-[#322D3B] text-xs text-[#FF7A6B]/70 hover:text-[#FF7A6B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B] focus-visible:ring-inset"
+        >
+          {isDeletingAccount ? '삭제하는 중...' : '계정 삭제'}
+        </button>
       </div>
 
       {/* 메인 콘텐츠 영역 */}
