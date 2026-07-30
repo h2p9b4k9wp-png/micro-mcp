@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import type { LensId, DeadlinesResult, QuestionsResult, DigestResult } from '@/lib/lenses';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
+import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
+import { ANONYMOUS_HOURLY_LIMIT, ANONYMOUS_DAILY_LIMIT } from '@/lib/anonymous-usage';
 
 // 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 대시보드와 동일한 마크를 사용해 시각적 일관성을 유지합니다.
 function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
@@ -113,6 +115,15 @@ export default function LoginPage() {
     result: DeadlinesResult | QuestionsResult | DigestResult;
   } | null>(null);
 
+  // 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 던져보는 두 번째 체험.
+  const [guestChatPrompt, setGuestChatPrompt] = useState('');
+  const [isGuestChatLoading, setIsGuestChatLoading] = useState(false);
+  const [guestChatAnswer, setGuestChatAnswer] = useState('');
+
+  // 💡 [신규] 파일 분석·AI 채팅 두 체험이 같은 IP 예산(lib/anonymous-usage.ts)을 공유하므로,
+  // 어느 쪽에서 한도 초과가 오든 이 상태 하나로 통일해서 둘 다 비활성화하고 안내 배너를 띄웁니다.
+  const [guestLimitInfo, setGuestLimitInfo] = useState<{ type: 'hourly' | 'daily' } | null>(null);
+
   // 💡 [신규] PWA 서비스워커 등록 (홈 화면에 앱으로 설치 가능하게 해줍니다)
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -189,8 +200,8 @@ export default function LoginPage() {
   };
 
   // 💡 [신규] 로그인 없이 파일 1개를 분석해보는 체험. 서버(app/api/public-analyze)가
-  // IP당 하루 1회·3MB 상한을 강제하므로, 여기서는 사용자에게 보여줄 에러 메시지 처리와
-  // 결과 상태 관리만 담당합니다.
+  // IP당 시간당/일일 호출 횟수·3MB 상한을 강제하므로, 여기서는 사용자에게 보여줄 에러
+  // 메시지 처리와 결과 상태 관리만 담당합니다.
   const handleTrialFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -225,6 +236,12 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) {
+        // 💡 파일 분석·AI 채팅이 같은 IP 예산을 공유하므로, 한도 초과는 별도 배너로
+        // 통일해서 안내합니다(둘 다 disable 처리 — 아래 JSX 참고).
+        if (data.limitReached) {
+          setGuestLimitInfo({ type: data.limitType === 'daily' ? 'daily' : 'hourly' });
+          return;
+        }
         setTrialError(data.error || t('login.trial.analyzeError'));
         return;
       }
@@ -233,6 +250,50 @@ export default function LoginPage() {
       setTrialError(err instanceof Error ? err.message : t('login.trial.genericError'));
     } finally {
       setIsTrialAnalyzing(false);
+    }
+  };
+
+  // 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 서버(app/api/public-chat)에
+  // 보내고 답변을 스트리밍으로 받습니다. app/page.tsx의 handleExecute가 쓰는 것과 같은
+  // reader.read() 루프를 그대로 재사용하되, 렌즈·첨부파일·할 일 파싱 없이 텍스트만 이어붙입니다.
+  const handleGuestAsk = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const prompt = guestChatPrompt.trim();
+    if (!prompt || isGuestChatLoading) return;
+
+    setIsGuestChatLoading(true);
+    setGuestChatAnswer('');
+    try {
+      const res = await fetch('/api/public-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, responseLanguage: detectBrowserLanguageName() }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data.limitReached) {
+          setGuestLimitInfo({ type: data.limitType === 'daily' ? 'daily' : 'hourly' });
+        } else {
+          setGuestChatAnswer(data.error || t('login.trial.genericError'));
+        }
+        return;
+      }
+      if (!res.body) return;
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let answer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        answer += decoder.decode(value, { stream: true });
+        setGuestChatAnswer(answer);
+      }
+    } catch (err) {
+      setGuestChatAnswer(err instanceof Error ? err.message : t('login.trial.genericError'));
+    } finally {
+      setIsGuestChatLoading(false);
     }
   };
 
@@ -422,10 +483,37 @@ export default function LoginPage() {
                 {t('login.trial.subtitle')}
               </p>
 
+              {/* 💡 [신규] 파일 분석·AI 채팅이 같은 IP 예산을 공유하므로, 어느 쪽에서 한도
+                  초과가 오든 이 배너 하나로 안내하고 아래 두 입력을 모두 막습니다. */}
+              {guestLimitInfo && (
+                <div className="px-4 py-3.5 rounded-lg text-sm mb-5 border bg-[#331F29] border-[#F4679B]/40 text-[#F5F2F7]">
+                  <p className="mb-3 leading-relaxed">
+                    {t(
+                      guestLimitInfo.type === 'daily' ? 'login.trial.rateLimitDaily' : 'login.trial.rateLimitHourly',
+                      { limit: guestLimitInfo.type === 'daily' ? ANONYMOUS_DAILY_LIMIT : ANONYMOUS_HOURLY_LIMIT }
+                    )}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowTrial(false);
+                      setIsSignUp(true);
+                      setMessage(null);
+                    }}
+                    className="w-full py-2 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
+                  >
+                    {t('login.trial.signUpCta')}
+                  </button>
+                </div>
+              )}
+
+              <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
+                {t('login.trial.fileSectionTitle')}
+              </p>
+
               {!trialResult && (
                 <label
                   className={`flex flex-col items-center justify-center gap-2 border border-dashed rounded-xl py-10 px-4 text-center transition-colors ${
-                    isTrialAnalyzing
+                    isTrialAnalyzing || Boolean(guestLimitInfo)
                       ? 'border-[#322D3B] cursor-wait'
                       : 'border-[#423B4C] hover:border-[#F4679B]/50 cursor-pointer'
                   }`}
@@ -438,7 +526,7 @@ export default function LoginPage() {
                   <input
                     type="file"
                     className="hidden"
-                    disabled={isTrialAnalyzing}
+                    disabled={isTrialAnalyzing || Boolean(guestLimitInfo)}
                     onChange={handleTrialFileChange}
                   />
                 </label>
@@ -471,12 +559,49 @@ export default function LoginPage() {
                 </div>
               )}
 
+              <div className="my-6 flex items-center gap-3">
+                <hr className="flex-1 border-[#322D3B]" />
+                <span className="text-xs text-[#857C93]">{t('login.trial.orDivider')}</span>
+                <hr className="flex-1 border-[#322D3B]" />
+              </div>
+
+              {/* 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 던져보는 체험. */}
+              <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
+                {t('login.trial.chatSectionTitle')}
+              </p>
+              <form onSubmit={handleGuestAsk} className="flex flex-col gap-2.5">
+                <textarea
+                  value={guestChatPrompt}
+                  onChange={(e) => setGuestChatPrompt(e.target.value)}
+                  placeholder={t('login.trial.chatPlaceholder')}
+                  rows={3}
+                  disabled={isGuestChatLoading || Boolean(guestLimitInfo)}
+                  className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566] resize-none disabled:opacity-50"
+                />
+                <button
+                  type="submit"
+                  disabled={isGuestChatLoading || Boolean(guestLimitInfo) || !guestChatPrompt.trim()}
+                  className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-semibold cursor-pointer hover:bg-[#15131A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                >
+                  {isGuestChatLoading ? t('login.trial.chatLoading') : t('login.trial.chatButton')}
+                </button>
+              </form>
+
+              {guestChatAnswer && (
+                <div className="bg-[#15131A] border border-[#322D3B] rounded-xl p-4 mt-3 text-sm text-[#E4DEEA] leading-relaxed whitespace-pre-wrap">
+                  {guestChatAnswer}
+                </div>
+              )}
+
               <div className="mt-6 text-center">
                 <button
                   onClick={() => {
                     setShowTrial(false);
                     setTrialError(null);
                     setTrialResult(null);
+                    setGuestChatPrompt('');
+                    setGuestChatAnswer('');
+                    setGuestLimitInfo(null);
                   }}
                   className="bg-transparent border-none text-[#857C93] text-[13px] font-medium cursor-pointer hover:text-[#C9C0D6] hover:underline focus:outline-none"
                 >

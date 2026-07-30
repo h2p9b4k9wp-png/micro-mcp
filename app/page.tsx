@@ -32,6 +32,7 @@ import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scope
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { getPlanLimits, getPolarCheckoutUrl, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
+import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -262,21 +263,6 @@ const COMMON_RESPONSE_LANGUAGES = [
   'Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German',
   'Portuguese', 'Vietnamese', 'Thai', 'Indonesian', 'Russian', 'Arabic', 'Hindi',
 ];
-
-// 브라우저 언어(navigator.language, 예: "ko-KR")를 영어 언어 이름(예: "Korean")으로 변환합니다.
-// /api/chat 등에 보내는 responseLanguage 값은 프롬프트에 그대로 꽂혀 들어가므로("Respond
-// entirely in {language}") 사람이 읽는 영어 이름이어야 모델이 정확히 해석합니다.
-function detectBrowserLanguageName(): string {
-  if (typeof navigator === 'undefined') return 'English';
-  try {
-    const tag = navigator.language || 'en';
-    const base = tag.split('-')[0];
-    const displayNames = new Intl.DisplayNames(['en'], { type: 'language' });
-    return displayNames.of(base) || 'English';
-  } catch {
-    return 'English';
-  }
-}
 
 // OpenAI 비전이 실제로 받는 이미지 형식. 아이폰 기본 사진 형식인 HEIC/HEIF는 목록에 없음 —
 // 브라우저가 대신 변환해주지 않는 경우, 그대로 보내면 비전 모델이 못 읽어서 "분석이 안 되는데

@@ -378,7 +378,7 @@
     },
     "trial": {
       "title": "Ohne Konto testen",
-      "subtitle": "Analysieren Sie eine Datei kostenlos — keine Anmeldung nötig. (Bis zu 3 MB, einmal täglich.)",
+      "subtitle": "Testen Sie die Kernfunktionen ohne Konto — sowohl Dateianalyse als auch KI-Fragen.",
       "analyzing": "Ihre Datei wird analysiert…",
       "chooseFile": "Klicken, um eine Datei auszuwählen",
       "fileHint": "PDF, Word, PPT, Excel, HWP — bis zu 3 MB",
@@ -388,7 +388,16 @@
       "genericError": "Etwas ist schiefgelaufen.",
       "saveResultTitle": "Melden Sie sich an, um dieses Ergebnis zu speichern",
       "saveResultButton": "Anmelden und speichern",
-      "backToLogin": "← Zurück zur Anmeldung"
+      "backToLogin": "← Zurück zur Anmeldung",
+      "fileSectionTitle": "Mit einer Datei testen",
+      "chatSectionTitle": "Die KI direkt fragen",
+      "chatPlaceholder": "Fragen Sie etwas…",
+      "chatButton": "Fragen",
+      "chatLoading": "Antwort wird erstellt…",
+      "orDivider": "Oder",
+      "rateLimitHourly": "Der Gast-Test ist auf {limit} pro Stunde begrenzt. Erstellen Sie ein kostenloses Konto, um weiterzumachen!",
+      "rateLimitDaily": "Der Gast-Test ist auf {limit} pro Tag begrenzt. Erstellen Sie ein kostenloses Konto, um weiterzumachen!",
+      "signUpCta": "Kostenloses Konto erstellen"
     }
   },
   "account": {

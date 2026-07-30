@@ -378,7 +378,7 @@
     },
     "trial": {
       "title": "Probeer zonder account",
-      "subtitle": "Analyseer gratis één bestand — geen registratie nodig. (Tot 3MB, één keer per dag.)",
+      "subtitle": "Probeer de kernfuncties zonder account — zowel bestandsanalyse als AI-vragen.",
       "analyzing": "Je bestand wordt geanalyseerd…",
       "chooseFile": "Klik om een bestand te kiezen",
       "fileHint": "PDF, Word, PPT, Excel, HWP — tot 3MB",
@@ -388,7 +388,16 @@
       "genericError": "Er is iets misgegaan.",
       "saveResultTitle": "Log in om dit resultaat op te slaan",
       "saveResultButton": "Inloggen en opslaan",
-      "backToLogin": "← Terug naar inloggen"
+      "backToLogin": "← Terug naar inloggen",
+      "fileSectionTitle": "Proberen met een bestand",
+      "chatSectionTitle": "Stel de AI rechtstreeks een vraag",
+      "chatPlaceholder": "Vraag iets…",
+      "chatButton": "Vragen",
+      "chatLoading": "Antwoord wordt gegenereerd…",
+      "orDivider": "Of",
+      "rateLimitHourly": "Gastproeven zijn beperkt tot {limit} per uur. Maak een gratis account aan om door te gaan!",
+      "rateLimitDaily": "Gastproeven zijn beperkt tot {limit} per dag. Maak een gratis account aan om door te gaan!",
+      "signUpCta": "Gratis account aanmaken"
     }
   },
   "account": {

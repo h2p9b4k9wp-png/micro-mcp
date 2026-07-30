@@ -378,7 +378,7 @@
     },
     "trial": {
       "title": "Try it without an account",
-      "subtitle": "Analyze one file for free — no sign-up needed. (Up to 3MB, once per day.)",
+      "subtitle": "Try the core features without an account — both file analysis and AI Q&A.",
       "analyzing": "Analyzing your file…",
       "chooseFile": "Click to choose a file",
       "fileHint": "PDF, Word, PPT, Excel, HWP — up to 3MB",
@@ -388,7 +388,16 @@
       "genericError": "Something went wrong.",
       "saveResultTitle": "Log in to save this result",
       "saveResultButton": "Log in and save",
-      "backToLogin": "← Back to login"
+      "backToLogin": "← Back to login",
+      "fileSectionTitle": "Try with a file",
+      "chatSectionTitle": "Ask the AI directly",
+      "chatPlaceholder": "Ask anything…",
+      "chatButton": "Ask",
+      "chatLoading": "Generating an answer…",
+      "orDivider": "Or",
+      "rateLimitHourly": "Guest trials are limited to {limit} per hour. Create a free account to keep going!",
+      "rateLimitDaily": "Guest trials are limited to {limit} per day. Create a free account to keep going!",
+      "signUpCta": "Create a free account"
     }
   },
   "account": {

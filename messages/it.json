@@ -378,7 +378,7 @@
     },
     "trial": {
       "title": "Provalo senza account",
-      "subtitle": "Analizza un file gratis — nessuna registrazione richiesta. (Fino a 3MB, una volta al giorno.)",
+      "subtitle": "Prova le funzionalità principali senza account — sia l'analisi dei file che le domande all'IA.",
       "analyzing": "Analisi del file in corso…",
       "chooseFile": "Clicca per scegliere un file",
       "fileHint": "PDF, Word, PPT, Excel, HWP — fino a 3MB",
@@ -388,7 +388,16 @@
       "genericError": "Qualcosa è andato storto.",
       "saveResultTitle": "Accedi per salvare questo risultato",
       "saveResultButton": "Accedi e salva",
-      "backToLogin": "← Torna al login"
+      "backToLogin": "← Torna al login",
+      "fileSectionTitle": "Prova con un file",
+      "chatSectionTitle": "Chiedi direttamente all'IA",
+      "chatPlaceholder": "Chiedi qualsiasi cosa…",
+      "chatButton": "Chiedi",
+      "chatLoading": "Generazione della risposta…",
+      "orDivider": "Oppure",
+      "rateLimitHourly": "La prova ospite è limitata a {limit} all'ora. Crea un account gratuito per continuare!",
+      "rateLimitDaily": "La prova ospite è limitata a {limit} al giorno. Crea un account gratuito per continuare!",
+      "signUpCta": "Crea un account gratuito"
     }
   },
   "account": {

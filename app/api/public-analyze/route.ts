@@ -3,28 +3,18 @@ import { createClient } from '@supabase/supabase-js';
 import { extractFileText, FileExtractError } from '@/lib/file-text-extract';
 import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
+import { getClientIp, checkAnonymousUsage, recordAnonymousUsage } from '@/lib/anonymous-usage';
 
 // 💡 [신규] 로그인 없이 파일 1개를 분석해보는 체험(app/login/page.tsx의 "로그인 없이
 // 체험하기") 전용 라우트입니다. middleware.ts의 isPublicRoute에 이 경로가 등록돼 있어야
 // 세션 없이도 호출할 수 있습니다.
 //
 // 남용 방지는 로그인 사용자용 분당 속도 제한과는 완전히 다른 방식입니다 — 여기엔 사용자
-// 계정이 아예 없으므로, 요청 IP를 키로 anonymous_trial_usage 테이블에 하루 1건만 허용하는
-// 식으로 제한합니다(서비스 롤 키로 RLS 우회 — 로그인 사용자의 소유 데이터가 아니라 IP별
-// 집계이므로 auth.uid() 기반 RLS 자체가 적용될 수 없습니다). 파일 크기도 로그인 사용자
-// (10MB)보다 훨씬 낮은 3MB로 제한합니다.
-function getClientIp(req: Request): string {
-  const forwardedFor = req.headers.get('x-forwarded-for');
-  if (forwardedFor) {
-    const first = forwardedFor.split(',')[0]?.trim();
-    if (first) return first;
-  }
-  const realIp = req.headers.get('x-real-ip');
-  if (realIp) return realIp.trim();
-  // IP를 전혀 알 수 없는 상황(로컬 개발 등)에서는 모든 요청이 하나의 버킷을 공유하게
-  // 됩니다 — 완벽하진 않지만, 하루 1회 제한이 아예 작동하지 않는 것보다는 안전합니다.
-  return 'unknown';
-}
+// 계정이 아예 없으므로, 요청 IP를 키로 anonymous_trial_usage 테이블에 시간당/일일 호출
+// 횟수를 세는 lib/anonymous-usage.ts의 공용 체크를 씁니다(app/api/public-chat과 공유,
+// 서비스 롤 키로 RLS 우회 — 로그인 사용자의 소유 데이터가 아니라 IP별 집계이므로
+// auth.uid() 기반 RLS 자체가 적용될 수 없습니다). 파일 크기도 로그인 사용자(10MB)보다
+// 훨씬 낮은 3MB로 제한합니다.
 
 export async function POST(req: Request) {
   try {
@@ -42,16 +32,14 @@ export async function POST(req: Request) {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     const ip = getClientIp(req);
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const { count: usageCount, error: usageError } = await supabaseAdmin
-      .from('anonymous_trial_usage')
-      .select('id', { count: 'exact', head: true })
-      .eq('ip_address', ip)
-      .gte('created_at', oneDayAgo);
-    if (usageError) throw usageError;
-    if (usageCount !== null && usageCount >= 1) {
+    const usageCheck = await checkAnonymousUsage(supabaseAdmin, ip);
+    if (!usageCheck.ok) {
       return NextResponse.json(
-        { error: '로그인 없는 체험은 하루에 한 번만 사용할 수 있어요. 계정을 만들면 계속 이용할 수 있어요.' },
+        {
+          error: 'Guest trial limit reached. Log in to keep using it.',
+          limitReached: true,
+          limitType: usageCheck.limitType,
+        },
         { status: 429 }
       );
     }
@@ -75,12 +63,9 @@ export async function POST(req: Request) {
     }
 
     // 💡 이 지점부터는 실제 파싱·OpenAI 호출로 이어지는 비용 발생 구간이라, 이후 실패
-    // (파싱 오류, AI 오류 등)와 무관하게 여기서 하루 1회를 소진한 것으로 기록합니다 — 그래야
+    // (파싱 오류, AI 오류 등)와 무관하게 여기서 한 번을 소진한 것으로 기록합니다 — 그래야
     // 일부러 깨진 파일을 계속 보내며 재시도하는 방식으로 한도를 우회할 수 없습니다.
-    const { error: recordError } = await supabaseAdmin
-      .from('anonymous_trial_usage')
-      .insert({ ip_address: ip });
-    if (recordError) console.error('[public-analyze] 사용 이력 기록 실패:', recordError);
+    await recordAnonymousUsage(supabaseAdmin, ip, 'analyze');
 
     const text = await extractFileText(fileName, mimeType, content);
     const { lensId, result } = await runLensAnalysis({ apiKey, text, fileName });

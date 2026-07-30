@@ -378,7 +378,7 @@
     },
     "trial": {
       "title": "Experimente sem conta",
-      "subtitle": "Analise um arquivo gratuitamente — sem necessidade de cadastro. (Até 3MB, uma vez por dia.)",
+      "subtitle": "Experimente os principais recursos sem conta — análise de arquivos e perguntas à IA.",
       "analyzing": "Analisando seu arquivo…",
       "chooseFile": "Clique para escolher um arquivo",
       "fileHint": "PDF, Word, PPT, Excel, HWP — até 3MB",
@@ -388,7 +388,16 @@
       "genericError": "Algo deu errado.",
       "saveResultTitle": "Faça login para salvar este resultado",
       "saveResultButton": "Entrar e salvar",
-      "backToLogin": "← Voltar ao login"
+      "backToLogin": "← Voltar ao login",
+      "fileSectionTitle": "Experimentar com um arquivo",
+      "chatSectionTitle": "Perguntar diretamente à IA",
+      "chatPlaceholder": "Pergunte qualquer coisa…",
+      "chatButton": "Perguntar",
+      "chatLoading": "Gerando uma resposta…",
+      "orDivider": "Ou",
+      "rateLimitHourly": "O teste de convidado é limitado a {limit} por hora. Crie uma conta gratuita para continuar!",
+      "rateLimitDaily": "O teste de convidado é limitado a {limit} por dia. Crie uma conta gratuita para continuar!",
+      "signUpCta": "Criar uma conta gratuita"
     }
   },
   "account": {

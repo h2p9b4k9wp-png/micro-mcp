@@ -378,7 +378,7 @@
     },
     "trial": {
       "title": "Trải nghiệm không cần tài khoản",
-      "subtitle": "Phân tích miễn phí 1 tệp — không cần đăng ký. (Tối đa 3MB, mỗi ngày 1 lần.)",
+      "subtitle": "Trải nghiệm các tính năng cốt lõi mà không cần tài khoản — cả phân tích tệp lẫn hỏi đáp AI.",
       "analyzing": "Đang phân tích tệp của bạn…",
       "chooseFile": "Nhấp để chọn tệp",
       "fileHint": "PDF, Word, PPT, Excel, HWP — tối đa 3MB",
@@ -388,7 +388,16 @@
       "genericError": "Đã xảy ra sự cố.",
       "saveResultTitle": "Đăng nhập để lưu kết quả này",
       "saveResultButton": "Đăng nhập và lưu",
-      "backToLogin": "← Quay lại đăng nhập"
+      "backToLogin": "← Quay lại đăng nhập",
+      "fileSectionTitle": "Trải nghiệm với tệp",
+      "chatSectionTitle": "Hỏi AI trực tiếp",
+      "chatPlaceholder": "Hỏi bất cứ điều gì…",
+      "chatButton": "Hỏi",
+      "chatLoading": "Đang tạo câu trả lời…",
+      "orDivider": "Hoặc",
+      "rateLimitHourly": "Trải nghiệm khách chỉ giới hạn {limit} lần mỗi giờ. Tạo tài khoản miễn phí để tiếp tục!",
+      "rateLimitDaily": "Trải nghiệm khách chỉ giới hạn {limit} lần mỗi ngày. Tạo tài khoản miễn phí để tiếp tục!",
+      "signUpCta": "Tạo tài khoản miễn phí"
     }
   },
   "account": {

@@ -378,7 +378,7 @@
     },
     "trial": {
       "title": "アカウントなしで体験する",
-      "subtitle": "1つのファイルを無料で分析できます — 登録不要（最大3MB、1日1回）",
+      "subtitle": "アカウントなしでも核心機能を体験できます — ファイル分析もAIへの質問も可能です。",
       "analyzing": "ファイルを分析中…",
       "chooseFile": "クリックしてファイルを選択",
       "fileHint": "PDF・Word・PPT・Excel・HWP — 最大3MB",
@@ -388,7 +388,16 @@
       "genericError": "問題が発生しました。",
       "saveResultTitle": "結果を保存するにはログインしてください",
       "saveResultButton": "ログインして保存",
-      "backToLogin": "← ログインに戻る"
+      "backToLogin": "← ログインに戻る",
+      "fileSectionTitle": "ファイルで体験する",
+      "chatSectionTitle": "AIに直接質問する",
+      "chatPlaceholder": "気になることを聞いてみましょう…",
+      "chatButton": "質問する",
+      "chatLoading": "回答を生成中…",
+      "orDivider": "または",
+      "rateLimitHourly": "ゲスト体験は1時間に{limit}回までです。無料アカウントを作成すると引き続きご利用いただけます！",
+      "rateLimitDaily": "ゲスト体験は1日に{limit}回までです。無料アカウントを作成すると引き続きご利用いただけます！",
+      "signUpCta": "無料でアカウントを作成"
     }
   },
   "account": {

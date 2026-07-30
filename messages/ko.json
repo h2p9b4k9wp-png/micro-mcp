@@ -378,7 +378,7 @@
     },
     "trial": {
       "title": "계정 없이 체험하기",
-      "subtitle": "파일 1개를 무료로 분석해보세요 — 가입 불필요 (최대 3MB, 하루 1회)",
+      "subtitle": "로그인 없이도 핵심 기능을 체험해보세요 — 파일 분석과 AI 질문 모두 가능해요.",
       "analyzing": "파일을 분석하는 중…",
       "chooseFile": "클릭해서 파일 선택",
       "fileHint": "PDF·워드·PPT·엑셀·한글(HWP) — 최대 3MB",
@@ -388,7 +388,16 @@
       "genericError": "문제가 발생했어요.",
       "saveResultTitle": "결과를 저장하려면 로그인하세요",
       "saveResultButton": "로그인하고 저장하기",
-      "backToLogin": "← 로그인으로 돌아가기"
+      "backToLogin": "← 로그인으로 돌아가기",
+      "fileSectionTitle": "파일로 체험하기",
+      "chatSectionTitle": "AI에게 바로 질문하기",
+      "chatPlaceholder": "궁금한 걸 물어보세요…",
+      "chatButton": "질문하기",
+      "chatLoading": "답변을 생성하는 중…",
+      "orDivider": "또는",
+      "rateLimitHourly": "게스트 체험은 시간당 {limit}회까지예요. 무료 계정을 만들면 계속 이용할 수 있어요!",
+      "rateLimitDaily": "게스트 체험은 하루 {limit}회까지예요. 무료 계정을 만들면 계속 이용할 수 있어요!",
+      "signUpCta": "무료로 계정 만들기"
     }
   },
   "account": {
