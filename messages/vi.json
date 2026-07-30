@@ -14,10 +14,16 @@
     "send": "Gửi lệnh",
     "sending": "Đang gửi...",
     "delete": "Xóa",
-    "create": "Tạo"
+    "create": "Tạo",
+    "aiConnected": "Đã kết nối OpenAI GPT-4.1 mini",
+    "close": "Đóng",
+    "openMenu": "Mở menu",
+    "logout": "Đăng xuất",
+    "unknownError": "Lỗi không xác định",
+    "responseLanguageLabel": "Ngôn ngữ phản hồi AI"
   },
   "workspace": {
-    "subtitle": "AI tạo câu trả lời dựa trên ngữ cảnh của các khối MCP đang bật và nội dung tài liệu đã đính kèm.",
+    "subtitle": "AI tạo câu trả lời dựa trên ngữ cảnh cuộc trò chuyện và nội dung tài liệu đã đính kèm.",
     "promptSectionLabel": "Gửi lệnh cho AI",
     "removeAttachment": "Xóa tệp đính kèm {name}",
     "attachFile": "Đính kèm tệp/ảnh",
@@ -65,8 +71,13 @@
       "requestFailed": "Xin lỗi, chúng tôi không thể xử lý yêu cầu của bạn: {error}",
       "networkError": "Xin lỗi, đã xảy ra lỗi mạng: {error}",
       "analyzeFailed": "Phân tích thất bại.",
-      "analyzeErrorFallback": "Đã xảy ra lỗi trong quá trình phân tích."
-    }
+      "analyzeErrorFallback": "Đã xảy ra lỗi trong quá trình phân tích.",
+      "tooManyAttachments": "Bạn chỉ có thể đính kèm tối đa {max} tệp/ảnh cùng lúc (hiện tại {count}). Hãy giảm số lượng tệp hoặc xóa các tệp đã đính kèm rồi thử lại.",
+      "quotaCheckFailed": "Không thể kiểm tra hạn mức."
+    },
+    "viewAsLens": "Xem dưới dạng {label}",
+    "meetingNotesCourseLabel": "Được phát hiện từ ghi chú cuộc họp/bài giảng",
+    "lensRegisterCourseLabel": "Trích xuất hạn chót · Nguồn: \"{date}\""
   },
   "records": {
     "title": "Nhật ký của tôi",
@@ -107,8 +118,6 @@
     "goToChatTab": "Đến tab Trò chuyện",
     "urgencyDistribution": "Phân bố mức độ khẩn cấp",
     "timeline": "Dòng thời gian sắp tới",
-    "activeBlocksLabel": "Khối MCP đang hoạt động",
-    "noActiveBlocks": "Không có khối nào đang hoạt động",
     "recentFilesLabel": "Tệp đính kèm gần đây",
     "noAttachedFiles": "Không có tệp đính kèm",
     "moreFiles": "và {count} tệp khác",
@@ -123,8 +132,7 @@
       "total": "Tổng số hạn chót",
       "thisWeek": "Hạn chót tuần này",
       "overdue": "Quá hạn",
-      "files": "Tệp tham khảo",
-      "activeBlocks": "Khối MCP đang hoạt động"
+      "files": "Tệp tham khảo"
     },
     "urgency": {
       "overdue": "Quá hạn",
@@ -194,7 +202,24 @@
       "first": "Ấn tượng đầu tiên từ 1 tài liệu",
       "some": "Dựa trên {count} tài liệu — bắt đầu thấy rõ hơn",
       "clear": "Dựa trên {count} tài liệu — mô hình đã rõ ràng"
-    }
+    },
+    "errors": {
+      "schoolDeptRequired": "Vui lòng nhập trường và khoa.",
+      "registerFailed": "Không thể đăng ký giáo sư: {error}",
+      "updateFailed": "Cập nhật phân tích thất bại.",
+      "saveAnalysisFailed": "Không thể lưu kết quả phân tích.",
+      "thisProfessorFallback": "Giáo sư này",
+      "updateFailedAlert": "Cập nhật phân tích cho \"{name}\" thất bại: {error}\nSố lượng tài liệu và kết quả phân tích có thể tạm thời không đồng bộ — hãy thử lại bằng nút \"Phân tích giáo sư này\" trên màn hình chi tiết giáo sư.",
+      "docLimitReached": "Giáo sư này chỉ có thể đăng ký tối đa {max} tài liệu (hiện tại {count}). Vui lòng xóa bớt tài liệu không cần thiết trước.",
+      "docSaveFailed": "Không thể lưu \"{fileName}\": {error}",
+      "nameRequired": "Vui lòng nhập tên giáo sư.",
+      "selectProfessorFirst": "Vui lòng chọn giáo sư hoặc đăng ký mới trước.",
+      "docDeleteFailed": "Không thể xóa tài liệu: {error}",
+      "professorDeleteFailed": "Không thể xóa giáo sư: {error}"
+    },
+    "deleteConfirm": "Xóa \"{name}\" và toàn bộ tài liệu đã đăng ký? Thao tác này không thể hoàn tác.",
+    "upgradeMaxProfessors": "Gói miễn phí chỉ cho phép đăng ký tối đa {max} giáo sư. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "Gói miễn phí chỉ cho phép tối đa {max} tài liệu cho mỗi giáo sư. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "Giám sát & Tệp (Ngữ cảnh RAG)",
@@ -209,7 +234,12 @@
     },
     "fileListTitle": "Danh sách tệp ngữ cảnh đã đăng ký",
     "noFiles": "Chưa có tệp nào được đăng ký.",
-    "fileType": "Loại: {mimeType}"
+    "fileType": "Loại: {mimeType}",
+    "emptyContentPlaceholder": "Đây là tài liệu không có nội dung.",
+    "errors": {
+      "fileTooLarge": "Dung lượng tệp quá lớn (vượt quá 10MB). Hãy sao chép nội dung chính để nhập trực tiếp, hoặc chuyển đổi tệp rồi tải lên!",
+      "unsupportedFormat": "Định dạng tệp này khó đọc trực tiếp trên trình duyệt. Vui lòng dùng cách nhập văn bản trực tiếp."
+    }
   },
   "logs": {
     "title": "Nhật ký DB & Xem phản hồi AI",
@@ -226,7 +256,14 @@
     "collapseAnswer": "▲ Thu gọn câu trả lời",
     "viewAnswer": "▼ Xem câu trả lời của AI",
     "deleteLogAria": "Xóa nhật ký",
-    "responseRecordLabel": "[Bản ghi phản hồi AI]"
+    "responseRecordLabel": "[Bản ghi phản hồi AI]",
+    "errors": {
+      "logDeleteFailed": "Đã xảy ra lỗi khi xóa nhật ký: {error}",
+      "folderCreateFailed": "Không thể tạo thư mục: {error}",
+      "folderDeleteFailed": "Không thể xóa thư mục: {error}",
+      "moveToFolderFailed": "Không thể chuyển cuộc trò chuyện vào thư mục: {error}"
+    },
+    "deleteFolderConfirm": "Xóa thư mục \"{folderName}\"? Các cuộc trò chuyện bên trong sẽ không bị xóa mà chuyển sang mục chưa phân loại."
   },
   "nodes": {
     "this_doc": {
@@ -353,5 +390,26 @@
       "saveResultButton": "Đăng nhập và lưu",
       "backToLogin": "← Quay lại đăng nhập"
     }
+  },
+  "account": {
+    "deleteConfirm": "Bạn có chắc muốn xóa dữ liệu tài khoản không?\n\nTất cả tệp đã tải lên, tài liệu giáo sư, lịch sử trò chuyện và thư mục trò chuyện sẽ bị xóa vĩnh viễn và không thể khôi phục.\n(Tài khoản đăng nhập vẫn được giữ lại — bạn có thể đăng nhập lại và bắt đầu mới nếu muốn.)",
+    "deleteErrorAlert": "Đã xảy ra sự cố khi xóa tài khoản: {error}\nVui lòng thử lại.",
+    "deleting": "Đang xóa...",
+    "delete": "Xóa tài khoản"
+  },
+  "upgrade": {
+    "requestSendFailed": "Không thể gửi yêu cầu: {error}",
+    "requestReceivedTitle": "Đã nhận yêu cầu",
+    "requestReceivedDesc": "Chúng tôi sẽ liên hệ sớm!",
+    "title": "Nâng cấp lên Pro",
+    "priceLine": "Upgrade to Pro — {price}",
+    "defaultContext": "Quyền lợi Pro sẽ được áp dụng ngay khi thanh toán hoàn tất.",
+    "checkoutButton": "Đến trang thanh toán Pro",
+    "orContactDivider": "Hoặc để lại lời nhắn",
+    "emailLabel": "Email",
+    "memoLabel": "Ghi chú (tùy chọn)",
+    "memoPlaceholder": "Hãy cho chúng tôi biết câu hỏi hoặc tính năng bạn cần",
+    "sending": "Đang gửi...",
+    "sendRequest": "Gửi yêu cầu"
   }
 }

@@ -14,10 +14,16 @@
     "send": "프롬프트 전송",
     "sending": "전송 중...",
     "delete": "삭제",
-    "create": "만들기"
+    "create": "만들기",
+    "aiConnected": "OpenAI GPT-4.1 mini 연동됨",
+    "close": "닫기",
+    "openMenu": "메뉴 열기",
+    "logout": "로그아웃",
+    "unknownError": "알 수 없는 오류",
+    "responseLanguageLabel": "AI 답변 언어"
   },
   "workspace": {
-    "subtitle": "활성화된 MCP 블록 맥락 및 첨부된 문서 내용을 바탕으로 AI가 실제 답변을 도출합니다.",
+    "subtitle": "첨부한 문서 내용과 대화 맥락을 바탕으로 AI가 실제 답변을 도출합니다.",
     "promptSectionLabel": "AI 프롬프트 전송",
     "removeAttachment": "{name} 첨부 삭제",
     "attachFile": "파일/사진 첨부",
@@ -65,8 +71,13 @@
       "requestFailed": "죄송해요, 요청을 처리하지 못했어요: {error}",
       "networkError": "죄송해요, 네트워크 오류가 발생했어요: {error}",
       "analyzeFailed": "분석에 실패했어요.",
-      "analyzeErrorFallback": "분석 중 오류가 발생했어요."
-    }
+      "analyzeErrorFallback": "분석 중 오류가 발생했어요.",
+      "tooManyAttachments": "한 번에 첨부할 수 있는 파일/이미지는 최대 {max}개예요(현재 {count}개). 파일 수를 줄이거나 이미 첨부한 걸 지우고 다시 시도해주세요.",
+      "quotaCheckFailed": "한도를 확인하지 못했어요."
+    },
+    "viewAsLens": "{label}(으)로 보기",
+    "meetingNotesCourseLabel": "회의·강의 노트에서 감지됨",
+    "lensRegisterCourseLabel": "마감 뽑기 · 원문: \"{date}\""
   },
   "records": {
     "title": "나의 기록",
@@ -107,8 +118,6 @@
     "goToChatTab": "채팅 탭으로 가기",
     "urgencyDistribution": "긴급도 분포",
     "timeline": "다가오는 일정 타임라인",
-    "activeBlocksLabel": "활성화된 MCP 블록",
-    "noActiveBlocks": "활성화된 블록이 없어요",
     "recentFilesLabel": "최근 첨부 파일",
     "noAttachedFiles": "첨부된 파일이 없어요",
     "moreFiles": "외 {count}개 더",
@@ -123,8 +132,7 @@
       "total": "전체 마감일",
       "thisWeek": "이번 주 마감",
       "overdue": "지연됨",
-      "files": "참고 파일",
-      "activeBlocks": "활성 MCP 블록"
+      "files": "참고 파일"
     },
     "urgency": {
       "overdue": "지연됨",
@@ -194,7 +202,24 @@
       "first": "자료 1개로 본 첫인상이에요",
       "some": "자료 {count}개 기준 — 꽤 잡히기 시작했어요",
       "clear": "자료 {count}개 기준 — 패턴이 뚜렷해요"
-    }
+    },
+    "errors": {
+      "schoolDeptRequired": "학교와 학과를 입력해주세요.",
+      "registerFailed": "교수님을 등록하지 못했어요: {error}",
+      "updateFailed": "분석 갱신에 실패했어요.",
+      "saveAnalysisFailed": "분석 결과를 저장하지 못했어요.",
+      "thisProfessorFallback": "이 교수님",
+      "updateFailedAlert": "\"{name}\" 분석 갱신에 실패했어요: {error}\n자료 개수와 분석 결과가 실제와 잠시 어긋나 있을 수 있어요 — 교수님 상세 화면의 \"이 교수님 분석\" 버튼으로 다시 시도해주세요.",
+      "docLimitReached": "이 교수님에게는 최대 {max}개까지만 자료를 등록할 수 있어요(현재 {count}개). 필요 없는 자료를 먼저 삭제해주세요.",
+      "docSaveFailed": "\"{fileName}\"을 저장하지 못했어요: {error}",
+      "nameRequired": "교수님 이름을 입력해주세요.",
+      "selectProfessorFirst": "먼저 교수님을 선택하거나 새로 등록해주세요.",
+      "docDeleteFailed": "자료를 삭제하지 못했어요: {error}",
+      "professorDeleteFailed": "교수님을 삭제하지 못했어요: {error}"
+    },
+    "deleteConfirm": "\"{name}\" 교수님과 등록된 자료를 모두 삭제할까요? 이 작업은 되돌릴 수 없어요.",
+    "upgradeMaxProfessors": "무료 등급은 교수님을 {max}명까지만 등록할 수 있어요. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "무료 등급은 교수님 한 분당 자료를 {max}개까지만 등록할 수 있어요. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "모니터링 & 파일 (RAG 컨텍스트)",
@@ -209,7 +234,12 @@
     },
     "fileListTitle": "등록된 컨텍스트 파일 목록",
     "noFiles": "등록된 파일이 없습니다.",
-    "fileType": "타입: {mimeType}"
+    "fileType": "타입: {mimeType}",
+    "emptyContentPlaceholder": "내용이 입력되지 않은 문서입니다.",
+    "errors": {
+      "fileTooLarge": "파일 용량이 너무 큽니다 (10MB 초과). 핵심 텍스트를 복사해서 직접 입력하거나 변환해서 올려주세요!",
+      "unsupportedFormat": "이 파일 형식은 브라우저에서 직접 읽기 어렵습니다. 텍스트 직접 입력을 이용해 주세요."
+    }
   },
   "logs": {
     "title": "DB 연동 로그 & AI 답변 조회",
@@ -226,7 +256,14 @@
     "collapseAnswer": "▲ 답변 접기",
     "viewAnswer": "▼ AI 답변 보기",
     "deleteLogAria": "로그 삭제",
-    "responseRecordLabel": "[AI 응답 결과 기록]"
+    "responseRecordLabel": "[AI 응답 결과 기록]",
+    "errors": {
+      "logDeleteFailed": "로그 삭제 중 오류가 발생했어요: {error}",
+      "folderCreateFailed": "폴더를 만들지 못했어요: {error}",
+      "folderDeleteFailed": "폴더를 삭제하지 못했어요: {error}",
+      "moveToFolderFailed": "대화를 폴더로 옮기지 못했어요: {error}"
+    },
+    "deleteFolderConfirm": "\"{folderName}\" 폴더를 삭제할까요? 폴더 안의 대화는 삭제되지 않고 미분류로 이동해요."
   },
   "nodes": {
     "this_doc": {
@@ -353,5 +390,26 @@
       "saveResultButton": "로그인하고 저장하기",
       "backToLogin": "← 로그인으로 돌아가기"
     }
+  },
+  "account": {
+    "deleteConfirm": "정말로 계정 데이터를 삭제할까요?\n\n업로드한 모든 파일, 교수님 자료, 대화 기록, 대화 폴더가 영구적으로 삭제되며 되돌릴 수 없습니다.\n(로그인 계정 자체는 유지되며, 원하시면 다시 로그인해 새로 시작할 수 있어요.)",
+    "deleteErrorAlert": "계정 삭제 중 문제가 발생했어요: {error}\n다시 시도해주세요.",
+    "deleting": "삭제하는 중...",
+    "delete": "계정 삭제"
+  },
+  "upgrade": {
+    "requestSendFailed": "요청을 보내지 못했어요: {error}",
+    "requestReceivedTitle": "요청이 접수됐어요",
+    "requestReceivedDesc": "곧 연락드릴게요!",
+    "title": "Pro로 업그레이드하기",
+    "priceLine": "Upgrade to Pro — {price}",
+    "defaultContext": "결제를 완료하면 Pro 혜택이 바로 적용돼요.",
+    "checkoutButton": "Pro 결제하러 가기",
+    "orContactDivider": "또는 문의 남기기",
+    "emailLabel": "이메일",
+    "memoLabel": "메모 (선택)",
+    "memoPlaceholder": "궁금한 점이나 필요한 기능을 적어주세요",
+    "sending": "보내는 중...",
+    "sendRequest": "요청 보내기"
   }
 }

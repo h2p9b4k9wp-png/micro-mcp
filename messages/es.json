@@ -14,10 +14,16 @@
     "send": "Enviar instrucción",
     "sending": "Enviando...",
     "delete": "Eliminar",
-    "create": "Crear"
+    "create": "Crear",
+    "aiConnected": "OpenAI GPT-4.1 mini conectado",
+    "close": "Cerrar",
+    "openMenu": "Abrir menú",
+    "logout": "Cerrar sesión",
+    "unknownError": "Error desconocido",
+    "responseLanguageLabel": "Idioma de respuesta de la IA"
   },
   "workspace": {
-    "subtitle": "La IA genera respuestas basándose en el contexto de los bloques MCP activos y el contenido de cualquier documento adjunto.",
+    "subtitle": "La IA genera respuestas basándose en el contexto de la conversación y el contenido de cualquier documento adjunto.",
     "promptSectionLabel": "Enviar instrucción a la IA",
     "removeAttachment": "Quitar el archivo adjunto {name}",
     "attachFile": "Adjuntar archivo/foto",
@@ -65,8 +71,13 @@
       "requestFailed": "Lo sentimos, no pudimos procesar tu solicitud: {error}",
       "networkError": "Lo sentimos, ocurrió un error de red: {error}",
       "analyzeFailed": "El análisis falló.",
-      "analyzeErrorFallback": "Ocurrió un error durante el análisis."
-    }
+      "analyzeErrorFallback": "Ocurrió un error durante el análisis.",
+      "tooManyAttachments": "Puedes adjuntar hasta {max} archivos/imágenes a la vez (actualmente {count}). Reduce la cantidad de archivos o elimina los adjuntos existentes e inténtalo de nuevo.",
+      "quotaCheckFailed": "No se pudo comprobar el límite."
+    },
+    "viewAsLens": "Ver como {label}",
+    "meetingNotesCourseLabel": "Detectado en notas de reunión/clase",
+    "lensRegisterCourseLabel": "Extraer plazos · Fuente: \"{date}\""
   },
   "records": {
     "title": "Mis registros",
@@ -107,8 +118,6 @@
     "goToChatTab": "Ir a la pestaña de chat",
     "urgencyDistribution": "Distribución de urgencia",
     "timeline": "Cronología próxima",
-    "activeBlocksLabel": "Bloques MCP activos",
-    "noActiveBlocks": "No hay bloques activos",
     "recentFilesLabel": "Archivos adjuntos recientes",
     "noAttachedFiles": "No hay archivos adjuntos",
     "moreFiles": "+{count} más",
@@ -123,8 +132,7 @@
       "total": "Total de plazos",
       "thisWeek": "Vencen esta semana",
       "overdue": "Vencidos",
-      "files": "Archivos de referencia",
-      "activeBlocks": "Bloques MCP activos"
+      "files": "Archivos de referencia"
     },
     "urgency": {
       "overdue": "Vencidos",
@@ -194,7 +202,24 @@
       "first": "Primera impresión a partir de 1 documento",
       "some": "Según {count} documentos — un patrón empieza a formarse",
       "clear": "Según {count} documentos — el patrón es claro"
-    }
+    },
+    "errors": {
+      "schoolDeptRequired": "Introduce la escuela y el departamento.",
+      "registerFailed": "No se pudo registrar al profesor: {error}",
+      "updateFailed": "No se pudo actualizar el análisis.",
+      "saveAnalysisFailed": "No se pudo guardar el resultado del análisis.",
+      "thisProfessorFallback": "Este profesor",
+      "updateFailedAlert": "No se pudo actualizar el análisis de \"{name}\": {error}\nEl número de documentos y el resultado del análisis pueden estar temporalmente desincronizados — intenta de nuevo con el botón \"Analizar este profesor\" en la pantalla de detalles.",
+      "docLimitReached": "Este profesor puede tener como máximo {max} documentos (actualmente {count}). Elimina primero algunos documentos innecesarios.",
+      "docSaveFailed": "No se pudo guardar \"{fileName}\": {error}",
+      "nameRequired": "Introduce el nombre del profesor.",
+      "selectProfessorFirst": "Selecciona un profesor o registra uno nuevo primero.",
+      "docDeleteFailed": "No se pudo eliminar el documento: {error}",
+      "professorDeleteFailed": "No se pudo eliminar al profesor: {error}"
+    },
+    "deleteConfirm": "¿Eliminar a \"{name}\" y todos sus materiales registrados? Esto no se puede deshacer.",
+    "upgradeMaxProfessors": "El plan gratuito permite hasta {max} profesores. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "El plan gratuito permite hasta {max} documentos por profesor. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "Monitoreo y archivos (Contexto RAG)",
@@ -209,7 +234,12 @@
     },
     "fileListTitle": "Archivos de contexto registrados",
     "noFiles": "No hay archivos registrados.",
-    "fileType": "Tipo: {mimeType}"
+    "fileType": "Tipo: {mimeType}",
+    "emptyContentPlaceholder": "Este documento no tiene contenido.",
+    "errors": {
+      "fileTooLarge": "El archivo es demasiado grande (supera 10MB). ¡Copia el texto clave e ingrésalo directamente, o convierte el archivo y súbelo!",
+      "unsupportedFormat": "El navegador no puede leer este formato de archivo directamente. Usa la entrada de texto directa."
+    }
   },
   "logs": {
     "title": "Registros de BD y respuestas de la IA",
@@ -226,7 +256,14 @@
     "collapseAnswer": "▲ Ocultar respuesta",
     "viewAnswer": "▼ Ver respuesta de la IA",
     "deleteLogAria": "Eliminar registro",
-    "responseRecordLabel": "[Registro de respuesta de la IA]"
+    "responseRecordLabel": "[Registro de respuesta de la IA]",
+    "errors": {
+      "logDeleteFailed": "Ocurrió un error al eliminar el registro: {error}",
+      "folderCreateFailed": "No se pudo crear la carpeta: {error}",
+      "folderDeleteFailed": "No se pudo eliminar la carpeta: {error}",
+      "moveToFolderFailed": "No se pudo mover la conversación a la carpeta: {error}"
+    },
+    "deleteFolderConfirm": "¿Eliminar la carpeta \"{folderName}\"? Las conversaciones dentro no se eliminarán, se moverán a Sin clasificar."
   },
   "nodes": {
     "this_doc": {
@@ -353,5 +390,26 @@
       "saveResultButton": "Iniciar sesión y guardar",
       "backToLogin": "← Volver al inicio de sesión"
     }
+  },
+  "account": {
+    "deleteConfirm": "¿Seguro que quieres eliminar los datos de tu cuenta?\n\nTodos los archivos subidos, materiales de profesores, historial de conversaciones y carpetas de conversación se eliminarán de forma permanente y no se podrán recuperar.\n(Tu cuenta de acceso se mantiene — puedes volver a iniciar sesión y empezar de nuevo si lo deseas.)",
+    "deleteErrorAlert": "Ocurrió un problema al eliminar tu cuenta: {error}\nInténtalo de nuevo.",
+    "deleting": "Eliminando...",
+    "delete": "Eliminar cuenta"
+  },
+  "upgrade": {
+    "requestSendFailed": "No se pudo enviar la solicitud: {error}",
+    "requestReceivedTitle": "Solicitud recibida",
+    "requestReceivedDesc": "¡Nos pondremos en contacto pronto!",
+    "title": "Actualizar a Pro",
+    "priceLine": "Upgrade to Pro — {price}",
+    "defaultContext": "Los beneficios de Pro se aplican en cuanto se completa el pago.",
+    "checkoutButton": "Ir al pago de Pro",
+    "orContactDivider": "O deja un mensaje",
+    "emailLabel": "Correo electrónico",
+    "memoLabel": "Nota (opcional)",
+    "memoPlaceholder": "Cuéntanos tus preguntas o las funciones que necesitas",
+    "sending": "Enviando...",
+    "sendRequest": "Enviar solicitud"
   }
 }

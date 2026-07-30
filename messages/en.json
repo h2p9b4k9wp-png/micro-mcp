@@ -14,10 +14,16 @@
     "send": "Send Prompt",
     "sending": "Sending...",
     "delete": "Delete",
-    "create": "Create"
+    "create": "Create",
+    "aiConnected": "OpenAI GPT-4.1 mini connected",
+    "close": "Close",
+    "openMenu": "Open menu",
+    "logout": "Log Out",
+    "unknownError": "Unknown error",
+    "responseLanguageLabel": "AI Response Language"
   },
   "workspace": {
-    "subtitle": "The AI generates answers based on the active MCP block context and any attached document content.",
+    "subtitle": "The AI generates answers based on the conversation context and any attached document content.",
     "promptSectionLabel": "Send AI Prompt",
     "removeAttachment": "Remove attachment {name}",
     "attachFile": "Attach file/photo",
@@ -65,8 +71,13 @@
       "requestFailed": "Sorry, we couldn't process your request: {error}",
       "networkError": "Sorry, a network error occurred: {error}",
       "analyzeFailed": "Analysis failed.",
-      "analyzeErrorFallback": "An error occurred during analysis."
-    }
+      "analyzeErrorFallback": "An error occurred during analysis.",
+      "tooManyAttachments": "You can attach up to {max} files/images at once (currently {count}). Remove some files or clear existing attachments and try again.",
+      "quotaCheckFailed": "Could not check your quota."
+    },
+    "viewAsLens": "View as {label}",
+    "meetingNotesCourseLabel": "Detected from meeting/lecture notes",
+    "lensRegisterCourseLabel": "Extract Deadlines · Source: \"{date}\""
   },
   "records": {
     "title": "My Records",
@@ -107,8 +118,6 @@
     "goToChatTab": "Go to Chat Tab",
     "urgencyDistribution": "Urgency Distribution",
     "timeline": "Upcoming Timeline",
-    "activeBlocksLabel": "Active MCP Blocks",
-    "noActiveBlocks": "No active blocks",
     "recentFilesLabel": "Recent Attachments",
     "noAttachedFiles": "No attached files",
     "moreFiles": "+{count} more",
@@ -123,8 +132,7 @@
       "total": "Total Deadlines",
       "thisWeek": "Due This Week",
       "overdue": "Overdue",
-      "files": "Reference Files",
-      "activeBlocks": "Active MCP Blocks"
+      "files": "Reference Files"
     },
     "urgency": {
       "overdue": "Overdue",
@@ -194,7 +202,24 @@
       "first": "First impression from 1 document",
       "some": "Based on {count} documents — a pattern is starting to form",
       "clear": "Based on {count} documents — the pattern is clear"
-    }
+    },
+    "errors": {
+      "schoolDeptRequired": "Please enter both school and department.",
+      "registerFailed": "Could not register the professor: {error}",
+      "updateFailed": "Failed to refresh the analysis.",
+      "saveAnalysisFailed": "Could not save the analysis result.",
+      "thisProfessorFallback": "This professor",
+      "updateFailedAlert": "Failed to refresh the analysis for \"{name}\": {error}\nThe document count and analysis result may be briefly out of sync — try the \"Analyze This Professor\" button on the professor detail screen again.",
+      "docLimitReached": "This professor can have at most {max} documents (currently {count}). Please delete some unneeded documents first.",
+      "docSaveFailed": "Could not save \"{fileName}\": {error}",
+      "nameRequired": "Please enter the professor's name.",
+      "selectProfessorFirst": "Please select a professor or register a new one first.",
+      "docDeleteFailed": "Could not delete the document: {error}",
+      "professorDeleteFailed": "Could not delete the professor: {error}"
+    },
+    "deleteConfirm": "Delete \"{name}\" and all their registered materials? This cannot be undone.",
+    "upgradeMaxProfessors": "The free tier allows up to {max} professors. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "The free tier allows up to {max} documents per professor. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "Monitoring & Files (RAG Context)",
@@ -209,7 +234,12 @@
     },
     "fileListTitle": "Registered Context Files",
     "noFiles": "No files registered.",
-    "fileType": "Type: {mimeType}"
+    "fileType": "Type: {mimeType}",
+    "emptyContentPlaceholder": "This document has no content.",
+    "errors": {
+      "fileTooLarge": "The file is too large (over 10MB). Copy the key text and enter it directly, or convert the file and upload it!",
+      "unsupportedFormat": "This file format can't be read directly by the browser. Please use direct text entry instead."
+    }
   },
   "logs": {
     "title": "DB Logs & AI Response History",
@@ -226,7 +256,14 @@
     "collapseAnswer": "▲ Hide Answer",
     "viewAnswer": "▼ View AI Answer",
     "deleteLogAria": "Delete log",
-    "responseRecordLabel": "[AI Response Record]"
+    "responseRecordLabel": "[AI Response Record]",
+    "errors": {
+      "logDeleteFailed": "An error occurred while deleting the log: {error}",
+      "folderCreateFailed": "Could not create the folder: {error}",
+      "folderDeleteFailed": "Could not delete the folder: {error}",
+      "moveToFolderFailed": "Could not move the conversation to the folder: {error}"
+    },
+    "deleteFolderConfirm": "Delete the folder \"{folderName}\"? Conversations inside it won't be deleted — they'll move to Unfiled."
   },
   "nodes": {
     "this_doc": {
@@ -353,5 +390,26 @@
       "saveResultButton": "Log in and save",
       "backToLogin": "← Back to login"
     }
+  },
+  "account": {
+    "deleteConfirm": "Are you sure you want to delete your account data?\n\nAll uploaded files, professor materials, conversation history, and conversation folders will be permanently deleted and cannot be undone.\n(Your login account itself is kept — you can log back in and start fresh if you want.)",
+    "deleteErrorAlert": "A problem occurred while deleting your account: {error}\nPlease try again.",
+    "deleting": "Deleting...",
+    "delete": "Delete Account"
+  },
+  "upgrade": {
+    "requestSendFailed": "Could not send the request: {error}",
+    "requestReceivedTitle": "Request received",
+    "requestReceivedDesc": "We'll be in touch soon!",
+    "title": "Upgrade to Pro",
+    "priceLine": "Upgrade to Pro — {price}",
+    "defaultContext": "Pro benefits apply as soon as payment is complete.",
+    "checkoutButton": "Go to Pro Checkout",
+    "orContactDivider": "Or leave a message",
+    "emailLabel": "Email",
+    "memoLabel": "Note (optional)",
+    "memoPlaceholder": "Tell us any questions or features you need",
+    "sending": "Sending...",
+    "sendRequest": "Send Request"
   }
 }

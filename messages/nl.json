@@ -14,10 +14,16 @@
     "send": "Prompt versturen",
     "sending": "Versturen...",
     "delete": "Verwijderen",
-    "create": "Aanmaken"
+    "create": "Aanmaken",
+    "aiConnected": "OpenAI GPT-4.1 mini verbonden",
+    "close": "Sluiten",
+    "openMenu": "Menu openen",
+    "logout": "Uitloggen",
+    "unknownError": "Onbekende fout",
+    "responseLanguageLabel": "AI-antwoordtaal"
   },
   "workspace": {
-    "subtitle": "De AI genereert antwoorden op basis van de context van actieve MCP-blokken en de inhoud van bijgevoegde documenten.",
+    "subtitle": "De AI genereert antwoorden op basis van de gesprekscontext en de inhoud van bijgevoegde documenten.",
     "promptSectionLabel": "AI-prompt versturen",
     "removeAttachment": "Bijlage {name} verwijderen",
     "attachFile": "Bestand/foto bijvoegen",
@@ -65,8 +71,13 @@
       "requestFailed": "Sorry, we konden je verzoek niet verwerken: {error}",
       "networkError": "Sorry, er is een netwerkfout opgetreden: {error}",
       "analyzeFailed": "Analyse mislukt.",
-      "analyzeErrorFallback": "Er is een fout opgetreden tijdens de analyse."
-    }
+      "analyzeErrorFallback": "Er is een fout opgetreden tijdens de analyse.",
+      "tooManyAttachments": "Je kunt maximaal {max} bestanden/afbeeldingen tegelijk bijvoegen (momenteel {count}). Verminder het aantal bestanden of verwijder bestaande bijlagen en probeer het opnieuw.",
+      "quotaCheckFailed": "Kon de limiet niet controleren."
+    },
+    "viewAsLens": "Bekijk als {label}",
+    "meetingNotesCourseLabel": "Gedetecteerd uit vergader-/collegenotities",
+    "lensRegisterCourseLabel": "Deadlines extraheren · Bron: \"{date}\""
   },
   "records": {
     "title": "Mijn overzicht",
@@ -107,8 +118,6 @@
     "goToChatTab": "Naar het chattabblad",
     "urgencyDistribution": "Urgentieverdeling",
     "timeline": "Aankomende tijdlijn",
-    "activeBlocksLabel": "Actieve MCP-blokken",
-    "noActiveBlocks": "Geen actieve blokken",
     "recentFilesLabel": "Recente bijlagen",
     "noAttachedFiles": "Geen bijgevoegde bestanden",
     "moreFiles": "+{count} meer",
@@ -123,8 +132,7 @@
       "total": "Totaal aantal deadlines",
       "thisWeek": "Deze week verschuldigd",
       "overdue": "Te laat",
-      "files": "Referentiebestanden",
-      "activeBlocks": "Actieve MCP-blokken"
+      "files": "Referentiebestanden"
     },
     "urgency": {
       "overdue": "Te laat",
@@ -194,7 +202,24 @@
       "first": "Eerste indruk op basis van 1 document",
       "some": "Gebaseerd op {count} documenten — er begint een patroon te ontstaan",
       "clear": "Gebaseerd op {count} documenten — het patroon is duidelijk"
-    }
+    },
+    "errors": {
+      "schoolDeptRequired": "Vul school en afdeling in.",
+      "registerFailed": "Kon de docent niet registreren: {error}",
+      "updateFailed": "Analyse bijwerken mislukt.",
+      "saveAnalysisFailed": "Kon het analyseresultaat niet opslaan.",
+      "thisProfessorFallback": "Deze docent",
+      "updateFailedAlert": "Analyse bijwerken voor \"{name}\" mislukt: {error}\nHet aantal documenten en het analyseresultaat kunnen tijdelijk niet synchroon lopen — probeer het opnieuw via de knop \"Analyseer deze docent\" op het detailscherm.",
+      "docLimitReached": "Deze docent kan maximaal {max} documenten hebben (momenteel {count}). Verwijder eerst enkele onnodige documenten.",
+      "docSaveFailed": "Kon \"{fileName}\" niet opslaan: {error}",
+      "nameRequired": "Vul de naam van de docent in.",
+      "selectProfessorFirst": "Selecteer eerst een docent of registreer een nieuwe.",
+      "docDeleteFailed": "Kon het document niet verwijderen: {error}",
+      "professorDeleteFailed": "Kon de docent niet verwijderen: {error}"
+    },
+    "deleteConfirm": "\"{name}\" en alle geregistreerde materialen verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "upgradeMaxProfessors": "Het gratis abonnement staat maximaal {max} docenten toe. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "Het gratis abonnement staat maximaal {max} documenten per docent toe. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "Monitoring & bestanden (RAG-context)",
@@ -209,7 +234,12 @@
     },
     "fileListTitle": "Geregistreerde contextbestanden",
     "noFiles": "Geen bestanden geregistreerd.",
-    "fileType": "Type: {mimeType}"
+    "fileType": "Type: {mimeType}",
+    "emptyContentPlaceholder": "Dit document heeft geen inhoud.",
+    "errors": {
+      "fileTooLarge": "Het bestand is te groot (meer dan 10MB). Kopieer de belangrijkste tekst en voer deze rechtstreeks in, of converteer het bestand en upload het!",
+      "unsupportedFormat": "Dit bestandsformaat kan niet rechtstreeks door de browser worden gelezen. Gebruik in plaats daarvan directe tekstinvoer."
+    }
   },
   "logs": {
     "title": "DB-logs & AI-antwoordgeschiedenis",
@@ -226,7 +256,14 @@
     "collapseAnswer": "▲ Antwoord verbergen",
     "viewAnswer": "▼ AI-antwoord bekijken",
     "deleteLogAria": "Log verwijderen",
-    "responseRecordLabel": "[AI-antwoordregistratie]"
+    "responseRecordLabel": "[AI-antwoordregistratie]",
+    "errors": {
+      "logDeleteFailed": "Er is een fout opgetreden bij het verwijderen van het logboek: {error}",
+      "folderCreateFailed": "Kon de map niet aanmaken: {error}",
+      "folderDeleteFailed": "Kon de map niet verwijderen: {error}",
+      "moveToFolderFailed": "Kon het gesprek niet naar de map verplaatsen: {error}"
+    },
+    "deleteFolderConfirm": "Map \"{folderName}\" verwijderen? Gesprekken erin worden niet verwijderd, maar verplaatst naar Niet-ingedeeld."
   },
   "nodes": {
     "this_doc": {
@@ -353,5 +390,26 @@
       "saveResultButton": "Inloggen en opslaan",
       "backToLogin": "← Terug naar inloggen"
     }
+  },
+  "account": {
+    "deleteConfirm": "Weet je zeker dat je je accountgegevens wilt verwijderen?\n\nAlle geüploade bestanden, docentmateriaal, gespreksgeschiedenis en gespreksmappen worden permanent verwijderd en kunnen niet worden hersteld.\n(Je inlogaccount zelf blijft behouden — je kunt opnieuw inloggen en helemaal opnieuw beginnen als je dat wilt.)",
+    "deleteErrorAlert": "Er is een probleem opgetreden bij het verwijderen van je account: {error}\nProbeer het opnieuw.",
+    "deleting": "Bezig met verwijderen...",
+    "delete": "Account verwijderen"
+  },
+  "upgrade": {
+    "requestSendFailed": "Kon het verzoek niet verzenden: {error}",
+    "requestReceivedTitle": "Verzoek ontvangen",
+    "requestReceivedDesc": "We nemen snel contact met je op!",
+    "title": "Upgraden naar Pro",
+    "priceLine": "Upgrade to Pro — {price}",
+    "defaultContext": "Pro-voordelen gelden zodra de betaling is voltooid.",
+    "checkoutButton": "Naar Pro-checkout",
+    "orContactDivider": "Of laat een bericht achter",
+    "emailLabel": "E-mail",
+    "memoLabel": "Notitie (optioneel)",
+    "memoPlaceholder": "Vertel ons je vragen of gewenste functies",
+    "sending": "Bezig met verzenden...",
+    "sendRequest": "Verzoek verzenden"
   }
 }

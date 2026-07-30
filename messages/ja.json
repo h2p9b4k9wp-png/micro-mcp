@@ -14,10 +14,16 @@
     "send": "プロンプト送信",
     "sending": "送信中...",
     "delete": "削除",
-    "create": "作成"
+    "create": "作成",
+    "aiConnected": "OpenAI GPT-4.1 mini 連携済み",
+    "close": "閉じる",
+    "openMenu": "メニューを開く",
+    "logout": "ログアウト",
+    "unknownError": "不明なエラー",
+    "responseLanguageLabel": "AI回答言語"
   },
   "workspace": {
-    "subtitle": "有効化されたMCPブロックのコンテキストと添付されたドキュメントの内容をもとに、AIが実際の回答を導き出します。",
+    "subtitle": "添付されたドキュメントの内容と会話の文脈をもとに、AIが実際の回答を導き出します。",
     "promptSectionLabel": "AIプロンプト送信",
     "removeAttachment": "{name} の添付を削除",
     "attachFile": "ファイル/写真を添付",
@@ -65,8 +71,13 @@
       "requestFailed": "申し訳ありません、リクエストを処理できませんでした: {error}",
       "networkError": "申し訳ありません、ネットワークエラーが発生しました: {error}",
       "analyzeFailed": "分析に失敗しました。",
-      "analyzeErrorFallback": "分析中にエラーが発生しました。"
-    }
+      "analyzeErrorFallback": "分析中にエラーが発生しました。",
+      "tooManyAttachments": "一度に添付できるファイル・画像は最大{max}件です（現在{count}件）。ファイル数を減らすか、既存の添付を削除してから再度お試しください。",
+      "quotaCheckFailed": "上限を確認できませんでした。"
+    },
+    "viewAsLens": "{label}で見る",
+    "meetingNotesCourseLabel": "会議・講義ノートから検出",
+    "lensRegisterCourseLabel": "締め切り抽出・原文：「{date}」"
   },
   "records": {
     "title": "マイ履歴",
@@ -107,8 +118,6 @@
     "goToChatTab": "チャットタブへ移動",
     "urgencyDistribution": "緊急度の分布",
     "timeline": "今後の予定タイムライン",
-    "activeBlocksLabel": "有効なMCPブロック",
-    "noActiveBlocks": "有効なブロックがありません",
     "recentFilesLabel": "最近の添付ファイル",
     "noAttachedFiles": "添付されたファイルがありません",
     "moreFiles": "他{count}件",
@@ -123,8 +132,7 @@
       "total": "締め切り総数",
       "thisWeek": "今週締め切り",
       "overdue": "期限切れ",
-      "files": "参考ファイル",
-      "activeBlocks": "有効なMCPブロック"
+      "files": "参考ファイル"
     },
     "urgency": {
       "overdue": "期限切れ",
@@ -194,7 +202,24 @@
       "first": "資料1件から見た第一印象です",
       "some": "資料{count}件を基準 — だんだん見えてきました",
       "clear": "資料{count}件を基準 — パターンがはっきりしています"
-    }
+    },
+    "errors": {
+      "schoolDeptRequired": "学校と学科を入力してください。",
+      "registerFailed": "教授を登録できませんでした：{error}",
+      "updateFailed": "分析の更新に失敗しました。",
+      "saveAnalysisFailed": "分析結果を保存できませんでした。",
+      "thisProfessorFallback": "この教授",
+      "updateFailedAlert": "「{name}」の分析更新に失敗しました：{error}\n資料数と分析結果が一時的にずれている可能性があります — 教授詳細画面の「この教授を分析」ボタンで再度お試しください。",
+      "docLimitReached": "この教授には最大{max}件までしか資料を登録できません（現在{count}件）。不要な資料を先に削除してください。",
+      "docSaveFailed": "「{fileName}」を保存できませんでした：{error}",
+      "nameRequired": "教授の名前を入力してください。",
+      "selectProfessorFirst": "まず教授を選択するか、新規登録してください。",
+      "docDeleteFailed": "資料を削除できませんでした：{error}",
+      "professorDeleteFailed": "教授を削除できませんでした：{error}"
+    },
+    "deleteConfirm": "「{name}」教授と登録済みの資料をすべて削除しますか？この操作は元に戻せません。",
+    "upgradeMaxProfessors": "無料プランでは教授を{max}人までしか登録できません。Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "無料プランでは教授1人あたり資料を{max}件までしか登録できません。Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "モニタリング＆ファイル（RAGコンテキスト）",
@@ -209,7 +234,12 @@
     },
     "fileListTitle": "登録されたコンテキストファイル一覧",
     "noFiles": "登録されたファイルがありません。",
-    "fileType": "タイプ: {mimeType}"
+    "fileType": "タイプ: {mimeType}",
+    "emptyContentPlaceholder": "内容が入力されていない文書です。",
+    "errors": {
+      "fileTooLarge": "ファイル容量が大きすぎます（10MB超過）。重要なテキストをコピーして直接入力するか、変換してからアップロードしてください！",
+      "unsupportedFormat": "このファイル形式はブラウザで直接読み込めません。テキスト直接入力をご利用ください。"
+    }
   },
   "logs": {
     "title": "DB連携ログ＆AI回答の確認",
@@ -226,7 +256,14 @@
     "collapseAnswer": "▲ 回答を閉じる",
     "viewAnswer": "▼ AIの回答を見る",
     "deleteLogAria": "ログを削除",
-    "responseRecordLabel": "[AI応答結果の記録]"
+    "responseRecordLabel": "[AI応答結果の記録]",
+    "errors": {
+      "logDeleteFailed": "ログの削除中にエラーが発生しました：{error}",
+      "folderCreateFailed": "フォルダを作成できませんでした：{error}",
+      "folderDeleteFailed": "フォルダを削除できませんでした：{error}",
+      "moveToFolderFailed": "会話をフォルダに移動できませんでした：{error}"
+    },
+    "deleteFolderConfirm": "「{folderName}」フォルダを削除しますか？フォルダ内の会話は削除されず、未分類に移動します。"
   },
   "nodes": {
     "this_doc": {
@@ -353,5 +390,26 @@
       "saveResultButton": "ログインして保存",
       "backToLogin": "← ログインに戻る"
     }
+  },
+  "account": {
+    "deleteConfirm": "本当にアカウントデータを削除しますか？\n\nアップロードしたすべてのファイル、教授の資料、会話履歴、会話フォルダが完全に削除され、元に戻せません。\n（ログインアカウント自体は維持されます。ご希望であれば再度ログインして最初からやり直せます。）",
+    "deleteErrorAlert": "アカウント削除中に問題が発生しました：{error}\nもう一度お試しください。",
+    "deleting": "削除中...",
+    "delete": "アカウント削除"
+  },
+  "upgrade": {
+    "requestSendFailed": "リクエストを送信できませんでした：{error}",
+    "requestReceivedTitle": "リクエストを受け付けました",
+    "requestReceivedDesc": "近日中にご連絡します！",
+    "title": "Proにアップグレード",
+    "priceLine": "Upgrade to Pro — {price}",
+    "defaultContext": "決済が完了すると、すぐにPro特典が適用されます。",
+    "checkoutButton": "Proの決済に進む",
+    "orContactDivider": "またはお問い合わせ",
+    "emailLabel": "メールアドレス",
+    "memoLabel": "メモ（任意）",
+    "memoPlaceholder": "ご質問や必要な機能をご記入ください",
+    "sending": "送信中...",
+    "sendRequest": "リクエストを送信"
   }
 }

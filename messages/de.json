@@ -14,10 +14,16 @@
     "send": "Prompt senden",
     "sending": "Wird gesendet...",
     "delete": "Löschen",
-    "create": "Erstellen"
+    "create": "Erstellen",
+    "aiConnected": "OpenAI GPT-4.1 mini verbunden",
+    "close": "Schließen",
+    "openMenu": "Menü öffnen",
+    "logout": "Abmelden",
+    "unknownError": "Unbekannter Fehler",
+    "responseLanguageLabel": "KI-Antwortsprache"
   },
   "workspace": {
-    "subtitle": "Die KI erstellt Antworten basierend auf dem Kontext der aktiven MCP-Blöcke und dem Inhalt angehängter Dokumente.",
+    "subtitle": "Die KI erstellt Antworten basierend auf dem Gesprächskontext und dem Inhalt angehängter Dokumente.",
     "promptSectionLabel": "KI-Prompt senden",
     "removeAttachment": "Anhang {name} entfernen",
     "attachFile": "Datei/Foto anhängen",
@@ -65,8 +71,13 @@
       "requestFailed": "Entschuldigung, wir konnten deine Anfrage nicht verarbeiten: {error}",
       "networkError": "Entschuldigung, es ist ein Netzwerkfehler aufgetreten: {error}",
       "analyzeFailed": "Die Analyse ist fehlgeschlagen.",
-      "analyzeErrorFallback": "Bei der Analyse ist ein Fehler aufgetreten."
-    }
+      "analyzeErrorFallback": "Bei der Analyse ist ein Fehler aufgetreten.",
+      "tooManyAttachments": "Sie können maximal {max} Dateien/Bilder gleichzeitig anhängen (aktuell {count}). Verringern Sie die Anzahl der Dateien oder entfernen Sie vorhandene Anhänge und versuchen Sie es erneut.",
+      "quotaCheckFailed": "Das Limit konnte nicht überprüft werden."
+    },
+    "viewAsLens": "Als {label} anzeigen",
+    "meetingNotesCourseLabel": "Aus Meeting-/Vorlesungsnotizen erkannt",
+    "lensRegisterCourseLabel": "Fristen extrahieren · Quelle: „{date}\""
   },
   "records": {
     "title": "Meine Aufzeichnungen",
@@ -107,8 +118,6 @@
     "goToChatTab": "Zum Chat-Tab",
     "urgencyDistribution": "Dringlichkeitsverteilung",
     "timeline": "Bevorstehende Zeitleiste",
-    "activeBlocksLabel": "Aktive MCP-Blöcke",
-    "noActiveBlocks": "Keine aktiven Blöcke",
     "recentFilesLabel": "Kürzliche Anhänge",
     "noAttachedFiles": "Keine angehängten Dateien",
     "moreFiles": "+{count} weitere",
@@ -123,8 +132,7 @@
       "total": "Fristen insgesamt",
       "thisWeek": "Diese Woche fällig",
       "overdue": "Überfällig",
-      "files": "Referenzdateien",
-      "activeBlocks": "Aktive MCP-Blöcke"
+      "files": "Referenzdateien"
     },
     "urgency": {
       "overdue": "Überfällig",
@@ -194,7 +202,24 @@
       "first": "Erster Eindruck aus 1 Dokument",
       "some": "Basierend auf {count} Dokumenten — ein Muster zeichnet sich ab",
       "clear": "Basierend auf {count} Dokumenten — das Muster ist klar"
-    }
+    },
+    "errors": {
+      "schoolDeptRequired": "Bitte geben Sie Schule und Fachbereich ein.",
+      "registerFailed": "Der Professor konnte nicht registriert werden: {error}",
+      "updateFailed": "Die Analyse konnte nicht aktualisiert werden.",
+      "saveAnalysisFailed": "Das Analyseergebnis konnte nicht gespeichert werden.",
+      "thisProfessorFallback": "Dieser Professor",
+      "updateFailedAlert": "Die Analyse für „{name}\" konnte nicht aktualisiert werden: {error}\nDie Dokumentenanzahl und das Analyseergebnis können vorübergehend nicht übereinstimmen — versuchen Sie es erneut über die Schaltfläche „Diesen Professor analysieren\" auf der Detailseite.",
+      "docLimitReached": "Dieser Professor kann höchstens {max} Dokumente haben (aktuell {count}). Bitte löschen Sie zuerst nicht benötigte Dokumente.",
+      "docSaveFailed": "„{fileName}\" konnte nicht gespeichert werden: {error}",
+      "nameRequired": "Bitte geben Sie den Namen des Professors ein.",
+      "selectProfessorFirst": "Bitte wählen Sie zuerst einen Professor aus oder registrieren Sie einen neuen.",
+      "docDeleteFailed": "Das Dokument konnte nicht gelöscht werden: {error}",
+      "professorDeleteFailed": "Der Professor konnte nicht gelöscht werden: {error}"
+    },
+    "deleteConfirm": "„{name}\" und alle registrierten Materialien löschen? Dies kann nicht rückgängig gemacht werden.",
+    "upgradeMaxProfessors": "Die kostenlose Stufe erlaubt bis zu {max} Professoren. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "Die kostenlose Stufe erlaubt bis zu {max} Dokumente pro Professor. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "Überwachung & Dateien (RAG-Kontext)",
@@ -209,7 +234,12 @@
     },
     "fileListTitle": "Registrierte Kontextdateien",
     "noFiles": "Keine Dateien registriert.",
-    "fileType": "Typ: {mimeType}"
+    "fileType": "Typ: {mimeType}",
+    "emptyContentPlaceholder": "Dieses Dokument hat keinen Inhalt.",
+    "errors": {
+      "fileTooLarge": "Die Datei ist zu groß (über 10 MB). Kopieren Sie den wichtigsten Text und geben Sie ihn direkt ein, oder konvertieren Sie die Datei und laden Sie sie hoch!",
+      "unsupportedFormat": "Dieses Dateiformat kann vom Browser nicht direkt gelesen werden. Bitte verwenden Sie die direkte Texteingabe."
+    }
   },
   "logs": {
     "title": "DB-Protokolle & KI-Antwortverlauf",
@@ -226,7 +256,14 @@
     "collapseAnswer": "▲ Antwort ausblenden",
     "viewAnswer": "▼ KI-Antwort anzeigen",
     "deleteLogAria": "Protokoll löschen",
-    "responseRecordLabel": "[KI-Antwortprotokoll]"
+    "responseRecordLabel": "[KI-Antwortprotokoll]",
+    "errors": {
+      "logDeleteFailed": "Beim Löschen des Protokolls ist ein Fehler aufgetreten: {error}",
+      "folderCreateFailed": "Der Ordner konnte nicht erstellt werden: {error}",
+      "folderDeleteFailed": "Der Ordner konnte nicht gelöscht werden: {error}",
+      "moveToFolderFailed": "Das Gespräch konnte nicht in den Ordner verschoben werden: {error}"
+    },
+    "deleteFolderConfirm": "Ordner „{folderName}\" löschen? Gespräche darin werden nicht gelöscht, sondern nach „Nicht zugeordnet\" verschoben."
   },
   "nodes": {
     "this_doc": {
@@ -353,5 +390,26 @@
       "saveResultButton": "Anmelden und speichern",
       "backToLogin": "← Zurück zur Anmeldung"
     }
+  },
+  "account": {
+    "deleteConfirm": "Möchten Sie Ihre Kontodaten wirklich löschen?\n\nAlle hochgeladenen Dateien, Materialien von Professoren, der Gesprächsverlauf und die Gesprächsordner werden dauerhaft gelöscht und können nicht wiederhergestellt werden.\n(Ihr Login-Konto selbst bleibt bestehen — Sie können sich jederzeit wieder anmelden und neu beginnen.)",
+    "deleteErrorAlert": "Beim Löschen Ihres Kontos ist ein Problem aufgetreten: {error}\nBitte versuchen Sie es erneut.",
+    "deleting": "Wird gelöscht...",
+    "delete": "Konto löschen"
+  },
+  "upgrade": {
+    "requestSendFailed": "Die Anfrage konnte nicht gesendet werden: {error}",
+    "requestReceivedTitle": "Anfrage erhalten",
+    "requestReceivedDesc": "Wir melden uns bald bei Ihnen!",
+    "title": "Auf Pro upgraden",
+    "priceLine": "Upgrade to Pro — {price}",
+    "defaultContext": "Pro-Vorteile gelten, sobald die Zahlung abgeschlossen ist.",
+    "checkoutButton": "Zur Pro-Kasse",
+    "orContactDivider": "Oder hinterlassen Sie eine Nachricht",
+    "emailLabel": "E-Mail",
+    "memoLabel": "Notiz (optional)",
+    "memoPlaceholder": "Teilen Sie uns Fragen oder benötigte Funktionen mit",
+    "sending": "Wird gesendet...",
+    "sendRequest": "Anfrage senden"
   }
 }

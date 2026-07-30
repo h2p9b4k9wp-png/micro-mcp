@@ -45,18 +45,6 @@ import {
   type DigestResult,
 } from '@/lib/lenses';
 
-// 💡 [신규] 이번 단계는 UI를 9노드 3열 파이프라인으로 전환하는 게 목표라, 그래프 자체를 만들고
-// 편집하는 로직은 아직 없습니다. 눈으로 확인할 수 있도록 더미 그래프를 하드코딩해서 렌더합니다.
-const DUMMY_GRAPH: CircuitGraphState = {
-  nodes: [
-    { id: 'this_doc', layer: 'source', status: 'done' },
-    { id: 'digest', layer: 'lens', status: 'running' },
-  ],
-  edges: [
-    { from: 'this_doc', to: 'digest' },
-  ],
-};
-
 interface LogItem {
   id: string;
   content: string;
@@ -416,10 +404,6 @@ export default function HomePage() {
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const commandInputRef = useRef<HTMLInputElement>(null);
 
-  // 💡 [신규] 9노드 3열(source→lens→action) 파이프라인 그래프 상태. 그래프 자체(노드 배치·연결)는
-  // 매 문서/세션마다 새로 구성되는 걸 전제로 하고 있어 저장하지 않습니다 — 지금은 더미 그래프 고정.
-  const [graph] = useState<CircuitGraphState>(DUMMY_GRAPH);
-
   // 💡 [신규] 그래프 자체는 저장하지 않지만, 다음 그래프를 빠르게 구성할 때 참고할 최소한의 힌트
   // (마지막에 쓴 렌즈, 선호 action)는 계정별로 저장합니다.
   const [graphPreferences, setGraphPreferences] = useState<GraphPreferences>({ lastLens: null, preferredAction: null });
@@ -734,11 +718,6 @@ export default function HomePage() {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [streamingLog, logs]);
 
-  const activeMcpNames = graph.nodes
-    .map(n => getNodeMeta(n.id)?.label)
-    .filter((label): label is string => Boolean(label))
-    .join(', ') || '연결된 노드 없음';
-
   // 💡 [신규] 노드 클릭 시 그래프 자체를 편집하지는 않습니다(더미 그래프 고정 단계). 대신 lens/action
   // 노드를 클릭하면 "마지막에 쓴 렌즈"/"선호 action" 힌트를 갱신합니다 — 실행 로직과는 무관합니다.
   const handleNodeClick = (nodeId: NodeId) => {
@@ -910,7 +889,7 @@ export default function HomePage() {
     if (filesToAttach.length === 0) return;
 
     if (chatAttachments.length + filesToAttach.length > MAX_CHAT_ATTACHMENTS) {
-      alert(`한 번에 첨부할 수 있는 파일/이미지는 최대 ${MAX_CHAT_ATTACHMENTS}개예요(현재 ${chatAttachments.length}개). 파일 수를 줄이거나 이미 첨부한 걸 지우고 다시 시도해주세요.`);
+      alert(t('workspace.errors.tooManyAttachments', { max: MAX_CHAT_ATTACHMENTS, count: chatAttachments.length }));
       return;
     }
 
@@ -951,7 +930,7 @@ export default function HomePage() {
                 openUpgradeModal(quotaData.error);
                 break;
               }
-              alert(quotaData.error || '한도를 확인하지 못했어요.');
+              alert(quotaData.error || t('workspace.errors.quotaCheckFailed'));
               continue;
             }
           } catch (quotaErr) {
@@ -1045,7 +1024,7 @@ export default function HomePage() {
         memo: upgradeMemo.trim() || null,
       });
       if (error) {
-        alert(`요청을 보내지 못했어요: ${error.message}`);
+        alert(t('upgrade.requestSendFailed', { error: error.message }));
         return;
       }
       setUpgradeRequestSubmitted(true);
@@ -1065,9 +1044,7 @@ export default function HomePage() {
   // 업로드한 자료·교수님·대화 기록·폴더만 전부 지워집니다.
   const handleDeleteAccount = async () => {
     if (!user) return;
-    const confirmed = window.confirm(
-      '정말로 계정 데이터를 삭제할까요?\n\n업로드한 모든 파일, 교수님 자료, 대화 기록, 대화 폴더가 영구적으로 삭제되며 되돌릴 수 없습니다.\n(로그인 계정 자체는 유지되며, 원하시면 다시 로그인해 새로 시작할 수 있어요.)'
-    );
+    const confirmed = window.confirm(t('account.deleteConfirm'));
     if (!confirmed) return;
 
     setIsDeletingAccount(true);
@@ -1082,14 +1059,14 @@ export default function HomePage() {
       ]);
       const firstError = results.find((r) => r.error)?.error;
       if (firstError) {
-        alert(`계정 삭제 중 문제가 발생했어요: ${firstError.message}\n다시 시도해주세요.`);
+        alert(t('account.deleteErrorAlert', { error: firstError.message }));
         return;
       }
 
       await supabase.auth.signOut();
       router.push('/login');
     } catch (error) {
-      alert(`계정 삭제 중 문제가 발생했어요: ${error instanceof Error ? error.message : String(error)}`);
+      alert(t('account.deleteErrorAlert', { error: error instanceof Error ? error.message : String(error) }));
     } finally {
       setIsDeletingAccount(false);
     }
@@ -1103,7 +1080,7 @@ export default function HomePage() {
     const trimmedSchool = school.trim();
     const trimmedDepartment = department.trim();
     if (!trimmedSchool || !trimmedDepartment) {
-      alert('학교와 학과를 입력해주세요.');
+      alert(t('professors.errors.schoolDeptRequired'));
       return null;
     }
 
@@ -1112,7 +1089,7 @@ export default function HomePage() {
     // 여기서 클라이언트측으로 검사합니다.
     const limits = getPlanLimits(isPro);
     if (professors.length >= limits.maxProfessors) {
-      openUpgradeModal(`무료 등급은 교수님을 ${limits.maxProfessors}명까지만 등록할 수 있어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`);
+      openUpgradeModal(t('professors.upgradeMaxProfessors', { max: limits.maxProfessors, price: PRO_PRICE_LABEL }));
       return null;
     }
 
@@ -1122,7 +1099,7 @@ export default function HomePage() {
       .select()
       .single();
     if (error || !data) {
-      alert(`교수님을 등록하지 못했어요: ${error?.message || '알 수 없는 오류'}`);
+      alert(t('professors.errors.registerFailed', { error: error?.message || t('common.unknownError') }));
       return null;
     }
     setProfessors(prev => [data, ...prev]);
@@ -1163,7 +1140,7 @@ export default function HomePage() {
           body: JSON.stringify(requestBody),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || '분석 갱신에 실패했어요.');
+        if (!res.ok) throw new Error(data.error || t('professors.errors.updateFailed'));
 
         const { data: upserted, error } = await supabase
           .from('professor_analysis')
@@ -1173,7 +1150,7 @@ export default function HomePage() {
           )
           .select('professor_id, result, document_count, updated_at')
           .single();
-        if (error || !upserted) throw new Error(error?.message || '분석 결과를 저장하지 못했어요.');
+        if (error || !upserted) throw new Error(error?.message || t('professors.errors.saveAnalysisFailed'));
 
         setProfessorAnalyses(prev => [upserted, ...prev.filter(a => a.professor_id !== professorId)]);
         setIsAnalyzingProfessor(false);
@@ -1186,8 +1163,10 @@ export default function HomePage() {
     setIsAnalyzingProfessor(false);
     setProfessorAnalysisError(lastErrorMessage);
     alert(
-      `"${professor?.name ?? '이 교수님'}" 분석 갱신에 실패했어요: ${lastErrorMessage}\n` +
-      '자료 개수와 분석 결과가 실제와 잠시 어긋나 있을 수 있어요 — 교수님 상세 화면의 "이 교수님 분석" 버튼으로 다시 시도해주세요.'
+      t('professors.errors.updateFailedAlert', {
+        name: professor?.name ?? t('professors.errors.thisProfessorFallback'),
+        error: lastErrorMessage ?? '',
+      })
     );
   };
 
@@ -1264,11 +1243,11 @@ export default function HomePage() {
     const existingCount = professorDocuments.filter(d => d.professor_id === professorId).length;
     const limits = getPlanLimits(isPro);
     if (existingCount + filesToUpload.length > limits.maxDocumentsPerProfessor) {
-      openUpgradeModal(`무료 등급은 교수님 한 분당 자료를 ${limits.maxDocumentsPerProfessor}개까지만 등록할 수 있어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`);
+      openUpgradeModal(t('professors.upgradeMaxDocuments', { max: limits.maxDocumentsPerProfessor, price: PRO_PRICE_LABEL }));
       return;
     }
     if (existingCount + filesToUpload.length > MAX_PROFESSOR_DOCUMENTS) {
-      alert(`이 교수님에게는 최대 ${MAX_PROFESSOR_DOCUMENTS}개까지만 자료를 등록할 수 있어요(현재 ${existingCount}개). 필요 없는 자료를 먼저 삭제해주세요.`);
+      alert(t('professors.errors.docLimitReached', { max: MAX_PROFESSOR_DOCUMENTS, count: existingCount }));
       return;
     }
 
@@ -1277,14 +1256,14 @@ export default function HomePage() {
     try {
       for (const file of filesToUpload) {
         if (file.size > 10 * 1024 * 1024) {
-          alert(`"${file.name}"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.`);
+          alert(t('workspace.errors.fileTooLarge', { fileName: file.name }));
           continue;
         }
 
         const dataUrl: string = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject(new Error('파일을 읽는 중 문제가 발생했어요.'));
+          reader.onerror = () => reject(new Error(t('workspace.errors.fileReadFailed')));
           reader.readAsDataURL(file);
         });
         const commaIndex = dataUrl.indexOf(',');
@@ -1306,7 +1285,7 @@ export default function HomePage() {
               openUpgradeModal(data.error);
               break;
             }
-            alert(`"${file.name}"에서 글자를 뽑지 못했어요: ${data.error}`);
+            alert(t('workspace.errors.extractFailed', { fileName: file.name, error: data.error }));
             continue;
           }
 
@@ -1318,7 +1297,7 @@ export default function HomePage() {
             .select()
             .single();
           if (error || !inserted) {
-            alert(`"${file.name}"을 저장하지 못했어요: ${error?.message || '알 수 없는 오류'}`);
+            alert(t('professors.errors.docSaveFailed', { fileName: file.name, error: error?.message || t('common.unknownError') }));
             continue;
           }
           setProfessorDocuments(prev => [inserted, ...prev]);
@@ -1339,7 +1318,7 @@ export default function HomePage() {
           }
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          alert(`"${file.name}" 처리 중 오류가 발생했어요: ${message}`);
+          alert(t('workspace.errors.attachProcessingFailed', { fileName: file.name, error: message }));
         }
       }
     } finally {
@@ -1359,7 +1338,7 @@ export default function HomePage() {
     let professorId = uploadProfessorChoice;
     if (professorId === '__new__') {
       if (!newProfessorName.trim()) {
-        alert('교수님 이름을 입력해주세요.');
+        alert(t('professors.errors.nameRequired'));
         return;
       }
       const createdId = await handleCreateProfessor(newProfessorName, newProfessorSchool, newProfessorDepartment);
@@ -1371,7 +1350,7 @@ export default function HomePage() {
       setNewProfessorDepartment('');
     }
     if (!professorId) {
-      alert('먼저 교수님을 선택하거나 새로 등록해주세요.');
+      alert(t('professors.errors.selectProfessorFirst'));
       return;
     }
     await handleUploadProfessorFiles(fileList, professorId, uploadDocType);
@@ -1382,7 +1361,7 @@ export default function HomePage() {
   const handleDeleteProfessorDocument = async (docId: string, professorId: string) => {
     const { error } = await supabase.from('documents').delete().eq('id', docId);
     if (error) {
-      alert(`자료를 삭제하지 못했어요: ${error.message}`);
+      alert(t('professors.errors.docDeleteFailed', { error: error.message }));
       return;
     }
 
@@ -1402,12 +1381,12 @@ export default function HomePage() {
   // on delete cascade로 걸려있어 DB에서 함께 정리됩니다(supabase/migrations/20260727_...,
   // 20260728_...). 되돌릴 수 없는 작업이라(등록된 자료가 전부 함께 사라짐) 확인을 한 번 거칩니다.
   const handleDeleteProfessor = async (professorId: string, professorName: string) => {
-    if (!window.confirm(`"${professorName}" 교수님과 등록된 자료를 모두 삭제할까요? 이 작업은 되돌릴 수 없어요.`)) {
+    if (!window.confirm(t('professors.deleteConfirm', { name: professorName }))) {
       return;
     }
     const { error } = await supabase.from('professors').delete().eq('id', professorId);
     if (error) {
-      alert(`교수님을 삭제하지 못했어요: ${error.message}`);
+      alert(t('professors.errors.professorDeleteFailed', { error: error.message }));
       return;
     }
     setProfessors(prev => prev.filter(p => p.id !== professorId));
@@ -1545,7 +1524,7 @@ export default function HomePage() {
       id: Date.now().toString(),
       name: newFileName,
       size: `${(newFileContent.length / 1024).toFixed(1)} KB`,
-      content: newFileContent || '내용이 입력되지 않은 문서입니다.',
+      content: newFileContent || t('monitoring.emptyContentPlaceholder'),
       mimeType: 'text/plain',
       date: new Date().toISOString().split('T')[0]
     };
@@ -1568,7 +1547,7 @@ export default function HomePage() {
       setLogs(prev => prev.filter(log => log.id !== id));
       if (expandedLogId === id) setExpandedLogId(null);
     } catch (err: any) {
-      alert(`로그 삭제 중 오류가 발생했어요: ${err.message || err}`);
+      alert(t('logs.errors.logDeleteFailed', { error: err.message || err }));
     }
   };
 
@@ -1584,7 +1563,7 @@ export default function HomePage() {
         .select()
         .single();
       if (error || !data) {
-        alert(`폴더를 만들지 못했어요: ${error?.message || '알 수 없는 오류'}`);
+        alert(t('logs.errors.folderCreateFailed', { error: error?.message || t('common.unknownError') }));
         return;
       }
       setConversationFolders(prev => [data, ...prev]);
@@ -1599,12 +1578,12 @@ export default function HomePage() {
   // state의 folder_id를 직접 null로 갱신합니다). 지금 이 폴더로 필터링 중이었다면 "전체"로
   // 되돌립니다 — 안 그러면 존재하지 않는 폴더로 필터링된 빈 화면이 남습니다.
   const handleDeleteFolder = async (folderId: string, folderName: string) => {
-    if (!window.confirm(`"${folderName}" 폴더를 삭제할까요? 폴더 안의 대화는 삭제되지 않고 미분류로 이동해요.`)) {
+    if (!window.confirm(t('logs.deleteFolderConfirm', { folderName }))) {
       return;
     }
     const { error } = await supabase.from('conversation_folders').delete().eq('id', folderId);
     if (error) {
-      alert(`폴더를 삭제하지 못했어요: ${error.message}`);
+      alert(t('logs.errors.folderDeleteFailed', { error: error.message }));
       return;
     }
     setConversationFolders(prev => prev.filter(f => f.id !== folderId));
@@ -1616,7 +1595,7 @@ export default function HomePage() {
   const handleMoveLogToFolder = async (logId: string, folderId: string | null) => {
     const { error } = await supabase.from('logs').update({ folder_id: folderId }).eq('id', logId);
     if (error) {
-      alert(`대화를 폴더로 옮기지 못했어요: ${error.message}`);
+      alert(t('logs.errors.moveToFolderFailed', { error: error.message }));
       return;
     }
     setLogs(prev => prev.map(log => (log.id === logId ? { ...log, folder_id: folderId } : log)));
@@ -1627,7 +1606,7 @@ export default function HomePage() {
     if (!file) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      alert('파일 용량이 너무 큽니다 (10MB 초과). 핵심 텍스트를 복사해서 직접 입력하거나 변환해서 올려주세요!');
+      alert(t('monitoring.errors.fileTooLarge'));
       e.target.value = '';
       return;
     }
@@ -1654,7 +1633,7 @@ export default function HomePage() {
     try {
       reader.readAsDataURL(file);
     } catch (err) {
-      alert('이 파일 형식은 브라우저에서 직접 읽기 어렵습니다. 텍스트 직접 입력을 이용해 주세요.');
+      alert(t('monitoring.errors.unsupportedFormat'));
       e.target.value = '';
     }
   };
@@ -1703,7 +1682,7 @@ export default function HomePage() {
               className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-[13px] sm:text-xs font-medium px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
             >
               {meta && <meta.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />}
-              {meta?.label}(으)로 보기
+              {meta && t('workspace.viewAsLens', { label: meta.label })}
             </button>
           );
         })}
@@ -1737,7 +1716,7 @@ export default function HomePage() {
     const newDeadline: Deadline = {
       id: Date.now().toString(),
       title: item.title,
-      course: '회의·강의 노트에서 감지됨',
+      course: t('workspace.meetingNotesCourseLabel'),
       dueAt: item.dueAt,
     };
     setDeadlines(prev => [...prev, newDeadline]);
@@ -1834,7 +1813,7 @@ export default function HomePage() {
   const deadlineItemToDeadline = (item: DeadlineItem, index: number): Deadline => ({
     id: `${Date.now()}-${index}`,
     title: item.title,
-    course: `마감 뽑기 · 원문: "${item.date}"`,
+    course: t('workspace.lensRegisterCourseLabel', { date: item.date }),
     dueAt: tryParseDeadlineDate(item.date) ?? fallbackDeadlineDueAt(),
   });
 
@@ -1899,14 +1878,12 @@ export default function HomePage() {
     return diff >= 0 && diff <= 7 * 24 * 60 * 60 * 1000;
   }).length;
   const overdueDeadlinesCount = deadlines.filter((d) => new Date(d.dueAt).getTime() < nowTs).length;
-  const activeBlocksCount = graph.nodes.length;
 
   const kpiTiles = [
     { label: t('deadlines.kpi.total'), icon: '⏰', value: deadlines.length },
     { label: t('deadlines.kpi.thisWeek'), icon: '📅', value: upcomingWeekCount },
     { label: t('deadlines.kpi.overdue'), icon: '⚠️', value: overdueDeadlinesCount, emphasize: overdueDeadlinesCount > 0 },
     { label: t('deadlines.kpi.files'), icon: '📁', value: files.length },
-    { label: t('deadlines.kpi.activeBlocks'), icon: '🧩', value: activeBlocksCount },
   ];
 
   const urgencyBuckets = [
@@ -2064,7 +2041,7 @@ export default function HomePage() {
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="메뉴 열기"
+          aria-label={t('common.openMenu')}
           className="text-[#F5F2F7] text-xl p-1.5 rounded-lg hover:bg-[#15131A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
         >
           {isMobileMenuOpen ? '✕' : '☰'}
@@ -2112,25 +2089,9 @@ export default function HomePage() {
 
         {/* 좌측 하단 MCP 연결 상태 배지 UI */}
         <div className="p-4 border-t border-[#322D3B] text-xs bg-[#1C1922]">
-          <div className="flex items-center gap-2 mb-2.5">
+          <div className="flex items-center gap-2">
             <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#6EE7B7] animate-pulse' : 'bg-[#FF7A6B]'}`}></span>
-            <span className="font-semibold text-[#F5F2F7]">OpenAI GPT-4.1 mini 연동됨</span>
-          </div>
-          <div className="text-[11px] text-[#857C93] mb-1.5 font-medium uppercase tracking-wide">활성화된 MCP 블록</div>
-          <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
-            {graph.nodes.length === 0 ? (
-              <span className="text-[#857C93] italic">없음</span>
-            ) : (
-              graph.nodes.map(n => {
-                const meta = getNodeMeta(n.id);
-                if (!meta) return null;
-                return (
-                  <span key={n.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2 py-1 rounded-md text-[10px] font-medium flex items-center gap-1">
-                    <meta.icon className="w-3 h-3 shrink-0" strokeWidth={2} /> {meta.label}
-                  </span>
-                );
-              })
-            )}
+            <span className="font-semibold text-[#F5F2F7]">{t('common.aiConnected')}</span>
           </div>
         </div>
 
@@ -2139,7 +2100,7 @@ export default function HomePage() {
             recomputeProfessorAnalysis*가 이 값을 responseLanguage로 API에 보냅니다). */}
         <div className="px-4 py-3 border-t border-[#322D3B]">
           <label className="block text-[10px] font-semibold text-[#857C93] uppercase tracking-wide mb-1.5">
-            AI 답변 언어
+            {t('common.responseLanguageLabel')}
           </label>
           <select
             value={responseLanguage}
@@ -2168,7 +2129,7 @@ export default function HomePage() {
           disabled={isDeletingAccount}
           className="block w-full text-left px-4 py-3 border-t border-[#322D3B] text-xs text-[#FF7A6B]/70 hover:text-[#FF7A6B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B] focus-visible:ring-inset"
         >
-          {isDeletingAccount ? '삭제하는 중...' : '계정 삭제'}
+          {isDeletingAccount ? t('account.deleting') : t('account.delete')}
         </button>
       </div>
 
@@ -2185,7 +2146,7 @@ export default function HomePage() {
             }}
             className="px-4 py-2 rounded-lg border border-[#63392F] bg-[#211E28] text-[#FF7A6B] hover:bg-[#35201D] text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
           >
-            로그아웃
+            {t('common.logout')}
           </button>
         </div>
 
@@ -2210,14 +2171,8 @@ export default function HomePage() {
                   isDraggingOverChat ? 'border-[#F4679B] bg-[#2A1F26]' : 'border-[#322D3B]'
                 }`}
               >
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                  <div className="text-sm font-semibold text-[#F5F2F7]">
-                    {t('workspace.promptSectionLabel')}
-                  </div>
-                  <div className="flex items-center gap-1.5 bg-[#15131A] px-3 py-1 rounded-full border border-[#322D3B] text-xs text-[#AFA6BD] max-w-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#6EE7B7] animate-pulse shrink-0"></span>
-                    <span className="truncate">{activeMcpNames}</span>
-                  </div>
+                <div className="text-sm font-semibold text-[#F5F2F7] mb-4">
+                  {t('workspace.promptSectionLabel')}
                 </div>
 
                 {chatAttachments.length > 0 && (
@@ -2616,25 +2571,7 @@ export default function HomePage() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 pt-5 border-t border-[#322D3B]">
-                  <div>
-                    <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">{t('deadlines.activeBlocksLabel')}</h4>
-                    <div className="flex flex-wrap gap-1.5">
-                      {graph.nodes.length === 0 ? (
-                        <span className="text-xs text-[#857C93] italic">{t('deadlines.noActiveBlocks')}</span>
-                      ) : (
-                        graph.nodes.map((n) => {
-                          const meta = getNodeMeta(n.id);
-                          if (!meta) return null;
-                          return (
-                            <span key={n.id} className="bg-[#1B3328] text-[#6EE7B7] border border-[#37604D] px-2.5 py-1 rounded-md text-[11px] font-medium flex items-center gap-1">
-                              <meta.icon className="w-3.5 h-3.5 shrink-0" strokeWidth={2} /> {meta.label}
-                            </span>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
+                <div className="mt-6 pt-5 border-t border-[#322D3B]">
                   <div>
                     <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">{t('deadlines.recentFilesLabel')}</h4>
                     {files.length === 0 ? (
@@ -3363,22 +3300,22 @@ export default function HomePage() {
           {upgradeRequestSubmitted ? (
             <div className="flex flex-col items-center text-center gap-3 py-4">
               <span className="text-3xl">✨</span>
-              <h3 className="text-base font-bold text-[#F5F2F7]">요청이 접수됐어요</h3>
-              <p className="text-sm text-[#C9C0D6] leading-relaxed">곧 연락드릴게요!</p>
+              <h3 className="text-base font-bold text-[#F5F2F7]">{t('upgrade.requestReceivedTitle')}</h3>
+              <p className="text-sm text-[#C9C0D6] leading-relaxed">{t('upgrade.requestReceivedDesc')}</p>
               <button
                 type="button"
                 onClick={closeUpgradeModal}
                 className="mt-2 bg-[#F4679B] hover:bg-[#D1477F] text-white text-sm font-semibold px-5 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
               >
-                닫기
+                {t('common.close')}
               </button>
             </div>
           ) : (
             <>
-              <h3 className="text-base font-bold text-[#F5F2F7] mb-1.5">Pro로 업그레이드하기</h3>
-              <p className="text-sm font-bold text-[#F4679B] mb-3">Upgrade to Pro — {PRO_PRICE_LABEL}</p>
+              <h3 className="text-base font-bold text-[#F5F2F7] mb-1.5">{t('upgrade.title')}</h3>
+              <p className="text-sm font-bold text-[#F4679B] mb-3">{t('upgrade.priceLine', { price: PRO_PRICE_LABEL })}</p>
               <p className="text-xs text-[#AFA6BD] mb-4 leading-relaxed">
-                {upgradeContext || '결제를 완료하면 Pro 혜택이 바로 적용돼요.'}
+                {upgradeContext || t('upgrade.defaultContext')}
               </p>
               {/* 💡 [신규] Polar 결제 연동 — 실제 결제는 이 링크 하나로 끝. reference_id로
                   실어 보낸 user.id가 웹훅(app/api/webhooks/polar)을 통해 profiles.is_pro를
@@ -3390,16 +3327,16 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className="block text-center bg-[#F4679B] hover:bg-[#D1477F] text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
               >
-                Pro 결제하러 가기
+                {t('upgrade.checkoutButton')}
               </a>
               <div className="flex items-center gap-2 my-4">
                 <div className="flex-1 h-px bg-[#322D3B]" />
-                <span className="text-[10px] text-[#5B5566]">또는 문의 남기기</span>
+                <span className="text-[10px] text-[#5B5566]">{t('upgrade.orContactDivider')}</span>
                 <div className="flex-1 h-px bg-[#322D3B]" />
               </div>
               <form onSubmit={handleSubmitUpgradeRequest} className="flex flex-col gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">이메일</label>
+                  <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">{t('upgrade.emailLabel')}</label>
                   <input
                     type="email"
                     required
@@ -3410,12 +3347,12 @@ export default function HomePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">메모 (선택)</label>
+                  <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">{t('upgrade.memoLabel')}</label>
                   <textarea
                     value={upgradeMemo}
                     onChange={(e) => setUpgradeMemo(e.target.value)}
                     rows={3}
-                    placeholder="궁금한 점이나 필요한 기능을 적어주세요"
+                    placeholder={t('upgrade.memoPlaceholder')}
                     className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566] resize-none"
                   />
                 </div>
@@ -3425,14 +3362,14 @@ export default function HomePage() {
                     onClick={closeUpgradeModal}
                     className="flex-1 bg-[#15131A] hover:bg-[#0D0B11] text-[#C9C0D6] border border-[#322D3B] text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#857C93]"
                   >
-                    닫기
+                    {t('common.close')}
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingUpgradeRequest || !upgradeEmail.trim()}
                     className="flex-1 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[#2A2632] disabled:text-[#857C93] disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                   >
-                    {isSubmittingUpgradeRequest ? '보내는 중...' : '요청 보내기'}
+                    {isSubmittingUpgradeRequest ? t('upgrade.sending') : t('upgrade.sendRequest')}
                   </button>
                 </div>
               </form>

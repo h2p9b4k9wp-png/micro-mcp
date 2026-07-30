@@ -14,10 +14,16 @@
     "send": "Envoyer la requête",
     "sending": "Envoi en cours...",
     "delete": "Supprimer",
-    "create": "Créer"
+    "create": "Créer",
+    "aiConnected": "OpenAI GPT-4.1 mini connecté",
+    "close": "Fermer",
+    "openMenu": "Ouvrir le menu",
+    "logout": "Se déconnecter",
+    "unknownError": "Erreur inconnue",
+    "responseLanguageLabel": "Langue de réponse de l'IA"
   },
   "workspace": {
-    "subtitle": "L'IA génère des réponses en fonction du contexte des blocs MCP actifs et du contenu de tout document joint.",
+    "subtitle": "L'IA génère des réponses en fonction du contexte de la conversation et du contenu de tout document joint.",
     "promptSectionLabel": "Envoyer une requête à l'IA",
     "removeAttachment": "Supprimer la pièce jointe {name}",
     "attachFile": "Joindre un fichier/une photo",
@@ -65,8 +71,13 @@
       "requestFailed": "Désolé, nous n'avons pas pu traiter votre demande : {error}",
       "networkError": "Désolé, une erreur réseau est survenue : {error}",
       "analyzeFailed": "L'analyse a échoué.",
-      "analyzeErrorFallback": "Une erreur est survenue pendant l'analyse."
-    }
+      "analyzeErrorFallback": "Une erreur est survenue pendant l'analyse.",
+      "tooManyAttachments": "Vous pouvez joindre jusqu'à {max} fichiers/images à la fois (actuellement {count}). Réduisez le nombre de fichiers ou supprimez des pièces jointes existantes puis réessayez.",
+      "quotaCheckFailed": "Impossible de vérifier le quota."
+    },
+    "viewAsLens": "Voir comme {label}",
+    "meetingNotesCourseLabel": "Détecté à partir des notes de réunion/cours",
+    "lensRegisterCourseLabel": "Extraire les échéances · Source : \"{date}\""
   },
   "records": {
     "title": "Mes historiques",
@@ -107,8 +118,6 @@
     "goToChatTab": "Aller à l'onglet Chat",
     "urgencyDistribution": "Répartition de l'urgence",
     "timeline": "Chronologie à venir",
-    "activeBlocksLabel": "Blocs MCP actifs",
-    "noActiveBlocks": "Aucun bloc actif",
     "recentFilesLabel": "Pièces jointes récentes",
     "noAttachedFiles": "Aucun fichier joint",
     "moreFiles": "+{count} de plus",
@@ -123,8 +132,7 @@
       "total": "Total des échéances",
       "thisWeek": "Échéance cette semaine",
       "overdue": "En retard",
-      "files": "Fichiers de référence",
-      "activeBlocks": "Blocs MCP actifs"
+      "files": "Fichiers de référence"
     },
     "urgency": {
       "overdue": "En retard",
@@ -194,7 +202,24 @@
       "first": "Première impression basée sur 1 document",
       "some": "Basé sur {count} documents — une tendance commence à se dessiner",
       "clear": "Basé sur {count} documents — la tendance est claire"
-    }
+    },
+    "errors": {
+      "schoolDeptRequired": "Veuillez saisir l'école et le département.",
+      "registerFailed": "Impossible d'enregistrer le professeur : {error}",
+      "updateFailed": "Échec de l'actualisation de l'analyse.",
+      "saveAnalysisFailed": "Impossible d'enregistrer le résultat de l'analyse.",
+      "thisProfessorFallback": "Ce professeur",
+      "updateFailedAlert": "Échec de l'actualisation de l'analyse pour « {name} » : {error}\nLe nombre de documents et le résultat de l'analyse peuvent être temporairement désynchronisés — réessayez avec le bouton « Analyser ce professeur » sur l'écran de détail.",
+      "docLimitReached": "Ce professeur ne peut avoir que {max} documents au maximum (actuellement {count}). Veuillez supprimer des documents inutiles au préalable.",
+      "docSaveFailed": "Impossible d'enregistrer \"{fileName}\" : {error}",
+      "nameRequired": "Veuillez saisir le nom du professeur.",
+      "selectProfessorFirst": "Veuillez d'abord sélectionner un professeur ou en enregistrer un nouveau.",
+      "docDeleteFailed": "Impossible de supprimer le document : {error}",
+      "professorDeleteFailed": "Impossible de supprimer le professeur : {error}"
+    },
+    "deleteConfirm": "Supprimer « {name} » et tous ses documents enregistrés ? Cette action est irréversible.",
+    "upgradeMaxProfessors": "L'offre gratuite permet d'enregistrer jusqu'à {max} professeurs. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "L'offre gratuite permet jusqu'à {max} documents par professeur. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "Surveillance et fichiers (contexte RAG)",
@@ -209,7 +234,12 @@
     },
     "fileListTitle": "Fichiers de contexte enregistrés",
     "noFiles": "Aucun fichier enregistré.",
-    "fileType": "Type : {mimeType}"
+    "fileType": "Type : {mimeType}",
+    "emptyContentPlaceholder": "Ce document ne contient aucun contenu.",
+    "errors": {
+      "fileTooLarge": "Le fichier est trop volumineux (plus de 10 Mo). Copiez le texte essentiel pour le saisir directement, ou convertissez le fichier avant de le téléverser !",
+      "unsupportedFormat": "Ce format de fichier ne peut pas être lu directement par le navigateur. Veuillez utiliser la saisie de texte directe."
+    }
   },
   "logs": {
     "title": "Journaux BD et réponses de l'IA",
@@ -226,7 +256,14 @@
     "collapseAnswer": "▲ Masquer la réponse",
     "viewAnswer": "▼ Voir la réponse de l'IA",
     "deleteLogAria": "Supprimer le journal",
-    "responseRecordLabel": "[Enregistrement de la réponse de l'IA]"
+    "responseRecordLabel": "[Enregistrement de la réponse de l'IA]",
+    "errors": {
+      "logDeleteFailed": "Une erreur s'est produite lors de la suppression du journal : {error}",
+      "folderCreateFailed": "Impossible de créer le dossier : {error}",
+      "folderDeleteFailed": "Impossible de supprimer le dossier : {error}",
+      "moveToFolderFailed": "Impossible de déplacer la conversation vers le dossier : {error}"
+    },
+    "deleteFolderConfirm": "Supprimer le dossier « {folderName} » ? Les conversations qu'il contient ne seront pas supprimées, elles seront déplacées vers Non classées."
   },
   "nodes": {
     "this_doc": {
@@ -353,5 +390,26 @@
       "saveResultButton": "Se connecter et enregistrer",
       "backToLogin": "← Retour à la connexion"
     }
+  },
+  "account": {
+    "deleteConfirm": "Voulez-vous vraiment supprimer les données de votre compte ?\n\nTous les fichiers téléversés, documents de professeurs, historique des conversations et dossiers de conversation seront définitivement supprimés et cette action est irréversible.\n(Votre compte de connexion lui-même est conservé — vous pouvez vous reconnecter et repartir à zéro si vous le souhaitez.)",
+    "deleteErrorAlert": "Un problème est survenu lors de la suppression de votre compte : {error}\nVeuillez réessayer.",
+    "deleting": "Suppression en cours...",
+    "delete": "Supprimer le compte"
+  },
+  "upgrade": {
+    "requestSendFailed": "Impossible d'envoyer la demande : {error}",
+    "requestReceivedTitle": "Demande reçue",
+    "requestReceivedDesc": "Nous vous contacterons bientôt !",
+    "title": "Passer à Pro",
+    "priceLine": "Upgrade to Pro — {price}",
+    "defaultContext": "Les avantages Pro s'appliquent dès que le paiement est terminé.",
+    "checkoutButton": "Aller au paiement Pro",
+    "orContactDivider": "Ou laissez un message",
+    "emailLabel": "E-mail",
+    "memoLabel": "Note (facultatif)",
+    "memoPlaceholder": "Indiquez vos questions ou les fonctionnalités dont vous avez besoin",
+    "sending": "Envoi en cours...",
+    "sendRequest": "Envoyer la demande"
   }
 }
