@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label} nécessite au moins {count} documents dans Ma bibliothèque pour être utilisé",
     "estimatedSeconds": "~{seconds}s"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Assemblez votre travail",
+      "headlineLine2": "comme des blocs, automatiquement.",
+      "subheadline": "Pas besoin de coder ni de peaufiner des prompts complexes. Connectez simplement les blocs dont vous avez besoin, l'IA s'occupe du reste.",
+      "features": {
+        "automation": {
+          "title": "Automatisation connectée",
+          "desc": "Connectez bases de données, calendriers, recherche et fichiers via des blocs"
+        },
+        "outputs": {
+          "title": "Résultats orientés action",
+          "desc": "Ne s'arrête pas à la conversation — se transforme en documents et plannings réels"
+        },
+        "hybridEngine": {
+          "title": "Moteur IA hybride",
+          "desc": "Sélectionne automatiquement le meilleur modèle selon la difficulté de la tâche"
+        }
+      },
+      "shortTagline": "Assemblez votre travail comme des blocs, automatiquement",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "Créer un nouveau compte",
+      "signInTitle": "Content de vous revoir",
+      "signUpSubtitle": "Créez un compte pour commencer",
+      "signInSubtitle": "Connectez-vous pour utiliser le service",
+      "emailLabel": "Adresse e-mail",
+      "passwordLabel": "Mot de passe",
+      "processing": "Traitement en cours...",
+      "signUpButton": "S'inscrire",
+      "signInButton": "Se connecter",
+      "orDivider": "Connexion rapide",
+      "continueWithGoogle": "Continuer avec Google",
+      "toggleToSignIn": "Vous avez déjà un compte ? Connectez-vous",
+      "toggleToSignUp": "Pas de compte ? Inscrivez-vous",
+      "tryWithoutAccount": "Ou essayez un fichier sans vous connecter →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "Nous avons envoyé un e-mail de confirmation ! Veuillez vérifier votre boîte de réception.",
+      "authErrorFallback": "Une erreur s'est produite lors de l'authentification.",
+      "oauthErrorFallback": "Échec de la connexion sociale",
+      "trialSavedPrompt": "Connectez-vous et le résultat que vous venez de voir sera enregistré automatiquement."
+    },
+    "trial": {
+      "title": "Essayez sans compte",
+      "subtitle": "Analysez un fichier gratuitement — sans inscription. (Jusqu'à 3 Mo, une fois par jour.)",
+      "analyzing": "Analyse de votre fichier…",
+      "chooseFile": "Cliquez pour choisir un fichier",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — jusqu'à 3 Mo",
+      "fileTooLarge": "Sans compte, vous pouvez analyser des fichiers jusqu'à 3 Mo.",
+      "readError": "Impossible de lire le fichier.",
+      "analyzeError": "Impossible d'analyser ce fichier.",
+      "genericError": "Une erreur s'est produite.",
+      "saveResultTitle": "Connectez-vous pour enregistrer ce résultat",
+      "saveResultButton": "Se connecter et enregistrer",
+      "backToLogin": "← Retour à la connexion"
+    }
   }
 }

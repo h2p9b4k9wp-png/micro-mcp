@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label} necesita al menos {count} documentos en Mi biblioteca para usarse",
     "estimatedSeconds": "~{seconds}s"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Ensambla tu trabajo",
+      "headlineLine2": "como bloques, de forma automática.",
+      "subheadline": "No necesitas programar ni pelear con prompts complejos. Solo conecta los bloques que necesitas y la IA se encarga del resto.",
+      "features": {
+        "automation": {
+          "title": "Automatización conectada",
+          "desc": "Conecta bases de datos, calendarios, búsqueda y archivos como bloques"
+        },
+        "outputs": {
+          "title": "Resultados orientados a la acción",
+          "desc": "No se queda en la conversación — se convierte en documentos y horarios reales"
+        },
+        "hybridEngine": {
+          "title": "Motor de IA híbrido",
+          "desc": "Selecciona automáticamente el mejor modelo según la dificultad de la tarea"
+        }
+      },
+      "shortTagline": "Ensambla tu trabajo como bloques, de forma automática",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "Crear una cuenta nueva",
+      "signInTitle": "Bienvenido de nuevo",
+      "signUpSubtitle": "Crea una cuenta para empezar",
+      "signInSubtitle": "Inicia sesión para usar el servicio",
+      "emailLabel": "Correo electrónico",
+      "passwordLabel": "Contraseña",
+      "processing": "Procesando...",
+      "signUpButton": "Registrarse",
+      "signInButton": "Iniciar sesión",
+      "orDivider": "Inicio de sesión rápido",
+      "continueWithGoogle": "Continuar con Google",
+      "toggleToSignIn": "¿Ya tienes una cuenta? Inicia sesión",
+      "toggleToSignUp": "¿No tienes cuenta? Regístrate",
+      "tryWithoutAccount": "O prueba un archivo sin iniciar sesión →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "¡Enviamos un correo de confirmación! Revisa tu bandeja de entrada.",
+      "authErrorFallback": "Ocurrió un error durante la autenticación.",
+      "oauthErrorFallback": "Error al iniciar sesión social",
+      "trialSavedPrompt": "Inicia sesión y el resultado que acabas de ver se guardará automáticamente."
+    },
+    "trial": {
+      "title": "Pruébalo sin una cuenta",
+      "subtitle": "Analiza un archivo gratis — sin necesidad de registrarte. (Hasta 3MB, una vez al día.)",
+      "analyzing": "Analizando tu archivo…",
+      "chooseFile": "Haz clic para elegir un archivo",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — hasta 3MB",
+      "fileTooLarge": "Sin cuenta puedes analizar archivos de hasta 3MB.",
+      "readError": "No se pudo leer el archivo.",
+      "analyzeError": "No se pudo analizar este archivo.",
+      "genericError": "Algo salió mal.",
+      "saveResultTitle": "Inicia sesión para guardar este resultado",
+      "saveResultButton": "Iniciar sesión y guardar",
+      "backToLogin": "← Volver al inicio de sesión"
+    }
   }
 }

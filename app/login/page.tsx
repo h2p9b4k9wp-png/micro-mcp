@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import type { LensId, DeadlinesResult, QuestionsResult, DigestResult } from '@/lib/lenses';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 
@@ -37,11 +38,15 @@ function GoogleIcon() {
 // renderLensResult()와 달리 "등록" 같은 저장 액션은 없습니다(로그인 전이라 저장할 계정이
 // 없음). 결과를 읽어볼 수만 있고, 실제로 저장하려면 아래 "로그인하고 저장하기" 버튼을
 // 눌러야 합니다.
-function renderTrialResult(lens: LensId, result: DeadlinesResult | QuestionsResult | DigestResult) {
+function renderTrialResult(
+  lens: LensId,
+  result: DeadlinesResult | QuestionsResult | DigestResult,
+  t: ReturnType<typeof useTranslations>
+) {
   if (lens === 'deadlines') {
     const r = result as DeadlinesResult;
     if (r.items.length === 0) {
-      return <p className="text-sm text-[#C9C0D6]">Couldn&apos;t find any items with a due date.</p>;
+      return <p className="text-sm text-[#C9C0D6]">{t('workspace.lens.noDeadlinesFound')}</p>;
     }
     return (
       <ul className="flex flex-col gap-2.5">
@@ -60,7 +65,7 @@ function renderTrialResult(lens: LensId, result: DeadlinesResult | QuestionsResu
   if (lens === 'questions') {
     const r = result as QuestionsResult;
     if (r.items.length === 0) {
-      return <p className="text-sm text-[#C9C0D6]">Couldn&apos;t come up with expected questions.</p>;
+      return <p className="text-sm text-[#C9C0D6]">{t('workspace.lens.noQuestionsFound')}</p>;
     }
     return (
       <ul className="flex flex-col gap-2.5">
@@ -90,6 +95,7 @@ function renderTrialResult(lens: LensId, result: DeadlinesResult | QuestionsResu
 
 export default function LoginPage() {
   const router = useRouter();
+  const t = useTranslations();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -147,7 +153,7 @@ export default function LoginPage() {
           router.push('/');
           router.refresh();
         } else {
-          setMessage({ text: '회원가입 확인 이메일을 발송했습니다! 이메일을 확인해 주세요.', type: 'success' });
+          setMessage({ text: t('login.messages.signUpConfirmEmail'), type: 'success' });
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -161,7 +167,7 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch (err: any) {
-      setMessage({ text: err.message || '인증 과정에서 오류가 발생했습니다.', type: 'error' });
+      setMessage({ text: err.message || t('login.messages.authErrorFallback'), type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -178,7 +184,7 @@ export default function LoginPage() {
       });
       if (error) throw error;
     } catch (err: any) {
-      setMessage({ text: err.message || '소셜 로그인 실패', type: 'error' });
+      setMessage({ text: err.message || t('login.messages.oauthErrorFallback'), type: 'error' });
     }
   };
 
@@ -191,7 +197,7 @@ export default function LoginPage() {
     if (!file) return;
 
     if (file.size > 3 * 1024 * 1024) {
-      setTrialError('Files up to 3MB can be analyzed without an account.');
+      setTrialError(t('login.trial.fileTooLarge'));
       return;
     }
 
@@ -202,7 +208,7 @@ export default function LoginPage() {
       const dataUrl: string = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error('Could not read the file.'));
+        reader.onerror = () => reject(new Error(t('login.trial.readError')));
         reader.readAsDataURL(file);
       });
       const commaIndex = dataUrl.indexOf(',');
@@ -219,12 +225,12 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setTrialError(data.error || 'Could not analyze this file.');
+        setTrialError(data.error || t('login.trial.analyzeError'));
         return;
       }
       setTrialResult({ fileName: data.fileName, text: data.text, lens: data.lens, result: data.result });
     } catch (err) {
-      setTrialError(err instanceof Error ? err.message : 'Something went wrong.');
+      setTrialError(err instanceof Error ? err.message : t('login.trial.genericError'));
     } finally {
       setIsTrialAnalyzing(false);
     }
@@ -243,7 +249,7 @@ export default function LoginPage() {
     }
     setShowTrial(false);
     setIsSignUp(false);
-    setMessage({ text: 'Log in and the result you just saw will be saved automatically.', type: 'success' });
+    setMessage({ text: t('login.messages.trialSavedPrompt'), type: 'success' });
   };
 
   return (
@@ -274,17 +280,17 @@ export default function LoginPage() {
 
         <div className="relative">
           <h1 className="text-3xl lg:text-[34px] font-extrabold leading-tight tracking-tight mb-4">
-            블록을 조립하듯,<br />나만의 업무를 자동화하세요.
+            {t('login.brand.headlineLine1')}<br />{t('login.brand.headlineLine2')}
           </h1>
           <p className="text-white/70 text-sm leading-relaxed mb-10 max-w-sm">
-            코딩도, 복잡한 프롬프트 고민도 필요 없습니다. 필요한 기능을 블록으로 연결하면 AI가 나머지를 처리합니다.
+            {t('login.brand.subheadline')}
           </p>
 
           <div className="flex flex-col gap-4">
             {[
-              { title: '연동 자동화', desc: '데이터베이스·캘린더·검색·파일을 블록으로 연결', dot: '#F4679B' },
-              { title: '실행 중심 결과물', desc: '대화로 끝나지 않고, 실제 문서와 일정으로 정리', dot: '#6EE7B7' },
-              { title: '하이브리드 AI 엔진', desc: '작업 난이도에 맞춰 최적의 모델을 자동 선택', dot: '#FFD97D' },
+              { title: t('login.brand.features.automation.title'), desc: t('login.brand.features.automation.desc'), dot: '#F4679B' },
+              { title: t('login.brand.features.outputs.title'), desc: t('login.brand.features.outputs.desc'), dot: '#6EE7B7' },
+              { title: t('login.brand.features.hybridEngine.title'), desc: t('login.brand.features.hybridEngine.desc'), dot: '#FFD97D' },
             ].map((item) => (
               <div key={item.title} className="flex items-start gap-3">
                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: item.dot }} />
@@ -297,7 +303,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="relative text-white/40 text-xs">© {new Date().getFullYear()} Micro-MCP</div>
+        <div className="relative text-white/40 text-xs">{t('login.brand.copyright', { year: new Date().getFullYear() })}</div>
       </div>
 
       {/* 우측 로그인 폼 패널 */}
@@ -309,17 +315,17 @@ export default function LoginPage() {
             <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight mb-3">Micro-MCP</span>
             <Logomark className="w-14 h-14 text-[#F4679B]" />
             <p className="text-[#C9C0D6] text-sm text-center mt-3 max-w-[280px] leading-snug">
-              블록을 조립하듯, 나만의 업무를 자동화하세요
+              {t('login.brand.shortTagline')}
             </p>
           </div>
 
           {!showTrial ? (
             <>
               <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
-                {isSignUp ? '새 계정 만들기' : '다시 만나서 반가워요'}
+                {isSignUp ? t('login.form.signUpTitle') : t('login.form.signInTitle')}
               </h2>
               <p className="text-[#AFA6BD] text-sm text-center md:text-left mb-7">
-                {isSignUp ? '새 계정을 생성하여 시작하세요' : '서비스 이용을 위해 로그인해 주세요'}
+                {isSignUp ? t('login.form.signUpSubtitle') : t('login.form.signInSubtitle')}
               </p>
 
               {message && (
@@ -337,7 +343,7 @@ export default function LoginPage() {
               <form onSubmit={handleAuth} className="flex flex-col gap-4">
                 <div>
                   <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
-                    이메일 주소
+                    {t('login.form.emailLabel')}
                   </label>
                   <input
                     type="email"
@@ -351,7 +357,7 @@ export default function LoginPage() {
 
                 <div>
                   <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
-                    비밀번호
+                    {t('login.form.passwordLabel')}
                   </label>
                   <input
                     type="password"
@@ -368,13 +374,13 @@ export default function LoginPage() {
                   disabled={loading}
                   className="w-full py-2.5 mt-1 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
                 >
-                  {loading ? '처리 중...' : isSignUp ? '회원가입' : '로그인'}
+                  {loading ? t('login.form.processing') : isSignUp ? t('login.form.signUpButton') : t('login.form.signInButton')}
                 </button>
               </form>
 
               <div className="my-6 flex items-center gap-3">
                 <hr className="flex-1 border-[#322D3B]" />
-                <span className="text-xs text-[#857C93]">간편 로그인</span>
+                <span className="text-xs text-[#857C93]">{t('login.form.orDivider')}</span>
                 <hr className="flex-1 border-[#322D3B]" />
               </div>
 
@@ -383,7 +389,7 @@ export default function LoginPage() {
                 className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-medium cursor-pointer flex items-center justify-center gap-2.5 hover:bg-[#15131A] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
               >
                 <GoogleIcon />
-                Google로 계속하기
+                {t('login.form.continueWithGoogle')}
               </button>
 
               <div className="mt-6 flex flex-col items-center gap-3">
@@ -394,7 +400,7 @@ export default function LoginPage() {
                   }}
                   className="bg-transparent border-none text-[#F4679B] text-[13px] font-medium cursor-pointer hover:underline focus:outline-none"
                 >
-                  {isSignUp ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입'}
+                  {isSignUp ? t('login.form.toggleToSignIn') : t('login.form.toggleToSignUp')}
                 </button>
                 <button
                   onClick={() => {
@@ -403,17 +409,17 @@ export default function LoginPage() {
                   }}
                   className="bg-transparent border-none text-[#857C93] text-[13px] font-medium cursor-pointer hover:text-[#C9C0D6] hover:underline focus:outline-none"
                 >
-                  또는, 로그인 없이 파일 하나 체험해보기 →
+                  {t('login.form.tryWithoutAccount')}
                 </button>
               </div>
             </>
           ) : (
             <>
               <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
-                Try it without an account
+                {t('login.trial.title')}
               </h2>
               <p className="text-[#AFA6BD] text-sm text-center md:text-left mb-7">
-                Analyze one file for free — no sign-up needed. (Up to 3MB, once per day.)
+                {t('login.trial.subtitle')}
               </p>
 
               {!trialResult && (
@@ -426,9 +432,9 @@ export default function LoginPage() {
                 >
                   <span className="text-2xl">📄</span>
                   <span className="text-sm font-medium text-[#C9C0D6]">
-                    {isTrialAnalyzing ? 'Analyzing your file…' : 'Click to choose a file'}
+                    {isTrialAnalyzing ? t('login.trial.analyzing') : t('login.trial.chooseFile')}
                   </span>
-                  <span className="text-xs text-[#5B5566]">PDF, Word, PPT, Excel, HWP — up to 3MB</span>
+                  <span className="text-xs text-[#5B5566]">{t('login.trial.fileHint')}</span>
                   <input
                     type="file"
                     className="hidden"
@@ -448,18 +454,18 @@ export default function LoginPage() {
                 <div className="flex flex-col gap-4">
                   <div className="bg-[#15131A] border border-[#322D3B] rounded-xl p-4">
                     <p className="text-xs text-[#857C93] mb-3 truncate">{trialResult.fileName}</p>
-                    {renderTrialResult(trialResult.lens, trialResult.result)}
+                    {renderTrialResult(trialResult.lens, trialResult.result, t)}
                   </div>
 
                   <div className="bg-[#331F29] border border-[#F4679B]/40 rounded-xl p-4 text-center">
                     <p className="text-sm text-[#F5F2F7] font-semibold mb-3">
-                      Log in to save this result
+                      {t('login.trial.saveResultTitle')}
                     </p>
                     <button
                       onClick={handleSaveTrialResult}
                       className="w-full py-2.5 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
                     >
-                      Log in and save
+                      {t('login.trial.saveResultButton')}
                     </button>
                   </div>
                 </div>
@@ -474,7 +480,7 @@ export default function LoginPage() {
                   }}
                   className="bg-transparent border-none text-[#857C93] text-[13px] font-medium cursor-pointer hover:text-[#C9C0D6] hover:underline focus:outline-none"
                 >
-                  ← Back to login
+                  {t('login.trial.backToLogin')}
                 </button>
               </div>
             </>

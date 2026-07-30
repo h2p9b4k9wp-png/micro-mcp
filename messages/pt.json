@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label} precisa de pelo menos {count} documentos em Minha biblioteca para ser usado",
     "estimatedSeconds": "~{seconds}s"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Monte seu trabalho",
+      "headlineLine2": "como blocos, automaticamente.",
+      "subheadline": "Sem programação, sem lutar com prompts complexos. Basta conectar os blocos que você precisa e a IA cuida do resto.",
+      "features": {
+        "automation": {
+          "title": "Automação conectada",
+          "desc": "Conecte bancos de dados, calendários, busca e arquivos como blocos"
+        },
+        "outputs": {
+          "title": "Resultados orientados à ação",
+          "desc": "Não termina na conversa — vira documentos e cronogramas reais"
+        },
+        "hybridEngine": {
+          "title": "Motor de IA híbrido",
+          "desc": "Seleciona automaticamente o melhor modelo conforme a dificuldade da tarefa"
+        }
+      },
+      "shortTagline": "Monte seu trabalho como blocos, automaticamente",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "Criar uma nova conta",
+      "signInTitle": "Bem-vindo de volta",
+      "signUpSubtitle": "Crie uma conta para começar",
+      "signInSubtitle": "Faça login para usar o serviço",
+      "emailLabel": "Endereço de e-mail",
+      "passwordLabel": "Senha",
+      "processing": "Processando...",
+      "signUpButton": "Cadastrar",
+      "signInButton": "Entrar",
+      "orDivider": "Login rápido",
+      "continueWithGoogle": "Continuar com o Google",
+      "toggleToSignIn": "Já tem uma conta? Entrar",
+      "toggleToSignUp": "Não tem uma conta? Cadastre-se",
+      "tryWithoutAccount": "Ou experimente um arquivo sem fazer login →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "Enviamos um e-mail de confirmação! Verifique sua caixa de entrada.",
+      "authErrorFallback": "Ocorreu um erro durante a autenticação.",
+      "oauthErrorFallback": "Falha no login social",
+      "trialSavedPrompt": "Faça login e o resultado que você acabou de ver será salvo automaticamente."
+    },
+    "trial": {
+      "title": "Experimente sem conta",
+      "subtitle": "Analise um arquivo gratuitamente — sem necessidade de cadastro. (Até 3MB, uma vez por dia.)",
+      "analyzing": "Analisando seu arquivo…",
+      "chooseFile": "Clique para escolher um arquivo",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — até 3MB",
+      "fileTooLarge": "Sem conta, você pode analisar arquivos de até 3MB.",
+      "readError": "Não foi possível ler o arquivo.",
+      "analyzeError": "Não foi possível analisar este arquivo.",
+      "genericError": "Algo deu errado.",
+      "saveResultTitle": "Faça login para salvar este resultado",
+      "saveResultButton": "Entrar e salvar",
+      "backToLogin": "← Voltar ao login"
+    }
   }
 }

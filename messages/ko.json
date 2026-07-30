@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label}은(는) 내 자료실에 문서가 {count}개 이상 있어야 써볼 수 있어요",
     "estimatedSeconds": "~{seconds}초"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "블록을 조립하듯,",
+      "headlineLine2": "나만의 업무를 자동화하세요.",
+      "subheadline": "코딩도, 복잡한 프롬프트 고민도 필요 없습니다. 필요한 기능을 블록으로 연결하면 AI가 나머지를 처리합니다.",
+      "features": {
+        "automation": {
+          "title": "연동 자동화",
+          "desc": "데이터베이스·캘린더·검색·파일을 블록으로 연결"
+        },
+        "outputs": {
+          "title": "실행 중심 결과물",
+          "desc": "대화로 끝나지 않고, 실제 문서와 일정으로 정리"
+        },
+        "hybridEngine": {
+          "title": "하이브리드 AI 엔진",
+          "desc": "작업 난이도에 맞춰 최적의 모델을 자동 선택"
+        }
+      },
+      "shortTagline": "블록을 조립하듯, 나만의 업무를 자동화하세요",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "새 계정 만들기",
+      "signInTitle": "다시 만나서 반가워요",
+      "signUpSubtitle": "새 계정을 생성하여 시작하세요",
+      "signInSubtitle": "서비스 이용을 위해 로그인해 주세요",
+      "emailLabel": "이메일 주소",
+      "passwordLabel": "비밀번호",
+      "processing": "처리 중...",
+      "signUpButton": "회원가입",
+      "signInButton": "로그인",
+      "orDivider": "간편 로그인",
+      "continueWithGoogle": "Google로 계속하기",
+      "toggleToSignIn": "이미 계정이 있으신가요? 로그인",
+      "toggleToSignUp": "계정이 없으신가요? 회원가입",
+      "tryWithoutAccount": "또는, 로그인 없이 파일 하나 체험해보기 →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "회원가입 확인 이메일을 발송했습니다! 이메일을 확인해 주세요.",
+      "authErrorFallback": "인증 과정에서 오류가 발생했습니다.",
+      "oauthErrorFallback": "소셜 로그인 실패",
+      "trialSavedPrompt": "로그인하면 방금 본 결과가 자동으로 저장돼요."
+    },
+    "trial": {
+      "title": "계정 없이 체험하기",
+      "subtitle": "파일 1개를 무료로 분석해보세요 — 가입 불필요 (최대 3MB, 하루 1회)",
+      "analyzing": "파일을 분석하는 중…",
+      "chooseFile": "클릭해서 파일 선택",
+      "fileHint": "PDF·워드·PPT·엑셀·한글(HWP) — 최대 3MB",
+      "fileTooLarge": "계정 없이는 3MB까지 분석할 수 있어요.",
+      "readError": "파일을 읽지 못했어요.",
+      "analyzeError": "이 파일을 분석하지 못했어요.",
+      "genericError": "문제가 발생했어요.",
+      "saveResultTitle": "결과를 저장하려면 로그인하세요",
+      "saveResultButton": "로그인하고 저장하기",
+      "backToLogin": "← 로그인으로 돌아가기"
+    }
   }
 }

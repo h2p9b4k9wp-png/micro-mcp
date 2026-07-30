@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label} needs at least {count} documents in My Library to use",
     "estimatedSeconds": "~{seconds}s"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Automate your work",
+      "headlineLine2": "like assembling blocks.",
+      "subheadline": "No coding, no wrestling with complex prompts. Just connect the blocks you need and let AI handle the rest.",
+      "features": {
+        "automation": {
+          "title": "Connected Automation",
+          "desc": "Link databases, calendars, search, and files as blocks"
+        },
+        "outputs": {
+          "title": "Action-Oriented Results",
+          "desc": "Doesn't just end in chat — turns into real documents and schedules"
+        },
+        "hybridEngine": {
+          "title": "Hybrid AI Engine",
+          "desc": "Automatically picks the best model for each task's difficulty"
+        }
+      },
+      "shortTagline": "Automate your work, like assembling blocks",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "Create a new account",
+      "signInTitle": "Welcome back",
+      "signUpSubtitle": "Create an account to get started",
+      "signInSubtitle": "Log in to use the service",
+      "emailLabel": "Email address",
+      "passwordLabel": "Password",
+      "processing": "Processing...",
+      "signUpButton": "Sign Up",
+      "signInButton": "Log In",
+      "orDivider": "Quick sign-in",
+      "continueWithGoogle": "Continue with Google",
+      "toggleToSignIn": "Already have an account? Log in",
+      "toggleToSignUp": "Don't have an account? Sign up",
+      "tryWithoutAccount": "Or, try one file without logging in →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "We sent a confirmation email! Please check your inbox.",
+      "authErrorFallback": "An error occurred during authentication.",
+      "oauthErrorFallback": "Social login failed",
+      "trialSavedPrompt": "Log in and the result you just saw will be saved automatically."
+    },
+    "trial": {
+      "title": "Try it without an account",
+      "subtitle": "Analyze one file for free — no sign-up needed. (Up to 3MB, once per day.)",
+      "analyzing": "Analyzing your file…",
+      "chooseFile": "Click to choose a file",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — up to 3MB",
+      "fileTooLarge": "Files up to 3MB can be analyzed without an account.",
+      "readError": "Could not read the file.",
+      "analyzeError": "Could not analyze this file.",
+      "genericError": "Something went wrong.",
+      "saveResultTitle": "Log in to save this result",
+      "saveResultButton": "Log in and save",
+      "backToLogin": "← Back to login"
+    }
   }
 }

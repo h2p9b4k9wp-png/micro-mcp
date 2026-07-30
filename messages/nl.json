@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label} heeft minstens {count} documenten in Mijn bibliotheek nodig om te gebruiken",
     "estimatedSeconds": "~{seconds}s"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Bouw je werk",
+      "headlineLine2": "als blokken, automatisch.",
+      "subheadline": "Geen code, geen worstelen met complexe prompts. Verbind gewoon de blokken die je nodig hebt en AI doet de rest.",
+      "features": {
+        "automation": {
+          "title": "Verbonden automatisering",
+          "desc": "Koppel databases, agenda's, zoeken en bestanden als blokken"
+        },
+        "outputs": {
+          "title": "Actiegerichte resultaten",
+          "desc": "Stopt niet bij een gesprek — wordt echte documenten en planningen"
+        },
+        "hybridEngine": {
+          "title": "Hybride AI-engine",
+          "desc": "Kiest automatisch het beste model op basis van de moeilijkheidsgraad"
+        }
+      },
+      "shortTagline": "Bouw je werk als blokken, automatisch",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "Nieuw account aanmaken",
+      "signInTitle": "Welkom terug",
+      "signUpSubtitle": "Maak een account aan om te beginnen",
+      "signInSubtitle": "Log in om de dienst te gebruiken",
+      "emailLabel": "E-mailadres",
+      "passwordLabel": "Wachtwoord",
+      "processing": "Bezig...",
+      "signUpButton": "Registreren",
+      "signInButton": "Inloggen",
+      "orDivider": "Snel inloggen",
+      "continueWithGoogle": "Doorgaan met Google",
+      "toggleToSignIn": "Heb je al een account? Inloggen",
+      "toggleToSignUp": "Nog geen account? Registreren",
+      "tryWithoutAccount": "Of probeer één bestand zonder in te loggen →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "We hebben een bevestigingsmail gestuurd! Controleer je inbox.",
+      "authErrorFallback": "Er is een fout opgetreden tijdens de authenticatie.",
+      "oauthErrorFallback": "Sociale login mislukt",
+      "trialSavedPrompt": "Log in en het resultaat dat je zojuist zag wordt automatisch opgeslagen."
+    },
+    "trial": {
+      "title": "Probeer zonder account",
+      "subtitle": "Analyseer gratis één bestand — geen registratie nodig. (Tot 3MB, één keer per dag.)",
+      "analyzing": "Je bestand wordt geanalyseerd…",
+      "chooseFile": "Klik om een bestand te kiezen",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — tot 3MB",
+      "fileTooLarge": "Zonder account kun je bestanden tot 3MB analyseren.",
+      "readError": "Kon het bestand niet lezen.",
+      "analyzeError": "Kon dit bestand niet analyseren.",
+      "genericError": "Er is iets misgegaan.",
+      "saveResultTitle": "Log in om dit resultaat op te slaan",
+      "saveResultButton": "Inloggen en opslaan",
+      "backToLogin": "← Terug naar inloggen"
+    }
   }
 }

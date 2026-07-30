@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label} benötigt mindestens {count} Dokumente in Meine Bibliothek",
     "estimatedSeconds": "~{seconds}s"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Setzen Sie Ihre Arbeit",
+      "headlineLine2": "wie Blöcke zusammen – automatisch.",
+      "subheadline": "Kein Programmieren, kein Ringen mit komplexen Prompts. Verbinden Sie einfach die benötigten Blöcke, den Rest übernimmt die KI.",
+      "features": {
+        "automation": {
+          "title": "Vernetzte Automatisierung",
+          "desc": "Verbinden Sie Datenbanken, Kalender, Suche und Dateien als Blöcke"
+        },
+        "outputs": {
+          "title": "Handlungsorientierte Ergebnisse",
+          "desc": "Endet nicht im Chat — wird zu echten Dokumenten und Terminplänen"
+        },
+        "hybridEngine": {
+          "title": "Hybride KI-Engine",
+          "desc": "Wählt automatisch das beste Modell je nach Aufgabenschwierigkeit"
+        }
+      },
+      "shortTagline": "Setzen Sie Ihre Arbeit wie Blöcke zusammen – automatisch",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "Neues Konto erstellen",
+      "signInTitle": "Willkommen zurück",
+      "signUpSubtitle": "Erstellen Sie ein Konto, um zu beginnen",
+      "signInSubtitle": "Bitte melden Sie sich an, um den Dienst zu nutzen",
+      "emailLabel": "E-Mail-Adresse",
+      "passwordLabel": "Passwort",
+      "processing": "Wird verarbeitet...",
+      "signUpButton": "Registrieren",
+      "signInButton": "Anmelden",
+      "orDivider": "Schnelle Anmeldung",
+      "continueWithGoogle": "Mit Google fortfahren",
+      "toggleToSignIn": "Bereits ein Konto? Anmelden",
+      "toggleToSignUp": "Noch kein Konto? Registrieren",
+      "tryWithoutAccount": "Oder testen Sie eine Datei ohne Anmeldung →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "Wir haben eine Bestätigungs-E-Mail gesendet! Bitte prüfen Sie Ihr Postfach.",
+      "authErrorFallback": "Bei der Authentifizierung ist ein Fehler aufgetreten.",
+      "oauthErrorFallback": "Soziale Anmeldung fehlgeschlagen",
+      "trialSavedPrompt": "Melden Sie sich an, und das gerade gesehene Ergebnis wird automatisch gespeichert."
+    },
+    "trial": {
+      "title": "Ohne Konto testen",
+      "subtitle": "Analysieren Sie eine Datei kostenlos — keine Anmeldung nötig. (Bis zu 3 MB, einmal täglich.)",
+      "analyzing": "Ihre Datei wird analysiert…",
+      "chooseFile": "Klicken, um eine Datei auszuwählen",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — bis zu 3 MB",
+      "fileTooLarge": "Ohne Konto können Sie Dateien bis zu 3 MB analysieren.",
+      "readError": "Die Datei konnte nicht gelesen werden.",
+      "analyzeError": "Diese Datei konnte nicht analysiert werden.",
+      "genericError": "Etwas ist schiefgelaufen.",
+      "saveResultTitle": "Melden Sie sich an, um dieses Ergebnis zu speichern",
+      "saveResultButton": "Anmelden und speichern",
+      "backToLogin": "← Zurück zur Anmeldung"
+    }
   }
 }

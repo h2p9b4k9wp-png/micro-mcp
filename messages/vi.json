@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label} cần ít nhất {count} tài liệu trong Thư viện của tôi để sử dụng",
     "estimatedSeconds": "~{seconds} giây"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Lắp ráp như những khối,",
+      "headlineLine2": "tự động hóa công việc của riêng bạn.",
+      "subheadline": "Không cần viết code, không cần suy nghĩ về prompt phức tạp. Chỉ cần kết nối các khối chức năng cần thiết, AI sẽ lo phần còn lại.",
+      "features": {
+        "automation": {
+          "title": "Tự động hóa kết nối",
+          "desc": "Kết nối cơ sở dữ liệu, lịch, tìm kiếm và tệp bằng các khối"
+        },
+        "outputs": {
+          "title": "Kết quả hướng đến hành động",
+          "desc": "Không chỉ dừng ở trò chuyện — chuyển thành tài liệu và lịch trình thực tế"
+        },
+        "hybridEngine": {
+          "title": "Công cụ AI lai",
+          "desc": "Tự động chọn mô hình tối ưu theo độ khó của công việc"
+        }
+      },
+      "shortTagline": "Lắp ráp như những khối, tự động hóa công việc của riêng bạn",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "Tạo tài khoản mới",
+      "signInTitle": "Chào mừng trở lại",
+      "signUpSubtitle": "Tạo tài khoản để bắt đầu",
+      "signInSubtitle": "Vui lòng đăng nhập để sử dụng dịch vụ",
+      "emailLabel": "Địa chỉ email",
+      "passwordLabel": "Mật khẩu",
+      "processing": "Đang xử lý...",
+      "signUpButton": "Đăng ký",
+      "signInButton": "Đăng nhập",
+      "orDivider": "Đăng nhập nhanh",
+      "continueWithGoogle": "Tiếp tục với Google",
+      "toggleToSignIn": "Đã có tài khoản? Đăng nhập",
+      "toggleToSignUp": "Chưa có tài khoản? Đăng ký",
+      "tryWithoutAccount": "Hoặc, trải nghiệm 1 tệp mà không cần đăng nhập →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "Chúng tôi đã gửi email xác nhận! Vui lòng kiểm tra hộp thư của bạn.",
+      "authErrorFallback": "Đã xảy ra lỗi trong quá trình xác thực.",
+      "oauthErrorFallback": "Đăng nhập mạng xã hội thất bại",
+      "trialSavedPrompt": "Đăng nhập và kết quả bạn vừa xem sẽ được lưu tự động."
+    },
+    "trial": {
+      "title": "Trải nghiệm không cần tài khoản",
+      "subtitle": "Phân tích miễn phí 1 tệp — không cần đăng ký. (Tối đa 3MB, mỗi ngày 1 lần.)",
+      "analyzing": "Đang phân tích tệp của bạn…",
+      "chooseFile": "Nhấp để chọn tệp",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — tối đa 3MB",
+      "fileTooLarge": "Không cần tài khoản có thể phân tích tệp tối đa 3MB.",
+      "readError": "Không thể đọc tệp.",
+      "analyzeError": "Không thể phân tích tệp này.",
+      "genericError": "Đã xảy ra sự cố.",
+      "saveResultTitle": "Đăng nhập để lưu kết quả này",
+      "saveResultButton": "Đăng nhập và lưu",
+      "backToLogin": "← Quay lại đăng nhập"
+    }
   }
 }

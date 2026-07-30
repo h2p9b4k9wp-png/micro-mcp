@@ -294,5 +294,64 @@
     },
     "gatedTooltip": "{label}はマイライブラリに{count}件以上の資料が必要です",
     "estimatedSeconds": "約{seconds}秒"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "ブロックを組み立てるように、",
+      "headlineLine2": "自分だけの業務を自動化しましょう。",
+      "subheadline": "コーディングも複雑なプロンプトの工夫も不要です。必要な機能をブロックでつなげば、あとはAIが処理します。",
+      "features": {
+        "automation": {
+          "title": "連携自動化",
+          "desc": "データベース・カレンダー・検索・ファイルをブロックで連携"
+        },
+        "outputs": {
+          "title": "実行重視の成果物",
+          "desc": "会話だけで終わらず、実際の文書やスケジュールに整理"
+        },
+        "hybridEngine": {
+          "title": "ハイブリッドAIエンジン",
+          "desc": "タスクの難易度に合わせて最適なモデルを自動選択"
+        }
+      },
+      "shortTagline": "ブロックを組み立てるように、自分だけの業務を自動化しましょう",
+      "copyright": "© {year} Micro-MCP"
+    },
+    "form": {
+      "signUpTitle": "新しいアカウントを作成",
+      "signInTitle": "おかえりなさい",
+      "signUpSubtitle": "アカウントを作成して始めましょう",
+      "signInSubtitle": "サービスを利用するにはログインしてください",
+      "emailLabel": "メールアドレス",
+      "passwordLabel": "パスワード",
+      "processing": "処理中...",
+      "signUpButton": "新規登録",
+      "signInButton": "ログイン",
+      "orDivider": "簡単ログイン",
+      "continueWithGoogle": "Googleで続ける",
+      "toggleToSignIn": "すでにアカウントをお持ちですか？ログイン",
+      "toggleToSignUp": "アカウントをお持ちでないですか？新規登録",
+      "tryWithoutAccount": "または、ログインせずに1ファイル体験する →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "確認メールを送信しました！メールをご確認ください。",
+      "authErrorFallback": "認証中にエラーが発生しました。",
+      "oauthErrorFallback": "ソーシャルログインに失敗しました",
+      "trialSavedPrompt": "ログインすると、先ほどの結果が自動的に保存されます。"
+    },
+    "trial": {
+      "title": "アカウントなしで体験する",
+      "subtitle": "1つのファイルを無料で分析できます — 登録不要（最大3MB、1日1回）",
+      "analyzing": "ファイルを分析中…",
+      "chooseFile": "クリックしてファイルを選択",
+      "fileHint": "PDF・Word・PPT・Excel・HWP — 最大3MB",
+      "fileTooLarge": "アカウントなしでは3MBまで分析できます。",
+      "readError": "ファイルを読み込めませんでした。",
+      "analyzeError": "このファイルを分析できませんでした。",
+      "genericError": "問題が発生しました。",
+      "saveResultTitle": "結果を保存するにはログインしてください",
+      "saveResultButton": "ログインして保存",
+      "backToLogin": "← ログインに戻る"
+    }
   }
 }
