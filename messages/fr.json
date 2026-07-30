@@ -210,5 +210,22 @@
     "fileListTitle": "Fichiers de contexte enregistrés",
     "noFiles": "Aucun fichier enregistré.",
     "fileType": "Type : {mimeType}"
+  },
+  "logs": {
+    "title": "Journaux BD et réponses de l'IA",
+    "subtitle": "Consultez l'historique des requêtes enregistrées dans la base de données Supabase et les réponses de l'IA à l'époque.",
+    "filterAll": "Tout ({count})",
+    "filterUnfiled": "Non classé ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Supprimer le dossier {folderName}",
+    "newFolderPlaceholder": "+ Nouveau dossier",
+    "noConversationsAtAll": "Aucune conversation enregistrée. Envoyez une question depuis Demander à l'IA !",
+    "noConversationsInFolder": "Aucune conversation dans ce dossier.",
+    "moveToFolderAria": "Déplacer vers un dossier",
+    "unfiledOption": "Non classé",
+    "collapseAnswer": "▲ Masquer la réponse",
+    "viewAnswer": "▼ Voir la réponse de l'IA",
+    "deleteLogAria": "Supprimer le journal",
+    "responseRecordLabel": "[Enregistrement de la réponse de l'IA]"
   }
 }

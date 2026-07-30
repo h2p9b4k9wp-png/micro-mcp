@@ -210,5 +210,22 @@
     "fileListTitle": "등록된 컨텍스트 파일 목록",
     "noFiles": "등록된 파일이 없습니다.",
     "fileType": "타입: {mimeType}"
+  },
+  "logs": {
+    "title": "DB 연동 로그 & AI 답변 조회",
+    "subtitle": "Supabase 데이터베이스에 기록된 프롬프트 이력과 당시 AI의 답변을 확인할 수 있습니다.",
+    "filterAll": "전체 ({count})",
+    "filterUnfiled": "미분류 ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "{folderName} 폴더 삭제",
+    "newFolderPlaceholder": "+ 새 폴더",
+    "noConversationsAtAll": "저장된 대화가 없습니다. 물어보기에서 질문을 보내보세요!",
+    "noConversationsInFolder": "이 폴더에는 대화가 없어요.",
+    "moveToFolderAria": "폴더로 옮기기",
+    "unfiledOption": "미분류",
+    "collapseAnswer": "▲ 답변 접기",
+    "viewAnswer": "▼ AI 답변 보기",
+    "deleteLogAria": "로그 삭제",
+    "responseRecordLabel": "[AI 응답 결과 기록]"
   }
 }

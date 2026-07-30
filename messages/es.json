@@ -210,5 +210,22 @@
     "fileListTitle": "Archivos de contexto registrados",
     "noFiles": "No hay archivos registrados.",
     "fileType": "Tipo: {mimeType}"
+  },
+  "logs": {
+    "title": "Registros de BD y respuestas de la IA",
+    "subtitle": "Consulta el historial de instrucciones registrado en la base de datos de Supabase y las respuestas de la IA en su momento.",
+    "filterAll": "Todo ({count})",
+    "filterUnfiled": "Sin clasificar ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Eliminar carpeta {folderName}",
+    "newFolderPlaceholder": "+ Nueva carpeta",
+    "noConversationsAtAll": "No hay conversaciones guardadas. ¡Envía una pregunta desde Preguntar a la IA!",
+    "noConversationsInFolder": "No hay conversaciones en esta carpeta.",
+    "moveToFolderAria": "Mover a carpeta",
+    "unfiledOption": "Sin clasificar",
+    "collapseAnswer": "▲ Ocultar respuesta",
+    "viewAnswer": "▼ Ver respuesta de la IA",
+    "deleteLogAria": "Eliminar registro",
+    "responseRecordLabel": "[Registro de respuesta de la IA]"
   }
 }

@@ -210,5 +210,22 @@
     "fileListTitle": "登録されたコンテキストファイル一覧",
     "noFiles": "登録されたファイルがありません。",
     "fileType": "タイプ: {mimeType}"
+  },
+  "logs": {
+    "title": "DB連携ログ＆AI回答の確認",
+    "subtitle": "Supabaseデータベースに記録されたプロンプト履歴と、その時のAIの回答を確認できます。",
+    "filterAll": "すべて（{count}）",
+    "filterUnfiled": "未分類（{count}）",
+    "folderButtonLabel": "{name}（{count}）",
+    "deleteFolderAria": "{folderName}フォルダを削除",
+    "newFolderPlaceholder": "+ 新しいフォルダ",
+    "noConversationsAtAll": "保存された会話がありません。「AIに質問」から質問を送ってみましょう！",
+    "noConversationsInFolder": "このフォルダには会話がありません。",
+    "moveToFolderAria": "フォルダに移動",
+    "unfiledOption": "未分類",
+    "collapseAnswer": "▲ 回答を閉じる",
+    "viewAnswer": "▼ AIの回答を見る",
+    "deleteLogAria": "ログを削除",
+    "responseRecordLabel": "[AI応答結果の記録]"
   }
 }

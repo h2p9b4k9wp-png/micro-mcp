@@ -210,5 +210,22 @@
     "fileListTitle": "Geregistreerde contextbestanden",
     "noFiles": "Geen bestanden geregistreerd.",
     "fileType": "Type: {mimeType}"
+  },
+  "logs": {
+    "title": "DB-logs & AI-antwoordgeschiedenis",
+    "subtitle": "Bekijk de prompt-geschiedenis die is vastgelegd in de Supabase-database en de AI-antwoorden van destijds.",
+    "filterAll": "Alle ({count})",
+    "filterUnfiled": "Niet-ingedeeld ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Map {folderName} verwijderen",
+    "newFolderPlaceholder": "+ Nieuwe map",
+    "noConversationsAtAll": "Geen gesprekken opgeslagen. Stel een vraag via AI vragen!",
+    "noConversationsInFolder": "Geen gesprekken in deze map.",
+    "moveToFolderAria": "Naar map verplaatsen",
+    "unfiledOption": "Niet-ingedeeld",
+    "collapseAnswer": "▲ Antwoord verbergen",
+    "viewAnswer": "▼ AI-antwoord bekijken",
+    "deleteLogAria": "Log verwijderen",
+    "responseRecordLabel": "[AI-antwoordregistratie]"
   }
 }

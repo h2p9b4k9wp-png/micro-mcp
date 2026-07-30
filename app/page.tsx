@@ -3193,10 +3193,10 @@ export default function HomePage() {
             <div>
               <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  DB 연동 로그 & AI 답변 조회
+                  {t('logs.title')}
                 </h1>
                 <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
-                  Supabase 데이터베이스에 기록된 프롬프트 이력과 당시 AI의 답변을 확인할 수 있습니다.
+                  {t('logs.subtitle')}
                 </p>
               </div>
 
@@ -3211,7 +3211,7 @@ export default function HomePage() {
                       : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
                   }`}
                 >
-                  전체 ({logs.length})
+                  {t('logs.filterAll', { count: logs.length })}
                 </button>
                 <button
                   type="button"
@@ -3222,7 +3222,7 @@ export default function HomePage() {
                       : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
                   }`}
                 >
-                  미분류 ({logs.filter((l) => !l.folder_id).length})
+                  {t('logs.filterUnfiled', { count: logs.filter((l) => !l.folder_id).length })}
                 </button>
                 {conversationFolders.map((folder) => (
                   <span
@@ -3238,12 +3238,12 @@ export default function HomePage() {
                       onClick={() => setLogFolderFilter(folder.id)}
                       className="text-xs font-semibold cursor-pointer hover:text-[#F5F2F7] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
                     >
-                      {folder.name} ({logs.filter((l) => l.folder_id === folder.id).length})
+                      {t('logs.folderButtonLabel', { name: folder.name, count: logs.filter((l) => l.folder_id === folder.id).length })}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDeleteFolder(folder.id, folder.name)}
-                      aria-label={`${folder.name} 폴더 삭제`}
+                      aria-label={t('logs.deleteFolderAria', { folderName: folder.name })}
                       className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[#2A2632] text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
                     >
                       <X className="w-3 h-3" strokeWidth={2.5} />
@@ -3258,7 +3258,7 @@ export default function HomePage() {
                     type="text"
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
-                    placeholder="+ 새 폴더"
+                    placeholder={t('logs.newFolderPlaceholder')}
                     className="w-24 bg-[#15131A] border border-[#423B4C] rounded-full px-3 py-1.5 text-[#F5F2F7] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
                   />
                   <button
@@ -3266,7 +3266,7 @@ export default function HomePage() {
                     disabled={!newFolderName.trim() || isCreatingFolder}
                     className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#2A2632] hover:bg-[#332D3B] text-[#F5F2F7] border border-[#423B4C] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                   >
-                    만들기
+                    {t('common.create')}
                   </button>
                 </form>
               </div>
@@ -3281,7 +3281,7 @@ export default function HomePage() {
                   if (filteredLogs.length === 0) {
                     return (
                       <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
-                        {logs.length === 0 ? '저장된 대화가 없습니다. 물어보기에서 질문을 보내보세요!' : '이 폴더에는 대화가 없어요.'}
+                        {logs.length === 0 ? t('logs.noConversationsAtAll') : t('logs.noConversationsInFolder')}
                       </div>
                     );
                   }
@@ -3291,17 +3291,17 @@ export default function HomePage() {
                     <div key={log.id} className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-4 flex flex-col gap-3 shadow-sm">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <div className="flex items-center gap-2 font-mono-console text-xs text-[#F4679B]">
-                          <span className="text-[#857C93]">[{new Date(log.created_at).toLocaleTimeString()}]</span>
+                          <span className="text-[#857C93]">[{new Date(log.created_at).toLocaleTimeString(locale)}]</span>
                           <span className="font-semibold text-[#F5F2F7]">{log.content}</span>
                         </div>
                         <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                           <select
                             value={log.folder_id || ''}
                             onChange={(e) => handleMoveLogToFolder(log.id, e.target.value || null)}
-                            aria-label="폴더로 옮기기"
+                            aria-label={t('logs.moveToFolderAria')}
                             className="bg-[#15131A] border border-[#322D3B] rounded-lg px-2 py-1.5 text-[#AFA6BD] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 cursor-pointer"
                           >
-                            <option value="">미분류</option>
+                            <option value="">{t('logs.unfiledOption')}</option>
                             {conversationFolders.map((folder) => (
                               <option key={folder.id} value={folder.id}>{folder.name}</option>
                             ))}
@@ -3311,12 +3311,12 @@ export default function HomePage() {
                               onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
                               className="bg-[#331F29] hover:bg-[#3D2733] text-[#F4679B] border border-[#5C3A4A] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                             >
-                              {isExpanded ? '▲ 답변 접기' : '▼ AI 답변 보기'}
+                              {isExpanded ? t('logs.collapseAnswer') : t('logs.viewAnswer')}
                             </button>
                           )}
                           <button
                             onClick={() => handleDeleteLog(log.id)}
-                            aria-label="로그 삭제"
+                            aria-label={t('logs.deleteLogAria')}
                             className="w-7 h-7 flex items-center justify-center bg-[#15131A] hover:bg-[#35201D] text-[#857C93] hover:text-[#FF7A6B] border border-[#322D3B] rounded-lg text-xs transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
                           >
                             ✕
@@ -3326,7 +3326,7 @@ export default function HomePage() {
 
                       {isExpanded && log.response && (
                         <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] text-[14px] font-medium text-[#FBE4EE] leading-[1.8] whitespace-pre-wrap mt-1">
-                          <div className="text-[11px] text-[#8D8499] mb-2">[AI 응답 결과 기록]</div>
+                          <div className="text-[11px] text-[#8D8499] mb-2">{t('logs.responseRecordLabel')}</div>
                           {log.response}
                         </div>
                       )}

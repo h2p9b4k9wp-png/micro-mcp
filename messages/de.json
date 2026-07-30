@@ -210,5 +210,22 @@
     "fileListTitle": "Registrierte Kontextdateien",
     "noFiles": "Keine Dateien registriert.",
     "fileType": "Typ: {mimeType}"
+  },
+  "logs": {
+    "title": "DB-Protokolle & KI-Antwortverlauf",
+    "subtitle": "Sieh dir den in der Supabase-Datenbank gespeicherten Prompt-Verlauf und die damaligen KI-Antworten an.",
+    "filterAll": "Alle ({count})",
+    "filterUnfiled": "Nicht einsortiert ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Ordner {folderName} löschen",
+    "newFolderPlaceholder": "+ Neuer Ordner",
+    "noConversationsAtAll": "Keine Unterhaltungen gespeichert. Stelle über „KI fragen“ eine Frage!",
+    "noConversationsInFolder": "Keine Unterhaltungen in diesem Ordner.",
+    "moveToFolderAria": "In Ordner verschieben",
+    "unfiledOption": "Nicht einsortiert",
+    "collapseAnswer": "▲ Antwort ausblenden",
+    "viewAnswer": "▼ KI-Antwort anzeigen",
+    "deleteLogAria": "Protokoll löschen",
+    "responseRecordLabel": "[KI-Antwortprotokoll]"
   }
 }

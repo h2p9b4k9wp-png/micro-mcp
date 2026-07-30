@@ -210,5 +210,22 @@
     "fileListTitle": "File di contesto registrati",
     "noFiles": "Nessun file registrato.",
     "fileType": "Tipo: {mimeType}"
+  },
+  "logs": {
+    "title": "Log del DB e cronologia risposte IA",
+    "subtitle": "Consulta la cronologia dei prompt registrata nel database Supabase e le risposte dell'IA in quel momento.",
+    "filterAll": "Tutti ({count})",
+    "filterUnfiled": "Non classificati ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Elimina cartella {folderName}",
+    "newFolderPlaceholder": "+ Nuova cartella",
+    "noConversationsAtAll": "Nessuna conversazione salvata. Invia una domanda da Chiedi all'IA!",
+    "noConversationsInFolder": "Nessuna conversazione in questa cartella.",
+    "moveToFolderAria": "Sposta nella cartella",
+    "unfiledOption": "Non classificati",
+    "collapseAnswer": "▲ Nascondi risposta",
+    "viewAnswer": "▼ Vedi risposta dell'IA",
+    "deleteLogAria": "Elimina log",
+    "responseRecordLabel": "[Registro della risposta dell'IA]"
   }
 }

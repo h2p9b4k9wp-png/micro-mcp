@@ -210,5 +210,22 @@
     "fileListTitle": "Registered Context Files",
     "noFiles": "No files registered.",
     "fileType": "Type: {mimeType}"
+  },
+  "logs": {
+    "title": "DB Logs & AI Response History",
+    "subtitle": "View the prompt history recorded in the Supabase database and the AI's responses at the time.",
+    "filterAll": "All ({count})",
+    "filterUnfiled": "Unfiled ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Delete folder {folderName}",
+    "newFolderPlaceholder": "+ New Folder",
+    "noConversationsAtAll": "No conversations saved. Send a question from Ask AI!",
+    "noConversationsInFolder": "No conversations in this folder.",
+    "moveToFolderAria": "Move to folder",
+    "unfiledOption": "Unfiled",
+    "collapseAnswer": "▲ Hide Answer",
+    "viewAnswer": "▼ View AI Answer",
+    "deleteLogAria": "Delete log",
+    "responseRecordLabel": "[AI Response Record]"
   }
 }

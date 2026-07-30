@@ -210,5 +210,22 @@
     "fileListTitle": "Danh sách tệp ngữ cảnh đã đăng ký",
     "noFiles": "Chưa có tệp nào được đăng ký.",
     "fileType": "Loại: {mimeType}"
+  },
+  "logs": {
+    "title": "Nhật ký DB & Xem phản hồi AI",
+    "subtitle": "Xem lịch sử lệnh đã ghi trong cơ sở dữ liệu Supabase và phản hồi của AI tại thời điểm đó.",
+    "filterAll": "Tất cả ({count})",
+    "filterUnfiled": "Chưa phân loại ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Xóa thư mục {folderName}",
+    "newFolderPlaceholder": "+ Thư mục mới",
+    "noConversationsAtAll": "Chưa có cuộc trò chuyện nào được lưu. Hãy gửi câu hỏi từ mục Hỏi AI!",
+    "noConversationsInFolder": "Thư mục này chưa có cuộc trò chuyện nào.",
+    "moveToFolderAria": "Chuyển vào thư mục",
+    "unfiledOption": "Chưa phân loại",
+    "collapseAnswer": "▲ Thu gọn câu trả lời",
+    "viewAnswer": "▼ Xem câu trả lời của AI",
+    "deleteLogAria": "Xóa nhật ký",
+    "responseRecordLabel": "[Bản ghi phản hồi AI]"
   }
 }
