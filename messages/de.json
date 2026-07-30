@@ -227,5 +227,72 @@
     "viewAnswer": "▼ KI-Antwort anzeigen",
     "deleteLogAria": "Protokoll löschen",
     "responseRecordLabel": "[KI-Antwortprotokoll]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Dieses Dokument",
+      "hint": "Bezieht sich nur auf das Dokument, das Sie gerade ansehen"
+    },
+    "my_library": {
+      "label": "Meine Bibliothek",
+      "hint": "Durchsucht alle gespeicherten Materialien"
+    },
+    "web_search": {
+      "label": "Im Web suchen",
+      "hint": "Durchsucht das Web in Echtzeit"
+    },
+    "deadlines": {
+      "label": "Fristen extrahieren",
+      "hint": "Wählt nur Einträge mit Datum oder Frist aus"
+    },
+    "questions": {
+      "label": "Erwartete Fragen",
+      "hint": "Sagt mögliche Fragen im Voraus voraus"
+    },
+    "digest": {
+      "label": "Kernzusammenfassung",
+      "hint": "Fasst den Inhalt auf das Wesentliche zusammen"
+    },
+    "save_deadline": {
+      "label": "Als Frist speichern",
+      "hint": "Speichert den gefundenen Termin im Fristen-Manager"
+    },
+    "sync_calendar": {
+      "label": "Zum Kalender hinzufügen",
+      "hint": "Exportiert in eine externe Kalender-App"
+    },
+    "export_hwp": {
+      "label": "Als HWP exportieren",
+      "hint": "Speichert das Ergebnis als Hangul(HWP)-Datei"
+    },
+    "professor_docs": {
+      "label": "Materialien dieses Professors",
+      "hint": "Bezieht sich auf alle bisher hochgeladenen Materialien"
+    },
+    "professor_ai_core": {
+      "label": "KI-Analyse",
+      "hint": "Fasst die hochgeladenen Materialien zusammen, um Muster zu finden"
+    },
+    "expected_questions": {
+      "label": "Erwartete Fragen",
+      "hint": "Sagt anhand von Fragestil und -typ voraus"
+    },
+    "assignment_direction": {
+      "label": "Ausrichtung der Aufgaben",
+      "hint": "Zeigt den geforderten Aufgabenstil"
+    },
+    "study_method": {
+      "label": "Lernmethode",
+      "hint": "Konzentriert sich auf die am häufigsten betonten Themen"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Dateien",
+      "lens": "Analyse",
+      "action": "Ergebnis"
+    },
+    "gatedTooltip": "{label} benötigt mindestens {count} Dokumente in Meine Bibliothek",
+    "estimatedSeconds": "~{seconds}s"
   }
 }

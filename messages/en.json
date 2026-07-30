@@ -227,5 +227,72 @@
     "viewAnswer": "▼ View AI Answer",
     "deleteLogAria": "Delete log",
     "responseRecordLabel": "[AI Response Record]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "This Document",
+      "hint": "Only references the document you're currently viewing"
+    },
+    "my_library": {
+      "label": "My Library",
+      "hint": "Searches everything you've saved"
+    },
+    "web_search": {
+      "label": "Search the Web",
+      "hint": "Searches the web in real time"
+    },
+    "deadlines": {
+      "label": "Extract Deadlines",
+      "hint": "Picks out only items with dates or due dates"
+    },
+    "questions": {
+      "label": "Expected Questions",
+      "hint": "Predicts questions likely to come up"
+    },
+    "digest": {
+      "label": "Key Summary",
+      "hint": "Condenses the content down to the essentials"
+    },
+    "save_deadline": {
+      "label": "Register as Deadline",
+      "hint": "Saves the found schedule to Deadline Manager"
+    },
+    "sync_calendar": {
+      "label": "Add to Calendar",
+      "hint": "Exports to an external calendar app"
+    },
+    "export_hwp": {
+      "label": "Export as HWP",
+      "hint": "Saves the result as a Hangul (HWP) file"
+    },
+    "professor_docs": {
+      "label": "This Professor's Materials",
+      "hint": "References everything uploaded so far"
+    },
+    "professor_ai_core": {
+      "label": "AI Analysis",
+      "hint": "Synthesizes the uploaded materials to find patterns"
+    },
+    "expected_questions": {
+      "label": "Expected Questions",
+      "hint": "Predicts based on question style and types"
+    },
+    "assignment_direction": {
+      "label": "Assignment Direction",
+      "hint": "Tells you the style of assignments they require"
+    },
+    "study_method": {
+      "label": "Study Method",
+      "hint": "Centers on the topics they emphasize most often"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Files",
+      "lens": "Analysis",
+      "action": "Result"
+    },
+    "gatedTooltip": "{label} needs at least {count} documents in My Library to use",
+    "estimatedSeconds": "~{seconds}s"
   }
 }

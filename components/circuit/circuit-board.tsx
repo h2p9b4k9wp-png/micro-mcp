@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Cpu, Check } from 'lucide-react';
 import type { NodeId, NodeLayer, NodeStatus, GraphEdge, CircuitGraphState } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
@@ -26,16 +27,11 @@ interface CircuitBoardProps {
 type Orientation = 'horizontal' | 'vertical' | 'compact';
 
 const LAYERS: NodeLayer[] = ['source', 'lens', 'action'];
-const LAYER_TITLES: Record<NodeLayer, string> = { source: '파일', lens: '분석', action: '결과' };
 const edgeKey = (edge: GraphEdge) => `${edge.from}->${edge.to}`;
 
 // compact 모드는 가로 배치(CIRCUIT_VIEWBOX)와 같은 좌표계를 쓰되, source·lens 열만 보이도록
 // SVG viewBox로 화면을 크롭합니다 — 위치 계산 로직을 새로 만들 필요가 없습니다.
 const COMPACT_VIEWBOX = { x: 60, y: 160, width: 520, height: 240 };
-
-function getNodeMeta(id: NodeId) {
-  return NODE_REGISTRY.find((n) => n.id === id);
-}
 
 function getStatusVisual(status: NodeStatus) {
   switch (status) {
@@ -51,9 +47,23 @@ function getStatusVisual(status: NodeStatus) {
 }
 
 export function CircuitBoard({ graph, onNodeClick, compact = false }: CircuitBoardProps) {
+  const t = useTranslations();
   const [revealedEdges, setRevealedEdges] = useState<Set<string>>(() => new Set());
   const [sparkGeneration, setSparkGeneration] = useState(0);
   const [gatedTooltipId, setGatedTooltipId] = useState<NodeId | null>(null);
+
+  // 💡 [신규] NODE_REGISTRY의 label/hint는 한국어 고정값이라(CircuitNode 타입상 필수 필드),
+  // 실제 렌더에는 nodes.{id}.label/hint 번역으로 덮어씁니다. app/page.tsx의 getNodeMeta와 동일한 패턴.
+  const getNodeMeta = (id: NodeId) => {
+    const base = NODE_REGISTRY.find((n) => n.id === id);
+    if (!base) return undefined;
+    return { ...base, label: t(`nodes.${id}.label`), hint: t(`nodes.${id}.hint`) };
+  };
+  const LAYER_TITLES: Record<NodeLayer, string> = {
+    source: t('circuit.layerTitle.source'),
+    lens: t('circuit.layerTitle.lens'),
+    action: t('circuit.layerTitle.action'),
+  };
 
   // 노드를 열(layer)별로 묶고, 각 노드의 열 안 인덱스를 기억해 위치 계산에 씁니다 (열당 최대 3개 가정).
   const nodesByLayer: Record<NodeLayer, typeof graph.nodes> = { source: [], lens: [], action: [] };
@@ -169,7 +179,7 @@ export function CircuitBoard({ graph, onNodeClick, compact = false }: CircuitBoa
           const isGated = meta.minLibraryDocs != null;
           const status = getStatusVisual(node.status);
           const tooltipText = isGated
-            ? `${meta.label}은(는) 내 자료실에 문서가 ${meta.minLibraryDocs}개 이상 있어야 써볼 수 있어요`
+            ? t('circuit.gatedTooltip', { label: meta.label, count: meta.minLibraryDocs ?? 0 })
             : meta.hint;
           const tooltipPinned = gatedTooltipId === node.id;
 
@@ -249,7 +259,7 @@ export function CircuitBoard({ graph, onNodeClick, compact = false }: CircuitBoa
 
               {!isLens && !isCompact && (
                 <span className="absolute bottom-1 right-1.5 text-[9px] text-[#5B5566]">
-                  ~{meta.estimatedSeconds}초
+                  {t('circuit.estimatedSeconds', { seconds: meta.estimatedSeconds })}
                 </span>
               )}
 

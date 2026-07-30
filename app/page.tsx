@@ -45,10 +45,6 @@ import {
   type DigestResult,
 } from '@/lib/lenses';
 
-function getNodeMeta(id: NodeId) {
-  return NODE_REGISTRY.find((n) => n.id === id);
-}
-
 // 💡 [신규] 이번 단계는 UI를 9노드 3열 파이프라인으로 전환하는 게 목표라, 그래프 자체를 만들고
 // 편집하는 로직은 아직 없습니다. 눈으로 확인할 수 있도록 더미 그래프를 하드코딩해서 렌더합니다.
 const DUMMY_GRAPH: CircuitGraphState = {
@@ -339,6 +335,15 @@ export default function HomePage() {
   // 않았습니다 — 범위가 너무 커서 이번엔 새로 손대는 화면 위주로 반영).
   const t = useTranslations();
   const locale = useLocale();
+
+  // 💡 [신규] NODE_REGISTRY(lib/blocks/defaults.ts)의 label/hint는 한국어가 고정값으로 박혀
+  // 있어서(CircuitNode 타입상 label/hint가 필수라 완전히 뺄 수 없었습니다), 실제 화면에 쓸 때는
+  // 여기서 번역된 값으로 덮어씁니다. components/circuit/circuit-board.tsx도 동일한 패턴을 씁니다.
+  const getNodeMeta = (id: NodeId) => {
+    const base = NODE_REGISTRY.find((n) => n.id === id);
+    if (!base) return undefined;
+    return { ...base, label: t(`nodes.${id}.label`), hint: t(`nodes.${id}.hint`) };
+  };
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState('connecting');

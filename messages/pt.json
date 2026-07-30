@@ -227,5 +227,72 @@
     "viewAnswer": "▼ Ver resposta da IA",
     "deleteLogAria": "Excluir registro",
     "responseRecordLabel": "[Registro de resposta da IA]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Este documento",
+      "hint": "Refere-se apenas ao documento que você está vendo agora"
+    },
+    "my_library": {
+      "label": "Minha biblioteca",
+      "hint": "Busca em todo o material salvo"
+    },
+    "web_search": {
+      "label": "Buscar na web",
+      "hint": "Pesquisa na web em tempo real"
+    },
+    "deadlines": {
+      "label": "Extrair prazos",
+      "hint": "Seleciona apenas itens com data ou prazo"
+    },
+    "questions": {
+      "label": "Perguntas esperadas",
+      "hint": "Antecipa perguntas que podem surgir"
+    },
+    "digest": {
+      "label": "Resumo principal",
+      "hint": "Condensa o conteúdo no essencial"
+    },
+    "save_deadline": {
+      "label": "Registrar como prazo",
+      "hint": "Salva o cronograma encontrado no Gerenciador de prazos"
+    },
+    "sync_calendar": {
+      "label": "Adicionar ao calendário",
+      "hint": "Exporta para um aplicativo de calendário externo"
+    },
+    "export_hwp": {
+      "label": "Exportar como HWP",
+      "hint": "Salva o resultado como arquivo Hangul (HWP)"
+    },
+    "professor_docs": {
+      "label": "Materiais deste professor",
+      "hint": "Refere-se a todo o material enviado até agora"
+    },
+    "professor_ai_core": {
+      "label": "Análise de IA",
+      "hint": "Sintetiza o material enviado para encontrar padrões"
+    },
+    "expected_questions": {
+      "label": "Perguntas esperadas",
+      "hint": "Antecipa com base no estilo e tipo de perguntas"
+    },
+    "assignment_direction": {
+      "label": "Direção do trabalho",
+      "hint": "Indica o estilo de trabalho exigido"
+    },
+    "study_method": {
+      "label": "Método de estudo",
+      "hint": "Foca nos temas mais frequentemente enfatizados"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Arquivos",
+      "lens": "Análise",
+      "action": "Resultado"
+    },
+    "gatedTooltip": "{label} precisa de pelo menos {count} documentos em Minha biblioteca para ser usado",
+    "estimatedSeconds": "~{seconds}s"
   }
 }

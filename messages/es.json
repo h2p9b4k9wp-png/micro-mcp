@@ -227,5 +227,72 @@
     "viewAnswer": "▼ Ver respuesta de la IA",
     "deleteLogAria": "Eliminar registro",
     "responseRecordLabel": "[Registro de respuesta de la IA]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Este documento",
+      "hint": "Solo consulta el documento que estás viendo ahora"
+    },
+    "my_library": {
+      "label": "Mi biblioteca",
+      "hint": "Busca en todo el material guardado"
+    },
+    "web_search": {
+      "label": "Buscar en la web",
+      "hint": "Busca en la web en tiempo real"
+    },
+    "deadlines": {
+      "label": "Extraer plazos",
+      "hint": "Selecciona solo los elementos con fecha o plazo"
+    },
+    "questions": {
+      "label": "Preguntas esperadas",
+      "hint": "Anticipa preguntas que podrían surgir"
+    },
+    "digest": {
+      "label": "Resumen clave",
+      "hint": "Condensa el contenido en lo esencial"
+    },
+    "save_deadline": {
+      "label": "Registrar como plazo",
+      "hint": "Guarda el cronograma encontrado en el Gestor de plazos"
+    },
+    "sync_calendar": {
+      "label": "Añadir al calendario",
+      "hint": "Exporta a una app de calendario externa"
+    },
+    "export_hwp": {
+      "label": "Exportar como HWP",
+      "hint": "Guarda el resultado como archivo Hangul (HWP)"
+    },
+    "professor_docs": {
+      "label": "Material de este profesor",
+      "hint": "Consulta todo el material subido hasta ahora"
+    },
+    "professor_ai_core": {
+      "label": "Análisis de IA",
+      "hint": "Sintetiza el material subido para encontrar patrones"
+    },
+    "expected_questions": {
+      "label": "Preguntas esperadas",
+      "hint": "Anticipa según el estilo y tipo de preguntas"
+    },
+    "assignment_direction": {
+      "label": "Dirección de la tarea",
+      "hint": "Indica el estilo de tareas que exige"
+    },
+    "study_method": {
+      "label": "Método de estudio",
+      "hint": "Se centra en los temas que más enfatiza"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Archivos",
+      "lens": "Análisis",
+      "action": "Resultado"
+    },
+    "gatedTooltip": "{label} necesita al menos {count} documentos en Mi biblioteca para usarse",
+    "estimatedSeconds": "~{seconds}s"
   }
 }

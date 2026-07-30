@@ -227,5 +227,72 @@
     "viewAnswer": "▼ AI-antwoord bekijken",
     "deleteLogAria": "Log verwijderen",
     "responseRecordLabel": "[AI-antwoordregistratie]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Dit document",
+      "hint": "Verwijst alleen naar het document dat je nu bekijkt"
+    },
+    "my_library": {
+      "label": "Mijn bibliotheek",
+      "hint": "Doorzoekt al het opgeslagen materiaal"
+    },
+    "web_search": {
+      "label": "Zoek op het web",
+      "hint": "Doorzoekt het web in realtime"
+    },
+    "deadlines": {
+      "label": "Deadlines extraheren",
+      "hint": "Selecteert alleen items met een datum of deadline"
+    },
+    "questions": {
+      "label": "Verwachte vragen",
+      "hint": "Voorspelt vragen die waarschijnlijk komen"
+    },
+    "digest": {
+      "label": "Kernsamenvatting",
+      "hint": "Vat de inhoud samen tot de essentie"
+    },
+    "save_deadline": {
+      "label": "Registreren als deadline",
+      "hint": "Slaat het gevonden schema op in Deadline Manager"
+    },
+    "sync_calendar": {
+      "label": "Toevoegen aan agenda",
+      "hint": "Exporteert naar een externe agenda-app"
+    },
+    "export_hwp": {
+      "label": "Exporteren als HWP",
+      "hint": "Slaat het resultaat op als Hangul (HWP)-bestand"
+    },
+    "professor_docs": {
+      "label": "Materiaal van deze docent",
+      "hint": "Verwijst naar al het materiaal dat tot nu toe is geüpload"
+    },
+    "professor_ai_core": {
+      "label": "AI-analyse",
+      "hint": "Combineert het geüploade materiaal om patronen te vinden"
+    },
+    "expected_questions": {
+      "label": "Verwachte vragen",
+      "hint": "Voorspelt op basis van vraagstijl en -type"
+    },
+    "assignment_direction": {
+      "label": "Richting van de opdracht",
+      "hint": "Geeft aan welke stijl van opdrachten wordt gevraagd"
+    },
+    "study_method": {
+      "label": "Studiemethode",
+      "hint": "Focust op de thema's die het vaakst worden benadrukt"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Bestanden",
+      "lens": "Analyse",
+      "action": "Resultaat"
+    },
+    "gatedTooltip": "{label} heeft minstens {count} documenten in Mijn bibliotheek nodig om te gebruiken",
+    "estimatedSeconds": "~{seconds}s"
   }
 }

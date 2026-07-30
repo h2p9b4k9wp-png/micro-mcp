@@ -227,5 +227,72 @@
     "viewAnswer": "▼ Voir la réponse de l'IA",
     "deleteLogAria": "Supprimer le journal",
     "responseRecordLabel": "[Enregistrement de la réponse de l'IA]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Ce document",
+      "hint": "Ne fait référence qu'au document que vous consultez actuellement"
+    },
+    "my_library": {
+      "label": "Ma bibliothèque",
+      "hint": "Recherche dans tous les documents enregistrés"
+    },
+    "web_search": {
+      "label": "Rechercher sur le web",
+      "hint": "Recherche sur le web en temps réel"
+    },
+    "deadlines": {
+      "label": "Extraire les échéances",
+      "hint": "Ne retient que les éléments avec une date ou une échéance"
+    },
+    "questions": {
+      "label": "Questions attendues",
+      "hint": "Anticipe les questions susceptibles d'être posées"
+    },
+    "digest": {
+      "label": "Résumé clé",
+      "hint": "Condense le contenu à l'essentiel"
+    },
+    "save_deadline": {
+      "label": "Enregistrer comme échéance",
+      "hint": "Enregistre le calendrier trouvé dans le gestionnaire d'échéances"
+    },
+    "sync_calendar": {
+      "label": "Ajouter au calendrier",
+      "hint": "Exporte vers une application de calendrier externe"
+    },
+    "export_hwp": {
+      "label": "Exporter en HWP",
+      "hint": "Enregistre le résultat sous forme de fichier Hangul (HWP)"
+    },
+    "professor_docs": {
+      "label": "Documents de ce professeur",
+      "hint": "Fait référence à tous les documents téléversés jusqu'ici"
+    },
+    "professor_ai_core": {
+      "label": "Analyse IA",
+      "hint": "Synthétise les documents téléversés pour trouver des tendances"
+    },
+    "expected_questions": {
+      "label": "Questions attendues",
+      "hint": "Anticipe selon le style et le type de questions"
+    },
+    "assignment_direction": {
+      "label": "Orientation des devoirs",
+      "hint": "Indique le style de devoirs exigé"
+    },
+    "study_method": {
+      "label": "Méthode d'étude",
+      "hint": "Se concentre sur les thèmes les plus souvent soulignés"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Fichiers",
+      "lens": "Analyse",
+      "action": "Résultat"
+    },
+    "gatedTooltip": "{label} nécessite au moins {count} documents dans Ma bibliothèque pour être utilisé",
+    "estimatedSeconds": "~{seconds}s"
   }
 }

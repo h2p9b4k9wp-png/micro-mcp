@@ -227,5 +227,72 @@
     "viewAnswer": "▼ AI 답변 보기",
     "deleteLogAria": "로그 삭제",
     "responseRecordLabel": "[AI 응답 결과 기록]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "이 문서",
+      "hint": "지금 보고 있는 문서만 참고해요"
+    },
+    "my_library": {
+      "label": "내 자료실",
+      "hint": "저장해둔 자료 전체에서 찾아요"
+    },
+    "web_search": {
+      "label": "웹에서 찾기",
+      "hint": "실시간으로 웹을 검색해요"
+    },
+    "deadlines": {
+      "label": "마감 뽑기",
+      "hint": "날짜·기한이 있는 항목만 골라내요"
+    },
+    "questions": {
+      "label": "예상 질문",
+      "hint": "나올 법한 질문을 미리 뽑아봐요"
+    },
+    "digest": {
+      "label": "핵심 정리",
+      "hint": "핵심만 간추려 정리해요"
+    },
+    "save_deadline": {
+      "label": "마감일로 등록",
+      "hint": "찾아낸 일정을 마감일 매니저에 저장해요"
+    },
+    "sync_calendar": {
+      "label": "캘린더에 넣기",
+      "hint": "외부 캘린더 앱으로 내보내요"
+    },
+    "export_hwp": {
+      "label": "한글로 내보내기",
+      "hint": "결과를 한글(HWP) 파일로 저장해요"
+    },
+    "professor_docs": {
+      "label": "이 교수님 자료",
+      "hint": "지금까지 올린 자료 전체를 참고해요"
+    },
+    "professor_ai_core": {
+      "label": "AI 분석",
+      "hint": "올라온 자료를 종합해서 패턴을 찾아요"
+    },
+    "expected_questions": {
+      "label": "예상 문제",
+      "hint": "문제 내는 방식·유형을 바탕으로 예상해요"
+    },
+    "assignment_direction": {
+      "label": "과제 방향",
+      "hint": "과제를 요구하는 스타일을 알려줘요"
+    },
+    "study_method": {
+      "label": "공부 방식",
+      "hint": "자주 강조하는 주제를 중심으로 알려줘요"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "파일",
+      "lens": "분석",
+      "action": "결과"
+    },
+    "gatedTooltip": "{label}은(는) 내 자료실에 문서가 {count}개 이상 있어야 써볼 수 있어요",
+    "estimatedSeconds": "~{seconds}초"
   }
 }

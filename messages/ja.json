@@ -227,5 +227,72 @@
     "viewAnswer": "▼ AIの回答を見る",
     "deleteLogAria": "ログを削除",
     "responseRecordLabel": "[AI応答結果の記録]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "この文書",
+      "hint": "今見ている文書だけを参照します"
+    },
+    "my_library": {
+      "label": "マイライブラリ",
+      "hint": "保存済みの資料全体から探します"
+    },
+    "web_search": {
+      "label": "ウェブで検索",
+      "hint": "リアルタイムでウェブを検索します"
+    },
+    "deadlines": {
+      "label": "締め切り抽出",
+      "hint": "日付・期限のある項目だけを選び出します"
+    },
+    "questions": {
+      "label": "想定質問",
+      "hint": "出そうな質問をあらかじめ抽出します"
+    },
+    "digest": {
+      "label": "要点整理",
+      "hint": "要点だけを簡潔にまとめます"
+    },
+    "save_deadline": {
+      "label": "締め切りとして登録",
+      "hint": "見つかった日程を締め切りマネージャーに保存します"
+    },
+    "sync_calendar": {
+      "label": "カレンダーに追加",
+      "hint": "外部カレンダーアプリに書き出します"
+    },
+    "export_hwp": {
+      "label": "HWPで書き出す",
+      "hint": "結果をHangul(HWP)ファイルとして保存します"
+    },
+    "professor_docs": {
+      "label": "この教授の資料",
+      "hint": "これまでアップロードした資料全体を参照します"
+    },
+    "professor_ai_core": {
+      "label": "AI分析",
+      "hint": "アップロードされた資料を総合してパターンを見つけます"
+    },
+    "expected_questions": {
+      "label": "想定問題",
+      "hint": "出題方式・タイプをもとに予想します"
+    },
+    "assignment_direction": {
+      "label": "課題の方向性",
+      "hint": "求められる課題のスタイルを教えます"
+    },
+    "study_method": {
+      "label": "勉強法",
+      "hint": "よく強調されるテーマを中心に教えます"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "ファイル",
+      "lens": "分析",
+      "action": "結果"
+    },
+    "gatedTooltip": "{label}はマイライブラリに{count}件以上の資料が必要です",
+    "estimatedSeconds": "約{seconds}秒"
   }
 }

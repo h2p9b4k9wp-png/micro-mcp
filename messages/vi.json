@@ -227,5 +227,72 @@
     "viewAnswer": "▼ Xem câu trả lời của AI",
     "deleteLogAria": "Xóa nhật ký",
     "responseRecordLabel": "[Bản ghi phản hồi AI]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Tài liệu này",
+      "hint": "Chỉ tham khảo tài liệu bạn đang xem"
+    },
+    "my_library": {
+      "label": "Thư viện của tôi",
+      "hint": "Tìm trong toàn bộ tài liệu đã lưu"
+    },
+    "web_search": {
+      "label": "Tìm trên web",
+      "hint": "Tìm kiếm trên web theo thời gian thực"
+    },
+    "deadlines": {
+      "label": "Trích xuất hạn chót",
+      "hint": "Chỉ chọn ra các mục có ngày/hạn chót"
+    },
+    "questions": {
+      "label": "Câu hỏi dự kiến",
+      "hint": "Dự đoán trước các câu hỏi có thể xuất hiện"
+    },
+    "digest": {
+      "label": "Tóm tắt chính",
+      "hint": "Cô đọng nội dung thành những điểm chính"
+    },
+    "save_deadline": {
+      "label": "Đăng ký làm hạn chót",
+      "hint": "Lưu lịch trình tìm được vào Trình quản lý hạn chót"
+    },
+    "sync_calendar": {
+      "label": "Thêm vào lịch",
+      "hint": "Xuất ra ứng dụng lịch bên ngoài"
+    },
+    "export_hwp": {
+      "label": "Xuất file HWP",
+      "hint": "Lưu kết quả dưới dạng file Hangul (HWP)"
+    },
+    "professor_docs": {
+      "label": "Tài liệu của giáo sư này",
+      "hint": "Tham khảo toàn bộ tài liệu đã tải lên từ trước"
+    },
+    "professor_ai_core": {
+      "label": "Phân tích AI",
+      "hint": "Tổng hợp tài liệu đã tải lên để tìm ra khuôn mẫu"
+    },
+    "expected_questions": {
+      "label": "Câu hỏi dự kiến",
+      "hint": "Dự đoán dựa trên cách ra đề và dạng câu hỏi"
+    },
+    "assignment_direction": {
+      "label": "Định hướng bài tập",
+      "hint": "Cho biết phong cách yêu cầu bài tập"
+    },
+    "study_method": {
+      "label": "Phương pháp học",
+      "hint": "Tập trung vào các chủ đề thường được nhấn mạnh"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Tệp",
+      "lens": "Phân tích",
+      "action": "Kết quả"
+    },
+    "gatedTooltip": "{label} cần ít nhất {count} tài liệu trong Thư viện của tôi để sử dụng",
+    "estimatedSeconds": "~{seconds} giây"
   }
 }

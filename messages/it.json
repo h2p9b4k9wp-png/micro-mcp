@@ -227,5 +227,72 @@
     "viewAnswer": "▼ Vedi risposta dell'IA",
     "deleteLogAria": "Elimina log",
     "responseRecordLabel": "[Registro della risposta dell'IA]"
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Questo documento",
+      "hint": "Fa riferimento solo al documento che stai visualizzando"
+    },
+    "my_library": {
+      "label": "La mia libreria",
+      "hint": "Cerca in tutto il materiale salvato"
+    },
+    "web_search": {
+      "label": "Cerca sul web",
+      "hint": "Cerca sul web in tempo reale"
+    },
+    "deadlines": {
+      "label": "Estrai scadenze",
+      "hint": "Seleziona solo gli elementi con data o scadenza"
+    },
+    "questions": {
+      "label": "Domande previste",
+      "hint": "Anticipa le domande che potrebbero emergere"
+    },
+    "digest": {
+      "label": "Riepilogo chiave",
+      "hint": "Condensa il contenuto nell'essenziale"
+    },
+    "save_deadline": {
+      "label": "Registra come scadenza",
+      "hint": "Salva il programma trovato in Gestione scadenze"
+    },
+    "sync_calendar": {
+      "label": "Aggiungi al calendario",
+      "hint": "Esporta verso un'app di calendario esterna"
+    },
+    "export_hwp": {
+      "label": "Esporta come HWP",
+      "hint": "Salva il risultato come file Hangul (HWP)"
+    },
+    "professor_docs": {
+      "label": "Materiali di questo professore",
+      "hint": "Fa riferimento a tutto il materiale caricato finora"
+    },
+    "professor_ai_core": {
+      "label": "Analisi IA",
+      "hint": "Sintetizza il materiale caricato per trovare schemi"
+    },
+    "expected_questions": {
+      "label": "Domande previste",
+      "hint": "Anticipa in base allo stile e al tipo di domande"
+    },
+    "assignment_direction": {
+      "label": "Orientamento dei compiti",
+      "hint": "Indica lo stile dei compiti richiesti"
+    },
+    "study_method": {
+      "label": "Metodo di studio",
+      "hint": "Si concentra sui temi più spesso enfatizzati"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "File",
+      "lens": "Analisi",
+      "action": "Risultato"
+    },
+    "gatedTooltip": "{label} richiede almeno {count} documenti in La mia libreria per essere usato",
+    "estimatedSeconds": "~{seconds}s"
   }
 }
