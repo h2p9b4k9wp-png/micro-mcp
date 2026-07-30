@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Micro-MCP (미니 업무 비서 / "나만의 AI 업무 비서") is a Next.js 16 (App Router) PWA. Users toggle "MCP blocks" (web search, document analysis, deadline tracking, writing assistant, meeting-notes structuring) and issue prompts against an AI backend that assembles context from those blocks. All UI copy and AI-facing prompts are in Korean.
+Cramly (미니 업무 비서 / "나만의 AI 업무 비서") is a Next.js 16 (App Router) PWA. Users toggle "MCP blocks" (web search, document analysis, deadline tracking, writing assistant, meeting-notes structuring) and issue prompts against an AI backend that assembles context from those blocks. All UI copy and AI-facing prompts are in Korean.
 
 ## Commands
 

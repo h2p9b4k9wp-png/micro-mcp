@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Micro-MCP — 나만의 AI 업무 비서',
-    short_name: 'Micro-MCP',
+    name: 'Cramly — 나만의 AI 업무 비서',
+    short_name: 'Cramly',
     description: '블록을 조립하듯, 나만의 업무와 일상을 자동화하는 AI 워크플로우 플랫폼',
     start_url: '/',
     display: 'standalone',

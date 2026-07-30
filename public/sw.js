@@ -1,4 +1,4 @@
-const CACHE_NAME = 'micro-mcp-v1';
+const CACHE_NAME = 'cramly-v1';
 
 self.addEventListener('install', () => {
   self.skipWaiting();

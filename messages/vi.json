@@ -81,8 +81,8 @@
   },
   "records": {
     "title": "Nhật ký của tôi",
-    "subtitle": "Xem nhanh dữ liệu mà Micro-MCP đã thu thập về bạn cho đến nay.",
-    "heroLabel": "Những gì Micro-MCP biết về bạn",
+    "subtitle": "Xem nhanh dữ liệu mà Cramly đã thu thập về bạn cho đến nay.",
+    "heroLabel": "Những gì Cramly biết về bạn",
     "unitSuffix": "",
     "daysSinceJoin": "Bạn đã đồng hành cùng chúng tôi được {days} ngày",
     "deadlinesCard": {
@@ -352,7 +352,7 @@
         }
       },
       "shortTagline": "Lắp ráp như những khối, tự động hóa công việc của riêng bạn",
-      "copyright": "© {year} Micro-MCP"
+      "copyright": "© {year} Cramly"
     },
     "form": {
       "signUpTitle": "Tạo tài khoản mới",

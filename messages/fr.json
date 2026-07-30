@@ -81,8 +81,8 @@
   },
   "records": {
     "title": "Mes historiques",
-    "subtitle": "Consultez en un coup d'œil les données que Micro-MCP a recueillies à votre sujet jusqu'à présent.",
-    "heroLabel": "Ce que Micro-MCP sait de vous",
+    "subtitle": "Consultez en un coup d'œil les données que Cramly a recueillies à votre sujet jusqu'à présent.",
+    "heroLabel": "Ce que Cramly sait de vous",
     "unitSuffix": "",
     "daysSinceJoin": "Vous nous accompagnez depuis {days} jours",
     "deadlinesCard": {
@@ -352,7 +352,7 @@
         }
       },
       "shortTagline": "Assemblez votre travail comme des blocs, automatiquement",
-      "copyright": "© {year} Micro-MCP"
+      "copyright": "© {year} Cramly"
     },
     "form": {
       "signUpTitle": "Créer un nouveau compte",

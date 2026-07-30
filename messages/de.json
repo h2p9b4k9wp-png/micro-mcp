@@ -81,8 +81,8 @@
   },
   "records": {
     "title": "Meine Aufzeichnungen",
-    "subtitle": "Verschaffe dir einen Überblick über die Daten, die Micro-MCP bisher über dich gesammelt hat.",
-    "heroLabel": "Was Micro-MCP über dich weiß",
+    "subtitle": "Verschaffe dir einen Überblick über die Daten, die Cramly bisher über dich gesammelt hat.",
+    "heroLabel": "Was Cramly über dich weiß",
     "unitSuffix": "",
     "daysSinceJoin": "Du bist seit {days} Tagen dabei",
     "deadlinesCard": {
@@ -352,7 +352,7 @@
         }
       },
       "shortTagline": "Setzen Sie Ihre Arbeit wie Blöcke zusammen – automatisch",
-      "copyright": "© {year} Micro-MCP"
+      "copyright": "© {year} Cramly"
     },
     "form": {
       "signUpTitle": "Neues Konto erstellen",
