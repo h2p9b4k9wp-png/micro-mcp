@@ -1,29 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import type { LensId, DeadlinesResult, QuestionsResult, DigestResult } from '@/lib/lenses';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import { ANONYMOUS_HOURLY_LIMIT, ANONYMOUS_DAILY_LIMIT } from '@/lib/anonymous-usage';
-
-// 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 대시보드와 동일한 마크를 사용해 시각적 일관성을 유지합니다.
-function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <circle cx="11" cy="5" r="2" fill="currentColor" opacity="0.7" />
-      <circle cx="21" cy="5" r="2" fill="currentColor" opacity="0.7" />
-      <path d="M11 7L13 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-      <path d="M21 7L19 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-      <rect x="5" y="10" width="22" height="19" rx="8" fill="currentColor" />
-      <circle cx="13" cy="19" r="2.2" fill="white" />
-      <circle cx="19" cy="19" r="2.2" fill="white" />
-      <path d="M12.5 23.5C13.8 25 18.2 25 19.5 23.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-    </svg>
-  );
-}
+import { Logomark } from '@/components/logomark';
 
 function GoogleIcon() {
   return (
@@ -95,8 +80,9 @@ function renderTrialResult(
   );
 }
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -105,7 +91,10 @@ export default function LoginPage() {
   const [message, setMessage] = useState<{ text: string; type: 'error' | 'success' } | null>(null);
 
   // 💡 [신규] "로그인 없이 체험하기" — 로그인/회원가입 폼 대신 이 패널을 보여줍니다.
-  const [showTrial, setShowTrial] = useState(false);
+  // app/welcome/page.tsx의 "지금 체험하기" CTA가 /login?trial=1로 링크하면, 로그인 폼이
+  // 잠깐 보였다가 전환되는 깜빡임 없이 처음부터 체험 패널이 바로 열리도록 useState
+  // 초기값에서 바로 읽습니다(useEffect로 나중에 켜면 첫 렌더에 로그인 폼이 스쳐 지나갑니다).
+  const [showTrial, setShowTrial] = useState(() => searchParams.get('trial') === '1');
   const [isTrialAnalyzing, setIsTrialAnalyzing] = useState(false);
   const [trialError, setTrialError] = useState<string | null>(null);
   const [trialResult, setTrialResult] = useState<{
@@ -613,5 +602,17 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 💡 useSearchParams()는 Next.js가 정적 분석 시 가장 가까운 Suspense 경계까지 클라이언트
+// 렌더링을 요구합니다 — 이 페이지는 어차피 항상 동적으로 렌더링되지만(app/layout.tsx가
+// 쿠키를 읽어 async라 전체가 dynamic), 빌드 시 경고를 피하려면 이 경계가 필요합니다.
+// fallback은 거의 보이지 않습니다(서버가 이미 결정된 쿼리 파라미터로 스트리밍하므로).
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

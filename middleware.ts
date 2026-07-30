@@ -70,16 +70,18 @@ export async function middleware(request: NextRequest) {
   };
 
   // 💡 [수정] /privacy·/pricing은 로그인 없이도 봐야 하는 공개 페이지입니다(앱 심사·가입 전
-  // 방문자 등). /api/cron/*는 세션 쿠키가 아니라 자체 CRON_SECRET으로 인증하는 Vercel
-  // Cron 전용 라우트라, 여기서 세션을 요구하면 Cron 호출 자체가 401로 막힙니다.
-  // /api/public-analyze(파일 분석)와 /api/public-chat(AI 채팅)은 로그인 없이 체험해보는
-  // 전용 라우트로, 둘 다 lib/anonymous-usage.ts의 IP 기반 시간당/일일 제한을 공유하며
-  // 자체적으로 남용을 막고 있어 세션이 없어도 됩니다. /api/webhooks/polar는 Polar 서버가
-  // 세션 쿠키 없이 호출하는 결제 웹훅으로, 인증은 여기가 아니라 라우트 안의 웹훅 서명
-  // 검증(POLAR_WEBHOOK_SECRET)이 담당합니다 — /api/cron/*가 CRON_SECRET으로 자체
-  // 인증하는 것과 같은 구조입니다.
+  // 방문자 등). /welcome은 로그인 없이 링크로 들어온 방문자가 보는 첫 화면(라이트 테마
+  // 랜딩 페이지, app/welcome/page.tsx)입니다. /api/cron/*는 세션 쿠키가 아니라 자체
+  // CRON_SECRET으로 인증하는 Vercel Cron 전용 라우트라, 여기서 세션을 요구하면 Cron
+  // 호출 자체가 401로 막힙니다. /api/public-analyze(파일 분석)와 /api/public-chat(AI 채팅)은
+  // 로그인 없이 체험해보는 전용 라우트로, 둘 다 lib/anonymous-usage.ts의 IP 기반 시간당/
+  // 일일 제한을 공유하며 자체적으로 남용을 막고 있어 세션이 없어도 됩니다. /api/webhooks/polar는
+  // Polar 서버가 세션 쿠키 없이 호출하는 결제 웹훅으로, 인증은 여기가 아니라 라우트 안의
+  // 웹훅 서명 검증(POLAR_WEBHOOK_SECRET)이 담당합니다 — /api/cron/*가 CRON_SECRET으로
+  // 자체 인증하는 것과 같은 구조입니다.
   const isPublicRoute =
     path === '/login' ||
+    path === '/welcome' ||
     path.startsWith('/auth/') ||
     path === '/privacy' ||
     path === '/pricing' ||
@@ -92,7 +94,11 @@ export async function middleware(request: NextRequest) {
     if (isApiRoute) {
       return NextResponse.json({ error: '인증이 필요합니다. 로그인 후 다시 시도해주세요.' }, { status: 401 });
     }
-    return withDetectedLocale(NextResponse.redirect(new URL('/login', request.url)));
+    // 💡 [신규] 링크로 바로 들어온 미로그인 방문자의 "첫 화면"은 로그인 폼이 아니라
+    // /welcome(체험 유도 랜딩 페이지)입니다. 그 외 보호된 경로를 북마크 등으로 직접
+    // 열었을 때는 기존처럼 /login으로 보냅니다.
+    const target = path === '/' ? '/welcome' : '/login';
+    return withDetectedLocale(NextResponse.redirect(new URL(target, request.url)));
   }
 
   return withDetectedLocale(response);

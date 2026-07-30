@@ -420,5 +420,26 @@
     "memoPlaceholder": "Cuéntanos tus preguntas o las funciones que necesitas",
     "sending": "Enviando...",
     "sendRequest": "Enviar solicitud"
+  },
+  "landing": {
+    "loginButton": "Iniciar sesión",
+    "headline": "Deja que la IA lea y organice tus archivos por ti",
+    "subheadline": "Sube un archivo y obtén plazos, preguntas esperadas y un resumen clave automáticamente, o simplemente pregunta lo que quieras.",
+    "ctaButton": "Probar ahora",
+    "ctaHint": "Sin necesidad de registrarte — pruébalo ahora mismo",
+    "features": {
+      "analysis": {
+        "title": "Un archivo, análisis completo",
+        "desc": "Sube un archivo PDF, Word, Excel o HWP y obtén plazos, preguntas esperadas y un resumen clave automáticamente."
+      },
+      "chat": {
+        "title": "Pregúntale a la IA lo que sea",
+        "desc": "Haz una pregunta y obtén una respuesta al instante — no necesitas cuenta para probarlo."
+      },
+      "deadlines": {
+        "title": "Todos tus plazos, de un vistazo",
+        "desc": "Tus plazos se ordenan automáticamente por urgencia, así siempre sabes qué hacer primero."
+      }
+    }
   }
 }

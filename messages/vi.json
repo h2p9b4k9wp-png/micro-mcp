@@ -420,5 +420,26 @@
     "memoPlaceholder": "Hãy cho chúng tôi biết câu hỏi hoặc tính năng bạn cần",
     "sending": "Đang gửi...",
     "sendRequest": "Gửi yêu cầu"
+  },
+  "landing": {
+    "loginButton": "Đăng nhập",
+    "headline": "Để AI đọc và sắp xếp tài liệu của bạn",
+    "subheadline": "Tải tệp lên để tự động nhận hạn chót, câu hỏi dự kiến và tóm tắt chính — hoặc hỏi bất cứ điều gì.",
+    "ctaButton": "Trải nghiệm ngay",
+    "ctaHint": "Không cần đăng ký — dùng thử ngay",
+    "features": {
+      "analysis": {
+        "title": "Phân tích trọn vẹn chỉ với 1 tệp",
+        "desc": "Tải lên tệp PDF, Word, Excel hoặc HWP để tự động nhận hạn chót, câu hỏi dự kiến và tóm tắt chính."
+      },
+      "chat": {
+        "title": "Hỏi AI bất cứ điều gì",
+        "desc": "Đặt câu hỏi và nhận câu trả lời ngay lập tức — không cần tài khoản để dùng thử."
+      },
+      "deadlines": {
+        "title": "Xem tất cả hạn chót trong nháy mắt",
+        "desc": "Các hạn chót của bạn được tự động sắp xếp theo mức độ khẩn cấp, để bạn luôn biết nên làm gì trước."
+      }
+    }
   }
 }

@@ -420,5 +420,26 @@
     "memoPlaceholder": "Raccontaci le tue domande o le funzionalità di cui hai bisogno",
     "sending": "Invio in corso...",
     "sendRequest": "Invia richiesta"
+  },
+  "landing": {
+    "loginButton": "Accedi",
+    "headline": "Lascia che l'IA legga e organizzi i tuoi file al posto tuo",
+    "subheadline": "Carica un file e ottieni automaticamente scadenze, domande previste e un riepilogo chiave — oppure chiedi semplicemente qualcosa.",
+    "ctaButton": "Prova ora",
+    "ctaHint": "Nessuna registrazione necessaria — provalo subito",
+    "features": {
+      "analysis": {
+        "title": "Un file, analisi completa",
+        "desc": "Carica un file PDF, Word, Excel o HWP e ottieni automaticamente scadenze, domande previste e un riepilogo chiave."
+      },
+      "chat": {
+        "title": "Chiedi qualsiasi cosa all'IA",
+        "desc": "Fai una domanda e ricevi subito una risposta — non serve un account per provarlo."
+      },
+      "deadlines": {
+        "title": "Tutte le scadenze, a colpo d'occhio",
+        "desc": "Le tue scadenze vengono ordinate automaticamente per urgenza, così sai sempre da cosa iniziare."
+      }
+    }
   }
 }

@@ -33,6 +33,7 @@ import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { getPlanLimits, getPolarCheckoutUrl, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
+import { Logomark } from '@/components/logomark';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -167,22 +168,6 @@ const FORMAT_ICONS: Record<string, string> = {
 // 라벨이 번역돼야 해서(t() 필요) 컴포넌트 안의 docTypeDefs/docTypeLabels로 계산합니다 —
 // 이 목록에서는 키(DOC_TYPE_KEYS)만 갖고 있습니다.
 const DOC_TYPE_KEYS = ['lecture', 'exam', 'assignment', 'paper'] as const;
-
-// 브랜드 로고마크 — 귀여운 블록 캐릭터 얼굴. 로그인 화면과 동일한 마크를 사용해 시각적 일관성을 유지합니다.
-function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <circle cx="11" cy="5" r="2" fill="currentColor" opacity="0.7" />
-      <circle cx="21" cy="5" r="2" fill="currentColor" opacity="0.7" />
-      <path d="M11 7L13 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-      <path d="M21 7L19 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-      <rect x="5" y="10" width="22" height="19" rx="8" fill="currentColor" />
-      <circle cx="13" cy="19" r="2.2" fill="white" />
-      <circle cx="19" cy="19" r="2.2" fill="white" />
-      <path d="M12.5 23.5C13.8 25 18.2 25 19.5 23.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-    </svg>
-  );
-}
 
 // AI 콘솔이 아직 아무 대화도 시작하지 않았을 때의 상태를 나타내는 내부 식별자(sentinel) — 실제
 // 표시 문구는 messages/*.json의 workspace.idleMessage로 지역화되어 렌더링 시점에 t()로 가져옵니다.

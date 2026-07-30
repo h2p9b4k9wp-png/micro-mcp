@@ -420,5 +420,26 @@
     "memoPlaceholder": "Vertel ons je vragen of gewenste functies",
     "sending": "Bezig met verzenden...",
     "sendRequest": "Verzoek verzenden"
+  },
+  "landing": {
+    "loginButton": "Inloggen",
+    "headline": "Laat AI je bestanden voor je lezen en ordenen",
+    "subheadline": "Upload een bestand en krijg automatisch deadlines, verwachte vragen en een kernsamenvatting — of stel gewoon een vraag.",
+    "ctaButton": "Nu proberen",
+    "ctaHint": "Geen registratie nodig — probeer het meteen",
+    "features": {
+      "analysis": {
+        "title": "Eén bestand, volledige analyse",
+        "desc": "Upload een PDF-, Word-, Excel- of HWP-bestand en krijg automatisch deadlines, verwachte vragen en een kernsamenvatting."
+      },
+      "chat": {
+        "title": "Stel de AI van alles",
+        "desc": "Stel een vraag en krijg meteen antwoord — geen account nodig om het te proberen."
+      },
+      "deadlines": {
+        "title": "Al je deadlines in één oogopslag",
+        "desc": "Je deadlines worden automatisch gesorteerd op urgentie, zodat je altijd weet wat je eerst moet doen."
+      }
+    }
   }
 }

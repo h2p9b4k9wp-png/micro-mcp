@@ -420,5 +420,26 @@
     "memoPlaceholder": "Indiquez vos questions ou les fonctionnalités dont vous avez besoin",
     "sending": "Envoi en cours...",
     "sendRequest": "Envoyer la demande"
+  },
+  "landing": {
+    "loginButton": "Connexion",
+    "headline": "Laissez l'IA lire et organiser vos documents à votre place",
+    "subheadline": "Téléversez un fichier et obtenez automatiquement échéances, questions attendues et résumé clé — ou posez simplement une question.",
+    "ctaButton": "Essayer maintenant",
+    "ctaHint": "Aucune inscription nécessaire — essayez tout de suite",
+    "features": {
+      "analysis": {
+        "title": "Un seul fichier, une analyse complète",
+        "desc": "Téléversez un fichier PDF, Word, Excel ou HWP et obtenez automatiquement échéances, questions attendues et résumé clé."
+      },
+      "chat": {
+        "title": "Demandez tout à l'IA",
+        "desc": "Posez une question et obtenez une réponse immédiatement — aucun compte nécessaire pour essayer."
+      },
+      "deadlines": {
+        "title": "Toutes vos échéances, en un coup d'œil",
+        "desc": "Vos échéances sont automatiquement triées par urgence, pour toujours savoir par quoi commencer."
+      }
+    }
   }
 }

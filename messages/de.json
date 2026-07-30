@@ -420,5 +420,26 @@
     "memoPlaceholder": "Teilen Sie uns Fragen oder benötigte Funktionen mit",
     "sending": "Wird gesendet...",
     "sendRequest": "Anfrage senden"
+  },
+  "landing": {
+    "loginButton": "Anmelden",
+    "headline": "Lassen Sie die KI Ihre Dateien für Sie lesen und ordnen",
+    "subheadline": "Laden Sie eine Datei hoch und erhalten Sie automatisch Fristen, erwartete Fragen und eine Kernzusammenfassung — oder fragen Sie einfach etwas.",
+    "ctaButton": "Jetzt testen",
+    "ctaHint": "Keine Anmeldung nötig — sofort testen",
+    "features": {
+      "analysis": {
+        "title": "Eine Datei, vollständige Analyse",
+        "desc": "Laden Sie eine PDF-, Word-, Excel- oder HWP-Datei hoch und erhalten Sie automatisch Fristen, erwartete Fragen und eine Kernzusammenfassung."
+      },
+      "chat": {
+        "title": "Fragen Sie die KI alles",
+        "desc": "Stellen Sie eine Frage und erhalten Sie sofort eine Antwort — kein Konto nötig, um es auszuprobieren."
+      },
+      "deadlines": {
+        "title": "Alle Fristen auf einen Blick",
+        "desc": "Ihre Fristen werden automatisch nach Dringlichkeit sortiert, damit Sie immer wissen, was zuerst zu erledigen ist."
+      }
+    }
   }
 }

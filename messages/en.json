@@ -420,5 +420,26 @@
     "memoPlaceholder": "Tell us any questions or features you need",
     "sending": "Sending...",
     "sendRequest": "Send Request"
+  },
+  "landing": {
+    "loginButton": "Log In",
+    "headline": "Let AI read and organize your files for you",
+    "subheadline": "Upload a file and get deadlines, expected questions, and a key summary automatically — or just ask anything.",
+    "ctaButton": "Try It Now",
+    "ctaHint": "No sign-up needed — try it right away",
+    "features": {
+      "analysis": {
+        "title": "One file, full analysis",
+        "desc": "Upload a PDF, Word, Excel, or HWP file and get deadlines, expected questions, and a key summary automatically."
+      },
+      "chat": {
+        "title": "Ask the AI anything",
+        "desc": "Ask a question and get an answer right away — no account needed to try it."
+      },
+      "deadlines": {
+        "title": "All your deadlines, at a glance",
+        "desc": "Your deadlines are automatically sorted by urgency, so you always know what to tackle first."
+      }
+    }
   }
 }

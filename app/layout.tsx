@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -37,22 +37,7 @@ export default async function RootLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
         </NextIntlClientProvider>
-        <footer className="shrink-0 bg-[#15131A] border-t border-[#2A2632] px-5 py-4 text-center text-xs text-[#5B5566]">
-          © {new Date().getFullYear()} Cramly ·{' '}
-          <Link
-            href="/pricing"
-            className="text-[#857C93] hover:text-[#F4679B] underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
-          >
-            Pricing
-          </Link>{' '}
-          ·{' '}
-          <Link
-            href="/privacy"
-            className="text-[#857C93] hover:text-[#F4679B] underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
-          >
-            Privacy Policy
-          </Link>
-        </footer>
+        <SiteFooter />
       </body>
     </html>
   );
