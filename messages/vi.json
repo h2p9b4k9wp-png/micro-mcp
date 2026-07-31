@@ -411,9 +411,17 @@
       "chatButton": "Hỏi",
       "chatLoading": "Đang tạo câu trả lời…",
       "orDivider": "Hoặc",
-      "rateLimitHourly": "Trải nghiệm khách chỉ giới hạn {limit} lần mỗi giờ. Tạo tài khoản miễn phí để tiếp tục!",
-      "rateLimitDaily": "Trải nghiệm khách chỉ giới hạn {limit} lần mỗi ngày. Tạo tài khoản miễn phí để tiếp tục!",
       "signUpCta": "Tạo tài khoản miễn phí",
+      "limit": {
+        "uploadSessionTitle": "Bạn đã dùng lượt tải lên trong trải nghiệm này",
+        "uploadSessionDesc": "Mỗi trải nghiệm chỉ được tải lên 1 lần. Bạn vẫn có thể dùng khung chat AI ở trên, và tạo tài khoản miễn phí để tiếp tục tải lên!",
+        "chatSessionTitle": "Tạo tài khoản để hỏi thêm",
+        "chatSessionDesc": "Bạn đã dùng hết lượt hỏi trong trải nghiệm này. Tạo tài khoản miễn phí để tiếp tục hỏi!",
+        "ipTitle": "Bạn đã dùng hết lượt trải nghiệm hôm nay",
+        "ipDesc": "Trải nghiệm khách chỉ giới hạn 3 lần mỗi ngày. Tạo tài khoản miễn phí để tiếp tục sử dụng!",
+        "globalTitle": "Trải nghiệm khách đang tạm dừng",
+        "globalDesc": "Hôm nay có quá nhiều yêu cầu trải nghiệm khách nên đã tạm dừng một chút. Tạo tài khoản miễn phí để tiếp tục ngay!"
+      },
       "guided": {
         "sectionTitle": "Trải nghiệm với ảnh",
         "chooseImage": "Nhấn để chọn ảnh",
@@ -422,9 +430,7 @@
         "unsupportedFormat": "Chỉ hỗ trợ định dạng PNG, JPEG, GIF, WEBP. Nếu là ảnh HEIC, hãy chuyển sang JPEG rồi thử lại.",
         "tooLarge": "Không cần tài khoản có thể phân tích ảnh tối đa 3MB.",
         "questionsTitle": "Câu hỏi dự kiến",
-        "summaryTitle": "Tóm tắt",
-        "limitReachedTitle": "Bạn đã dùng hết lượt trải nghiệm",
-        "limitReachedDesc": "Trải nghiệm này chỉ dùng được 1 lần. Tạo tài khoản miễn phí để tiếp tục sử dụng!"
+        "summaryTitle": "Tóm tắt"
       }
     }
   },

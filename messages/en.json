@@ -411,9 +411,17 @@
       "chatButton": "Ask",
       "chatLoading": "Generating an answer…",
       "orDivider": "Or",
-      "rateLimitHourly": "Guest trials are limited to {limit} per hour. Create a free account to keep going!",
-      "rateLimitDaily": "Guest trials are limited to {limit} per day. Create a free account to keep going!",
       "signUpCta": "Create a free account",
+      "limit": {
+        "uploadSessionTitle": "You've already used this trial's upload",
+        "uploadSessionDesc": "Each trial includes 1 upload. You can still use AI chat above, and a free account lets you keep uploading too!",
+        "chatSessionTitle": "Sign up to keep asking",
+        "chatSessionDesc": "You've used up this trial's questions. Create a free account to keep asking!",
+        "ipTitle": "You've used up today's trials",
+        "ipDesc": "Guest trials are limited to 3 per day. Create a free account to keep using it!",
+        "globalTitle": "Guest trials are paused for now",
+        "globalDesc": "Guest trial requests are unusually high today, so we've paused them for a bit. Create a free account to keep going right away!"
+      },
       "guided": {
         "sectionTitle": "Try with a photo",
         "chooseImage": "Click to choose a photo",
@@ -422,9 +430,7 @@
         "unsupportedFormat": "Only PNG, JPEG, GIF, or WEBP are supported. If it's a HEIC photo, convert it to JPEG and try again.",
         "tooLarge": "Photos up to 3MB can be analyzed without an account.",
         "questionsTitle": "Expected Questions",
-        "summaryTitle": "Summary",
-        "limitReachedTitle": "You've used your one trial",
-        "limitReachedDesc": "This trial only works once. Create a free account to keep using it!"
+        "summaryTitle": "Summary"
       }
     }
   },

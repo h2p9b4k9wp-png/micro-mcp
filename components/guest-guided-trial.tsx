@@ -4,18 +4,18 @@ import { useTranslations } from 'next-intl';
 import { useGuidedTrial } from '@/lib/use-guided-trial';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { renderTrialResult } from '@/components/trial-result-view';
+import { GuestLimitBanner } from '@/components/guest-limit-banner';
 import type { CircuitGraphState } from '@/types/blocks';
 
 // 💡 [신규] 로그인 없이 사진/캡처본 한 장을 올려 회로도 애니메이션 + 예상 문제 + 요약정리를
-// 미리 체험해보는 컴포넌트. app/login/page.tsx의 기존 파일 분석·AI 채팅 체험과는 남용 방지
-// 예산이 완전히 분리돼 있습니다(세션당/IP당 평생 1회, app/api/public-guided-trial 참고) —
-// 그래서 기존 guestLimitInfo(시간당/일일 공유 예산)와 엮지 않고 lib/use-guided-trial.ts 훅이
-// 자기 상태를 스스로 관리합니다. 실제 업로드 검증·API 호출 로직은 그 훅에 있고, 이 컴포넌트는
-// 로그인 페이지의 좁은 체험 패널 레이아웃만 담당합니다(넓은 웰컴 히어로용은
-// components/welcome-hero-trial.tsx가 같은 훅으로 별도 레이아웃을 그립니다).
+// 미리 체험해보는 컴포넌트. app/login/page.tsx의 파일 분석 체험과 같은 "세션당 업로드
+// 1건" 예산을 공유합니다(app/api/public-guided-trial, lib/anonymous-usage.ts의
+// checkGuestUploadAllowed 참고) — 실제 업로드 검증·API 호출 로직은 lib/use-guided-trial.ts
+// 훅에 있고, 이 컴포넌트는 로그인 페이지의 좁은 체험 패널 레이아웃만 담당합니다(넓은 웰컴
+// 히어로용은 components/welcome-hero-trial.tsx가 같은 훅으로 별도 레이아웃을 그립니다).
 export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => void }) {
   const t = useTranslations();
-  const { isDone, isAnalyzing, uploaded, error, result, analyzeFile } = useGuidedTrial();
+  const { limitType, isAnalyzing, uploaded, error, result, analyzeFile } = useGuidedTrial();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -38,27 +38,14 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
     ],
   };
 
-  const limitBanner = (
-    <div className="bg-[#331F29] border border-[#F4679B]/40 rounded-xl p-4 text-center">
-      <p className="text-sm text-[#F5F2F7] font-semibold mb-1">{t('login.trial.guided.limitReachedTitle')}</p>
-      <p className="text-xs text-[#C9C0D6] mb-3">{t('login.trial.guided.limitReachedDesc')}</p>
-      <button
-        onClick={onRequestSignUp}
-        className="w-full py-2 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
-      >
-        {t('login.trial.signUpCta')}
-      </button>
-    </div>
-  );
-
   return (
     <div>
       <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
         {t('login.trial.guided.sectionTitle')}
       </p>
 
-      {isDone && !result ? (
-        limitBanner
+      {limitType && !result ? (
+        <GuestLimitBanner limitType={limitType} context="upload" onRequestSignUp={onRequestSignUp} />
       ) : (
         <>
           {!result && (
@@ -111,8 +98,6 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
                 </p>
                 {renderTrialResult('digest', result.summary, t)}
               </div>
-
-              <div className="mt-1">{limitBanner}</div>
             </div>
           )}
         </>

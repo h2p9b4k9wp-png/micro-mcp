@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import { truncateForPrompt } from '@/lib/truncate-text';
-import { getClientIp, checkAnonymousUsage, recordAnonymousUsage } from '@/lib/anonymous-usage';
+import { getClientIp, getGuestSessionId, checkGuestChatAllowed, recordAnonymousUsage } from '@/lib/anonymous-usage';
 
 // 💡 [신규] 로그인 없이 AI에게 자유 질문 하나를 던져보는 체험(app/login/page.tsx의 "AI에게
 // 바로 질문하기") 전용 라우트입니다. middleware.ts의 isPublicRoute에 등록돼 있어야 세션
@@ -10,8 +10,9 @@ import { getClientIp, checkAnonymousUsage, recordAnonymousUsage } from '@/lib/an
 // 기록·웹 검색은 전부 계정이 있어야 의미가 있는 기능이라 이 라우트에는 없습니다 — 사용자가
 // 방금 입력한 질문 하나만 받아서 답합니다.
 //
-// 남용 방지는 app/api/public-analyze와 동일하게 lib/anonymous-usage.ts의 IP 기반 시간당/
-// 일일 호출 횟수 제한을 공유합니다(두 라우트가 같은 예산을 소진).
+// 이 요청은 게스트 세션의 "채팅" 예산(세션당 최대 3턴)을 씁니다 — 업로드를 먼저 하지
+// 않고 이 라우트부터 호출해도 새 세션이 시작되고 채팅 예산만 쓰입니다(lib/anonymous-usage.ts의
+// checkGuestChatAllowed 참고).
 export const dynamic = 'force-dynamic';
 
 // 프롬프트 길이 상한 — 로그인 사용자 문서 첨부용 기본값(6만 자, lib/truncate-text.ts)은
@@ -35,7 +36,8 @@ export async function POST(req: Request) {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     const ip = getClientIp(req);
-    const usageCheck = await checkAnonymousUsage(supabaseAdmin, ip);
+    const sessionId = await getGuestSessionId();
+    const usageCheck = await checkGuestChatAllowed(supabaseAdmin, ip, sessionId);
     if (!usageCheck.ok) {
       return NextResponse.json(
         {
@@ -56,7 +58,7 @@ export async function POST(req: Request) {
     // 💡 실제 OpenAI 호출 전에 먼저 기록합니다 — 스트리밍 도중 오류가 나도 이미 비용이
     // 발생하는 요청을 보낸 것이므로, app/api/public-analyze와 같은 원칙으로 여기서 한 번을
     // 소진한 것으로 기록합니다.
-    await recordAnonymousUsage(supabaseAdmin, ip, 'chat');
+    await recordAnonymousUsage(supabaseAdmin, ip, 'chat', sessionId);
 
     const truncatedPrompt = truncateForPrompt(prompt.trim(), MAX_ANONYMOUS_PROMPT_CHARS);
 

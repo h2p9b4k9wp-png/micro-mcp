@@ -73,12 +73,12 @@ export async function middleware(request: NextRequest) {
   // 방문자 등). /welcome은 로그인 없이 링크로 들어온 방문자가 보는 첫 화면(라이트 테마
   // 랜딩 페이지, app/welcome/page.tsx)입니다. /api/cron/*는 세션 쿠키가 아니라 자체
   // CRON_SECRET으로 인증하는 Vercel Cron 전용 라우트라, 여기서 세션을 요구하면 Cron
-  // 호출 자체가 401로 막힙니다. /api/public-analyze(파일 분석)와 /api/public-chat(AI 채팅)은
-  // 로그인 없이 체험해보는 전용 라우트로, 둘 다 lib/anonymous-usage.ts의 IP 기반 시간당/
-  // 일일 제한을 공유하며 자체적으로 남용을 막고 있어 세션이 없어도 됩니다.
-  // /api/public-guided-trial(사진 업로드 → 회로도 애니메이션 + 예상 문제 + 요약정리)도
-  // 같은 이유로 세션이 없어도 되지만, 남용 방지는 시간당/일일이 아니라 IP당 평생 1회로
-  // 별도입니다(checkGuidedTrialUsed). /api/webhooks/polar는
+  // 호출 자체가 401로 막힙니다. /api/public-analyze(파일 분석)·/api/public-chat(AI 채팅)·
+  // /api/public-guided-trial(사진 업로드)은 로그인 없이 체험해보는 전용 라우트로, 셋 다
+  // lib/anonymous-usage.ts의 게스트 세션(httpOnly 쿠키, Supabase 로그인 세션과는 별개)
+  // 기반 남용 방지를 자체적으로 하고 있어 로그인 세션이 없어도 됩니다 — 세션당 업로드
+  // 1건+채팅 3턴, IP당 하루 3세션, 전체 게스트 일일 호출 상한까지 서버에서 강제합니다.
+  // /api/webhooks/polar는
   // Polar 서버가 세션 쿠키 없이 호출하는 결제 웹훅으로, 인증은 여기가 아니라 라우트 안의
   // 웹훅 서명 검증(POLAR_WEBHOOK_SECRET)이 담당합니다 — /api/cron/*가 CRON_SECRET으로
   // 자체 인증하는 것과 같은 구조입니다.

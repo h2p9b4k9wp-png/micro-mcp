@@ -7,10 +7,11 @@ import { useTranslations } from 'next-intl';
 import type { LensId, DeadlinesResult, QuestionsResult, DigestResult } from '@/lib/lenses';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
-import { ANONYMOUS_HOURLY_LIMIT, ANONYMOUS_DAILY_LIMIT } from '@/lib/anonymous-usage';
+import type { GuidedTrialLimitType } from '@/lib/use-guided-trial';
 import { Logomark } from '@/components/logomark';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestGuidedTrial } from '@/components/guest-guided-trial';
+import { GuestLimitBanner } from '@/components/guest-limit-banner';
 
 function GoogleIcon() {
   return (
@@ -53,9 +54,15 @@ function LoginPageContent() {
   const [isGuestChatLoading, setIsGuestChatLoading] = useState(false);
   const [guestChatAnswer, setGuestChatAnswer] = useState('');
 
-  // 💡 [신규] 파일 분석·AI 채팅 두 체험이 같은 IP 예산(lib/anonymous-usage.ts)을 공유하므로,
-  // 어느 쪽에서 한도 초과가 오든 이 상태 하나로 통일해서 둘 다 비활성화하고 안내 배너를 띄웁니다.
-  const [guestLimitInfo, setGuestLimitInfo] = useState<{ type: 'hourly' | 'daily' } | null>(null);
+  // 💡 [신규] 게스트 세션 예산(lib/anonymous-usage.ts) — 1세션 = 업로드 1건(파일 분석 또는
+  // 이미지 체험) + 채팅 최대 3턴. ip/global 한도는 그 시점에 이 세션이 아직 아무것도 안 썼을
+  // 때만 발생하므로(세션이 이미 뭔가 썼다면 IP 일일 검사 자체를 건너뜀 — lib/anonymous-usage.ts의
+  // isNewSession 참고) 파일·채팅 두 섹션을 통째로 막아도 됩니다. 반면 session 한도(업로드
+  // 이미 씀 / 채팅 3턴 다 씀)는 리소스별로 따로 발생해서 각 섹션을 독립적으로 막습니다 —
+  // 업로드를 이미 썼어도 채팅은 여전히 쓸 수 있어야 하고, 그 반대도 마찬가지입니다.
+  const [guestSuspended, setGuestSuspended] = useState<{ type: 'ip' | 'global' } | null>(null);
+  const [uploadSessionUsed, setUploadSessionUsed] = useState(false);
+  const [chatSessionUsed, setChatSessionUsed] = useState(false);
 
   // 💡 [신규] PWA 서비스워커 등록 (홈 화면에 앱으로 설치 가능하게 해줍니다)
   useEffect(() => {
@@ -169,10 +176,13 @@ function LoginPageContent() {
       });
       const data = await res.json();
       if (!res.ok) {
-        // 💡 파일 분석·AI 채팅이 같은 IP 예산을 공유하므로, 한도 초과는 별도 배너로
-        // 통일해서 안내합니다(둘 다 disable 처리 — 아래 JSX 참고).
         if (data.limitReached) {
-          setGuestLimitInfo({ type: data.limitType === 'daily' ? 'daily' : 'hourly' });
+          const limitType = data.limitType as GuidedTrialLimitType | undefined;
+          if (limitType === 'session') {
+            setUploadSessionUsed(true);
+          } else {
+            setGuestSuspended({ type: (limitType as 'ip' | 'global') || 'ip' });
+          }
           return;
         }
         setTrialError(data.error || t('login.trial.analyzeError'));
@@ -206,7 +216,12 @@ function LoginPageContent() {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         if (data.limitReached) {
-          setGuestLimitInfo({ type: data.limitType === 'daily' ? 'daily' : 'hourly' });
+          const limitType = data.limitType as GuidedTrialLimitType | undefined;
+          if (limitType === 'session') {
+            setChatSessionUsed(true);
+          } else {
+            setGuestSuspended({ type: (limitType as 'ip' | 'global') || 'ip' });
+          }
         } else {
           setGuestChatAnswer(data.error || t('login.trial.genericError'));
         }
@@ -416,26 +431,19 @@ function LoginPageContent() {
                 {t('login.trial.subtitle')}
               </p>
 
-              {/* 💡 [신규] 파일 분석·AI 채팅이 같은 IP 예산을 공유하므로, 어느 쪽에서 한도
-                  초과가 오든 이 배너 하나로 안내하고 아래 두 입력을 모두 막습니다. */}
-              {guestLimitInfo && (
-                <div className="px-4 py-3.5 rounded-lg text-sm mb-5 border bg-[#331F29] border-[#F4679B]/40 text-[#F5F2F7]">
-                  <p className="mb-3 leading-relaxed">
-                    {t(
-                      guestLimitInfo.type === 'daily' ? 'login.trial.rateLimitDaily' : 'login.trial.rateLimitHourly',
-                      { limit: guestLimitInfo.type === 'daily' ? ANONYMOUS_DAILY_LIMIT : ANONYMOUS_HOURLY_LIMIT }
-                    )}
-                  </p>
-                  <button
-                    onClick={() => {
+              {/* 💡 [신규] guestSuspended(ip/global)만 이 상단 배너로 안내하고 아래 두 섹션을
+                  전부 막습니다 — 이 한도는 이 세션이 아직 아무것도 안 썼을 때만 발생하므로
+                  (lib/anonymous-usage.ts의 isNewSession 참고), 통째로 막아도 문제 없습니다. */}
+              {guestSuspended && (
+                <div className="mb-5">
+                  <GuestLimitBanner
+                    limitType={guestSuspended.type}
+                    onRequestSignUp={() => {
                       setShowTrial(false);
                       setIsSignUp(true);
                       setMessage(null);
                     }}
-                    className="w-full py-2 rounded-lg border-none bg-[#F4679B] text-white font-semibold text-sm cursor-pointer hover:bg-[#D1477F] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
-                  >
-                    {t('login.trial.signUpCta')}
-                  </button>
+                  />
                 </div>
               )}
 
@@ -443,26 +451,41 @@ function LoginPageContent() {
                 {t('login.trial.fileSectionTitle')}
               </p>
 
-              {!trialResult && (
-                <label
-                  className={`flex flex-col items-center justify-center gap-2 border border-dashed rounded-xl py-10 px-4 text-center transition-colors ${
-                    isTrialAnalyzing || Boolean(guestLimitInfo)
-                      ? 'border-[#322D3B] cursor-wait'
-                      : 'border-[#423B4C] hover:border-[#F4679B]/50 cursor-pointer'
-                  }`}
-                >
-                  <span className="text-2xl">📄</span>
-                  <span className="text-sm font-medium text-[#C9C0D6]">
-                    {isTrialAnalyzing ? t('login.trial.analyzing') : t('login.trial.chooseFile')}
-                  </span>
-                  <span className="text-xs text-[#5B5566]">{t('login.trial.fileHint')}</span>
-                  <input
-                    type="file"
-                    className="hidden"
-                    disabled={isTrialAnalyzing || Boolean(guestLimitInfo)}
-                    onChange={handleTrialFileChange}
-                  />
-                </label>
+              {/* 💡 세션당 업로드 1건 — 이미 썼으면(uploadSessionUsed) 채팅 섹션은 그대로 두고
+                  이 섹션만 안내 배너로 바꿉니다(파일 분석과 이미지 체험이 같은 업로드 예산을
+                  공유하므로, 아래 GuestGuidedTrial에서 먼저 썼어도 여기서 똑같이 나타납니다). */}
+              {uploadSessionUsed && !guestSuspended ? (
+                <GuestLimitBanner
+                  limitType="session"
+                  context="upload"
+                  onRequestSignUp={() => {
+                    setShowTrial(false);
+                    setIsSignUp(true);
+                    setMessage(null);
+                  }}
+                />
+              ) : (
+                !trialResult && (
+                  <label
+                    className={`flex flex-col items-center justify-center gap-2 border border-dashed rounded-xl py-10 px-4 text-center transition-colors ${
+                      isTrialAnalyzing || Boolean(guestSuspended)
+                        ? 'border-[#322D3B] cursor-wait'
+                        : 'border-[#423B4C] hover:border-[#F4679B]/50 cursor-pointer'
+                    }`}
+                  >
+                    <span className="text-2xl">📄</span>
+                    <span className="text-sm font-medium text-[#C9C0D6]">
+                      {isTrialAnalyzing ? t('login.trial.analyzing') : t('login.trial.chooseFile')}
+                    </span>
+                    <span className="text-xs text-[#5B5566]">{t('login.trial.fileHint')}</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      disabled={isTrialAnalyzing || Boolean(guestSuspended)}
+                      onChange={handleTrialFileChange}
+                    />
+                  </label>
+                )
               )}
 
               {trialError && (
@@ -498,27 +521,41 @@ function LoginPageContent() {
                 <hr className="flex-1 border-[#322D3B]" />
               </div>
 
-              {/* 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 던져보는 체험. */}
+              {/* 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 던져보는 체험.
+                  세션당 최대 3턴 — 업로드를 안 해도 이것부터 시작할 수 있고, 그 경우 이 세션은
+                  채팅 예산만 쓰고 업로드 예산은 그대로 남습니다. */}
               <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
                 {t('login.trial.chatSectionTitle')}
               </p>
-              <form onSubmit={handleGuestAsk} className="flex flex-col gap-2.5">
-                <textarea
-                  value={guestChatPrompt}
-                  onChange={(e) => setGuestChatPrompt(e.target.value)}
-                  placeholder={t('login.trial.chatPlaceholder')}
-                  rows={3}
-                  disabled={isGuestChatLoading || Boolean(guestLimitInfo)}
-                  className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566] resize-none disabled:opacity-50"
+              {chatSessionUsed && !guestSuspended ? (
+                <GuestLimitBanner
+                  limitType="session"
+                  context="chat"
+                  onRequestSignUp={() => {
+                    setShowTrial(false);
+                    setIsSignUp(true);
+                    setMessage(null);
+                  }}
                 />
-                <button
-                  type="submit"
-                  disabled={isGuestChatLoading || Boolean(guestLimitInfo) || !guestChatPrompt.trim()}
-                  className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-semibold cursor-pointer hover:bg-[#15131A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                >
-                  {isGuestChatLoading ? t('login.trial.chatLoading') : t('login.trial.chatButton')}
-                </button>
-              </form>
+              ) : (
+                <form onSubmit={handleGuestAsk} className="flex flex-col gap-2.5">
+                  <textarea
+                    value={guestChatPrompt}
+                    onChange={(e) => setGuestChatPrompt(e.target.value)}
+                    placeholder={t('login.trial.chatPlaceholder')}
+                    rows={3}
+                    disabled={isGuestChatLoading || Boolean(guestSuspended)}
+                    className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566] resize-none disabled:opacity-50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isGuestChatLoading || Boolean(guestSuspended) || !guestChatPrompt.trim()}
+                    className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-semibold cursor-pointer hover:bg-[#15131A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                  >
+                    {isGuestChatLoading ? t('login.trial.chatLoading') : t('login.trial.chatButton')}
+                  </button>
+                </form>
+              )}
 
               {guestChatAnswer && (
                 <div className="bg-[#15131A] border border-[#322D3B] rounded-xl p-4 mt-3 text-sm text-[#E4DEEA] leading-relaxed whitespace-pre-wrap">
@@ -533,8 +570,9 @@ function LoginPageContent() {
               </div>
 
               {/* 💡 [신규] "사진으로 체험하기" — 이미지 1장 → 회로도 애니메이션 + 예상 문제 + 요약정리.
-                  기존 두 체험(파일 분석/AI 채팅)과 남용 방지 예산이 완전히 분리돼 있어(세션당/IP당
-                  평생 1회) guestLimitInfo와 엮지 않고 컴포넌트가 스스로 상태를 관리합니다. */}
+                  파일 분석과 같은 "세션당 업로드 1건" 예산을 공유합니다(app/api/public-guided-trial) —
+                  둘 중 하나만 세션당 한 번 쓸 수 있습니다. 컴포넌트가 lib/use-guided-trial.ts 훅으로
+                  자기 상태를 관리하고, 여기 guestSuspended와는 별도로 자체 배너를 보여줍니다. */}
               <GuestGuidedTrial
                 onRequestSignUp={() => {
                   setShowTrial(false);
@@ -551,7 +589,9 @@ function LoginPageContent() {
                     setTrialResult(null);
                     setGuestChatPrompt('');
                     setGuestChatAnswer('');
-                    setGuestLimitInfo(null);
+                    setGuestSuspended(null);
+                    setUploadSessionUsed(false);
+                    setChatSessionUsed(false);
                   }}
                   className="bg-transparent border-none text-[#857C93] text-[13px] font-medium cursor-pointer hover:text-[#C9C0D6] hover:underline focus:outline-none"
                 >

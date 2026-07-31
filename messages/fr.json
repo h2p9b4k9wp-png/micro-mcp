@@ -411,9 +411,17 @@
       "chatButton": "Demander",
       "chatLoading": "Génération de la réponse…",
       "orDivider": "Ou",
-      "rateLimitHourly": "L'essai invité est limité à {limit} par heure. Créez un compte gratuit pour continuer !",
-      "rateLimitDaily": "L'essai invité est limité à {limit} par jour. Créez un compte gratuit pour continuer !",
       "signUpCta": "Créer un compte gratuit",
+      "limit": {
+        "uploadSessionTitle": "Vous avez déjà utilisé le téléversement de cet essai",
+        "uploadSessionDesc": "Chaque essai inclut 1 téléversement. Vous pouvez encore utiliser le chat IA ci-dessus, et un compte gratuit vous permet de continuer à téléverser aussi !",
+        "chatSessionTitle": "Inscrivez-vous pour continuer à poser des questions",
+        "chatSessionDesc": "Vous avez utilisé toutes les questions de cet essai. Créez un compte gratuit pour continuer à poser des questions !",
+        "ipTitle": "Vous avez épuisé les essais d'aujourd'hui",
+        "ipDesc": "L'essai invité est limité à 3 par jour. Créez un compte gratuit pour continuer à l'utiliser !",
+        "globalTitle": "Les essais invités sont en pause",
+        "globalDesc": "Les demandes d'essai invité sont inhabituellement nombreuses aujourd'hui, nous les avons donc mises en pause un moment. Créez un compte gratuit pour continuer tout de suite !"
+      },
       "guided": {
         "sectionTitle": "Essayer avec une photo",
         "chooseImage": "Cliquez pour choisir une photo",
@@ -422,9 +430,7 @@
         "unsupportedFormat": "Seuls les formats PNG, JPEG, GIF ou WEBP sont pris en charge. S'il s'agit d'une photo HEIC, convertissez-la en JPEG et réessayez.",
         "tooLarge": "Sans compte, vous pouvez analyser des photos jusqu'à 3 Mo.",
         "questionsTitle": "Questions attendues",
-        "summaryTitle": "Résumé",
-        "limitReachedTitle": "Vous avez utilisé votre essai",
-        "limitReachedDesc": "Cet essai ne fonctionne qu'une seule fois. Créez un compte gratuit pour continuer à l'utiliser !"
+        "summaryTitle": "Résumé"
       }
     }
   },

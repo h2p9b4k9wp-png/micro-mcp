@@ -411,9 +411,17 @@
       "chatButton": "Vragen",
       "chatLoading": "Antwoord wordt gegenereerd…",
       "orDivider": "Of",
-      "rateLimitHourly": "Gastproeven zijn beperkt tot {limit} per uur. Maak een gratis account aan om door te gaan!",
-      "rateLimitDaily": "Gastproeven zijn beperkt tot {limit} per dag. Maak een gratis account aan om door te gaan!",
       "signUpCta": "Gratis account aanmaken",
+      "limit": {
+        "uploadSessionTitle": "Je hebt de upload van deze proefsessie al gebruikt",
+        "uploadSessionDesc": "Elke proefsessie bevat 1 upload. Je kunt de AI-chat hierboven nog gebruiken, en met een gratis account kun je ook blijven uploaden!",
+        "chatSessionTitle": "Maak een account aan om door te vragen",
+        "chatSessionDesc": "Je hebt de vragen van deze proefsessie op. Maak een gratis account aan om door te blijven vragen!",
+        "ipTitle": "Je hebt de proefsessies van vandaag op",
+        "ipDesc": "Gastproeven zijn beperkt tot 3 per dag. Maak een gratis account aan om door te gaan!",
+        "globalTitle": "Gastproeven zijn tijdelijk gepauzeerd",
+        "globalDesc": "Er zijn vandaag ongewoon veel aanvragen voor gastproeven, dus we hebben ze even gepauzeerd. Maak een gratis account aan om meteen door te gaan!"
+      },
       "guided": {
         "sectionTitle": "Proberen met een foto",
         "chooseImage": "Klik om een foto te kiezen",
@@ -422,9 +430,7 @@
         "unsupportedFormat": "Alleen PNG, JPEG, GIF of WEBP worden ondersteund. Is het een HEIC-foto, zet deze dan om naar JPEG en probeer opnieuw.",
         "tooLarge": "Zonder account kun je foto's tot 3MB analyseren.",
         "questionsTitle": "Verwachte vragen",
-        "summaryTitle": "Samenvatting",
-        "limitReachedTitle": "Je hebt je proefsessie al gebruikt",
-        "limitReachedDesc": "Deze proefsessie werkt maar één keer. Maak een gratis account aan om te blijven gebruiken!"
+        "summaryTitle": "Samenvatting"
       }
     }
   },

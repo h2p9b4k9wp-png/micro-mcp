@@ -3,18 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 import { extractFileText, FileExtractError } from '@/lib/file-text-extract';
 import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
-import { getClientIp, checkAnonymousUsage, recordAnonymousUsage } from '@/lib/anonymous-usage';
+import { getClientIp, getGuestSessionId, checkGuestUploadAllowed, recordAnonymousUsage } from '@/lib/anonymous-usage';
 
 // 💡 [신규] 로그인 없이 파일 1개를 분석해보는 체험(app/login/page.tsx의 "로그인 없이
 // 체험하기") 전용 라우트입니다. middleware.ts의 isPublicRoute에 이 경로가 등록돼 있어야
-// 세션 없이도 호출할 수 있습니다.
-//
-// 남용 방지는 로그인 사용자용 분당 속도 제한과는 완전히 다른 방식입니다 — 여기엔 사용자
-// 계정이 아예 없으므로, 요청 IP를 키로 anonymous_trial_usage 테이블에 시간당/일일 호출
-// 횟수를 세는 lib/anonymous-usage.ts의 공용 체크를 씁니다(app/api/public-chat과 공유,
-// 서비스 롤 키로 RLS 우회 — 로그인 사용자의 소유 데이터가 아니라 IP별 집계이므로
-// auth.uid() 기반 RLS 자체가 적용될 수 없습니다). 파일 크기도 로그인 사용자(10MB)보다
-// 훨씬 낮은 3MB로 제한합니다.
+// 세션 없이도 호출할 수 있습니다. 이 요청은 게스트 세션의 "업로드" 예산(세션당 1건,
+// 이미지 체험과 공유)을 씁니다 — lib/anonymous-usage.ts의 checkGuestUploadAllowed 참고.
+// 파일 크기도 로그인 사용자(10MB)보다 훨씬 낮은 3MB로 제한합니다.
 
 export async function POST(req: Request) {
   try {
@@ -32,7 +27,8 @@ export async function POST(req: Request) {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     const ip = getClientIp(req);
-    const usageCheck = await checkAnonymousUsage(supabaseAdmin, ip);
+    const sessionId = await getGuestSessionId();
+    const usageCheck = await checkGuestUploadAllowed(supabaseAdmin, ip, sessionId);
     if (!usageCheck.ok) {
       return NextResponse.json(
         {
@@ -65,7 +61,7 @@ export async function POST(req: Request) {
     // 💡 이 지점부터는 실제 파싱·OpenAI 호출로 이어지는 비용 발생 구간이라, 이후 실패
     // (파싱 오류, AI 오류 등)와 무관하게 여기서 한 번을 소진한 것으로 기록합니다 — 그래야
     // 일부러 깨진 파일을 계속 보내며 재시도하는 방식으로 한도를 우회할 수 없습니다.
-    await recordAnonymousUsage(supabaseAdmin, ip, 'analyze');
+    await recordAnonymousUsage(supabaseAdmin, ip, 'analyze', sessionId);
 
     const text = await extractFileText(fileName, mimeType, content);
     const { lensId, result } = await runLensAnalysis({ apiKey, text, fileName });

@@ -75,8 +75,9 @@ function WelcomeCircuitDemo() {
 // "지금 체험하기"를 눌러도 페이지 이동 없이 파일 선택창이 뜨고, 히어로 전체가 드래그앤드롭
 // 영역이며, 업로드 즉시 URL 변경 없이 회로도 애니메이션 → 결과로 전환됩니다. 실제 업로드
 // 검증·API 호출·결과 상태는 components/guest-guided-trial.tsx(로그인 페이지 체험 패널)와
-// 완전히 같은 lib/use-guided-trial.ts 훅을 공유합니다 — 그래서 게스트 1회 제한도 두 진입점
-// 사이에서 자연스럽게 공유됩니다(같은 localStorage 키 + 같은 서버 IP 판정).
+// 완전히 같은 lib/use-guided-trial.ts 훅을 공유합니다 — 그래서 게스트 세션 예산(업로드
+// 1건)도 두 진입점 사이에서 자연스럽게 공유됩니다(같은 브라우저의 httpOnly 세션 쿠키 +
+// 같은 서버 IP 판정, lib/anonymous-usage.ts).
 //
 // 결과 카드(renderTrialResult)는 로그인 페이지 버전과 동일한 다크 테마 색상을 그대로 씁니다
 // — /welcome은 유일하게 라이트 테마인 페이지라, 다크 배경 위가 아니면 그 색상 조합이 거의
@@ -84,7 +85,7 @@ function WelcomeCircuitDemo() {
 // 다크 패널(제품 스크린샷처럼) 안에 넣어서 라이트 히어로 위에 자연스럽게 얹었습니다.
 export function WelcomeHeroTrial() {
   const t = useTranslations();
-  const { isDone, isAnalyzing, uploaded, error, result, analyzeFile, reset } = useGuidedTrial();
+  const { limitType, isAnalyzing, uploaded, error, result, analyzeFile, reset } = useGuidedTrial();
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -155,10 +156,14 @@ export function WelcomeHeroTrial() {
             <span className="break-keep">{t('landing.professorAppeal')}</span>
           </div>
 
-          {isDone ? (
+          {limitType ? (
             <div className="bg-[#FFF0F5] border border-[#F4679B]/30 rounded-2xl px-6 py-5 max-w-sm">
-              <p className="break-keep text-sm font-semibold text-[#1C1922] mb-1">{t('login.trial.guided.limitReachedTitle')}</p>
-              <p className="break-keep text-xs text-[#5B5566] mb-4">{t('login.trial.guided.limitReachedDesc')}</p>
+              <p className="break-keep text-sm font-semibold text-[#1C1922] mb-1">
+                {t(`login.trial.limit.${limitType === 'session' ? 'uploadSession' : limitType}Title`)}
+              </p>
+              <p className="break-keep text-xs text-[#5B5566] mb-4">
+                {t(`login.trial.limit.${limitType === 'session' ? 'uploadSession' : limitType}Desc`)}
+              </p>
               <Link
                 href="/login?trial=1"
                 className="inline-flex items-center justify-center bg-[#F4679B] hover:bg-[#D1477F] text-white font-semibold text-sm px-6 py-2.5 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"

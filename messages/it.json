@@ -411,9 +411,17 @@
       "chatButton": "Chiedi",
       "chatLoading": "Generazione della risposta…",
       "orDivider": "Oppure",
-      "rateLimitHourly": "La prova ospite è limitata a {limit} all'ora. Crea un account gratuito per continuare!",
-      "rateLimitDaily": "La prova ospite è limitata a {limit} al giorno. Crea un account gratuito per continuare!",
       "signUpCta": "Crea un account gratuito",
+      "limit": {
+        "uploadSessionTitle": "Hai già usato il caricamento di questa prova",
+        "uploadSessionDesc": "Ogni prova include 1 caricamento. Puoi ancora usare la chat IA qui sopra, e con un account gratuito puoi continuare a caricare anche tu!",
+        "chatSessionTitle": "Registrati per continuare a chiedere",
+        "chatSessionDesc": "Hai esaurito le domande di questa prova. Crea un account gratuito per continuare a chiedere!",
+        "ipTitle": "Hai esaurito le prove di oggi",
+        "ipDesc": "La prova ospite è limitata a 3 al giorno. Crea un account gratuito per continuare a usarla!",
+        "globalTitle": "Le prove ospite sono in pausa",
+        "globalDesc": "Oggi ci sono molte richieste di prova ospite, quindi le abbiamo messe in pausa per un po'. Crea un account gratuito per continuare subito!"
+      },
       "guided": {
         "sectionTitle": "Prova con una foto",
         "chooseImage": "Clicca per scegliere una foto",
@@ -422,9 +430,7 @@
         "unsupportedFormat": "Sono supportati solo PNG, JPEG, GIF o WEBP. Se è una foto HEIC, convertila in JPEG e riprova.",
         "tooLarge": "Senza account puoi analizzare foto fino a 3MB.",
         "questionsTitle": "Domande previste",
-        "summaryTitle": "Riepilogo",
-        "limitReachedTitle": "Hai già usato la tua prova",
-        "limitReachedDesc": "Questa prova funziona solo una volta. Crea un account gratuito per continuare a usarla!"
+        "summaryTitle": "Riepilogo"
       }
     }
   },

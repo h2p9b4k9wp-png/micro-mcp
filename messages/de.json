@@ -411,9 +411,17 @@
       "chatButton": "Fragen",
       "chatLoading": "Antwort wird erstellt…",
       "orDivider": "Oder",
-      "rateLimitHourly": "Der Gast-Test ist auf {limit} pro Stunde begrenzt. Erstellen Sie ein kostenloses Konto, um weiterzumachen!",
-      "rateLimitDaily": "Der Gast-Test ist auf {limit} pro Tag begrenzt. Erstellen Sie ein kostenloses Konto, um weiterzumachen!",
       "signUpCta": "Kostenloses Konto erstellen",
+      "limit": {
+        "uploadSessionTitle": "Sie haben den Upload dieses Tests bereits genutzt",
+        "uploadSessionDesc": "Jeder Test enthält 1 Upload. Sie können den KI-Chat oben weiterhin nutzen, und mit einem kostenlosen Konto können Sie auch weiter hochladen!",
+        "chatSessionTitle": "Registrieren Sie sich, um weiter zu fragen",
+        "chatSessionDesc": "Sie haben die Fragen dieses Tests aufgebraucht. Erstellen Sie ein kostenloses Konto, um weiter zu fragen!",
+        "ipTitle": "Sie haben die heutigen Tests aufgebraucht",
+        "ipDesc": "Der Gast-Test ist auf 3 pro Tag begrenzt. Erstellen Sie ein kostenloses Konto, um weiterzumachen!",
+        "globalTitle": "Gast-Tests sind vorübergehend pausiert",
+        "globalDesc": "Die Nachfrage nach Gast-Tests ist heute ungewöhnlich hoch, daher haben wir sie kurz pausiert. Erstellen Sie ein kostenloses Konto, um sofort weiterzumachen!"
+      },
       "guided": {
         "sectionTitle": "Mit einem Foto testen",
         "chooseImage": "Klicken, um ein Foto auszuwählen",
@@ -422,9 +430,7 @@
         "unsupportedFormat": "Nur PNG, JPEG, GIF oder WEBP werden unterstützt. Bei einem HEIC-Foto bitte in JPEG umwandeln und erneut versuchen.",
         "tooLarge": "Ohne Konto können Fotos bis 3 MB analysiert werden.",
         "questionsTitle": "Erwartete Fragen",
-        "summaryTitle": "Zusammenfassung",
-        "limitReachedTitle": "Sie haben Ihren Testlauf bereits genutzt",
-        "limitReachedDesc": "Dieser Test funktioniert nur einmal. Erstellen Sie ein kostenloses Konto, um ihn weiter zu nutzen!"
+        "summaryTitle": "Zusammenfassung"
       }
     }
   },

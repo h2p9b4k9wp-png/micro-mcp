@@ -411,9 +411,17 @@
       "chatButton": "Perguntar",
       "chatLoading": "Gerando uma resposta…",
       "orDivider": "Ou",
-      "rateLimitHourly": "O teste de convidado é limitado a {limit} por hora. Crie uma conta gratuita para continuar!",
-      "rateLimitDaily": "O teste de convidado é limitado a {limit} por dia. Crie uma conta gratuita para continuar!",
       "signUpCta": "Criar uma conta gratuita",
+      "limit": {
+        "uploadSessionTitle": "Você já usou o envio deste teste",
+        "uploadSessionDesc": "Cada teste inclui 1 envio. Você ainda pode usar o chat de IA acima, e uma conta gratuita permite continuar enviando também!",
+        "chatSessionTitle": "Cadastre-se para continuar perguntando",
+        "chatSessionDesc": "Você usou todas as perguntas deste teste. Crie uma conta gratuita para continuar perguntando!",
+        "ipTitle": "Você esgotou os testes de hoje",
+        "ipDesc": "O teste de convidado é limitado a 3 por dia. Crie uma conta gratuita para continuar!",
+        "globalTitle": "Os testes de convidado estão pausados",
+        "globalDesc": "Hoje há muitas solicitações de teste de convidado, então pausamos por um momento. Crie uma conta gratuita para continuar agora mesmo!"
+      },
       "guided": {
         "sectionTitle": "Experimentar com uma foto",
         "chooseImage": "Clique para escolher uma foto",
@@ -422,9 +430,7 @@
         "unsupportedFormat": "Apenas PNG, JPEG, GIF ou WEBP são compatíveis. Se for uma foto HEIC, converta para JPEG e tente novamente.",
         "tooLarge": "Sem conta é possível analisar fotos de até 3MB.",
         "questionsTitle": "Perguntas esperadas",
-        "summaryTitle": "Resumo",
-        "limitReachedTitle": "Você já usou seu teste",
-        "limitReachedDesc": "Este teste só funciona uma vez. Crie uma conta gratuita para continuar usando!"
+        "summaryTitle": "Resumo"
       }
     }
   },
