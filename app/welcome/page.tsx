@@ -57,15 +57,33 @@ export default function WelcomePage() {
         </Link>
       </header>
 
-      {/* 💡 [신규] 정적 헤드라인+CTA 링크 대신 인라인 체험 컴포넌트 — "지금 체험하기"를
-          눌러도 페이지 이동 없이 이 자리에서 바로 파일 선택창이 열리고, 히어로 전체가
-          드래그앤드롭 영역이며, 업로드하면 URL 변경 없이 이 자리에서 회로도 애니메이션 →
-          결과로 전환됩니다. */}
-      <main className="flex-1 flex flex-col items-center text-center px-6 pt-4 sm:pt-8 pb-10">
+      {/* 💡 [순서 변경] "교수님별 정리" 섹션을 히어로보다 먼저 보여줍니다 — 헤더 바로 다음,
+          페이지에서 가장 먼저 만나는 콘텐츠. 더미 데이터로 실제 클릭 가능한 데모
+          (components/professor-demo.tsx)를 붙여서, 로그인 후 사이드바 "교수님" 탭에서
+          실제로 어떤 일이 벌어지는지 방문자가 미리 눌러볼 수 있게 했습니다. */}
+      <section className="px-6 pb-20 sm:pb-28 bg-[#FAF8FB] py-16 sm:py-20">
+        <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
+          <h2 className="break-keep text-2xl sm:text-[32px] font-extrabold tracking-tight text-[#1C1922] mb-3">
+            {t('landing.professorSection.title')}
+          </h2>
+          <p className="break-keep text-sm sm:text-base text-[#5B5566] leading-relaxed max-w-xl mx-auto">
+            {t('landing.professorSection.description')}
+          </p>
+        </div>
+        <div className="max-w-3xl mx-auto">
+          <ProfessorDemo />
+        </div>
+      </section>
+
+      {/* 💡 [순서 변경] "AI가 정리해줍니다" 헤드라인 + 체험(업로드) 영역은 교수님 섹션보다
+          아래로 내렸습니다. "지금 체험하기"를 눌러도 페이지 이동 없이 이 자리에서 바로 파일
+          선택창이 열리고, 히어로 전체가 드래그앤드롭 영역이며, 업로드하면 URL 변경 없이 이
+          자리에서 회로도 애니메이션 → 결과로 전환됩니다. */}
+      <main className="flex-1 flex flex-col items-center text-center px-6 pt-14 sm:pt-16 pb-10">
         <WelcomeHeroTrial />
       </main>
 
-      {/* 💡 [신규] 히어로 바로 아래 "할 수 있는 것" 짧은 나열 — 기존 3개짜리 feature 그리드를
+      {/* 💡 히어로 바로 아래 "할 수 있는 것" 짧은 나열 — 기존 3개짜리 feature 그리드를
           대체합니다(사진 업로드 등 새 기능까지 포함해서 더 포괄적). 항목이 전부 한 줄짜리
           짧은 문구라 rigid grid 대신 flex-wrap 칩으로 배치해 어떤 화면 너비에서도 자연스럽게
           줄바꿈됩니다. */}
@@ -80,24 +98,6 @@ export default function WelcomePage() {
               {c.label}
             </span>
           ))}
-        </div>
-      </section>
-
-      {/* 💡 [신규] "교수님별 정리" 기능 전용 섹션 — 작은 배지 하나였던 걸 독립 섹션으로 확장.
-          더미 데이터로 실제 클릭 가능한 데모(components/professor-demo.tsx)를 붙여서, 로그인
-          후 사이드바 "교수님" 탭에서 실제로 어떤 일이 벌어지는지 방문자가 미리 눌러볼 수
-          있게 했습니다. */}
-      <section className="px-6 pb-20 sm:pb-28 bg-[#FAF8FB] py-16 sm:py-20">
-        <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
-          <h2 className="break-keep text-2xl sm:text-[32px] font-extrabold tracking-tight text-[#1C1922] mb-3">
-            {t('landing.professorSection.title')}
-          </h2>
-          <p className="break-keep text-sm sm:text-base text-[#5B5566] leading-relaxed max-w-xl mx-auto">
-            {t('landing.professorSection.description')}
-          </p>
-        </div>
-        <div className="max-w-3xl mx-auto">
-          <ProfessorDemo />
         </div>
       </section>
 
