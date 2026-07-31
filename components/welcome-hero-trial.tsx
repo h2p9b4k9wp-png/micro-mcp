@@ -1,12 +1,75 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useGuidedTrial } from '@/lib/use-guided-trial';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { renderTrialResult } from '@/components/trial-result-view';
 import type { CircuitGraphState } from '@/types/blocks';
+
+type DemoPhase = 'idle' | 'running' | 'done';
+
+// 💡 [신규] idle 상태(아직 아무것도 업로드 안 한 방문자)에서 보여주는 "미리보기" 데모 —
+// 실제 업로드/분석과는 무관하게 idle→running→done을 계속 순환시켜서, 실제 컴포넌트
+// (정적 이미지 아님)로 "이렇게 동작해요"를 보여줍니다. prefers-reduced-motion이면 계속
+// 순환시키지 않고 done 상태로 고정합니다 — CircuitBoard 자체의 리빌 애니메이션은 이미 이
+// 설정을 존중하지만, 그것과 별개로 "계속 반복 재생"하는 것 자체도 모션이라 여기서도 존중합니다.
+function useDemoCircuitPhase(): DemoPhase {
+  const [phase, setPhase] = useState<DemoPhase>('idle');
+
+  useEffect(() => {
+    const prefersReducedMotion =
+      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      setPhase('done');
+      return;
+    }
+
+    const sequence: Array<{ phase: DemoPhase; delay: number }> = [
+      { phase: 'running', delay: 600 },
+      { phase: 'done', delay: 1800 },
+      { phase: 'idle', delay: 4000 },
+    ];
+    let i = 0;
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      const step = sequence[i];
+      timer = setTimeout(() => {
+        setPhase(step.phase);
+        i = (i + 1) % sequence.length;
+        tick();
+      }, step.delay);
+    };
+    tick();
+    return () => clearTimeout(timer);
+  }, []);
+
+  return phase;
+}
+
+function WelcomeCircuitDemo() {
+  const phase = useDemoCircuitPhase();
+  const graph: CircuitGraphState = {
+    nodes: [
+      { id: 'guest_upload', layer: 'source', status: phase === 'idle' ? 'idle' : 'done' },
+      { id: 'guest_ai_core', layer: 'lens', status: phase === 'running' ? 'running' : phase === 'done' ? 'done' : 'idle' },
+      { id: 'questions', layer: 'action', status: phase === 'done' ? 'done' : 'idle' },
+      { id: 'digest', layer: 'action', status: phase === 'done' ? 'done' : 'idle' },
+    ],
+    edges: [
+      { from: 'guest_upload', to: 'guest_ai_core' },
+      { from: 'guest_ai_core', to: 'questions' },
+      { from: 'guest_ai_core', to: 'digest' },
+    ],
+  };
+
+  return (
+    <div className="w-full bg-[#15131A] rounded-[28px] border border-[#2A2632] p-4 sm:p-8" aria-hidden="true">
+      <CircuitBoard graph={graph} onNodeClick={() => {}} />
+    </div>
+  );
+}
 
 // 💡 [신규] /welcome 히어로 영역을 그 자리에서 바로 체험할 수 있게 만든 인라인 버전 —
 // "지금 체험하기"를 눌러도 페이지 이동 없이 파일 선택창이 뜨고, 히어로 전체가 드래그앤드롭
@@ -79,13 +142,18 @@ export function WelcomeHeroTrial() {
       />
 
       {!isInteracting ? (
-        <div key="idle" className="professor-circuit-reveal flex flex-col items-center text-center max-w-xl">
-          <h1 className="text-3xl sm:text-[44px] font-extrabold tracking-tight leading-tight text-[#1C1922] mb-5">
+        <div key="idle" className="professor-circuit-reveal w-full flex flex-col items-center text-center">
+          <h1 className="text-3xl sm:text-[44px] font-extrabold tracking-tight leading-tight text-[#1C1922] mb-5 max-w-xl">
             {t('landing.headline')}
           </h1>
-          <p className="text-base sm:text-lg text-[#5B5566] leading-relaxed mb-9 max-w-xl">
+          <p className="text-base sm:text-lg text-[#5B5566] leading-relaxed mb-5 max-w-xl">
             {t('landing.subheadline')}
           </p>
+
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#F4679B] bg-[#FFF0F5] px-3 py-1.5 rounded-full mb-9">
+            <span aria-hidden="true">🎓</span>
+            {t('landing.professorAppeal')}
+          </div>
 
           {isDone ? (
             <div className="bg-[#FFF0F5] border border-[#F4679B]/30 rounded-2xl px-6 py-5 max-w-sm">
@@ -116,6 +184,10 @@ export function WelcomeHeroTrial() {
               {error}
             </div>
           )}
+
+          <div className="w-full max-w-2xl mt-14">
+            <WelcomeCircuitDemo />
+          </div>
         </div>
       ) : (
         <div key="result" className="professor-circuit-reveal w-full flex flex-col items-center">
