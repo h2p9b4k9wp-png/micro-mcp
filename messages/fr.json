@@ -447,6 +447,7 @@
     "subheadline": "Téléversez un fichier et obtenez automatiquement échéances, questions attendues et résumé clé — ou posez simplement une question.",
     "ctaButton": "Essayer maintenant",
     "ctaHint": "Aucune inscription nécessaire — essayez tout de suite",
+    "startOver": "← Recommencer",
     "features": {
       "analysis": {
         "title": "Un seul fichier, une analyse complète",

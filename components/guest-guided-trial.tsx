@@ -1,110 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import type { QuestionsResult, DigestResult } from '@/lib/lenses';
-import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
-import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
+import { useGuidedTrial } from '@/lib/use-guided-trial';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { renderTrialResult } from '@/components/trial-result-view';
 import type { CircuitGraphState } from '@/types/blocks';
 
-// 💡 [신규] 서버(app/api/public-guided-trial)가 IP당 평생 1회로 최종 판정하지만, 같은
-// 브라우저에서 재시도했을 때 업로드 다이얼로그를 다시 보여줬다가 429로 튕기는 것보다,
-// 로컬에 "이미 썼다"를 남겨서 처음부터 안내 배너를 보여주는 게 낫습니다 — 서버가 항상
-// 최종 권한을 가지므로(private 모드 등으로 이 값이 사라져도 서버가 다시 막습니다), 이건
-// 순전히 UX 개선용입니다.
-const GUIDED_TRIAL_DONE_KEY = 'cramly_guest_guided_trial_done';
-
-interface GuidedTrialResult {
-  questions: QuestionsResult;
-  summary: DigestResult;
-}
-
 // 💡 [신규] 로그인 없이 사진/캡처본 한 장을 올려 회로도 애니메이션 + 예상 문제 + 요약정리를
 // 미리 체험해보는 컴포넌트. app/login/page.tsx의 기존 파일 분석·AI 채팅 체험과는 남용 방지
 // 예산이 완전히 분리돼 있습니다(세션당/IP당 평생 1회, app/api/public-guided-trial 참고) —
-// 그래서 기존 guestLimitInfo(시간당/일일 공유 예산)와 엮지 않고 이 컴포넌트가 자기 상태를
-// 스스로 관리합니다.
+// 그래서 기존 guestLimitInfo(시간당/일일 공유 예산)와 엮지 않고 lib/use-guided-trial.ts 훅이
+// 자기 상태를 스스로 관리합니다. 실제 업로드 검증·API 호출 로직은 그 훅에 있고, 이 컴포넌트는
+// 로그인 페이지의 좁은 체험 패널 레이아웃만 담당합니다(넓은 웰컴 히어로용은
+// components/welcome-hero-trial.tsx가 같은 훅으로 별도 레이아웃을 그립니다).
 export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => void }) {
   const t = useTranslations();
-  const [isDone, setIsDone] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [uploaded, setUploaded] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<GuidedTrialResult | null>(null);
-
-  useEffect(() => {
-    try {
-      if (localStorage.getItem(GUIDED_TRIAL_DONE_KEY) === '1') {
-        setIsDone(true);
-      }
-    } catch {
-      // localStorage 접근 불가(프라이빗 모드 등) — 서버가 최종적으로 막아주므로 그냥 무시합니다.
-    }
-  }, []);
-
-  const markDone = () => {
-    setIsDone(true);
-    try {
-      localStorage.setItem(GUIDED_TRIAL_DONE_KEY, '1');
-    } catch {
-      // ignore
-    }
-  };
+  const { isDone, isAnalyzing, uploaded, error, result, analyzeFile } = useGuidedTrial();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-
-    if (!SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
-      setError(t('login.trial.guided.unsupportedFormat'));
-      return;
-    }
-    if (file.size > MAX_ANONYMOUS_UPLOAD_BYTES) {
-      setError(t('login.trial.guided.tooLarge'));
-      return;
-    }
-
-    setIsAnalyzing(true);
-    setError(null);
-    setResult(null);
-    setUploaded(true);
-    try {
-      const dataUrl: string = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error(t('login.trial.readError')));
-        reader.readAsDataURL(file);
-      });
-      const resized = await resizeImageDataUrl(dataUrl);
-      const commaIndex = resized.indexOf(',');
-      const base64Content = commaIndex !== -1 ? resized.substring(commaIndex + 1) : resized;
-      const mimeMatch = resized.match(/^data:([^;]+);/);
-      const mimeType = mimeMatch ? mimeMatch[1] : file.type;
-
-      const res = await fetch('/api/public-guided-trial', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileName: file.name, mimeType, content: base64Content }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        if (data.limitReached) {
-          markDone();
-          return;
-        }
-        setError(data.error || t('login.trial.genericError'));
-        return;
-      }
-      setResult({ questions: data.questions, summary: data.summary });
-      markDone();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('login.trial.genericError'));
-    } finally {
-      setIsAnalyzing(false);
-    }
+    await analyzeFile(file);
   };
 
   const graph: CircuitGraphState = {

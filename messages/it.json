@@ -447,6 +447,7 @@
     "subheadline": "Carica un file e ottieni automaticamente scadenze, domande previste e un riepilogo chiave — oppure chiedi semplicemente qualcosa.",
     "ctaButton": "Prova ora",
     "ctaHint": "Nessuna registrazione necessaria — provalo subito",
+    "startOver": "← Ricomincia",
     "features": {
       "analysis": {
         "title": "Un file, analisi completa",

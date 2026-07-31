@@ -447,6 +447,7 @@
     "subheadline": "Sube un archivo y obtén plazos, preguntas esperadas y un resumen clave automáticamente, o simplemente pregunta lo que quieras.",
     "ctaButton": "Probar ahora",
     "ctaHint": "Sin necesidad de registrarte — pruébalo ahora mismo",
+    "startOver": "← Empezar de nuevo",
     "features": {
       "analysis": {
         "title": "Un archivo, análisis completo",

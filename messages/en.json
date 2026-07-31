@@ -447,6 +447,7 @@
     "subheadline": "Upload a file and get deadlines, expected questions, and a key summary automatically — or just ask anything.",
     "ctaButton": "Try It Now",
     "ctaHint": "No sign-up needed — try it right away",
+    "startOver": "← Start over",
     "features": {
       "analysis": {
         "title": "One file, full analysis",

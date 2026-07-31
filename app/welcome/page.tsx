@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Logomark } from '@/components/logomark';
+import { WelcomeHeroTrial } from '@/components/welcome-hero-trial';
 
 // 💡 [신규] 링크로 바로 들어온 미로그인 방문자의 첫 화면(middleware.ts가 "/" 미로그인
 // 요청을 여기로 보냅니다). 나머지 페이지(app/page.tsx, app/login/page.tsx, /pricing,
@@ -53,22 +54,12 @@ export default function WelcomePage() {
         </Link>
       </header>
 
+      {/* 💡 [신규] 정적 헤드라인+CTA 링크 대신 인라인 체험 컴포넌트 — "지금 체험하기"를
+          눌러도 페이지 이동 없이 이 자리에서 바로 파일 선택창이 열리고, 히어로 전체가
+          드래그앤드롭 영역이며, 업로드하면 URL 변경 없이 이 자리에서 회로도 애니메이션 →
+          결과로 전환됩니다. */}
       <main className="flex-1 flex flex-col items-center justify-center text-center px-6 py-16 sm:py-24">
-        <div className="max-w-2xl mx-auto flex flex-col items-center">
-          <h1 className="text-3xl sm:text-[44px] font-extrabold tracking-tight leading-tight text-[#1C1922] mb-5">
-            {t('landing.headline')}
-          </h1>
-          <p className="text-base sm:text-lg text-[#5B5566] leading-relaxed mb-9 max-w-xl">
-            {t('landing.subheadline')}
-          </p>
-          <Link
-            href="/login?trial=1"
-            className="inline-flex items-center justify-center bg-[#F4679B] hover:bg-[#D1477F] text-white font-semibold text-base px-8 py-3.5 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
-          >
-            {t('landing.ctaButton')}
-          </Link>
-          <p className="text-xs text-[#AFA6BD] mt-3">{t('landing.ctaHint')}</p>
-        </div>
+        <WelcomeHeroTrial />
       </main>
 
       <section className="px-6 pb-20 sm:pb-28">
