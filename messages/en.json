@@ -329,6 +329,14 @@
     "guest_ai_core": {
       "label": "AI Analysis",
       "hint": "Reads and analyzes what's in the photo"
+    },
+    "professor_summary": {
+      "label": "Key Summary",
+      "hint": "Boils this professor's materials down to the essentials"
+    },
+    "professor_emphasis": {
+      "label": "Emphasis Points",
+      "hint": "What this professor tends to emphasize"
     }
   },
   "circuit": {
@@ -449,19 +457,16 @@
     "ctaHint": "No sign-up needed — try it right away",
     "professorAppeal": "Organizes materials by each professor",
     "startOver": "← Start over",
-    "features": {
-      "analysis": {
-        "title": "One file, full analysis",
-        "desc": "Upload a PDF, Word, Excel, or HWP file and get deadlines, expected questions, and a key summary automatically."
-      },
-      "chat": {
-        "title": "Ask the AI anything",
-        "desc": "Ask a question and get an answer right away — no account needed to try it."
-      },
-      "deadlines": {
-        "title": "All your deadlines, at a glance",
-        "desc": "Your deadlines are automatically sorted by urgency, so you always know what to tackle first."
-      }
+    "capabilities": {
+      "upload": "Upload files, photos, or screenshots to analyze",
+      "deadlines": "Auto-extract deadlines",
+      "questions": "Generate expected questions",
+      "summary": "Key summaries",
+      "ask": "Ask questions straight from your materials"
+    },
+    "professorSection": {
+      "title": "Every professor tests differently",
+      "description": "Organize materials by professor and one click gives you expected questions and a summary tuned to what that professor emphasizes and how they test."
     }
   }
 }

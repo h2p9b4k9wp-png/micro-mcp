@@ -123,7 +123,7 @@ export function WelcomeHeroTrial() {
 
   return (
     <div
-      className={`w-full max-w-2xl mx-auto flex flex-col items-center px-6 py-16 sm:py-24 rounded-[32px] transition-colors duration-200 ${
+      className={`w-full max-w-2xl mx-auto flex flex-col items-center px-6 py-8 sm:py-12 rounded-[32px] transition-colors duration-200 ${
         isDragging ? 'bg-[#FFF0F5] outline-dashed outline-2 outline-[#F4679B] -outline-offset-8' : ''
       }`}
       onDragOver={(e) => {
@@ -143,22 +143,22 @@ export function WelcomeHeroTrial() {
 
       {!isInteracting ? (
         <div key="idle" className="professor-circuit-reveal w-full flex flex-col items-center text-center">
-          <h1 className="text-3xl sm:text-[44px] font-extrabold tracking-tight leading-tight text-[#1C1922] mb-5 max-w-xl">
+          <h1 className="break-keep text-3xl sm:text-[44px] font-extrabold tracking-tight leading-tight text-[#1C1922] mb-4 max-w-xl">
             {t('landing.headline')}
           </h1>
-          <p className="text-base sm:text-lg text-[#5B5566] leading-relaxed mb-5 max-w-xl">
+          <p className="break-keep text-base sm:text-lg text-[#5B5566] leading-relaxed mb-4 max-w-xl">
             {t('landing.subheadline')}
           </p>
 
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#F4679B] bg-[#FFF0F5] px-3 py-1.5 rounded-full mb-9">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#F4679B] bg-[#FFF0F5] px-3 py-1.5 rounded-full mb-6">
             <span aria-hidden="true">🎓</span>
-            {t('landing.professorAppeal')}
+            <span className="break-keep">{t('landing.professorAppeal')}</span>
           </div>
 
           {isDone ? (
             <div className="bg-[#FFF0F5] border border-[#F4679B]/30 rounded-2xl px-6 py-5 max-w-sm">
-              <p className="text-sm font-semibold text-[#1C1922] mb-1">{t('login.trial.guided.limitReachedTitle')}</p>
-              <p className="text-xs text-[#5B5566] mb-4">{t('login.trial.guided.limitReachedDesc')}</p>
+              <p className="break-keep text-sm font-semibold text-[#1C1922] mb-1">{t('login.trial.guided.limitReachedTitle')}</p>
+              <p className="break-keep text-xs text-[#5B5566] mb-4">{t('login.trial.guided.limitReachedDesc')}</p>
               <Link
                 href="/login?trial=1"
                 className="inline-flex items-center justify-center bg-[#F4679B] hover:bg-[#D1477F] text-white font-semibold text-sm px-6 py-2.5 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-offset-2"
@@ -185,7 +185,7 @@ export function WelcomeHeroTrial() {
             </div>
           )}
 
-          <div className="w-full max-w-2xl mt-14">
+          <div className="w-full max-w-2xl mt-10">
             <WelcomeCircuitDemo />
           </div>
         </div>

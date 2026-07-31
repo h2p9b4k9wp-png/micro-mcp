@@ -329,6 +329,14 @@
     "guest_ai_core": {
       "label": "Phân tích AI",
       "hint": "Đọc và phân tích nội dung trong ảnh"
+    },
+    "professor_summary": {
+      "label": "Tóm tắt trọng tâm",
+      "hint": "Rút gọn tài liệu của giáo sư này thành phần cốt lõi"
+    },
+    "professor_emphasis": {
+      "label": "Điểm nhấn mạnh",
+      "hint": "Những điều giáo sư này thường nhấn mạnh"
     }
   },
   "circuit": {
@@ -449,19 +457,16 @@
     "ctaHint": "Không cần đăng ký — dùng thử ngay",
     "professorAppeal": "Sắp xếp tài liệu theo từng giáo sư",
     "startOver": "← Bắt đầu lại",
-    "features": {
-      "analysis": {
-        "title": "Phân tích trọn vẹn chỉ với 1 tệp",
-        "desc": "Tải lên tệp PDF, Word, Excel hoặc HWP để tự động nhận hạn chót, câu hỏi dự kiến và tóm tắt chính."
-      },
-      "chat": {
-        "title": "Hỏi AI bất cứ điều gì",
-        "desc": "Đặt câu hỏi và nhận câu trả lời ngay lập tức — không cần tài khoản để dùng thử."
-      },
-      "deadlines": {
-        "title": "Xem tất cả hạn chót trong nháy mắt",
-        "desc": "Các hạn chót của bạn được tự động sắp xếp theo mức độ khẩn cấp, để bạn luôn biết nên làm gì trước."
-      }
+    "capabilities": {
+      "upload": "Tải tệp, ảnh, ảnh chụp màn hình để phân tích",
+      "deadlines": "Tự động trích xuất hạn chót",
+      "questions": "Tạo câu hỏi dự kiến",
+      "summary": "Tóm tắt trọng tâm",
+      "ask": "Hỏi trực tiếp dựa trên tài liệu"
+    },
+    "professorSection": {
+      "title": "Mỗi giáo sư ra đề một kiểu",
+      "description": "Gom tài liệu theo từng giáo sư, chỉ một cú click là có ngay câu hỏi dự kiến và tóm tắt theo đúng điều giáo sư đó nhấn mạnh và cách ra đề."
     }
   }
 }

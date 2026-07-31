@@ -329,6 +329,14 @@
     "guest_ai_core": {
       "label": "Analisi IA",
       "hint": "Legge e analizza il contenuto della foto"
+    },
+    "professor_summary": {
+      "label": "Riepilogo chiave",
+      "hint": "Riduce i materiali di questo professore all'essenziale"
+    },
+    "professor_emphasis": {
+      "label": "Punti chiave",
+      "hint": "Ciò che questo professore sottolinea spesso"
     }
   },
   "circuit": {
@@ -449,19 +457,16 @@
     "ctaHint": "Nessuna registrazione necessaria — provalo subito",
     "professorAppeal": "Organizza i materiali per ogni professore",
     "startOver": "← Ricomincia",
-    "features": {
-      "analysis": {
-        "title": "Un file, analisi completa",
-        "desc": "Carica un file PDF, Word, Excel o HWP e ottieni automaticamente scadenze, domande previste e un riepilogo chiave."
-      },
-      "chat": {
-        "title": "Chiedi qualsiasi cosa all'IA",
-        "desc": "Fai una domanda e ricevi subito una risposta — non serve un account per provarlo."
-      },
-      "deadlines": {
-        "title": "Tutte le scadenze, a colpo d'occhio",
-        "desc": "Le tue scadenze vengono ordinate automaticamente per urgenza, così sai sempre da cosa iniziare."
-      }
+    "capabilities": {
+      "upload": "Carica file, foto o screenshot da analizzare",
+      "deadlines": "Estrazione automatica delle scadenze",
+      "questions": "Generazione di domande previste",
+      "summary": "Riepiloghi chiave",
+      "ask": "Fai domande direttamente sui tuoi materiali"
+    },
+    "professorSection": {
+      "title": "Ogni professore valuta in modo diverso",
+      "description": "Organizza i materiali per professore: un clic basta per ottenere domande previste e un riepilogo su misura di ciò che quel professore sottolinea e di come valuta."
     }
   }
 }

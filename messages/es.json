@@ -329,6 +329,14 @@
     "guest_ai_core": {
       "label": "Análisis de IA",
       "hint": "Lee y analiza el contenido de la foto"
+    },
+    "professor_summary": {
+      "label": "Resumen clave",
+      "hint": "Reduce los materiales de este profesor a lo esencial"
+    },
+    "professor_emphasis": {
+      "label": "Puntos clave",
+      "hint": "Lo que este profesor suele destacar"
     }
   },
   "circuit": {
@@ -449,19 +457,16 @@
     "ctaHint": "Sin necesidad de registrarte — pruébalo ahora mismo",
     "professorAppeal": "Organiza materiales por cada profesor",
     "startOver": "← Empezar de nuevo",
-    "features": {
-      "analysis": {
-        "title": "Un archivo, análisis completo",
-        "desc": "Sube un archivo PDF, Word, Excel o HWP y obtén plazos, preguntas esperadas y un resumen clave automáticamente."
-      },
-      "chat": {
-        "title": "Pregúntale a la IA lo que sea",
-        "desc": "Haz una pregunta y obtén una respuesta al instante — no necesitas cuenta para probarlo."
-      },
-      "deadlines": {
-        "title": "Todos tus plazos, de un vistazo",
-        "desc": "Tus plazos se ordenan automáticamente por urgencia, así siempre sabes qué hacer primero."
-      }
+    "capabilities": {
+      "upload": "Sube archivos, fotos o capturas para analizar",
+      "deadlines": "Extrae plazos automáticamente",
+      "questions": "Genera preguntas esperadas",
+      "summary": "Resúmenes clave",
+      "ask": "Pregunta directamente sobre tus materiales"
+    },
+    "professorSection": {
+      "title": "Cada profesor evalúa distinto",
+      "description": "Organiza tus materiales por profesor y con un clic obtén preguntas esperadas y un resumen ajustado a lo que ese profesor destaca y cómo evalúa."
     }
   }
 }

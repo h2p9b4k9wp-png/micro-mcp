@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Logomark } from '@/components/logomark';
 import { WelcomeHeroTrial } from '@/components/welcome-hero-trial';
+import { ProfessorDemo } from '@/components/professor-demo';
 
 // 💡 [신규] 링크로 바로 들어온 미로그인 방문자의 첫 화면(middleware.ts가 "/" 미로그인
 // 요청을 여기로 보냅니다). 나머지 페이지(app/page.tsx, app/login/page.tsx, /pricing,
@@ -25,10 +26,12 @@ export default function WelcomePage() {
     }
   }, []);
 
-  const features = [
-    { icon: '📄', title: t('landing.features.analysis.title'), desc: t('landing.features.analysis.desc') },
-    { icon: '💬', title: t('landing.features.chat.title'), desc: t('landing.features.chat.desc') },
-    { icon: '🗓', title: t('landing.features.deadlines.title'), desc: t('landing.features.deadlines.desc') },
+  const capabilities = [
+    { icon: '📎', label: t('landing.capabilities.upload') },
+    { icon: '🗓', label: t('landing.capabilities.deadlines') },
+    { icon: '❓', label: t('landing.capabilities.questions') },
+    { icon: '📝', label: t('landing.capabilities.summary') },
+    { icon: '💬', label: t('landing.capabilities.ask') },
   ];
 
   return (
@@ -58,19 +61,43 @@ export default function WelcomePage() {
           눌러도 페이지 이동 없이 이 자리에서 바로 파일 선택창이 열리고, 히어로 전체가
           드래그앤드롭 영역이며, 업로드하면 URL 변경 없이 이 자리에서 회로도 애니메이션 →
           결과로 전환됩니다. */}
-      <main className="flex-1 flex flex-col items-center justify-center text-center px-6 py-16 sm:py-24">
+      <main className="flex-1 flex flex-col items-center text-center px-6 pt-4 sm:pt-8 pb-10">
         <WelcomeHeroTrial />
       </main>
 
-      <section className="px-6 pb-20 sm:pb-28">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8">
-          {features.map((f) => (
-            <div key={f.title} className="flex flex-col items-center text-center gap-2.5">
-              <span className="text-3xl" aria-hidden="true">{f.icon}</span>
-              <h3 className="text-sm font-bold text-[#1C1922]">{f.title}</h3>
-              <p className="text-sm text-[#857C93] leading-relaxed">{f.desc}</p>
-            </div>
+      {/* 💡 [신규] 히어로 바로 아래 "할 수 있는 것" 짧은 나열 — 기존 3개짜리 feature 그리드를
+          대체합니다(사진 업로드 등 새 기능까지 포함해서 더 포괄적). 항목이 전부 한 줄짜리
+          짧은 문구라 rigid grid 대신 flex-wrap 칩으로 배치해 어떤 화면 너비에서도 자연스럽게
+          줄바꿈됩니다. */}
+      <section className="px-6 pb-14 sm:pb-20">
+        <div className="max-w-3xl mx-auto flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+          {capabilities.map((c) => (
+            <span
+              key={c.label}
+              className="break-keep inline-flex items-center gap-1.5 text-sm font-medium text-[#1C1922] bg-[#F7F5F9] border border-[#E5E1EA] px-3.5 py-2 rounded-full"
+            >
+              <span aria-hidden="true">{c.icon}</span>
+              {c.label}
+            </span>
           ))}
+        </div>
+      </section>
+
+      {/* 💡 [신규] "교수님별 정리" 기능 전용 섹션 — 작은 배지 하나였던 걸 독립 섹션으로 확장.
+          더미 데이터로 실제 클릭 가능한 데모(components/professor-demo.tsx)를 붙여서, 로그인
+          후 사이드바 "교수님" 탭에서 실제로 어떤 일이 벌어지는지 방문자가 미리 눌러볼 수
+          있게 했습니다. */}
+      <section className="px-6 pb-20 sm:pb-28 bg-[#FAF8FB] py-16 sm:py-20">
+        <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-10">
+          <h2 className="break-keep text-2xl sm:text-[32px] font-extrabold tracking-tight text-[#1C1922] mb-3">
+            {t('landing.professorSection.title')}
+          </h2>
+          <p className="break-keep text-sm sm:text-base text-[#5B5566] leading-relaxed max-w-xl mx-auto">
+            {t('landing.professorSection.description')}
+          </p>
+        </div>
+        <div className="max-w-3xl mx-auto">
+          <ProfessorDemo />
         </div>
       </section>
 

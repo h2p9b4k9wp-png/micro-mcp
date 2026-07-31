@@ -329,6 +329,14 @@
     "guest_ai_core": {
       "label": "AI 분석",
       "hint": "사진 속 내용을 읽고 분석해요"
+    },
+    "professor_summary": {
+      "label": "핵심 요약",
+      "hint": "이 교수님 자료의 핵심만 간추려요"
+    },
+    "professor_emphasis": {
+      "label": "강조 포인트",
+      "hint": "이 교수님이 자주 강조하는 부분이에요"
     }
   },
   "circuit": {
@@ -449,19 +457,16 @@
     "ctaHint": "회원가입 없이 바로 사용해볼 수 있어요",
     "professorAppeal": "교수님별로 자료를 따로 정리해드려요",
     "startOver": "← 다시 처음으로",
-    "features": {
-      "analysis": {
-        "title": "파일 하나로 끝내는 분석",
-        "desc": "PDF·워드·엑셀·한글 파일을 올리면 마감일, 예상 질문, 핵심 요약을 자동으로 뽑아드려요."
-      },
-      "chat": {
-        "title": "AI에게 무엇이든 질문",
-        "desc": "궁금한 걸 바로 물어보고 답을 받아보세요. 계정 없이도 체험할 수 있어요."
-      },
-      "deadlines": {
-        "title": "마감일을 한눈에",
-        "desc": "등록한 마감을 긴급도순으로 자동 정렬해서, 뭐부터 해야 할지 헷갈리지 않아요."
-      }
+    "capabilities": {
+      "upload": "파일·사진·캡처 업로드해서 분석",
+      "deadlines": "마감일 자동 추출",
+      "questions": "예상 문제 생성",
+      "summary": "핵심 요약",
+      "ask": "자료 기반으로 바로 질문"
+    },
+    "professorSection": {
+      "title": "교수님마다 시험이 다르니까요",
+      "description": "자료를 교수님별로 모아두면, 클릭 한 번에 그 교수님이 강조한 내용과 출제 경향에 맞춘 예상문제·요약이 나옵니다."
     }
   }
 }

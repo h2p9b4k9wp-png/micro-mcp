@@ -329,6 +329,14 @@
     "guest_ai_core": {
       "label": "AI-analyse",
       "hint": "Leest en analyseert de inhoud van de foto"
+    },
+    "professor_summary": {
+      "label": "Kernsamenvatting",
+      "hint": "Vat het materiaal van deze docent samen tot de essentie"
+    },
+    "professor_emphasis": {
+      "label": "Nadrukpunten",
+      "hint": "Wat deze docent vaak benadrukt"
     }
   },
   "circuit": {
@@ -449,19 +457,16 @@
     "ctaHint": "Geen registratie nodig — probeer het meteen",
     "professorAppeal": "Ordent materiaal per docent",
     "startOver": "← Opnieuw beginnen",
-    "features": {
-      "analysis": {
-        "title": "Eén bestand, volledige analyse",
-        "desc": "Upload een PDF-, Word-, Excel- of HWP-bestand en krijg automatisch deadlines, verwachte vragen en een kernsamenvatting."
-      },
-      "chat": {
-        "title": "Stel de AI van alles",
-        "desc": "Stel een vraag en krijg meteen antwoord — geen account nodig om het te proberen."
-      },
-      "deadlines": {
-        "title": "Al je deadlines in één oogopslag",
-        "desc": "Je deadlines worden automatisch gesorteerd op urgentie, zodat je altijd weet wat je eerst moet doen."
-      }
+    "capabilities": {
+      "upload": "Upload bestanden, foto's of screenshots om te analyseren",
+      "deadlines": "Deadlines automatisch extraheren",
+      "questions": "Verwachte vragen genereren",
+      "summary": "Kernsamenvattingen",
+      "ask": "Stel direct vragen over je materiaal"
+    },
+    "professorSection": {
+      "title": "Elke docent toetst anders",
+      "description": "Organiseer materiaal per docent, en met één klik krijg je verwachte vragen en een samenvatting afgestemd op wat die docent benadrukt en hoe die toetst."
     }
   }
 }

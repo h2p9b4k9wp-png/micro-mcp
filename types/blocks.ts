@@ -13,7 +13,11 @@ export type NodeId =
   | 'expected_questions' | 'assignment_direction' | 'study_method'
   // 💡 [신규] 게스트 가이드 체험(로그인 없이 이미지 1장 → 회로도 + 예상 문제 + 요약정리)
   // 전용 source/lens 노드 — action 레이어는 기존 'questions'/'digest'를 그대로 재사용합니다.
-  | 'guest_upload' | 'guest_ai_core';
+  | 'guest_upload' | 'guest_ai_core'
+  // 💡 [신규] /welcome "교수님별 정리" 미리보기 데모(components/professor-demo.tsx) 전용
+  // action 노드 — 예상 문제는 기존 'expected_questions'를 그대로 재사용하고, 이 둘만
+  // 새로 추가합니다(더미 데이터 데모라 실제 professor_ai_core 결과와 무관).
+  | 'professor_summary' | 'professor_emphasis';
 
 // 노드 레지스트리 항목 — "어떤 노드가 존재하는지"에 대한 정적 메타데이터입니다 (lib/blocks/defaults.ts).
 export interface CircuitNode {

@@ -1,4 +1,4 @@
-import { FileText, Library, Search, CalendarClock, HelpCircle, NotebookPen, CalendarPlus, CalendarSync, FileDown, GraduationCap, Cpu, ClipboardList, BookOpen, Camera } from 'lucide-react';
+import { FileText, Library, Search, CalendarClock, HelpCircle, NotebookPen, CalendarPlus, CalendarSync, FileDown, GraduationCap, Cpu, ClipboardList, BookOpen, Camera, Highlighter } from 'lucide-react';
 import type { CircuitNode } from '@/types/blocks';
 
 // 💡 [신규] 3계층 노드 레지스트리 (source → lens → action). 예전 5개 블록(McpBlock, on/off 토글) 모델은
@@ -149,5 +149,25 @@ export const NODE_REGISTRY: CircuitNode[] = [
     hint: '사진 속 내용을 읽고 분석해요',
     icon: Cpu,
     estimatedSeconds: 6,
+  },
+
+  // 💡 [신규] /welcome "교수님별 정리" 미리보기 데모(components/professor-demo.tsx) 전용
+  // action 노드. 예상 문제는 위의 'expected_questions'를 그대로 재사용합니다(라벨이
+  // 정확히 일치).
+  {
+    id: 'professor_summary',
+    layer: 'action',
+    label: '핵심 요약',
+    hint: '이 교수님 자료의 핵심만 간추려요',
+    icon: NotebookPen,
+    estimatedSeconds: 0,
+  },
+  {
+    id: 'professor_emphasis',
+    layer: 'action',
+    label: '강조 포인트',
+    hint: '이 교수님이 자주 강조하는 부분이에요',
+    icon: Highlighter,
+    estimatedSeconds: 0,
   },
 ];

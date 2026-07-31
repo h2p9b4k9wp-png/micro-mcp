@@ -329,6 +329,14 @@
     "guest_ai_core": {
       "label": "KI-Analyse",
       "hint": "Liest und analysiert den Inhalt des Fotos"
+    },
+    "professor_summary": {
+      "label": "Kernzusammenfassung",
+      "hint": "Fasst das Material dieses Dozenten auf das Wesentliche zusammen"
+    },
+    "professor_emphasis": {
+      "label": "Schwerpunkte",
+      "hint": "Was dieser Dozent häufig betont"
     }
   },
   "circuit": {
@@ -449,19 +457,16 @@
     "ctaHint": "Keine Anmeldung nötig — sofort testen",
     "professorAppeal": "Ordnet Material nach jedem Dozenten",
     "startOver": "← Von vorn beginnen",
-    "features": {
-      "analysis": {
-        "title": "Eine Datei, vollständige Analyse",
-        "desc": "Laden Sie eine PDF-, Word-, Excel- oder HWP-Datei hoch und erhalten Sie automatisch Fristen, erwartete Fragen und eine Kernzusammenfassung."
-      },
-      "chat": {
-        "title": "Fragen Sie die KI alles",
-        "desc": "Stellen Sie eine Frage und erhalten Sie sofort eine Antwort — kein Konto nötig, um es auszuprobieren."
-      },
-      "deadlines": {
-        "title": "Alle Fristen auf einen Blick",
-        "desc": "Ihre Fristen werden automatisch nach Dringlichkeit sortiert, damit Sie immer wissen, was zuerst zu erledigen ist."
-      }
+    "capabilities": {
+      "upload": "Dateien, Fotos oder Screenshots hochladen und analysieren",
+      "deadlines": "Fristen automatisch extrahieren",
+      "questions": "Erwartete Fragen generieren",
+      "summary": "Kernzusammenfassungen",
+      "ask": "Direkt zu Ihren Materialien fragen"
+    },
+    "professorSection": {
+      "title": "Jeder Dozent prüft anders",
+      "description": "Ordnen Sie Material nach Dozent, und ein Klick liefert erwartete Fragen und eine Zusammenfassung, abgestimmt auf das, was dieser Dozent betont und wie er prüft."
     }
   }
 }
