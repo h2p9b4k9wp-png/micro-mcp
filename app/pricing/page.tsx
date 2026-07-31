@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { FREE_LIMITS, PRO_LIMITS, PRO_PRICE_LABEL, FREE_LOG_RETENTION_DAYS } from '@/lib/plan-limits';
 
 export const metadata = {
-  title: 'Pricing — Cramly',
-  description: 'Cramly Free and Pro plans.',
+  title: 'Pricing — Carrotly',
+  description: 'Carrotly Free and Pro plans.',
 };
 
 // 💡 [신규] 로그인 없이도 봐야 하는 공개 페이지라(middleware.ts의 isPublicRoute에 등록)
@@ -19,7 +19,7 @@ export default function PricingPage() {
           href="/"
           className="text-sm text-[#AFA6BD] hover:text-[#F5F2F7] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
         >
-          ← Back to Cramly
+          ← Back to Carrotly
         </Link>
 
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] mt-6 mb-2 tracking-tight text-center sm:text-left">

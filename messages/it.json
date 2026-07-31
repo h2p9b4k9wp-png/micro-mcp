@@ -81,8 +81,8 @@
   },
   "records": {
     "title": "I miei archivi",
-    "subtitle": "Dai un'occhiata ai dati che Cramly ha raccolto su di te finora.",
-    "heroLabel": "Cosa sa Cramly su di te",
+    "subtitle": "Dai un'occhiata ai dati che Carrotly ha raccolto su di te finora.",
+    "heroLabel": "Cosa sa Carrotly su di te",
     "unitSuffix": "",
     "daysSinceJoin": "Sei con noi da {days} giorni",
     "deadlinesCard": {
@@ -360,7 +360,7 @@
         }
       },
       "shortTagline": "Assembla il tuo lavoro come blocchi, in automatico",
-      "copyright": "© {year} Cramly"
+      "copyright": "© {year} Carrotly"
     },
     "form": {
       "signUpTitle": "Crea un nuovo account",

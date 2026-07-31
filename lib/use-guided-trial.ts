@@ -13,7 +13,7 @@ import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
 // 순전히 UX 개선용입니다. /welcome(히어로 영역)과 /login?trial=1(체험 패널) 둘 다 같은 키를
 // 쓰기 때문에, 한쪽에서 이미 썼으면 다른 쪽에서도 곧바로 막힌 상태로 보입니다(같은 오리진의
 // localStorage + 같은 서버 IP 기준 판정이라 자연스럽게 공유됩니다).
-const GUIDED_TRIAL_DONE_KEY = 'cramly_guest_guided_trial_done';
+const GUIDED_TRIAL_DONE_KEY = 'carrotly_guest_guided_trial_done';
 
 export interface GuidedTrialResult {
   questions: QuestionsResult;

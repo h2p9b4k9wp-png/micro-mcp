@@ -44,7 +44,7 @@ export default function WelcomePage() {
       <header className="w-full max-w-5xl mx-auto flex items-center justify-between px-6 sm:px-10 py-6">
         <div className="flex items-center gap-2 text-[#F4679B]">
           <Logomark className="w-7 h-7" />
-          <span className="text-base font-extrabold text-[#1C1922] tracking-tight">Cramly</span>
+          <span className="text-base font-extrabold text-[#1C1922] tracking-tight">Carrotly</span>
         </div>
         <Link
           href="/login"
@@ -75,7 +75,7 @@ export default function WelcomePage() {
       </section>
 
       <footer className="px-6 py-6 text-center text-xs text-[#AFA6BD] border-t border-[#EDEAF0]">
-        © {new Date().getFullYear()} Cramly ·{' '}
+        © {new Date().getFullYear()} Carrotly ·{' '}
         <Link href="/pricing" className="underline underline-offset-2 hover:text-[#F4679B] transition-colors">
           Pricing
         </Link>{' '}

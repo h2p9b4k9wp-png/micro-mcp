@@ -269,7 +269,7 @@ function LoginPageContent() {
 
         <div className="flex items-center gap-2.5 relative">
           <Logomark className="w-8 h-8 text-[#F4679B]" />
-          <span className="text-lg font-extrabold tracking-tight">Cramly</span>
+          <span className="text-lg font-extrabold tracking-tight">Carrotly</span>
         </div>
 
         <div className="relative">
@@ -306,7 +306,7 @@ function LoginPageContent() {
 
           {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) — 스크롤 없이 폼이 보이도록 최대한 짧게 구성 */}
           <div className="flex md:hidden flex-col items-center mb-7">
-            <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight mb-3">Cramly</span>
+            <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight mb-3">Carrotly</span>
             <Logomark className="w-14 h-14" />
             <p className="text-[#C9C0D6] text-sm text-center mt-3 max-w-[280px] leading-snug">
               {t('login.brand.shortTagline')}

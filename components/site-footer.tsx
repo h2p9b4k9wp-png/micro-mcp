@@ -13,7 +13,7 @@ export function SiteFooter() {
 
   return (
     <footer className="shrink-0 bg-[#15131A] border-t border-[#2A2632] px-5 py-4 text-center text-xs text-[#5B5566]">
-      © {new Date().getFullYear()} Cramly ·{' '}
+      © {new Date().getFullYear()} Carrotly ·{' '}
       <Link
         href="/pricing"
         className="text-[#857C93] hover:text-[#F4679B] underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"

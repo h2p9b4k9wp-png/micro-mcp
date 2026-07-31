@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Privacy Policy — Cramly',
-  description: 'How Cramly collects, uses, and stores your data.',
+  title: 'Privacy Policy — Carrotly',
+  description: 'How Carrotly collects, uses, and stores your data.',
 };
 
 // 💡 [신규] 로그인 없이도 봐야 하는 공개 법적 페이지라 next-intl(ko/en 전환)을 거치지 않고
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
           href="/"
           className="text-sm text-[#AFA6BD] hover:text-[#F5F2F7] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
         >
-          ← Back to Cramly
+          ← Back to Carrotly
         </Link>
 
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] mt-6 mb-2 tracking-tight">
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
         <div className="flex flex-col gap-8 text-[15px] leading-relaxed">
           <section>
             <p>
-              Cramly (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the service&rdquo;) is a personal AI work
+              Carrotly (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the service&rdquo;) is a personal AI work
               assistant. This page explains what information we collect when you use it, why we
               collect it, who we share it with, how long we keep it, and what rights you have
               over it.
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Who we share it with</h2>
-            <p>We do not sell your data. We share it only with the service providers that make Cramly work:</p>
+            <p>We do not sell your data. We share it only with the service providers that make Carrotly work:</p>
             <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B] mt-2">
               <li>
                 <span className="font-semibold text-[#F5F2F7]">OpenAI</span> — receives the text of

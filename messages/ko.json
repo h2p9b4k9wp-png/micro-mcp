@@ -81,8 +81,8 @@
   },
   "records": {
     "title": "나의 기록",
-    "subtitle": "지금까지 Cramly에 쌓인 내 데이터를 한눈에 확인해보세요.",
-    "heroLabel": "Cramly가 당신에 대해 알고 있는 것",
+    "subtitle": "지금까지 Carrotly에 쌓인 내 데이터를 한눈에 확인해보세요.",
+    "heroLabel": "Carrotly가 당신에 대해 알고 있는 것",
     "unitSuffix": "개",
     "daysSinceJoin": "가입한 지 {days}일째 함께하고 있어요",
     "deadlinesCard": {
@@ -360,7 +360,7 @@
         }
       },
       "shortTagline": "블록을 조립하듯, 나만의 업무를 자동화하세요",
-      "copyright": "© {year} Cramly"
+      "copyright": "© {year} Carrotly"
     },
     "form": {
       "signUpTitle": "새 계정 만들기",

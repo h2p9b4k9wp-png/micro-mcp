@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cramly — 나만의 AI 업무 비서",
+  title: "Carrotly — 나만의 AI 업무 비서",
   description: "블록을 조립하듯, 나만의 업무와 일상을 자동화하는 AI 워크플로우 플랫폼",
 };
 

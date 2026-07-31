@@ -81,8 +81,8 @@
   },
   "records": {
     "title": "Mijn overzicht",
-    "subtitle": "Bekijk in één oogopslag de gegevens die Cramly tot nu toe over je heeft verzameld.",
-    "heroLabel": "Wat Cramly over je weet",
+    "subtitle": "Bekijk in één oogopslag de gegevens die Carrotly tot nu toe over je heeft verzameld.",
+    "heroLabel": "Wat Carrotly over je weet",
     "unitSuffix": "",
     "daysSinceJoin": "Je bent al {days} dagen bij ons",
     "deadlinesCard": {
@@ -360,7 +360,7 @@
         }
       },
       "shortTagline": "Bouw je werk als blokken, automatisch",
-      "copyright": "© {year} Cramly"
+      "copyright": "© {year} Carrotly"
     },
     "form": {
       "signUpTitle": "Nieuw account aanmaken",

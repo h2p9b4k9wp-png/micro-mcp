@@ -1956,7 +1956,7 @@ export default function HomePage() {
       {/* 모바일 상단 바 */}
       <div className="md:hidden flex items-center justify-between bg-[#211E28] border-b border-[#322D3B] px-4 py-3.5">
         <div className="flex items-center gap-2">
-          <span className="font-extrabold text-[15px] text-[#F5F2F7] tracking-tight">Cramly</span>
+          <span className="font-extrabold text-[15px] text-[#F5F2F7] tracking-tight">Carrotly</span>
           <button
             type="button"
             onClick={() => openUpgradeModal()}
@@ -1983,7 +1983,7 @@ export default function HomePage() {
         <div className="hidden md:flex px-6 py-6 items-center justify-between border-b border-[#322D3B]">
           <div className="flex items-center gap-2.5 text-[#F4679B]">
             <Logomark className="w-7 h-7" />
-            <span className="text-[16px] font-extrabold text-[#F5F2F7] tracking-tight">Cramly</span>
+            <span className="text-[16px] font-extrabold text-[#F5F2F7] tracking-tight">Carrotly</span>
             <button
               type="button"
               onClick={() => openUpgradeModal()}

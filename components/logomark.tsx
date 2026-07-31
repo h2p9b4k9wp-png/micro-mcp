@@ -13,7 +13,7 @@ export function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
     <svg
       viewBox="0 0 428 507"
       role="img"
-      aria-label="Cramly"
+      aria-label="Carrotly"
       className={`${className} shrink-0`}
     >
       <image href="/mascot/rabbit-mark.png" width={428} height={507} preserveAspectRatio="xMidYMid meet" />

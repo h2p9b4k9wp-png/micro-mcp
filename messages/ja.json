@@ -81,8 +81,8 @@
   },
   "records": {
     "title": "マイ履歴",
-    "subtitle": "これまでCramlyに蓄積されたあなたのデータを一目で確認できます。",
-    "heroLabel": "Cramlyがあなたについて知っていること",
+    "subtitle": "これまでCarrotlyに蓄積されたあなたのデータを一目で確認できます。",
+    "heroLabel": "Carrotlyがあなたについて知っていること",
     "unitSuffix": "件",
     "daysSinceJoin": "登録から{days}日目です",
     "deadlinesCard": {
@@ -360,7 +360,7 @@
         }
       },
       "shortTagline": "ブロックを組み立てるように、自分だけの業務を自動化しましょう",
-      "copyright": "© {year} Cramly"
+      "copyright": "© {year} Carrotly"
     },
     "form": {
       "signUpTitle": "新しいアカウントを作成",

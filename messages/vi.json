@@ -81,8 +81,8 @@
   },
   "records": {
     "title": "Nhật ký của tôi",
-    "subtitle": "Xem nhanh dữ liệu mà Cramly đã thu thập về bạn cho đến nay.",
-    "heroLabel": "Những gì Cramly biết về bạn",
+    "subtitle": "Xem nhanh dữ liệu mà Carrotly đã thu thập về bạn cho đến nay.",
+    "heroLabel": "Những gì Carrotly biết về bạn",
     "unitSuffix": "",
     "daysSinceJoin": "Bạn đã đồng hành cùng chúng tôi được {days} ngày",
     "deadlinesCard": {
@@ -360,7 +360,7 @@
         }
       },
       "shortTagline": "Lắp ráp như những khối, tự động hóa công việc của riêng bạn",
-      "copyright": "© {year} Cramly"
+      "copyright": "© {year} Carrotly"
     },
     "form": {
       "signUpTitle": "Tạo tài khoản mới",
