@@ -319,7 +319,7 @@ function LoginPageContent() {
         <div className="absolute w-72 h-72 bg-[#6EE7B7] rounded-full blur-3xl opacity-[0.12] -bottom-16 -right-10 pointer-events-none" />
 
         {/* 큼직한 캐릭터 마스코트 */}
-        <Logomark className="absolute right-8 bottom-24 w-40 h-40 text-[#F4679B] opacity-90" />
+        <Logomark variant="bg" className="absolute right-8 bottom-24 w-40 h-40 opacity-90" />
         <span className="absolute right-16 bottom-[168px] w-2 h-2 rounded-full bg-[#6EE7B7]" />
         <span className="absolute right-32 bottom-[228px] w-1.5 h-1.5 rounded-full bg-[#FFD97D]" />
 
@@ -363,7 +363,7 @@ function LoginPageContent() {
           {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) — 스크롤 없이 폼이 보이도록 최대한 짧게 구성 */}
           <div className="flex md:hidden flex-col items-center mb-7">
             <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight mb-3">Cramly</span>
-            <Logomark className="w-14 h-14 text-[#F4679B]" />
+            <Logomark variant="bg" className="w-14 h-14" />
             <p className="text-[#C9C0D6] text-sm text-center mt-3 max-w-[280px] leading-snug">
               {t('login.brand.shortTagline')}
             </p>
