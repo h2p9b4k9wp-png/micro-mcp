@@ -72,3 +72,64 @@ export async function runLensAnalysis({
 
   return { lensId, result };
 }
+
+export interface RunLensAnalysisOnImageParams {
+  apiKey: string;
+  dataUrl: string; // data:image/...;base64,...
+  lens: LensId;
+  responseLanguage?: string;
+}
+
+// 💡 [신규] 게스트 가이드 체험(app/api/public-guided-trial) 전용 — 텍스트가 아니라 이미지
+// 한 장을 분석 대상으로 삼습니다. runLensAnalysis와 스키마·시스템 프롬프트(LENSES[lens])는
+// 완전히 동일하게 재사용하되(잘 다듬어진 anti-hallucination 규칙을 새로 쓰지 않기 위함),
+// 사용자 메시지만 일반 텍스트 대신 app/api/chat/route.ts가 chatAttachments 이미지에 쓰는
+// 것과 동일한 형식의 멀티모달 content 배열(image_url part)로 바꿉니다. 이미지에는
+// detectLens를 적용할 텍스트가 없으므로 lens는 필수입니다(자동 감지 없음).
+export async function runLensAnalysisOnImage({
+  apiKey,
+  dataUrl,
+  lens,
+  responseLanguage,
+}: RunLensAnalysisOnImageParams): Promise<RunLensAnalysisResult> {
+  const lensDef = LENSES[lens];
+  const openai = new OpenAI({ apiKey, maxRetries: 1 });
+
+  const languageDirective = responseLanguage
+    ? `Respond entirely in ${responseLanguage}. This overrides the document's language.\n\n`
+    : '';
+
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4.1-mini',
+    max_tokens: 4096,
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: `${lens}_result`,
+        schema: lensDef.schema,
+        strict: true,
+      },
+    },
+    messages: [
+      { role: 'system', content: lensDef.systemPrompt },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: `${languageDirective}아래 첨부된 이미지가 분석 대상 문서입니다.` },
+          { type: 'image_url', image_url: { url: dataUrl } },
+        ],
+      },
+    ],
+  });
+
+  const raw = completion.choices[0]?.message?.content || '{}';
+  let result: unknown;
+  try {
+    result = JSON.parse(raw);
+  } catch {
+    console.error('AI 응답 파싱 실패:', raw);
+    throw new LensAnalysisParseError('The AI had trouble organizing the analysis result. Please try again.');
+  }
+
+  return { lensId: lens, result };
+}

@@ -321,6 +321,14 @@
     "study_method": {
       "label": "Método de estudo",
       "hint": "Foca nos temas mais frequentemente enfatizados"
+    },
+    "guest_upload": {
+      "label": "Foto enviada",
+      "hint": "Usa uma foto ou captura de tela que você fornece"
+    },
+    "guest_ai_core": {
+      "label": "Análise de IA",
+      "hint": "Lê e analisa o conteúdo da foto"
     }
   },
   "circuit": {
@@ -397,7 +405,19 @@
       "orDivider": "Ou",
       "rateLimitHourly": "O teste de convidado é limitado a {limit} por hora. Crie uma conta gratuita para continuar!",
       "rateLimitDaily": "O teste de convidado é limitado a {limit} por dia. Crie uma conta gratuita para continuar!",
-      "signUpCta": "Criar uma conta gratuita"
+      "signUpCta": "Criar uma conta gratuita",
+      "guided": {
+        "sectionTitle": "Experimentar com uma foto",
+        "chooseImage": "Clique para escolher uma foto",
+        "imageHint": "Foto ou captura de tela (PNG/JPEG/GIF/WEBP) — até 3MB",
+        "analyzing": "Analisando sua foto…",
+        "unsupportedFormat": "Apenas PNG, JPEG, GIF ou WEBP são compatíveis. Se for uma foto HEIC, converta para JPEG e tente novamente.",
+        "tooLarge": "Sem conta é possível analisar fotos de até 3MB.",
+        "questionsTitle": "Perguntas esperadas",
+        "summaryTitle": "Resumo",
+        "limitReachedTitle": "Você já usou seu teste",
+        "limitReachedDesc": "Este teste só funciona uma vez. Crie uma conta gratuita para continuar usando!"
+      }
     }
   },
   "account": {

@@ -321,6 +321,14 @@
     "study_method": {
       "label": "勉強法",
       "hint": "よく強調されるテーマを中心に教えます"
+    },
+    "guest_upload": {
+      "label": "アップロードした写真",
+      "hint": "写真やスクリーンショットを1枚参考にします"
+    },
+    "guest_ai_core": {
+      "label": "AI分析",
+      "hint": "写真の内容を読み取って分析します"
     }
   },
   "circuit": {
@@ -397,7 +405,19 @@
       "orDivider": "または",
       "rateLimitHourly": "ゲスト体験は1時間に{limit}回までです。無料アカウントを作成すると引き続きご利用いただけます！",
       "rateLimitDaily": "ゲスト体験は1日に{limit}回までです。無料アカウントを作成すると引き続きご利用いただけます！",
-      "signUpCta": "無料でアカウントを作成"
+      "signUpCta": "無料でアカウントを作成",
+      "guided": {
+        "sectionTitle": "写真で体験する",
+        "chooseImage": "クリックして写真を選択",
+        "imageHint": "写真・スクリーンショット (PNG/JPEG/GIF/WEBP) — 最大3MB",
+        "analyzing": "写真を分析中…",
+        "unsupportedFormat": "PNG、JPEG、GIF、WEBP形式のみ対応しています。HEIC写真の場合はJPEGに変換してもう一度お試しください。",
+        "tooLarge": "アカウントなしでは3MBまで分析できます。",
+        "questionsTitle": "予想問題",
+        "summaryTitle": "要約",
+        "limitReachedTitle": "体験を使い切りました",
+        "limitReachedDesc": "この体験は1回限りです。無料アカウントを作成すると続けて利用できます！"
+      }
     }
   },
   "account": {

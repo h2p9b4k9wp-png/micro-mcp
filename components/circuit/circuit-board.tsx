@@ -22,6 +22,13 @@ interface CircuitBoardProps {
   // 채팅 입력창 위처럼 좁은 자리에 끼워 넣을 때 쓰는 축소 모드 — 제목/열 구분선/팬·줌 없이
   // source·lens 영역만 크롭해서 세로 200px 정도로 표시합니다. 배선·글로우·스파크 로직은 동일합니다.
   compact?: boolean;
+  // 💡 [신규] 게스트 가이드 체험처럼 좁은 고정폭 컬럼(로그인 페이지 체험 패널, ~380px)에
+  // 놓일 때 씁니다. 기본 비-compact 레이아웃은 가로 배치에 minWidth:480을 요구하고,
+  // compact는 action 레이어 자체를 잘라내서 이 용도엔 맞지 않습니다 — 반면 기존 모바일용
+  // 세로 배치(renderDiagram('vertical'))는 minWidth 제약이 없어 좁은 컬럼에도 그대로
+  // 맞습니다. 이 플래그는 화면 너비와 무관하게 항상 그 세로 배치만 보여주도록
+  // sm:hidden/hidden sm:block 분기를 건너뜁니다 — 렌더링 로직 자체는 100% 재사용입니다.
+  forceVertical?: boolean;
 }
 
 type Orientation = 'horizontal' | 'vertical' | 'compact';
@@ -46,7 +53,7 @@ function getStatusVisual(status: NodeStatus) {
   }
 }
 
-export function CircuitBoard({ graph, onNodeClick, compact = false }: CircuitBoardProps) {
+export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertical = false }: CircuitBoardProps) {
   const t = useTranslations();
   const [revealedEdges, setRevealedEdges] = useState<Set<string>>(() => new Set());
   const [sparkGeneration, setSparkGeneration] = useState(0);
@@ -282,6 +289,14 @@ export function CircuitBoard({ graph, onNodeClick, compact = false }: CircuitBoa
     return (
       <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-2">
         {renderDiagram('compact')}
+      </div>
+    );
+  }
+
+  if (forceVertical) {
+    return (
+      <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 shadow-sm">
+        <PannableCanvas>{renderDiagram('vertical')}</PannableCanvas>
       </div>
     );
   }

@@ -30,6 +30,7 @@ import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
+import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
 import { getPlanLimits, getPolarCheckoutUrl, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
@@ -231,8 +232,6 @@ function chunkText(text: string, maxChars = 1500): string[] {
   return chunks;
 }
 
-const CHAT_IMAGE_MAX_EDGE = 1568; // GPT-4.1 mini 비전이 내부적으로 다운스케일하는 기준과 맞춰, 그 이상은 보내봐야 비용만 늘고 품질 이득이 없습니다.
-
 // 💡 [수정] 교수님 1명당 누적 가능한 자료 개수 상한. 자료 추가는 이제 기존 분석 요약 + 새
 // 자료만 보내는 증분 업데이트라 개수가 늘어나도 업로드 1건당 비용은 크게 늘지 않지만, 자료
 // 삭제 시에는 여전히 전체 자료를 다시 보내 재분석하므로(recomputeProfessorAnalysisFull)
@@ -248,41 +247,6 @@ const COMMON_RESPONSE_LANGUAGES = [
   'Korean', 'English', 'Japanese', 'Chinese', 'Spanish', 'French', 'German',
   'Portuguese', 'Vietnamese', 'Thai', 'Indonesian', 'Russian', 'Arabic', 'Hindi',
 ];
-
-// OpenAI 비전이 실제로 받는 이미지 형식. 아이폰 기본 사진 형식인 HEIC/HEIF는 목록에 없음 —
-// 브라우저가 대신 변환해주지 않는 경우, 그대로 보내면 비전 모델이 못 읽어서 "분석이 안 되는데
-// 이유를 알 수 없는" 상황이 됩니다. 업로드 시점에 걸러서 바로 안내합니다.
-const SUPPORTED_CHAT_IMAGE_MIME_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
-
-// 💡 [신규] 폰으로 찍은 사진처럼 큰 이미지를 GPT-4.1 mini에 보내기 전에 긴 변 기준
-// CHAT_IMAGE_MAX_EDGE로 줄여서 base64 용량(=토큰 비용)을 낮춥니다. 이미 그보다 작으면(대부분의
-// 스크린샷) 원본 포맷을 그대로 유지 — 리사이즈 과정에서 JPEG로 다시 인코딩되면 투명 배경이 깨질
-// 수 있어서, 정말 큰 이미지만 다시 인코딩합니다. 디코딩 자체가 실패하면 원본을 그대로 씁니다.
-function resizeImageDataUrl(dataUrl: string, maxEdge = CHAT_IMAGE_MAX_EDGE): Promise<string> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const longEdge = Math.max(img.width, img.height);
-      if (longEdge <= maxEdge) {
-        resolve(dataUrl);
-        return;
-      }
-      const scale = maxEdge / longEdge;
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        resolve(dataUrl);
-        return;
-      }
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
-    };
-    img.onerror = () => resolve(dataUrl);
-    img.src = dataUrl;
-  });
-}
 
 // 자료 개수에 따라 분석 결과 위에 붙는 한 줄 — 개수가 많아질수록 신뢰도가 올라간다는 걸 보여줍니다.
 export default function HomePage() {
@@ -1974,15 +1938,6 @@ export default function HomePage() {
         .font-mono-console { font-family: 'JetBrains Mono', ui-monospace, monospace; }
         @media (prefers-reduced-motion: reduce) {
           * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-        }
-
-        /* 교수님 상세 회로도 — AI 코어에서 나온 결과 3장이 순서대로(각 카드 300ms씩 지연) 나타납니다. */
-        @keyframes professorCircuitReveal {
-          from { opacity: 0; transform: translateY(6px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .professor-circuit-reveal {
-          animation: professorCircuitReveal 0.4s ease-out both;
         }
 
         /* 로딩 중 점 애니메이션 — "." → ".." → "..." → "."을 0.5초마다 반복합니다. */

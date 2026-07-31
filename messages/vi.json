@@ -321,6 +321,14 @@
     "study_method": {
       "label": "Phương pháp học",
       "hint": "Tập trung vào các chủ đề thường được nhấn mạnh"
+    },
+    "guest_upload": {
+      "label": "Ảnh đã tải lên",
+      "hint": "Tham khảo một ảnh hoặc ảnh chụp màn hình"
+    },
+    "guest_ai_core": {
+      "label": "Phân tích AI",
+      "hint": "Đọc và phân tích nội dung trong ảnh"
     }
   },
   "circuit": {
@@ -397,7 +405,19 @@
       "orDivider": "Hoặc",
       "rateLimitHourly": "Trải nghiệm khách chỉ giới hạn {limit} lần mỗi giờ. Tạo tài khoản miễn phí để tiếp tục!",
       "rateLimitDaily": "Trải nghiệm khách chỉ giới hạn {limit} lần mỗi ngày. Tạo tài khoản miễn phí để tiếp tục!",
-      "signUpCta": "Tạo tài khoản miễn phí"
+      "signUpCta": "Tạo tài khoản miễn phí",
+      "guided": {
+        "sectionTitle": "Trải nghiệm với ảnh",
+        "chooseImage": "Nhấn để chọn ảnh",
+        "imageHint": "Ảnh hoặc ảnh chụp màn hình (PNG/JPEG/GIF/WEBP) — tối đa 3MB",
+        "analyzing": "Đang phân tích ảnh…",
+        "unsupportedFormat": "Chỉ hỗ trợ định dạng PNG, JPEG, GIF, WEBP. Nếu là ảnh HEIC, hãy chuyển sang JPEG rồi thử lại.",
+        "tooLarge": "Không cần tài khoản có thể phân tích ảnh tối đa 3MB.",
+        "questionsTitle": "Câu hỏi dự kiến",
+        "summaryTitle": "Tóm tắt",
+        "limitReachedTitle": "Bạn đã dùng hết lượt trải nghiệm",
+        "limitReachedDesc": "Trải nghiệm này chỉ dùng được 1 lần. Tạo tài khoản miễn phí để tiếp tục sử dụng!"
+      }
     }
   },
   "account": {

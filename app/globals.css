@@ -24,3 +24,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 카드가 순서대로(각 300ms씩 지연) 나타나는 리빌 애니메이션 — 원래 app/page.tsx의 교수님
+   상세 회로도 전용이었는데, components/guest-guided-trial.tsx(게스트 가이드 체험 결과
+   카드)도 같은 연출을 써서 여기 전역으로 옮겼습니다. */
+@keyframes professorCircuitReveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.professor-circuit-reveal {
+  animation: professorCircuitReveal 0.4s ease-out both;
+}

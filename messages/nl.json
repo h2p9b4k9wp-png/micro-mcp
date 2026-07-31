@@ -321,6 +321,14 @@
     "study_method": {
       "label": "Studiemethode",
       "hint": "Focust op de thema's die het vaakst worden benadrukt"
+    },
+    "guest_upload": {
+      "label": "Geüploade foto",
+      "hint": "Gebruikt één foto of screenshot die je aanlevert"
+    },
+    "guest_ai_core": {
+      "label": "AI-analyse",
+      "hint": "Leest en analyseert de inhoud van de foto"
     }
   },
   "circuit": {
@@ -397,7 +405,19 @@
       "orDivider": "Of",
       "rateLimitHourly": "Gastproeven zijn beperkt tot {limit} per uur. Maak een gratis account aan om door te gaan!",
       "rateLimitDaily": "Gastproeven zijn beperkt tot {limit} per dag. Maak een gratis account aan om door te gaan!",
-      "signUpCta": "Gratis account aanmaken"
+      "signUpCta": "Gratis account aanmaken",
+      "guided": {
+        "sectionTitle": "Proberen met een foto",
+        "chooseImage": "Klik om een foto te kiezen",
+        "imageHint": "Foto of screenshot (PNG/JPEG/GIF/WEBP) — tot 3MB",
+        "analyzing": "Je foto wordt geanalyseerd…",
+        "unsupportedFormat": "Alleen PNG, JPEG, GIF of WEBP worden ondersteund. Is het een HEIC-foto, zet deze dan om naar JPEG en probeer opnieuw.",
+        "tooLarge": "Zonder account kun je foto's tot 3MB analyseren.",
+        "questionsTitle": "Verwachte vragen",
+        "summaryTitle": "Samenvatting",
+        "limitReachedTitle": "Je hebt je proefsessie al gebruikt",
+        "limitReachedDesc": "Deze proefsessie werkt maar één keer. Maak een gratis account aan om te blijven gebruiken!"
+      }
     }
   },
   "account": {

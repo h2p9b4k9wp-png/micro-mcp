@@ -1,4 +1,4 @@
-import { FileText, Library, Search, CalendarClock, HelpCircle, NotebookPen, CalendarPlus, CalendarSync, FileDown, GraduationCap, Cpu, ClipboardList, BookOpen } from 'lucide-react';
+import { FileText, Library, Search, CalendarClock, HelpCircle, NotebookPen, CalendarPlus, CalendarSync, FileDown, GraduationCap, Cpu, ClipboardList, BookOpen, Camera } from 'lucide-react';
 import type { CircuitNode } from '@/types/blocks';
 
 // 💡 [신규] 3계층 노드 레지스트리 (source → lens → action). 예전 5개 블록(McpBlock, on/off 토글) 모델은
@@ -129,5 +129,25 @@ export const NODE_REGISTRY: CircuitNode[] = [
     hint: '자주 강조하는 주제를 중심으로 알려줘요',
     icon: BookOpen,
     estimatedSeconds: 0,
+  },
+
+  // 💡 [신규] 게스트 가이드 체험(로그인 없이 이미지 1장 업로드) 전용 source/lens 노드.
+  // action 레이어는 위의 'questions'/'digest'를 그대로 재사용합니다 — 같은 개념(예상
+  // 질문/핵심 정리)이라 새 라벨을 또 만들지 않았습니다.
+  {
+    id: 'guest_upload',
+    layer: 'source',
+    label: '업로드한 사진',
+    hint: '사진이나 캡처본 한 장을 참고해요',
+    icon: Camera,
+    estimatedSeconds: 0,
+  },
+  {
+    id: 'guest_ai_core',
+    layer: 'lens',
+    label: 'AI 분석',
+    hint: '사진 속 내용을 읽고 분석해요',
+    icon: Cpu,
+    estimatedSeconds: 6,
   },
 ];

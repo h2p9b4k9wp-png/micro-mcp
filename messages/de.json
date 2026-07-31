@@ -321,6 +321,14 @@
     "study_method": {
       "label": "Lernmethode",
       "hint": "Konzentriert sich auf die am häufigsten betonten Themen"
+    },
+    "guest_upload": {
+      "label": "Hochgeladenes Foto",
+      "hint": "Verwendet ein von Ihnen bereitgestelltes Foto"
+    },
+    "guest_ai_core": {
+      "label": "KI-Analyse",
+      "hint": "Liest und analysiert den Inhalt des Fotos"
     }
   },
   "circuit": {
@@ -397,7 +405,19 @@
       "orDivider": "Oder",
       "rateLimitHourly": "Der Gast-Test ist auf {limit} pro Stunde begrenzt. Erstellen Sie ein kostenloses Konto, um weiterzumachen!",
       "rateLimitDaily": "Der Gast-Test ist auf {limit} pro Tag begrenzt. Erstellen Sie ein kostenloses Konto, um weiterzumachen!",
-      "signUpCta": "Kostenloses Konto erstellen"
+      "signUpCta": "Kostenloses Konto erstellen",
+      "guided": {
+        "sectionTitle": "Mit einem Foto testen",
+        "chooseImage": "Klicken, um ein Foto auszuwählen",
+        "imageHint": "Foto oder Screenshot (PNG/JPEG/GIF/WEBP) — bis zu 3 MB",
+        "analyzing": "Ihr Foto wird analysiert…",
+        "unsupportedFormat": "Nur PNG, JPEG, GIF oder WEBP werden unterstützt. Bei einem HEIC-Foto bitte in JPEG umwandeln und erneut versuchen.",
+        "tooLarge": "Ohne Konto können Fotos bis 3 MB analysiert werden.",
+        "questionsTitle": "Erwartete Fragen",
+        "summaryTitle": "Zusammenfassung",
+        "limitReachedTitle": "Sie haben Ihren Testlauf bereits genutzt",
+        "limitReachedDesc": "Dieser Test funktioniert nur einmal. Erstellen Sie ein kostenloses Konto, um ihn weiter zu nutzen!"
+      }
     }
   },
   "account": {

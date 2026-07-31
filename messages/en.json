@@ -321,6 +321,14 @@
     "study_method": {
       "label": "Study Method",
       "hint": "Centers on the topics they emphasize most often"
+    },
+    "guest_upload": {
+      "label": "Uploaded Photo",
+      "hint": "Uses one photo or screenshot you provide"
+    },
+    "guest_ai_core": {
+      "label": "AI Analysis",
+      "hint": "Reads and analyzes what's in the photo"
     }
   },
   "circuit": {
@@ -397,7 +405,19 @@
       "orDivider": "Or",
       "rateLimitHourly": "Guest trials are limited to {limit} per hour. Create a free account to keep going!",
       "rateLimitDaily": "Guest trials are limited to {limit} per day. Create a free account to keep going!",
-      "signUpCta": "Create a free account"
+      "signUpCta": "Create a free account",
+      "guided": {
+        "sectionTitle": "Try with a photo",
+        "chooseImage": "Click to choose a photo",
+        "imageHint": "Photo or screenshot (PNG/JPEG/GIF/WEBP) — up to 3MB",
+        "analyzing": "Analyzing your photo…",
+        "unsupportedFormat": "Only PNG, JPEG, GIF, or WEBP are supported. If it's a HEIC photo, convert it to JPEG and try again.",
+        "tooLarge": "Photos up to 3MB can be analyzed without an account.",
+        "questionsTitle": "Expected Questions",
+        "summaryTitle": "Summary",
+        "limitReachedTitle": "You've used your one trial",
+        "limitReachedDesc": "This trial only works once. Create a free account to keep using it!"
+      }
     }
   },
   "account": {

@@ -8,7 +8,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 export const ANONYMOUS_HOURLY_LIMIT = 5;
 export const ANONYMOUS_DAILY_LIMIT = 15;
 
-export type AnonymousUsageKind = 'analyze' | 'chat';
+export type AnonymousUsageKind = 'analyze' | 'chat' | 'guided';
 
 export interface AnonymousUsageCheck {
   ok: boolean;
@@ -60,6 +60,24 @@ export async function checkAnonymousUsage(
     return { ok: false, limitType: 'daily' };
   }
   return { ok: true };
+}
+
+// 💡 [신규] 이미지 업로드 → 회로도 애니메이션 + 예상 문제 + 요약정리 "가이드 체험"
+// (app/api/public-guided-trial) 전용 검사입니다. 위 시간당/일일 한도와 달리 시간 창이
+// 없습니다 — IP당 평생 딱 1번만 허용하고, 한 번 쓰면 계정을 만들어야 다시 쓸 수 있다는
+// 게 이 기능의 의도라 "하루 지나면 초기화"가 아니라 "그 IP에서 이 kind로 기록된 행이
+// 하나라도 있으면 이미 썼다"로 판단합니다.
+export async function checkGuidedTrialUsed(
+  supabaseAdmin: SupabaseClient,
+  ip: string
+): Promise<boolean> {
+  const { count, error } = await supabaseAdmin
+    .from('anonymous_trial_usage')
+    .select('id', { count: 'exact', head: true })
+    .eq('ip_address', ip)
+    .eq('kind', 'guided');
+  if (error) throw error;
+  return (count ?? 0) > 0;
 }
 
 // 💡 실제 OpenAI 호출 전에 먼저 기록합니다 — 그래야 실패(파싱 오류, AI 오류 등)를 반복

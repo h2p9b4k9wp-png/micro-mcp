@@ -321,6 +321,14 @@
     "study_method": {
       "label": "공부 방식",
       "hint": "자주 강조하는 주제를 중심으로 알려줘요"
+    },
+    "guest_upload": {
+      "label": "업로드한 사진",
+      "hint": "사진이나 캡처본 한 장을 참고해요"
+    },
+    "guest_ai_core": {
+      "label": "AI 분석",
+      "hint": "사진 속 내용을 읽고 분석해요"
     }
   },
   "circuit": {
@@ -397,7 +405,19 @@
       "orDivider": "또는",
       "rateLimitHourly": "게스트 체험은 시간당 {limit}회까지예요. 무료 계정을 만들면 계속 이용할 수 있어요!",
       "rateLimitDaily": "게스트 체험은 하루 {limit}회까지예요. 무료 계정을 만들면 계속 이용할 수 있어요!",
-      "signUpCta": "무료로 계정 만들기"
+      "signUpCta": "무료로 계정 만들기",
+      "guided": {
+        "sectionTitle": "사진으로 체험하기",
+        "chooseImage": "클릭해서 사진 선택",
+        "imageHint": "사진·캡처본 (PNG/JPEG/GIF/WEBP) — 최대 3MB",
+        "analyzing": "사진을 분석하는 중…",
+        "unsupportedFormat": "PNG, JPEG, GIF, WEBP 형식만 지원해요. HEIC 사진이라면 JPEG로 바꿔서 다시 시도해주세요.",
+        "tooLarge": "계정 없이는 3MB까지 분석할 수 있어요.",
+        "questionsTitle": "예상 문제",
+        "summaryTitle": "요약정리",
+        "limitReachedTitle": "체험을 모두 사용했어요",
+        "limitReachedDesc": "이 체험은 1회만 가능해요. 무료 계정을 만들면 계속 이용할 수 있어요!"
+      }
     }
   },
   "account": {
