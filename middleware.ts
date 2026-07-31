@@ -104,6 +104,13 @@ export async function middleware(request: NextRequest) {
   return withDetectedLocale(response);
 }
 
+// 확장자가 있는 경로(파비콘·마스코트 이미지·manifest.webmanifest·sw.js 등 public/ 정적
+// 파일)는 전부 미들웨어를 건너뜁니다. 이전엔 favicon.ico만 예외였어서, 로그인하지 않은
+// 방문자(예: /welcome·/login)의 정적 이미지 요청까지 이 미들웨어가 가로채 /login으로
+// 307 리다이렉트했습니다 — <img> 태그 입장에선 이미지 대신 HTML을 받은 셈이라 디코딩에
+// 실패하고, 브라우저가 기본 "깨진 이미지" 아이콘을 그려서 마스코트가 네모난 박스/검은
+// 실루엣처럼 보이는 원인이었습니다. 이 앱의 실제 페이지·API 경로는 전부 확장자가 없으므로
+// 이 패턴이 페이지 라우트를 오매칭할 위험은 없습니다.
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|.*\\..*).*)'],
 };
