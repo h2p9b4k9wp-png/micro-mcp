@@ -359,17 +359,13 @@ function LoginPageContent() {
         <div className="absolute w-72 h-72 bg-[#F4679B] rounded-full blur-3xl opacity-[0.18] -top-10 -left-16 pointer-events-none" />
         <div className="absolute w-72 h-72 bg-[#6EE7B7] rounded-full blur-3xl opacity-[0.12] -bottom-16 -right-10 pointer-events-none" />
 
-        {/* 💡 [수정] 큼직한 캐릭터 마스코트 — 검게 보이던 진짜 원인은 브라우저 강제 다크모드가
-            아니라 다운스케일 아티팩트였다고 최종 확인됐습니다(components/logomark.tsx 상단
-            주석 참고) — size="lg"(rabbit-256.png, 128px 표시에 딱 2배)로 그 아티팩트 자체를
-            없앴습니다. 이 카드(bg-[#15131A]/border-[#322D3B]/rounded-xl) 감싸기는 원인이
-            다크모드라고 오판했을 때 넣은 우회라 이제 기능적으로는 불필요하지만, 시각적으로도
-            괜찮아서 일단 그대로 둡니다 — 디자인상 걷어내고 싶으면 말씀해주세요. 바깥 박스
-            크기(w-40 h-40)는 기존과 동일하게 유지하고, 안쪽 이미지를 패딩만큼 줄여(w-32 h-32)
-            전체 자리 차지는 그대로입니다. */}
-        <div className="absolute right-8 bottom-24 w-40 h-40 rounded-xl bg-[#15131A] border border-[#322D3B] p-4 flex items-center justify-center opacity-90">
-          <Logomark className="w-32 h-32" size="lg" />
-        </div>
+        {/* 💡 큼직한 캐릭터 마스코트 — 검게 보이던 진짜 원인은 브라우저 강제 다크모드가 아니라
+            다운스케일 아티팩트였다고 최종 확인됐습니다(components/logomark.tsx 상단 주석
+            참고) — size="lg"(rabbit-256.png, 128px 표시에 딱 2배)로 그 아티팩트 자체를
+            없앴으므로, 다크모드 원인설 때 넣었던 카드 배경 감싸기(bg-[#15131A]/opacity-90
+            등)는 걷어내고 app/page.tsx·app/welcome/page.tsx와 동일하게 <Logomark>를
+            직접 씁니다. */}
+        <Logomark className="absolute right-8 bottom-24 w-40 h-40" size="lg" />
         <span className="absolute right-16 bottom-[168px] w-2 h-2 rounded-full bg-[#6EE7B7]" />
         <span className="absolute right-32 bottom-[228px] w-1.5 h-1.5 rounded-full bg-[#FFD97D]" />
 
