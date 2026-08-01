@@ -25,9 +25,10 @@ export const metadata: Metadata = {
 // 다크 배경 위 이미지(토끼 마스코트 등)의 밝은 크림색 영역을 자체적으로 다시 어둡게
 // 재반전시킵니다 — 확장 프로그램이 아니라 브라우저 자체 기능이라 시크릿 창에서도
 // 재현됩니다. "light dark"(둘 다 지원)로는 이 오판을 막기에 불충분해서 실패했었고, 이
-// 사이트는 실제로 다크 전용이므로 "dark"만 명시합니다 — 이게 <meta name="color-scheme">
-// 태그로 렌더링되고, app/globals.css의 html/:root color-scheme: dark 선언과 함께 세 곳
-// 모두 일치해야 브라우저가 이 힌트를 확실히 인식합니다.
+// 사이트는 실제로 다크 전용이므로 "dark"만 명시합니다. 세 겹으로 선언해야 확실히
+// 인식됩니다: 이 값이 <meta name="color-scheme" content="dark">로 렌더링되고, 아래
+// <html>에 style={{ colorScheme: 'dark' }}로 인라인 선언도 직접 붙이고, app/globals.css의
+// html·:root 선택자에도 color-scheme: dark를 선언합니다 — 세 곳이 전부 일치해야 합니다.
 export const viewport: Viewport = {
   colorScheme: "dark",
 };
@@ -44,6 +45,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      style={{ colorScheme: 'dark' }}
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider locale={locale} messages={messages}>
