@@ -2,21 +2,17 @@
 // app/page.tsx·app/login/page.tsx·app/welcome/page.tsx가 전부 같은 마크를 써서 시각적
 // 일관성을 유지합니다.
 //
-// <img> 대신 <svg><image href=... /></svg>로 감싸서 씁니다 — 크롬/웨일의 "다크 모드로 웹
-// 콘텐츠 표시" 기능은 <img>/<picture> 요소를 화면에 그려진 크기 기준으로 개별 분류해서,
-// 일정 크기를 넘는 이미지를 "사진"으로 판단해 밝은 영역(크림색 털)을 검게 재반전시킵니다.
-// 같은 PNG를 그대로 <svg>의 <image>로 감싸면(내용물은 100% 동일한 래스터 이미지) 이 분류
-// 대상에서 제외됩니다 — 벡터 도형으로 다시 그리는 대신, 이미지 자체는 원본 그대로 유지한 채
-// 브라우저가 "img 콘텐츠"로 인식하는 경로만 피하는 방법입니다.
+// 크롬의 강제 다크 모드가 이미지 밝은 영역을 재반전시키던 문제는 <svg><image>로 감싸는
+// 우회가 아니라, color-scheme을 html/:root(app/globals.css)와 <meta>(app/layout.tsx)
+// 세 곳 모두에 dark로 선언하는 정공법으로 해결했습니다 — 이제 평범한 <img>를 씁니다.
 export function Logomark({ className = 'w-7 h-7' }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 428 507"
-      role="img"
-      aria-label="Carrotly"
-      className={`${className} shrink-0`}
-    >
-      <image href="/mascot/rabbit-mark.png" width={428} height={507} preserveAspectRatio="xMidYMid meet" />
-    </svg>
+    <img
+      src="/mascot/rabbit-mark.png"
+      alt="Carrotly"
+      width={428}
+      height={507}
+      className={`${className} shrink-0 object-contain`}
+    />
   );
 }

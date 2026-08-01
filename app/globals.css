@@ -1,8 +1,16 @@
 @import "tailwindcss";
 
+/* 브라우저의 강제 다크 모드(크롬 "다크 모드로 웹 콘텐츠 표시" 등)가 이 사이트를 "다크
+   테마 미지원"으로 오판해 이미지 밝은 영역을 재반전시키는 문제 — color-scheme을 html/
+   :root/meta 세 곳 모두에 선언해야 브라우저가 이 힌트를 확실히 인식합니다. */
+html {
+  color-scheme: dark;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: dark;
 }
 
 @theme inline {
