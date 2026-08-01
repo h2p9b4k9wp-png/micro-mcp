@@ -359,13 +359,13 @@ function LoginPageContent() {
         <div className="absolute w-72 h-72 bg-[#F4679B] rounded-full blur-3xl opacity-[0.18] -top-10 -left-16 pointer-events-none" />
         <div className="absolute w-72 h-72 bg-[#6EE7B7] rounded-full blur-3xl opacity-[0.12] -bottom-16 -right-10 pointer-events-none" />
 
-        {/* 💡 큼직한 캐릭터 마스코트 — 검게 보이던 진짜 원인은 브라우저 강제 다크모드가 아니라
-            다운스케일 아티팩트였다고 최종 확인됐습니다(components/logomark.tsx 상단 주석
-            참고) — size="lg"(rabbit-256.png, 128px 표시에 딱 2배)로 그 아티팩트 자체를
-            없앴으므로, 다크모드 원인설 때 넣었던 카드 배경 감싸기(bg-[#15131A]/opacity-90
-            등)는 걷어내고 app/page.tsx·app/welcome/page.tsx와 동일하게 <Logomark>를
-            직접 씁니다. */}
-        <Logomark className="absolute right-8 bottom-24 w-40 h-40" size="lg" />
+        {/* 💡 큼직한 캐릭터 마스코트 — 흰색 원형 배경으로 감쌉니다. 검게 보이던 진짜 원인은
+            다운스케일 아티팩트로 이미 확인·해결됐지만(components/logomark.tsx 상단 주석),
+            투명 PNG를 어두운 배경 위에 직접 놓는 구조 자체를 없애 원인이 뭐든 상관없게
+            만들고, 다크 테마에서 마스코트가 더 잘 보이는 디자인 효과도 노립니다. */}
+        <div className="absolute right-8 bottom-24 w-40 h-40 rounded-full bg-white p-2 flex items-center justify-center">
+          <Logomark className="w-full h-full" size="lg" />
+        </div>
         <span className="absolute right-16 bottom-[168px] w-2 h-2 rounded-full bg-[#6EE7B7]" />
         <span className="absolute right-32 bottom-[228px] w-1.5 h-1.5 rounded-full bg-[#FFD97D]" />
 
