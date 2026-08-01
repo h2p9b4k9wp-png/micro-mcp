@@ -410,6 +410,14 @@
       "chatPlaceholder": "Posez votre question…",
       "chatButton": "Demander",
       "chatLoading": "Génération de la réponse…",
+      "attach": {
+        "label": "Joindre un fichier ou une photo",
+        "reading": "Lecture du fichier…",
+        "hint": "PDF, Word, PPT, Excel, HWP ou une photo — jusqu'à 3 Mo, 1 fichier",
+        "remove": "Retirer",
+        "tooLarge": "Sans compte, vous pouvez joindre des fichiers jusqu'à 3 Mo.",
+        "unsupportedImage": "Seuls les formats PNG, JPEG, GIF ou WEBP sont pris en charge. S'il s'agit d'une photo HEIC, convertissez-la en JPEG et réessayez."
+      },
       "orDivider": "Ou",
       "signUpCta": "Créer un compte gratuit",
       "limit": {

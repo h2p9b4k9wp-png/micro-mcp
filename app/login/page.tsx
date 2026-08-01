@@ -8,6 +8,7 @@ import type { LensId, DeadlinesResult, QuestionsResult, DigestResult } from '@/l
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import type { GuidedTrialLimitType } from '@/lib/use-guided-trial';
+import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
 import { Logomark } from '@/components/logomark';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestGuidedTrial } from '@/components/guest-guided-trial';
@@ -49,10 +50,22 @@ function LoginPageContent() {
     result: DeadlinesResult | QuestionsResult | DigestResult;
   } | null>(null);
 
-  // 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 던져보는 두 번째 체험.
+  // 💡 [신규] "AI에게 바로 질문하기" — 자유 질문 하나를 던져보는 두 번째 체험.
   const [guestChatPrompt, setGuestChatPrompt] = useState('');
   const [isGuestChatLoading, setIsGuestChatLoading] = useState(false);
   const [guestChatAnswer, setGuestChatAnswer] = useState('');
+
+  // 💡 [신규] 로그인 후 실제 채팅창에서 첨부 가능한 파일/사진(문서는 lib/file-text-extract.ts가
+  // 지원하는 형식, 사진은 SUPPORTED_CHAT_IMAGE_MIME_TYPES)을 이 체험 채팅에도 그대로 첨부할
+  // 수 있게 합니다. 게스트 세션은 업로드 예산이 세션당 1건뿐이라(파일 분석·사진 체험과 공유),
+  // 로그인 후처럼 여러 개(MAX_CHAT_ATTACHMENTS)가 아니라 딱 1개만 첨부할 수 있습니다.
+  const [guestChatAttachment, setGuestChatAttachment] = useState<{
+    fileName: string;
+    mimeType: string;
+    content: string; // base64
+  } | null>(null);
+  const [isReadingGuestChatAttachment, setIsReadingGuestChatAttachment] = useState(false);
+  const [guestChatAttachError, setGuestChatAttachError] = useState<string | null>(null);
 
   // 💡 [신규] 게스트 세션 예산(lib/anonymous-usage.ts) — 1세션 = 업로드 1건(파일 분석 또는
   // 이미지 체험) + 채팅 최대 3턴. ip/global 한도는 그 시점에 이 세션이 아직 아무것도 안 썼을
@@ -196,9 +209,56 @@ function LoginPageContent() {
     }
   };
 
-  // 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 서버(app/api/public-chat)에
+  // 💡 [신규] 게스트 채팅에 파일/사진 1개를 첨부합니다. app/page.tsx의
+  // handleChatAttachmentFiles와 같은 검증(이미지 형식·용량)을 하되, 텍스트 추출은
+  // 서버(app/api/public-chat)가 하므로 여기서는 base64로 읽어서 들고만 있습니다 — 로그인
+  // 사용자와 달리 /api/extract를 미리 호출하지 않는 이유는 그 라우트가 세션 인증이 필요해
+  // 게스트가 호출할 수 없기 때문입니다.
+  const handleGuestChatAttachmentChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setGuestChatAttachError(null);
+
+    if (file.size > 3 * 1024 * 1024) {
+      setGuestChatAttachError(t('login.trial.attach.tooLarge'));
+      return;
+    }
+
+    const isImage = file.type.startsWith('image/');
+    if (isImage && !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
+      setGuestChatAttachError(t('login.trial.attach.unsupportedImage'));
+      return;
+    }
+
+    setIsReadingGuestChatAttachment(true);
+    try {
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error(t('login.trial.readError')));
+        reader.readAsDataURL(file);
+      });
+
+      // 큰 사진(폰 카메라 등)은 로그인 후 채팅 첨부와 동일하게 다운스케일해 용량을 줄입니다.
+      const finalDataUrl = isImage ? await resizeImageDataUrl(dataUrl) : dataUrl;
+      const commaIndex = finalDataUrl.indexOf(',');
+      const base64Content = commaIndex !== -1 ? finalDataUrl.substring(commaIndex + 1) : finalDataUrl;
+      const mimeMatch = finalDataUrl.match(/^data:([^;]+);/);
+      const mimeType = mimeMatch ? mimeMatch[1] : file.type || 'application/octet-stream';
+
+      setGuestChatAttachment({ fileName: file.name, mimeType, content: base64Content });
+    } catch (err) {
+      setGuestChatAttachError(err instanceof Error ? err.message : t('login.trial.genericError'));
+    } finally {
+      setIsReadingGuestChatAttachment(false);
+    }
+  };
+
+  // 💡 [신규] "AI에게 바로 질문하기" — 질문(+선택적으로 파일/사진 1개)을 서버(app/api/public-chat)에
   // 보내고 답변을 스트리밍으로 받습니다. app/page.tsx의 handleExecute가 쓰는 것과 같은
-  // reader.read() 루프를 그대로 재사용하되, 렌즈·첨부파일·할 일 파싱 없이 텍스트만 이어붙입니다.
+  // reader.read() 루프를 그대로 재사용하되, 렌즈·할 일 파싱 없이 텍스트만 이어붙입니다.
   const handleGuestAsk = async (e: React.FormEvent) => {
     e.preventDefault();
     const prompt = guestChatPrompt.trim();
@@ -210,13 +270,28 @@ function LoginPageContent() {
       const res = await fetch('/api/public-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, responseLanguage: detectBrowserLanguageName() }),
+        body: JSON.stringify({
+          prompt,
+          responseLanguage: detectBrowserLanguageName(),
+          attachment: guestChatAttachment || undefined,
+        }),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         if (data.limitReached) {
           const limitType = data.limitType as GuidedTrialLimitType | undefined;
+          // 💡 [신규] limitScope로 소진된 예산이 채팅 턴인지 업로드 슬롯인지 구분합니다.
+          // 업로드 슬롯이 막힌 경우 uploadSessionUsed를 켜서 "파일 분석"/"사진 체험"
+          // 섹션도 함께 회색 처리되도록 합니다(세 기능이 같은 예산을 공유하므로).
+          if (data.limitScope === 'upload') {
+            if (limitType === 'session') {
+              setUploadSessionUsed(true);
+            } else {
+              setGuestSuspended({ type: (limitType as 'ip' | 'global') || 'ip' });
+            }
+            return;
+          }
           if (limitType === 'session') {
             setChatSessionUsed(true);
           } else {
@@ -228,6 +303,13 @@ function LoginPageContent() {
         return;
       }
       if (!res.body) return;
+
+      // 첨부가 있었다면 이 요청으로 업로드 예산을 이미 소모했으므로, 파일 분석/사진 체험
+      // 섹션도 즉시 회색 처리합니다 — 다음 요청의 429를 기다리지 않고 바로 반영합니다.
+      if (guestChatAttachment) {
+        setUploadSessionUsed(true);
+      }
+      setGuestChatAttachment(null);
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -547,9 +629,49 @@ function LoginPageContent() {
                     disabled={isGuestChatLoading || Boolean(guestSuspended)}
                     className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566] resize-none disabled:opacity-50"
                   />
+
+                  {/* 💡 [신규] 파일/사진 첨부 — 로그인 후 실제 채팅과 같은 형식을 지원하되, 게스트
+                      업로드 예산이 세션당 1건뿐이라 uploadSessionUsed가 이미 켜져 있으면(파일
+                      분석·사진 체험 중 하나를 이미 썼으면) 이 첨부도 함께 막습니다. */}
+                  {guestChatAttachment ? (
+                    <div className="flex items-center justify-between gap-2 bg-[#15131A] border border-[#423B4C] rounded-lg px-3 py-2">
+                      <span className="text-xs text-[#C9C0D6] truncate">📎 {guestChatAttachment.fileName}</span>
+                      <button
+                        type="button"
+                        onClick={() => setGuestChatAttachment(null)}
+                        disabled={isGuestChatLoading}
+                        className="bg-transparent border-none text-[#857C93] text-xs cursor-pointer hover:text-[#FF9585] disabled:opacity-50 focus:outline-none shrink-0"
+                      >
+                        {t('login.trial.attach.remove')}
+                      </button>
+                    </div>
+                  ) : (
+                    <label
+                      className={`flex items-center gap-1.5 text-xs font-medium w-fit ${
+                        uploadSessionUsed || guestSuspended || isGuestChatLoading || isReadingGuestChatAttachment
+                          ? 'text-[#5B5566] cursor-wait'
+                          : 'text-[#857C93] hover:text-[#C9C0D6] cursor-pointer'
+                      }`}
+                    >
+                      <span>📎 {isReadingGuestChatAttachment ? t('login.trial.attach.reading') : t('login.trial.attach.label')}</span>
+                      <input
+                        type="file"
+                        className="hidden"
+                        disabled={uploadSessionUsed || Boolean(guestSuspended) || isGuestChatLoading || isReadingGuestChatAttachment}
+                        onChange={handleGuestChatAttachmentChange}
+                      />
+                    </label>
+                  )}
+                  {!guestChatAttachment && !uploadSessionUsed && (
+                    <p className="text-[11px] text-[#5B5566] -mt-1.5">{t('login.trial.attach.hint')}</p>
+                  )}
+                  {guestChatAttachError && (
+                    <p className="text-[11px] text-[#FF9585] -mt-1.5">{guestChatAttachError}</p>
+                  )}
+
                   <button
                     type="submit"
-                    disabled={isGuestChatLoading || Boolean(guestSuspended) || !guestChatPrompt.trim()}
+                    disabled={isGuestChatLoading || isReadingGuestChatAttachment || Boolean(guestSuspended) || !guestChatPrompt.trim()}
                     className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-semibold cursor-pointer hover:bg-[#15131A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                   >
                     {isGuestChatLoading ? t('login.trial.chatLoading') : t('login.trial.chatButton')}
@@ -589,6 +711,8 @@ function LoginPageContent() {
                     setTrialResult(null);
                     setGuestChatPrompt('');
                     setGuestChatAnswer('');
+                    setGuestChatAttachment(null);
+                    setGuestChatAttachError(null);
                     setGuestSuspended(null);
                     setUploadSessionUsed(false);
                     setChatSessionUsed(false);

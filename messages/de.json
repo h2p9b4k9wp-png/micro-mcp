@@ -410,6 +410,14 @@
       "chatPlaceholder": "Fragen Sie etwas…",
       "chatButton": "Fragen",
       "chatLoading": "Antwort wird erstellt…",
+      "attach": {
+        "label": "Datei oder Foto anhängen",
+        "reading": "Datei wird gelesen…",
+        "hint": "PDF, Word, PPT, Excel, HWP oder ein Foto — bis zu 3 MB, 1 Datei",
+        "remove": "Entfernen",
+        "tooLarge": "Ohne Konto können Dateien bis zu 3 MB angehängt werden.",
+        "unsupportedImage": "Nur PNG, JPEG, GIF oder WEBP werden unterstützt. Bei einem HEIC-Foto bitte in JPEG umwandeln und erneut versuchen."
+      },
       "orDivider": "Oder",
       "signUpCta": "Kostenloses Konto erstellen",
       "limit": {

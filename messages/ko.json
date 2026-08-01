@@ -410,6 +410,14 @@
       "chatPlaceholder": "궁금한 걸 물어보세요…",
       "chatButton": "질문하기",
       "chatLoading": "답변을 생성하는 중…",
+      "attach": {
+        "label": "파일/사진 첨부",
+        "reading": "파일 읽는 중…",
+        "hint": "PDF·워드·PPT·엑셀·한글(HWP)·사진 — 최대 3MB, 1개",
+        "remove": "제거",
+        "tooLarge": "계정 없이는 3MB까지 첨부할 수 있어요.",
+        "unsupportedImage": "PNG, JPEG, GIF, WEBP 형식만 지원해요. HEIC 사진이라면 JPEG로 바꿔서 다시 시도해주세요."
+      },
       "orDivider": "또는",
       "signUpCta": "무료로 계정 만들기",
       "limit": {

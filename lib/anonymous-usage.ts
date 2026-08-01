@@ -25,7 +25,7 @@ export const GLOBAL_DAILY_GUEST_LIMIT = 100;
 const GUEST_SESSION_COOKIE = 'guest_session_id';
 const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24; // 24시간 — IP 일일 한도 집계 창과 맞춤
 
-export type AnonymousUsageKind = 'analyze' | 'chat' | 'guided';
+export type AnonymousUsageKind = 'analyze' | 'chat' | 'guided' | 'chat_attachment';
 
 export type GuestLimitType = 'session' | 'ip' | 'global';
 
@@ -108,13 +108,15 @@ async function countDistinctSessionsToday(supabaseAdmin: SupabaseClient, ip: str
   return new Set((data ?? []).map((row) => row.session_id)).size;
 }
 
-// 이 세션이 이미 업로드(분석/이미지체험 중 하나)를 썼는지 — 세션당 업로드는 딱 1건입니다.
+// 이 세션이 이미 업로드(분석/이미지체험/채팅 첨부 중 하나)를 썼는지 — 세션당 업로드는 딱 1건입니다.
+// 'chat_attachment'도 포함하는 이유: 채팅에 파일/사진을 첨부하는 것도 파싱·비전 호출이 있어
+// 비용 구조가 파일 분석·이미지 체험과 동일하므로, 같은 예산 슬롯을 공유합니다.
 async function sessionHasUsedUpload(supabaseAdmin: SupabaseClient, sessionId: string): Promise<boolean> {
   const { count, error } = await supabaseAdmin
     .from('anonymous_trial_usage')
     .select('id', { count: 'exact', head: true })
     .eq('session_id', sessionId)
-    .in('kind', ['analyze', 'guided']);
+    .in('kind', ['analyze', 'guided', 'chat_attachment']);
   if (error) throw error;
   return (count ?? 0) > 0;
 }
@@ -130,9 +132,9 @@ async function sessionChatTurnsUsed(supabaseAdmin: SupabaseClient, sessionId: st
   return count ?? 0;
 }
 
-// 💡 [신규] app/api/public-analyze, app/api/public-guided-trial(둘 다 "업로드" 액션)가
-// 호출합니다. 검사 순서: 전체 일일 한도 → (새 세션이면) IP 일일 세션 한도 → 이 세션이
-// 이미 업로드를 썼는지.
+// 💡 [신규] app/api/public-analyze, app/api/public-guided-trial(둘 다 "업로드" 액션),
+// 그리고 app/api/public-chat이 요청에 첨부가 포함된 경우에 호출합니다. 검사 순서:
+// 전체 일일 한도 → (새 세션이면) IP 일일 세션 한도 → 이 세션이 이미 업로드를 썼는지.
 export async function checkGuestUploadAllowed(
   supabaseAdmin: SupabaseClient,
   ip: string,

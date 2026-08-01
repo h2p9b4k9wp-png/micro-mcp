@@ -410,6 +410,14 @@
       "chatPlaceholder": "Vraag iets…",
       "chatButton": "Vragen",
       "chatLoading": "Antwoord wordt gegenereerd…",
+      "attach": {
+        "label": "Bestand of foto bijvoegen",
+        "reading": "Bestand wordt gelezen…",
+        "hint": "PDF, Word, PPT, Excel, HWP of een foto — tot 3MB, 1 bestand",
+        "remove": "Verwijderen",
+        "tooLarge": "Zonder account kun je bestanden tot 3MB bijvoegen.",
+        "unsupportedImage": "Alleen PNG, JPEG, GIF of WEBP worden ondersteund. Is het een HEIC-foto, zet deze dan om naar JPEG en probeer opnieuw."
+      },
       "orDivider": "Of",
       "signUpCta": "Gratis account aanmaken",
       "limit": {

@@ -410,6 +410,14 @@
       "chatPlaceholder": "Hỏi bất cứ điều gì…",
       "chatButton": "Hỏi",
       "chatLoading": "Đang tạo câu trả lời…",
+      "attach": {
+        "label": "Đính kèm tệp hoặc ảnh",
+        "reading": "Đang đọc tệp…",
+        "hint": "PDF, Word, PPT, Excel, HWP hoặc ảnh — tối đa 3MB, 1 tệp",
+        "remove": "Xóa",
+        "tooLarge": "Không cần tài khoản có thể đính kèm tệp tối đa 3MB.",
+        "unsupportedImage": "Chỉ hỗ trợ định dạng PNG, JPEG, GIF, WEBP. Nếu là ảnh HEIC, hãy chuyển sang JPEG rồi thử lại."
+      },
       "orDivider": "Hoặc",
       "signUpCta": "Tạo tài khoản miễn phí",
       "limit": {

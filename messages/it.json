@@ -410,6 +410,14 @@
       "chatPlaceholder": "Chiedi qualsiasi cosa…",
       "chatButton": "Chiedi",
       "chatLoading": "Generazione della risposta…",
+      "attach": {
+        "label": "Allega un file o una foto",
+        "reading": "Lettura del file in corso…",
+        "hint": "PDF, Word, PPT, Excel, HWP o una foto — fino a 3MB, 1 file",
+        "remove": "Rimuovi",
+        "tooLarge": "Senza account puoi allegare file fino a 3MB.",
+        "unsupportedImage": "Sono supportati solo PNG, JPEG, GIF o WEBP. Se è una foto HEIC, convertila in JPEG e riprova."
+      },
       "orDivider": "Oppure",
       "signUpCta": "Crea un account gratuito",
       "limit": {
