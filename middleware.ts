@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { SUPPORTED_LOCALES, DEFAULT_LOCALE, type AppLocale } from './i18n/locales';
+import { SUPPORTED_LOCALES, type AppLocale } from './i18n/locales';
 
 // 💡 [수정] Accept-Language 헤더(예: "nl;q=0.3,en-US;q=0.9,ko;q=0.95")를 진짜 선호도(q값)
 // 순으로 파싱해 SUPPORTED_LOCALES 중 처음 일치하는 언어를 고릅니다. 이전 버전은 q값을
@@ -34,11 +34,34 @@ function detectLocaleFromAcceptLanguage(header: string): AppLocale {
     const match = SUPPORTED_LOCALES.find((locale) => locale === tag);
     if (match) return match;
   }
-  return header.length === 0 ? DEFAULT_LOCALE : 'en';
+  // 💡 [수정] 지원 언어와 매칭되는 게 하나도 없으면(헤더 자체가 없는 경우 포함) 무조건
+  // 영어로 폴백합니다 — 사용자 명시 요청("매칭되는 게 없으면 영어로"). 이전엔 헤더가
+  // 아예 없는 경우에만 DEFAULT_LOCALE(한국어)로 폴백하는 예외가 있었는데, 그 구분을 없애고
+  // 일관되게 영어로 통일했습니다.
+  return 'en';
 }
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  // 💡 [신규] 이번 요청에서 실제로 써야 할 로케일을 미리 계산해 x-locale 요청 헤더로
+  // 실어 보냅니다. 쿠키가 아직 없는 최초 방문자의 경우, 아래 withDetectedLocale이 응답에
+  // Set-Cookie로 "locale" 쿠키를 심어도 그건 브라우저가 "다음" 요청부터 보내는 값이라,
+  // 이번 요청을 렌더링하는 app/layout.tsx(next-intl, i18n/request.ts의 next/headers
+  // cookies()는 들어온 요청의 쿠키만 읽습니다)는 여전히 그 쿠키를 못 보고 DEFAULT_LOCALE
+  // (한국어)로 렌더링하는 문제가 있었습니다 — 즉 "브라우저 언어 자동 감지"가 실제로는
+  // 두 번째 요청부터만 적용되고 있었습니다(랜딩 페이지처럼 방문자가 첫 화면만 보고
+  // 이탈할 수도 있는 페이지엔 치명적). x-locale 헤더는 미들웨어→서버 컴포넌트로 같은
+  // 요청 안에서 값을 넘기는 Next.js 공식 패턴이라, i18n/request.ts가 쿠키보다 이 헤더를
+  // 우선 읽으면 최초 요청부터 바로 감지된 언어로 렌더링됩니다.
+  const rawCookieLocale = request.cookies.get('locale')?.value;
+  const hasLocaleCookie = Boolean(rawCookieLocale);
+  const validCookieLocale = SUPPORTED_LOCALES.find((locale) => locale === rawCookieLocale);
+  const effectiveLocale: AppLocale =
+    validCookieLocale ?? detectLocaleFromAcceptLanguage(request.headers.get('accept-language') || '');
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-locale', effectiveLocale);
+
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,7 +73,7 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
+          response = NextResponse.next({ request: { headers: requestHeaders } });
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -65,19 +88,16 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isApiRoute = path.startsWith('/api/');
 
-  // 💡 [신규] "locale" 쿠키가 아직 없는 최초 방문자에게는 Accept-Language 헤더로 브라우저
-  // 언어를 감지해 심어줍니다 — 이게 없으면 i18n/request.ts(next-intl)가 쿠키 미존재 시
-  // 항상 DEFAULT_LOCALE('ko')로 폴백해서, 해외에서 접속한 방문자도 로그인 화면부터
-  // 한국어로 보게 됩니다. SUPPORTED_LOCALES 10개(i18n/locales.ts) 중 브라우저가 선호하는
-  // 언어를 detectLocaleFromAcceptLanguage로 고릅니다 — AI 답변 언어(responseLanguage,
-  // app/page.tsx)가 navigator.language로 자동 감지하는 것과 같은 취지를 메뉴·버튼 같은
-  // 고정 UI 문구에도 적용한 것입니다. LocaleSwitcher로 직접 바꾸면 그 값이 이 쿠키를
-  // 그대로 덮어쓰므로, 자동 감지는 "쿠키가 아예 없는 최초 방문" 시점에만 한 번 개입합니다.
-  const hasLocaleCookie = Boolean(request.cookies.get('locale'));
+  // 💡 [신규] "locale" 쿠키가 아직 없는 최초 방문자에게는 위에서 계산해둔 effectiveLocale
+  // (Accept-Language로 감지한 값)을 심어줍니다 — 이게 없으면 i18n/request.ts(next-intl)가
+  // 쿠키 미존재 시 항상 DEFAULT_LOCALE('ko')로 폴백해서, 해외에서 접속한 방문자도 로그인
+  // 화면부터 한국어로 보게 됩니다. AI 답변 언어(responseLanguage, app/page.tsx)가
+  // navigator.language로 자동 감지하는 것과 같은 취지를 메뉴·버튼 같은 고정 UI 문구에도
+  // 적용한 것입니다. LocaleSwitcher로 직접 바꾸면 그 값이 이 쿠키를 그대로 덮어쓰므로,
+  // 자동 감지는 "쿠키가 아예 없는 최초 방문" 시점에만 한 번 개입합니다.
   const withDetectedLocale = (res: NextResponse) => {
     if (isApiRoute || hasLocaleCookie) return res;
-    const detected = detectLocaleFromAcceptLanguage(request.headers.get('accept-language') || '');
-    res.cookies.set('locale', detected, {
+    res.cookies.set('locale', effectiveLocale, {
       path: '/',
       maxAge: 60 * 60 * 24 * 365,
       sameSite: 'lax',
