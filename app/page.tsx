@@ -1966,13 +1966,19 @@ export default function HomePage() {
             {isPro ? 'PRO' : 'Pro'}
           </button>
         </div>
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label={t('common.openMenu')}
-          className="text-[var(--text-primary)] text-xl p-1.5 rounded-lg hover:bg-[var(--bg-surface)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-        >
-          {isMobileMenuOpen ? '✕' : '☰'}
-        </button>
+        {/* 💡 [신규] 데스크톱 사이드바 헤더의 LocaleSwitcher는 md:flex 행 안에 있어 모바일에선
+            햄버거 메뉴를 열어도 안 보였습니다 — "헤더에 언어 선택기 항상 노출" 요건을
+            모바일에서도 만족시키려면 이 상단 바에도 따로 둬야 합니다. */}
+        <div className="flex items-center gap-2">
+          <LocaleSwitcher />
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={t('common.openMenu')}
+            className="text-[var(--text-primary)] text-xl p-1.5 rounded-lg hover:bg-[var(--bg-surface)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+          >
+            {isMobileMenuOpen ? '✕' : '☰'}
+          </button>
+        </div>
       </div>
 
       {/* 사이드바 메뉴 */}

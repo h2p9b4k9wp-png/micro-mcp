@@ -3,18 +3,34 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE, type AppLocale } from './i18n/locales';
 
-// 💡 [신규] Accept-Language 헤더(예: "de-DE,de;q=0.9,en;q=0.8")를 선호도 순으로 파싱해
-// SUPPORTED_LOCALES 중 처음 일치하는 언어를 고릅니다. 지원 로케일 코드가 전부 ISO 639-1
-// 주 언어 서브태그(ko/en/ja/vi/es/fr/de/it/pt/nl)라 지역 서브태그(-DE, -BR 등)는 무시하고
-// 앞부분만 비교합니다. 아무 것도 안 맞으면 'en'으로 — 한국어가 아닌 방문자를 지원하지
-// 않는 언어라고 계속 한국어로 두는 것보다는 영어가 더 도움이 됩니다.
+// 💡 [수정] Accept-Language 헤더(예: "nl;q=0.3,en-US;q=0.9,ko;q=0.95")를 진짜 선호도(q값)
+// 순으로 파싱해 SUPPORTED_LOCALES 중 처음 일치하는 언어를 고릅니다. 이전 버전은 q값을
+// 무시하고 헤더에 적힌 "글자 순서" 그대로 훑었는데, HTTP 스펙상 Accept-Language는 순서가
+// 아니라 q값이 우선순위입니다 — 브라우저 대부분은 순서와 q값이 일치하게 보내지만 전부는
+// 아니고(사설 VPN/프록시가 국가 스푸핑용으로 로케일을 끼워 넣는 경우 등), 순서만 보면
+// 사용자의 실제 1순위 언어가 아직 SUPPORTED_LOCALES에 없다는 이유만으로 그 뒤에 우연히
+// 붙어있던, 훨씬 낮은 우선순위의 지원 언어가 먼저 골라지는 오탐이 날 수 있습니다(네덜란드어가
+// 뜬 사례가 이 경로로 재현됩니다 — 실제 1순위 언어가 지원 목록에 없고, q값은 낮지만 목록상
+// 앞쪽에 'nl'이 끼어 있던 경우). q값을 실제로 비교해 정렬하면 이 오탐이 사라집니다.
+// 지원 로케일 코드가 전부 ISO 639-1 주 언어 서브태그(ko/en/ja/vi/es/fr/de/it/pt/nl)라
+// 지역 서브태그(-DE, -BR 등)는 무시하고 앞부분만 비교합니다. 아무 것도 안 맞으면 'en'으로 —
+// 한국어가 아닌 방문자를 지원하지 않는 언어라고 계속 한국어로 두는 것보다는 영어가 더 도움이 됩니다.
 function detectLocaleFromAcceptLanguage(header: string): AppLocale {
-  const primaryTags = header
+  const entries = header
     .split(',')
-    .map((tag) => tag.split(';')[0]?.trim().toLowerCase().split('-')[0])
-    .filter((tag): tag is string => Boolean(tag));
+    .map((raw) => {
+      const [tagPart, ...params] = raw.split(';').map((s) => s.trim());
+      const tag = tagPart?.toLowerCase().split('-')[0];
+      const qParam = params.find((p) => p.startsWith('q='));
+      const q = qParam ? parseFloat(qParam.slice(2)) : 1;
+      return { tag, q: Number.isFinite(q) ? q : 0 };
+    })
+    .filter((entry): entry is { tag: string; q: number } => Boolean(entry.tag) && entry.q > 0)
+    // 배열 sort는 안정 정렬이라 q값이 같으면(가장 흔한 경우 — q 생략 시 전부 1) 원래
+    // 헤더 순서(=암묵적 우선순위)가 그대로 유지됩니다.
+    .sort((a, b) => b.q - a.q);
 
-  for (const tag of primaryTags) {
+  for (const { tag } of entries) {
     const match = SUPPORTED_LOCALES.find((locale) => locale === tag);
     if (match) return match;
   }

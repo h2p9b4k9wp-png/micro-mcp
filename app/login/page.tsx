@@ -11,6 +11,7 @@ import type { GuidedTrialLimitType } from '@/lib/use-guided-trial';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
 import { Logomark } from '@/components/logomark';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { LocaleSwitcher } from '@/components/locale-switcher';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestGuidedTrial } from '@/components/guest-guided-trial';
 import { GuestLimitBanner } from '@/components/guest-limit-banner';
@@ -414,7 +415,10 @@ function LoginPageContent() {
 
       {/* 우측 로그인 폼 패널 */}
       <div className="relative flex-1 flex items-center justify-center px-6 py-12 bg-[var(--bg-page-alt)] md:bg-[var(--bg-page)]">
-        <ThemeToggle className="absolute top-4 right-4 md:top-6 md:right-6" />
+        <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2">
+          <LocaleSwitcher />
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-[380px]">
 
           {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) — 스크롤 없이 폼이 보이도록 최대한 짧게 구성 */}

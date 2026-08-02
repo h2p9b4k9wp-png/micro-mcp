@@ -4,8 +4,17 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Logomark } from '@/components/logomark';
+import { LocaleSwitcher } from '@/components/locale-switcher';
 import { WelcomeHeroTrial } from '@/components/welcome-hero-trial';
 import { ProfessorDemo } from '@/components/professor-demo';
+
+// 💡 [신규] 이 페이지는 앱 테마 설정과 무관하게 항상 고정 라이트라(위 주석 참고) CSS
+// 변수(var(--border-default) 등)를 쓰면 사용자의 앱 테마가 다크로 저장돼 있을 때 이
+// 고정 라이트 배경 위에서 다크 스타일이 새어 나옵니다 — LocaleSwitcher에 이 페이지
+// 전용 라이트 색상을 직접 넘겨줍니다.
+const WELCOME_LOCALE_SWITCHER_CLASSNAME =
+  'bg-transparent border border-[#E5E1EA] rounded-md px-2 py-1 text-xs font-semibold text-[#5B5566] outline-none focus:border-[#F4679B] cursor-pointer hover:text-[#1C1922]';
+const WELCOME_LOCALE_OPTION_CLASSNAME = 'bg-white text-[#1C1922]';
 
 // 💡 [신규] 링크로 바로 들어온 미로그인 방문자의 첫 화면(middleware.ts가 "/" 미로그인
 // 요청을 여기로 보냅니다). 나머지 페이지(app/page.tsx, app/login/page.tsx, /pricing,
@@ -49,12 +58,15 @@ export default function WelcomePage() {
           <Logomark className="w-7 h-7" />
           <span className="text-base font-extrabold text-[#1C1922] tracking-tight">Carrotly</span>
         </div>
-        <Link
-          href="/login"
-          className="text-sm font-semibold text-[#5B5566] hover:text-[#F4679B] transition-colors px-3.5 py-1.5 rounded-lg border border-[#E5E1EA] hover:border-[#F4679B]/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-        >
-          {t('landing.loginButton')}
-        </Link>
+        <div className="flex items-center gap-3">
+          <LocaleSwitcher className={WELCOME_LOCALE_SWITCHER_CLASSNAME} optionClassName={WELCOME_LOCALE_OPTION_CLASSNAME} />
+          <Link
+            href="/login"
+            className="text-sm font-semibold text-[#5B5566] hover:text-[#F4679B] transition-colors px-3.5 py-1.5 rounded-lg border border-[#E5E1EA] hover:border-[#F4679B]/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+          >
+            {t('landing.loginButton')}
+          </Link>
+        </div>
       </header>
 
       {/* 💡 [순서 변경] "교수님별 정리" 섹션을 히어로보다 먼저 보여줍니다 — 헤더 바로 다음,
