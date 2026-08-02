@@ -61,7 +61,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={["light", "dark"]}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem themes={["light", "dark"]}>
           <NextIntlClientProvider locale={locale} messages={messages}>
             {children}
           </NextIntlClientProvider>
