@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { SITE_URL } from '@/lib/site-config';
 
 // 💡 [수정] 원래 로그인 없이도 봐야 하는 공개 법적 페이지라는 이유로 next-intl을 거치지 않고
 // 영어 고정 텍스트였습니다. 하지만 서울 리전 국제 데이터 이전 고지를 추가하면서 사용자가
@@ -17,6 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
+    alternates: {
+      canonical: `${SITE_URL}/privacy`,
+    },
   };
 }
 

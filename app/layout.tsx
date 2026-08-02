@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import { SiteFooter } from "@/components/site-footer";
+import { SITE_URL } from "@/lib/site-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,11 +22,23 @@ const geistMono = Geist_Mono({
 // app.title/app.description(next-intl의 getTranslations, 요청별 로케일 인식)으로 옮겨
 // generateMetadata()로 바꿨습니다. app/manifest.ts(PWA 설치 시 이름)도 같은 이유로 별도로
 // 고쳤습니다 — 거긴 next-intl 요청 컨텍스트 밖이라 locale 쿠키를 직접 읽습니다.
+// 💡 [신규] metadataBase — 하위 라우트의 상대 경로 metadata(OpenGraph 이미지 등)를 절대
+// URL로 만들 때 next가 참조하는 기준값입니다. alternates.canonical(아래)도 여기 있으면
+// 각 라우트의 generateMetadata()가 매번 절대 URL을 직접 조립하지 않고 상대 경로만 넘겨도
+// 되지만, canonical은 라우트별로 명시적으로 지정하는 게 더 안전해 각 페이지에서 SITE_URL로
+// 직접 절대 URL을 만듭니다. 루트("/")의 canonical은 여기서 지정 — app/page.tsx(로그인된
+// 대시보드)는 이 루트 레이아웃 말고는 별도 layout.tsx가 없어서 라우트별 override를 걸 곳이
+// 없습니다. 더 구체적인 라우트(로그인/웰컴/프라이버시 등)는 자기 자신의 layout.tsx나
+// generateMetadata()에서 이 값을 덮어씁니다.
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('app');
   return {
     title: t('title'),
     description: t('description'),
+    metadataBase: new URL(SITE_URL),
+    alternates: {
+      canonical: `${SITE_URL}/`,
+    },
   };
 }
 

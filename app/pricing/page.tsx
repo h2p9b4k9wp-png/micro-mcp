@@ -1,9 +1,13 @@
 import Link from 'next/link';
 import { FREE_LIMITS, PRO_LIMITS, PRO_PRICE_LABEL, FREE_LOG_RETENTION_DAYS } from '@/lib/plan-limits';
+import { SITE_URL } from '@/lib/site-config';
 
 export const metadata = {
   title: 'Pricing — Carrotly',
   description: 'Carrotly Free and Pro plans.',
+  alternates: {
+    canonical: `${SITE_URL}/pricing`,
+  },
 };
 
 // 💡 [신규] 로그인 없이도 봐야 하는 공개 페이지라(middleware.ts의 isPublicRoute에 등록)

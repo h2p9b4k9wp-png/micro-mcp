@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { SITE_URL } from '@/lib/site-config';
 
 // 💡 [수정] /privacy와 같은 이유·같은 패턴으로 next-intl 기반 10개 언어 지원으로 전환했습니다
 // — 사용자가 명시적으로 요청했고, 이미 /privacy에서 "법적 페이지도 UI 로케일을 따라간다"는
@@ -29,6 +30,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
+    alternates: {
+      canonical: `${SITE_URL}/terms`,
+    },
   };
 }
 
