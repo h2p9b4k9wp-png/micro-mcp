@@ -474,25 +474,25 @@
   },
   "landing": {
     "loginButton": "ログイン",
-    "headline": "試験は明日なのに、資料はそのまま?",
-    "subheadline": "資料をアップロードすれば、要約と予想問題がすぐ出てきます。",
+    "headline": "過去問がなくても、大丈夫。",
+    "subheadline": "先生の資料をアップするだけで、その先生が強調したポイントから予想問題と要点整理を自動生成。",
     "ctaButton": "今すぐ体験する",
     "ctaHint": "登録不要、今すぐ確認できます",
-    "professorAppeal": "教授ごとに、違う形で整理します",
+    "professorAppeal": "先輩・サークルのコネなしでも",
     "startOver": "← 最初からやり直す",
     "capabilities": {
       "upload": "ファイル・写真・スクリーンショットを分析",
       "deadlines": "締め切りを自動で抽出",
-      "questions": "想定質問を生成",
+      "questions": "予想問題を生成",
       "summary": "要点を整理",
       "ask": "資料をもとにすぐ質問"
     },
     "professorSection": {
-      "title": "教授ごとに試験が違うから",
-      "description": "資料を教授ごとにまとめておけば、クリック一つでその教授が強調した内容と出題傾向に合わせた想定質問・要約が出てきます。",
+      "title": "シラバスではわからない、先生の出題傾向",
+      "description": "資料を先生ごとにまとめておけば、クリック一つでその先生が強調したポイントと出題傾向に合わせた予想問題・要点整理が出てきます。",
       "demo": {
         "autoPromptLabel": "自動プロンプト適用",
-        "promptTemplate": "「{name}の資料をもとに想定問題と要点整理を出して」",
+        "promptTemplate": "「{name}の資料をもとに予想問題と要点整理を出して」",
         "professors": [
           {
             "name": "田中先生",
