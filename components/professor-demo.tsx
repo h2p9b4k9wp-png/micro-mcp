@@ -151,7 +151,7 @@ export function ProfessorDemo() {
       </div>
 
       <div key={`circuit-${selectedId}`} className="w-full bg-[#15131A] rounded-[28px] border border-[#2A2632] p-4 sm:p-8">
-        <CircuitBoard graph={graph} onNodeClick={() => {}} />
+        <CircuitBoard graph={graph} onNodeClick={() => {}} pannable={false} />
 
         {phase === 'done' && (
           <div className="w-full max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2 text-left">

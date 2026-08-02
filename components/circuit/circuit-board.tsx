@@ -29,6 +29,12 @@ interface CircuitBoardProps {
   // 맞습니다. 이 플래그는 화면 너비와 무관하게 항상 그 세로 배치만 보여주도록
   // sm:hidden/hidden sm:block 분기를 건너뜁니다 — 렌더링 로직 자체는 100% 재사용입니다.
   forceVertical?: boolean;
+  // 💡 [신규] PannableCanvas(핀치 확대/드래그 이동)를 씌울지 여부 — 기본 true. 실제로
+  // 노드를 클릭해 뭔가 하는 인터랙티브한 곳(교수님 탭 상세, 채팅 입력창 위 미니와이어)은
+  // 계속 팬/핀치가 유용하지만, onNodeClick이 사실상 no-op인 순수 장식용 데모(웰컴 히어로
+  // 자동 루프 데모, 교수님 데모, 게스트 이미지 체험 결과)는 false로 꺼서 모바일에서 그
+  // 영역을 터치했을 때 전선이 드래그로 움직이는 의도치 않은 동작을 막습니다.
+  pannable?: boolean;
 }
 
 type Orientation = 'horizontal' | 'vertical' | 'compact';
@@ -53,11 +59,14 @@ function getStatusVisual(status: NodeStatus) {
   }
 }
 
-export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertical = false }: CircuitBoardProps) {
+export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertical = false, pannable = true }: CircuitBoardProps) {
   const t = useTranslations();
   const [revealedEdges, setRevealedEdges] = useState<Set<string>>(() => new Set());
   const [sparkGeneration, setSparkGeneration] = useState(0);
   const [gatedTooltipId, setGatedTooltipId] = useState<NodeId | null>(null);
+
+  // pannable=false면 PannableCanvas(터치 팬/핀치)를 아예 씌우지 않고 다이어그램을 그대로 둡니다.
+  const wrapPannable = (node: React.ReactNode) => (pannable ? <PannableCanvas>{node}</PannableCanvas> : node);
 
   // 💡 [신규] NODE_REGISTRY의 label/hint는 한국어 고정값이라(CircuitNode 타입상 필수 필드),
   // 실제 렌더에는 nodes.{id}.label/hint 번역으로 덮어씁니다. app/page.tsx의 getNodeMeta와 동일한 패턴.
@@ -296,16 +305,16 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
   if (forceVertical) {
     return (
       <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 shadow-sm">
-        <PannableCanvas>{renderDiagram('vertical')}</PannableCanvas>
+        {wrapPannable(renderDiagram('vertical'))}
       </div>
     );
   }
 
   return (
     <div>
-      {/* 좁은 화면(모바일): 위→아래로 흐르는 세로 배치 + 핀치 확대/축소·드래그 이동 */}
+      {/* 좁은 화면(모바일): 위→아래로 흐르는 세로 배치 + 핀치 확대/축소·드래그 이동(pannable=false면 생략) */}
       <div className="sm:hidden bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 mb-6 shadow-sm">
-        <PannableCanvas>{renderDiagram('vertical')}</PannableCanvas>
+        {wrapPannable(renderDiagram('vertical'))}
       </div>
 
       {/* 넓은 화면: 기존 좌→우 3열 파이프라인 배치를 그대로 유지 */}
@@ -315,7 +324,7 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
             <span key={layer}>{LAYER_TITLES[layer]}</span>
           ))}
         </div>
-        <PannableCanvas>{renderDiagram('horizontal')}</PannableCanvas>
+        {wrapPannable(renderDiagram('horizontal'))}
       </div>
     </div>
   );

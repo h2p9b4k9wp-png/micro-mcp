@@ -77,7 +77,7 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
 
           {(uploaded || result) && (
             <div className="mt-4">
-              <CircuitBoard graph={graph} onNodeClick={() => {}} forceVertical />
+              <CircuitBoard graph={graph} onNodeClick={() => {}} forceVertical pannable={false} />
             </div>
           )}
 

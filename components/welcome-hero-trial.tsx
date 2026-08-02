@@ -66,7 +66,7 @@ function WelcomeCircuitDemo() {
 
   return (
     <div className="w-full bg-[#15131A] rounded-[28px] border border-[#2A2632] p-4 sm:p-8" aria-hidden="true">
-      <CircuitBoard graph={graph} onNodeClick={() => {}} />
+      <CircuitBoard graph={graph} onNodeClick={() => {}} pannable={false} />
     </div>
   );
 }
@@ -197,7 +197,7 @@ export function WelcomeHeroTrial() {
       ) : (
         <div key="result" className="professor-circuit-reveal w-full flex flex-col items-center">
           <div className="w-full bg-[#15131A] rounded-[28px] border border-[#2A2632] p-4 sm:p-8">
-            <CircuitBoard graph={graph} onNodeClick={() => {}} />
+            <CircuitBoard graph={graph} onNodeClick={() => {}} pannable={false} />
 
             {result && (
               <div className="w-full max-w-xl mx-auto flex flex-col gap-3 mt-2 text-left">
