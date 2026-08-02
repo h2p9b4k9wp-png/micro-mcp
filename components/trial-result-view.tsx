@@ -15,17 +15,17 @@ export function renderTrialResult(
   if (lens === 'deadlines') {
     const r = result as DeadlinesResult;
     if (r.items.length === 0) {
-      return <p className="text-sm text-[#C9C0D6]">{t('workspace.lens.noDeadlinesFound')}</p>;
+      return <p className="text-sm text-[var(--text-secondary)]">{t('workspace.lens.noDeadlinesFound')}</p>;
     }
     return (
       <ul className="flex flex-col gap-2.5">
         {r.items.map((item, i) => (
-          <li key={i} className="border border-[#332D3B] rounded-lg p-3">
+          <li key={i} className="border border-[var(--border-chip-hover)] rounded-lg p-3">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="text-sm font-semibold text-[#F5F2F7]">{item.title}</span>
+              <span className="text-sm font-semibold text-[var(--text-primary)]">{item.title}</span>
               <span className="text-xs font-semibold text-[#F4679B] shrink-0">{item.date}</span>
             </div>
-            <p className="text-xs text-[#AFA6BD] italic">&quot;{item.evidence}&quot;</p>
+            <p className="text-xs text-[var(--text-tertiary)] italic">&quot;{item.evidence}&quot;</p>
           </li>
         ))}
       </ul>
@@ -34,14 +34,14 @@ export function renderTrialResult(
   if (lens === 'questions') {
     const r = result as QuestionsResult;
     if (r.items.length === 0) {
-      return <p className="text-sm text-[#C9C0D6]">{t('workspace.lens.noQuestionsFound')}</p>;
+      return <p className="text-sm text-[var(--text-secondary)]">{t('workspace.lens.noQuestionsFound')}</p>;
     }
     return (
       <ul className="flex flex-col gap-2.5">
         {r.items.map((item, i) => (
-          <li key={i} className="border border-[#332D3B] rounded-lg p-3">
-            <p className="text-sm font-semibold text-[#F5F2F7] mb-1">Q. {item.question}</p>
-            <p className="text-xs text-[#E4DEEA]">A. {item.draftAnswer}</p>
+          <li key={i} className="border border-[var(--border-chip-hover)] rounded-lg p-3">
+            <p className="text-sm font-semibold text-[var(--text-primary)] mb-1">Q. {item.question}</p>
+            <p className="text-xs text-[var(--text-oncard)]">A. {item.draftAnswer}</p>
           </li>
         ))}
       </ul>
@@ -50,11 +50,11 @@ export function renderTrialResult(
   const r = result as DigestResult;
   return (
     <div className="flex flex-col gap-2.5">
-      <p className="text-sm font-semibold text-[#F5F2F7]">{r.summary}</p>
+      <p className="text-sm font-semibold text-[var(--text-primary)]">{r.summary}</p>
       {r.keyPoints.length > 0 && (
         <ul className="flex flex-col gap-1.5">
           {r.keyPoints.map((p, i) => (
-            <li key={i} className="text-xs text-[#E4DEEA] list-disc list-inside ml-1">{p.text}</li>
+            <li key={i} className="text-xs text-[var(--text-oncard)] list-disc list-inside ml-1">{p.text}</li>
           ))}
         </ul>
       )}

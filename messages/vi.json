@@ -20,7 +20,8 @@
     "openMenu": "Mở menu",
     "logout": "Đăng xuất",
     "unknownError": "Lỗi không xác định",
-    "responseLanguageLabel": "Ngôn ngữ phản hồi AI"
+    "responseLanguageLabel": "Ngôn ngữ phản hồi AI",
+    "themeLabel": "Giao diện"
   },
   "workspace": {
     "subtitle": "AI tạo câu trả lời dựa trên ngữ cảnh cuộc trò chuyện và nội dung tài liệu đã đính kèm.",

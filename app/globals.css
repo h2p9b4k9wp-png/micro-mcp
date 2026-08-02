@@ -1,16 +1,95 @@
 @import "tailwindcss";
 
-/* 브라우저의 강제 다크 모드(크롬 "다크 모드로 웹 콘텐츠 표시" 등)가 이 사이트를 "다크
-   테마 미지원"으로 오판해 이미지 밝은 영역을 재반전시키는 문제 — color-scheme을 html/
-   :root/meta 세 곳 모두에 선언해야 브라우저가 이 힌트를 확실히 인식합니다. */
+/* 💡 [신규] 다크/라이트 테마 전환(next-themes) — <html>에 next-themes가 붙이는 "dark"/"light"
+   클래스에 따라 이 시맨틱 변수들의 값이 바뀝니다. 기본값(:root, 클래스 없을 때)은 기존
+   다크 색상 그대로라 next-themes가 아직 하이드레이션 전이어도 항상 다크로 먼저 보이고,
+   실제 저장된 테마는 next-themes가 <head>에 주입하는 동기 스크립트가 hydration 이전에
+   바로 클래스를 붙여서 반영합니다(app/layout.tsx의 ThemeProvider 참고) — 그래서 깜빡임
+   (FOUC)이 없습니다.
+
+   여기서 변수로 뺀 건 화면 배경·테두리·본문 텍스트처럼 테마에 따라 실제로 달라져야 하는
+   "구조색"만입니다. 브랜드 포인트 컬러(#F4679B 핑크, #6EE7B7 그린, #FFD97D 옐로 등)는
+   라이트/다크 어디서나 같은 값을 유지해야 브랜드 정체성이 흔들리지 않아서 그대로 하드코딩
+   값으로 남겨뒀습니다 — 의도적인 설계이지 누락이 아닙니다.
+
+   라이트 모드 값은 새로 지어낸 게 아니라 app/welcome/page.tsx(이미 라이트 테마로 운영
+   중인 유일한 페이지)에서 실제로 쓰고 있는 색상(#FAF8FB, #F7F5F9, #EDEAF0, #E5E1EA,
+   #1C1922, #5B5566 등)을 그대로 재사용했습니다 — 이미 검증된 팔레트라 새 색을 고르며
+   생길 수 있는 부조화를 피할 수 있습니다. */
 html {
   color-scheme: dark;
+}
+html.light {
+  color-scheme: light;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
   color-scheme: dark;
+
+  /* 배경 */
+  --bg-page: #211e28;
+  --bg-page-alt: #1c1922;
+  --bg-surface: #15131a;
+  --bg-panel: #17141d;
+  --bg-deep: #0d0b11;
+
+  /* 테두리 (surface-chip은 배경으로도 씁니다 — 칩/태그·회로도 카드가 같은 톤을 공유) */
+  --border-default: #322d3b;
+  --border-strong: #423b4c;
+  --border-chip-hover: #332d3b;
+  --border-accent-subtle: #5c3a4a;
+  --surface-chip: #2a2632;
+
+  /* 텍스트 */
+  --text-primary: #f5f2f7;
+  --text-secondary: #c9c0d6;
+  --text-tertiary: #afa6bd;
+  --text-muted: #857c93;
+  --text-faint: #5b5566;
+  --text-oncard: #e4deea;
+
+  /* 상태(에러/성공) 서브틀 배경·테두리·텍스트 — accent-danger(#FF7A6B)는 삭제·연결 끊기
+     버튼처럼 채도 높은 강조용이라 어두운 배경에선 그대로 잘 보이지만, 흰 배경에서는 대비가
+     약해 라이트 값만 더 진하게 낮췄습니다(다른 브랜드 포인트 컬러와 달리 이 둘만 라이트/
+     다크 값이 다른 이유). */
+  --bg-error-subtle: #35201d;
+  --border-error-subtle: #63392f;
+  --text-error: #ff9585;
+  --accent-danger: #ff7a6b;
+  --bg-success-subtle: #1b3328;
+  --border-success-subtle: #37604d;
+  --bg-accent-subtle: #331f29;
+}
+
+.light {
+  --bg-page: #ffffff;
+  --bg-page-alt: #faf8fb;
+  --bg-surface: #f7f5f9;
+  --bg-panel: #faf8fb;
+  --bg-deep: #f0edf2;
+
+  --border-default: #e5e1ea;
+  --border-strong: #d8d2e0;
+  --border-chip-hover: #d8d2e0;
+  --border-accent-subtle: #f3c6be;
+  --surface-chip: #f0edf2;
+
+  --text-primary: #1c1922;
+  --text-secondary: #3d3648;
+  --text-tertiary: #5b5566;
+  --text-muted: #857c93;
+  --text-faint: #afa6bd;
+  --text-oncard: #2a2632;
+
+  --bg-error-subtle: #fdedeb;
+  --border-error-subtle: #f3c6be;
+  --text-error: #c2402e;
+  --accent-danger: #d9483a;
+  --bg-success-subtle: #e8f7f0;
+  --border-success-subtle: #b8e8d2;
+  --bg-accent-subtle: #fdebf1;
 }
 
 @theme inline {
@@ -18,13 +97,6 @@ html {
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

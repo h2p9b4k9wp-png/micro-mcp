@@ -53,9 +53,9 @@ function getStatusVisual(status: NodeStatus) {
     case 'done':
       return { borderColor: '#6EE7B7', glow: false, pulse: false, badge: 'check' as const };
     case 'error':
-      return { borderColor: '#FF7A6B', glow: false, pulse: false, badge: 'none' as const };
+      return { borderColor: 'var(--accent-danger)', glow: false, pulse: false, badge: 'none' as const };
     default:
-      return { borderColor: '#322D3B', glow: false, pulse: false, badge: 'none' as const };
+      return { borderColor: 'var(--border-default)', glow: false, pulse: false, badge: 'none' as const };
   }
 }
 
@@ -220,13 +220,13 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
                 width: isLens ? (isCompact ? '60px' : 'clamp(84px, 15vw, 128px)') : isCompact ? '52px' : 'clamp(76px, 13vw, 108px)',
                 height: isLens ? (isCompact ? '60px' : 'clamp(84px, 15vw, 128px)') : undefined,
                 padding: isLens ? undefined : isCompact ? '6px 4px' : '10px 8px',
-                border: `2px solid ${isGated ? '#322D3B' : status.borderColor}`,
+                border: `2px solid ${isGated ? 'var(--border-default)' : status.borderColor}`,
                 background: isGated
-                  ? '#1C1922'
+                  ? 'var(--bg-page-alt)'
                   : isLens
-                    ? 'radial-gradient(circle, #331F29 0%, #211E28 70%)'
+                    ? 'radial-gradient(circle, var(--bg-accent-subtle) 0%, var(--bg-page) 70%)'
                     : node.status === 'idle'
-                      ? '#1C1922'
+                      ? 'var(--bg-page-alt)'
                       : '#2A1520',
                 boxShadow: !isGated && status.glow
                   ? isLens
@@ -247,7 +247,7 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#F4679B] animate-pulse" />
               )}
               {status.badge === 'check' && !isGated && (
-                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[#1B3328] border border-[#37604D] flex items-center justify-center">
+                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[var(--bg-success-subtle)] border border-[var(--border-success-subtle)] flex items-center justify-center">
                   <Check className="w-2.5 h-2.5 text-[#6EE7B7]" strokeWidth={3} />
                 </span>
               )}
@@ -256,32 +256,32 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
                   나머지 노드는 각자 자신의 아이콘(NODE_REGISTRY)을 보여줍니다. */}
               {isLens ? (
                 <Cpu
-                  className={`${isCompact ? 'w-5 h-5' : 'w-6 h-6 sm:w-7 sm:h-7'} ${isGated ? 'text-[#5B5566]' : 'text-[#F4679B]'}`}
+                  className={`${isCompact ? 'w-5 h-5' : 'w-6 h-6 sm:w-7 sm:h-7'} ${isGated ? 'text-[var(--text-faint)]' : 'text-[#F4679B]'}`}
                   strokeWidth={1.75}
                 />
               ) : (
                 <meta.icon
-                  className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5 sm:w-6 sm:h-6'} ${isGated ? 'text-[#5B5566]' : 'text-[#F5F2F7]'}`}
+                  className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5 sm:w-6 sm:h-6'} ${isGated ? 'text-[var(--text-faint)]' : 'text-[var(--text-primary)]'}`}
                   strokeWidth={2}
                 />
               )}
               <span
                 className={`${isCompact ? 'text-[9px]' : 'text-[10px] sm:text-[11px]'} font-semibold text-center leading-tight ${
-                  isGated ? 'text-[#5B5566]' : 'text-[#F5F2F7]'
+                  isGated ? 'text-[var(--text-faint)]' : 'text-[var(--text-primary)]'
                 }`}
               >
                 {meta.label}
               </span>
 
               {!isLens && !isCompact && (
-                <span className="absolute bottom-1 right-1.5 text-[9px] text-[#5B5566]">
+                <span className="absolute bottom-1 right-1.5 text-[9px] text-[var(--text-faint)]">
                   {t('circuit.estimatedSeconds', { seconds: meta.estimatedSeconds })}
                 </span>
               )}
 
               {/* 노드 설명(또는 게이트 안내) 툴팁 — 호버/포커스 시, 게이트된 노드는 클릭으로도 고정 표시 */}
               <span
-                className={`pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 rounded-lg border border-[#322D3B] bg-[#15131A] px-3 py-2 text-[11px] leading-snug text-[#C9C0D6] shadow-lg transition-opacity duration-150 z-20 ${
+                className={`pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 rounded-lg border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-[11px] leading-snug text-[var(--text-secondary)] shadow-lg transition-opacity duration-150 z-20 ${
                   tooltipPinned ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'
                 }`}
               >
@@ -296,7 +296,7 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
 
   if (compact) {
     return (
-      <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-2">
+      <div className="bg-[var(--bg-deep)] rounded-2xl border border-[var(--surface-chip)] p-2">
         {renderDiagram('compact')}
       </div>
     );
@@ -304,7 +304,7 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
 
   if (forceVertical) {
     return (
-      <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 shadow-sm">
+      <div className="bg-[var(--bg-deep)] rounded-2xl border border-[var(--surface-chip)] p-3 shadow-sm">
         {wrapPannable(renderDiagram('vertical'))}
       </div>
     );
@@ -313,13 +313,13 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
   return (
     <div>
       {/* 좁은 화면(모바일): 위→아래로 흐르는 세로 배치 + 핀치 확대/축소·드래그 이동(pannable=false면 생략) */}
-      <div className="sm:hidden bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 mb-6 shadow-sm">
+      <div className="sm:hidden bg-[var(--bg-deep)] rounded-2xl border border-[var(--surface-chip)] p-3 mb-6 shadow-sm">
         {wrapPannable(renderDiagram('vertical'))}
       </div>
 
       {/* 넓은 화면: 기존 좌→우 3열 파이프라인 배치를 그대로 유지 */}
-      <div className="hidden sm:block bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 sm:p-6 mb-6 shadow-sm overflow-x-auto">
-        <div className="grid grid-cols-3 max-w-[720px] mx-auto text-center text-[11px] font-semibold text-[#5B5566] uppercase tracking-wide mb-2">
+      <div className="hidden sm:block bg-[var(--bg-deep)] rounded-2xl border border-[var(--surface-chip)] p-3 sm:p-6 mb-6 shadow-sm overflow-x-auto">
+        <div className="grid grid-cols-3 max-w-[720px] mx-auto text-center text-[11px] font-semibold text-[var(--text-faint)] uppercase tracking-wide mb-2">
           {LAYERS.map((layer) => (
             <span key={layer}>{LAYER_TITLES[layer]}</span>
           ))}

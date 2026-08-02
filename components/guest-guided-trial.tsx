@@ -40,7 +40,7 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
 
   return (
     <div>
-      <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
+      <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
         {t('login.trial.guided.sectionTitle')}
       </p>
 
@@ -51,14 +51,14 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
           {!result && (
             <label
               className={`flex flex-col items-center justify-center gap-2 border border-dashed rounded-xl py-10 px-4 text-center transition-colors ${
-                isAnalyzing ? 'border-[#322D3B] cursor-wait' : 'border-[#423B4C] hover:border-[#F4679B]/50 cursor-pointer'
+                isAnalyzing ? 'border-[var(--border-default)] cursor-wait' : 'border-[var(--border-strong)] hover:border-[#F4679B]/50 cursor-pointer'
               }`}
             >
               <span className="text-2xl">📸</span>
-              <span className="text-sm font-medium text-[#C9C0D6]">
+              <span className="text-sm font-medium text-[var(--text-secondary)]">
                 {isAnalyzing ? t('login.trial.guided.analyzing') : t('login.trial.guided.chooseImage')}
               </span>
-              <span className="text-xs text-[#5B5566]">{t('login.trial.guided.imageHint')}</span>
+              <span className="text-xs text-[var(--text-faint)]">{t('login.trial.guided.imageHint')}</span>
               <input
                 type="file"
                 accept="image/*"
@@ -70,7 +70,7 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
           )}
 
           {error && (
-            <div className="px-4 py-3 rounded-lg text-sm mt-4 border bg-[#35201D] text-[#FF9585] border-[#63392F]">
+            <div className="px-4 py-3 rounded-lg text-sm mt-4 border bg-[var(--bg-error-subtle)] text-[var(--text-error)] border-[var(--border-error-subtle)]">
               {error}
             </div>
           )}
@@ -83,17 +83,17 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
 
           {result && (
             <div className="flex flex-col gap-3 mt-4">
-              <div className="professor-circuit-reveal bg-[#211E28] border border-[#322D3B] rounded-xl p-3.5">
-                <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
+              <div className="professor-circuit-reveal bg-[var(--bg-page)] border border-[var(--border-default)] rounded-xl p-3.5">
+                <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
                   {t('login.trial.guided.questionsTitle')}
                 </p>
                 {renderTrialResult('questions', result.questions, t)}
               </div>
               <div
-                className="professor-circuit-reveal bg-[#211E28] border border-[#322D3B] rounded-xl p-3.5"
+                className="professor-circuit-reveal bg-[var(--bg-page)] border border-[var(--border-default)] rounded-xl p-3.5"
                 style={{ animationDelay: '300ms' }}
               >
-                <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
+                <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
                   {t('login.trial.guided.summaryTitle')}
                 </p>
                 {renderTrialResult('digest', result.summary, t)}

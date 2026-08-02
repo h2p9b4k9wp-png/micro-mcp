@@ -35,6 +35,7 @@ import { getPlanLimits, getPolarCheckoutUrl, PRO_PRICE_LABEL } from '@/lib/plan-
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import { Logomark } from '@/components/logomark';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
@@ -709,7 +710,7 @@ export default function HomePage() {
     if (lensId === 'deadlines') {
       const result = lensResult as DeadlinesResult;
       if (result.items.length === 0) {
-        return <p className="text-base sm:text-sm text-[#C9C0D6] leading-relaxed">{t('workspace.lens.noDeadlinesFound')}</p>;
+        return <p className="text-base sm:text-sm text-[var(--text-secondary)] leading-relaxed">{t('workspace.lens.noDeadlinesFound')}</p>;
       }
       const allRegistered = result.items.every((_, i) => registeredDeadlineIndexes.has(i));
       return (
@@ -719,7 +720,7 @@ export default function HomePage() {
               type="button"
               disabled={allRegistered}
               onClick={() => registerAllDeadlineItems(result.items)}
-              className="inline-flex items-center gap-1.5 bg-[#2A2632] hover:bg-[#332D3B] border border-[#5C3A4A] text-[#F4679B] text-sm sm:text-xs font-semibold px-4 sm:px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-[#332D3B] disabled:text-[#857C93] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              className="inline-flex items-center gap-1.5 bg-[var(--surface-chip)] hover:bg-[var(--border-chip-hover)] border border-[var(--border-accent-subtle)] text-[#F4679B] text-sm sm:text-xs font-semibold px-4 sm:px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:border-[var(--border-chip-hover)] disabled:text-[var(--text-muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
             >
               {allRegistered ? t('workspace.lens.registerAllDone') : t('workspace.lens.registerAll')}
             </button>
@@ -728,9 +729,9 @@ export default function HomePage() {
             {result.items.map((item, i) => {
               const isRegistered = registeredDeadlineIndexes.has(i);
               return (
-                <li key={i} className="border border-[#332D3B] rounded-xl p-4 sm:p-3.5">
+                <li key={i} className="border border-[var(--border-chip-hover)] rounded-xl p-4 sm:p-3.5">
                   <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-1">
-                    <span className="text-base sm:text-sm font-semibold text-[#F5F2F7] leading-snug">{item.title}</span>
+                    <span className="text-base sm:text-sm font-semibold text-[var(--text-primary)] leading-snug">{item.title}</span>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-sm sm:text-xs font-semibold text-[#F4679B]">{item.date}</span>
                       <button
@@ -739,16 +740,16 @@ export default function HomePage() {
                         onClick={() => registerDeadlineItem(item, i)}
                         className={`text-xs sm:text-[11px] font-semibold px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                           isRegistered
-                            ? 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D] cursor-default'
-                            : 'bg-[#2A2632] hover:bg-[#332D3B] text-[#F4679B] border-[#5C3A4A] cursor-pointer'
+                            ? 'bg-[var(--bg-success-subtle)] text-[#6EE7B7] border-[var(--border-success-subtle)] cursor-default'
+                            : 'bg-[var(--surface-chip)] hover:bg-[var(--border-chip-hover)] text-[#F4679B] border-[var(--border-accent-subtle)] cursor-pointer'
                         }`}
                       >
                         {isRegistered ? t('workspace.lens.registered') : t('workspace.lens.register')}
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm sm:text-xs text-[#E4DEEA] italic leading-loose">&quot;{item.evidence}&quot;</p>
-                  <div className="mt-2.5 sm:mt-2 h-1.5 sm:h-1 rounded-full bg-[#2A2632] overflow-hidden">
+                  <p className="text-sm sm:text-xs text-[var(--text-oncard)] italic leading-loose">&quot;{item.evidence}&quot;</p>
+                  <div className="mt-2.5 sm:mt-2 h-1.5 sm:h-1 rounded-full bg-[var(--surface-chip)] overflow-hidden">
                     <div
                       className="h-full bg-[#6EE7B7]"
                       style={{ width: `${Math.round(Math.max(0, Math.min(1, item.confidence)) * 100)}%` }}
@@ -765,17 +766,17 @@ export default function HomePage() {
     if (lensId === 'questions') {
       const result = lensResult as QuestionsResult;
       if (result.items.length === 0) {
-        return <p className="text-base sm:text-sm text-[#C9C0D6] leading-relaxed">{t('workspace.lens.noQuestionsFound')}</p>;
+        return <p className="text-base sm:text-sm text-[var(--text-secondary)] leading-relaxed">{t('workspace.lens.noQuestionsFound')}</p>;
       }
       return (
         <ul className="flex flex-col gap-4 sm:gap-3">
           {result.items.map((item, i) => (
-            <li key={i} className="border border-[#332D3B] rounded-xl p-4 sm:p-3.5">
-              <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] mb-2 sm:mb-1.5 leading-relaxed">Q. {item.question}</p>
+            <li key={i} className="border border-[var(--border-chip-hover)] rounded-xl p-4 sm:p-3.5">
+              <p className="text-base sm:text-sm font-semibold text-[var(--text-primary)] mb-2 sm:mb-1.5 leading-relaxed">Q. {item.question}</p>
               <p className="text-sm sm:text-xs text-[#F4679B] mb-2 sm:mb-1.5 leading-loose">{t('workspace.lens.weakness', { text: item.targetWeakness })}</p>
-              <p className="text-sm sm:text-xs text-[#E4DEEA] leading-loose">A. {item.draftAnswer}</p>
+              <p className="text-sm sm:text-xs text-[var(--text-oncard)] leading-loose">A. {item.draftAnswer}</p>
               {item.source_quote && (
-                <p className="text-xs sm:text-[11px] text-[#857C93] italic leading-loose mt-1.5">{t('workspace.lens.evidencePrefix')}: &quot;{item.source_quote}&quot;</p>
+                <p className="text-xs sm:text-[11px] text-[var(--text-muted)] italic leading-loose mt-1.5">{t('workspace.lens.evidencePrefix')}: &quot;{item.source_quote}&quot;</p>
               )}
             </li>
           ))}
@@ -786,14 +787,14 @@ export default function HomePage() {
     const result = lensResult as DigestResult;
     return (
       <div className="flex flex-col gap-5 sm:gap-4">
-        <p className="text-base sm:text-sm font-semibold text-[#F5F2F7] leading-relaxed">{result.summary}</p>
+        <p className="text-base sm:text-sm font-semibold text-[var(--text-primary)] leading-relaxed">{result.summary}</p>
         {result.keyPoints.length > 0 && (
           <ul className="flex flex-col gap-2 sm:gap-1.5">
             {result.keyPoints.map((point, i) => (
-              <li key={i} className="text-sm sm:text-xs text-[#E4DEEA] leading-loose list-disc list-inside">
+              <li key={i} className="text-sm sm:text-xs text-[var(--text-oncard)] leading-loose list-disc list-inside">
                 {point.text}
                 {point.evidence && (
-                  <span className="block text-xs sm:text-[11px] text-[#857C93] italic mt-0.5 pl-4">&quot;{point.evidence}&quot;</span>
+                  <span className="block text-xs sm:text-[11px] text-[var(--text-muted)] italic mt-0.5 pl-4">&quot;{point.evidence}&quot;</span>
                 )}
               </li>
             ))}
@@ -805,7 +806,7 @@ export default function HomePage() {
               <span
                 key={i}
                 title={term.evidence}
-                className="bg-[#2A2632] border border-[#332D3B] text-[#E4DEEA] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full"
+                className="bg-[var(--surface-chip)] border border-[var(--border-chip-hover)] text-[var(--text-oncard)] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full"
               >
                 {term.text}
               </span>
@@ -1614,7 +1615,7 @@ export default function HomePage() {
                 setChatLensChoice(id);
                 if (latestTextAttachment) runLensAnalyze(latestTextAttachment.text || '', id, latestTextAttachment.name);
               }}
-              className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-[13px] sm:text-xs font-medium px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              className="inline-flex items-center gap-1.5 bg-[var(--bg-page)] hover:bg-[var(--surface-chip)] border border-[var(--border-default)] hover:border-[#F4679B]/50 text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-[13px] sm:text-xs font-medium px-3.5 py-2.5 sm:py-2 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
             >
               {meta && <meta.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />}
               {meta && t('workspace.viewAsLens', { label: meta.label })}
@@ -1795,11 +1796,11 @@ export default function HomePage() {
   };
 
   const urgencyStyles: Record<string, string> = {
-    overdue: 'bg-[#262330] text-[#AFA6BD] border-[#322D3B]',
-    critical: 'bg-[#35201D] text-[#FF9585] border-[#63392F]',
+    overdue: 'bg-[#262330] text-[var(--text-tertiary)] border-[var(--border-default)]',
+    critical: 'bg-[var(--bg-error-subtle)] text-[var(--text-error)] border-[var(--border-error-subtle)]',
     high: 'bg-[#362E1A] text-[#FFD97D] border-[#63501F]',
-    medium: 'bg-[#331F29] text-[#F4679B] border-[#5C3A4A]',
-    low: 'bg-[#15131A] text-[#AFA6BD] border-[#322D3B]',
+    medium: 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[var(--border-accent-subtle)]',
+    low: 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)]',
   };
 
   const sortedDeadlines = [...deadlines].sort(
@@ -1822,8 +1823,8 @@ export default function HomePage() {
   ];
 
   const urgencyBuckets = [
-    { key: 'overdue', label: t('deadlines.urgency.overdue'), color: '#857C93' },
-    { key: 'critical', label: t('deadlines.urgency.critical'), color: '#FF7A6B' },
+    { key: 'overdue', label: t('deadlines.urgency.overdue'), color: 'var(--text-muted)' },
+    { key: 'critical', label: t('deadlines.urgency.critical'), color: 'var(--accent-danger)' },
     { key: 'high', label: t('deadlines.urgency.high'), color: '#FFD97D' },
     { key: 'medium', label: t('deadlines.urgency.medium'), color: '#F4679B' },
     { key: 'low', label: t('deadlines.urgency.low'), color: '#6EE7B7' },
@@ -1915,14 +1916,14 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#15131A] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--bg-surface)] flex items-center justify-center">
         <style jsx global>{`
           @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
           * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
         `}</style>
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-[3px] border-[#322D3B] border-t-[#F4679B] rounded-full animate-spin" />
-          <span className="text-sm text-[#AFA6BD]">{t('app.loadingSession')}</span>
+          <div className="w-8 h-8 border-[3px] border-[var(--border-default)] border-t-[#F4679B] rounded-full animate-spin" />
+          <span className="text-sm text-[var(--text-tertiary)]">{t('app.loadingSession')}</span>
         </div>
       </div>
     );
@@ -1930,7 +1931,7 @@ export default function HomePage() {
 
   return (
     <>
-    <div className="min-h-screen bg-[#15131A] text-[#F5F2F7] flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[var(--bg-surface)] text-[var(--text-primary)] flex flex-col md:flex-row">
       <style jsx global>{`
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
@@ -1954,9 +1955,9 @@ export default function HomePage() {
       `}</style>
 
       {/* 모바일 상단 바 */}
-      <div className="md:hidden flex items-center justify-between bg-[#211E28] border-b border-[#322D3B] px-4 py-3.5">
+      <div className="md:hidden flex items-center justify-between bg-[var(--bg-page)] border-b border-[var(--border-default)] px-4 py-3.5">
         <div className="flex items-center gap-2">
-          <span className="font-extrabold text-[15px] text-[#F5F2F7] tracking-tight">Carrotly</span>
+          <span className="font-extrabold text-[15px] text-[var(--text-primary)] tracking-tight">Carrotly</span>
           <button
             type="button"
             onClick={() => openUpgradeModal()}
@@ -1968,7 +1969,7 @@ export default function HomePage() {
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label={t('common.openMenu')}
-          className="text-[#F5F2F7] text-xl p-1.5 rounded-lg hover:bg-[#15131A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+          className="text-[var(--text-primary)] text-xl p-1.5 rounded-lg hover:bg-[var(--bg-surface)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
         >
           {isMobileMenuOpen ? '✕' : '☰'}
         </button>
@@ -1977,17 +1978,17 @@ export default function HomePage() {
       {/* 사이드바 메뉴 */}
       <div className={`
         ${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex
-        w-full md:w-64 bg-[#211E28] border-r border-[#322D3B] flex-col shrink-0
+        w-full md:w-64 bg-[var(--bg-page)] border-r border-[var(--border-default)] flex-col shrink-0
         z-50
       `}>
-        <div className="hidden md:flex px-6 py-6 items-center justify-between border-b border-[#322D3B]">
+        <div className="hidden md:flex px-6 py-6 items-center justify-between border-b border-[var(--border-default)]">
           <div className="flex items-center gap-2.5 text-[#F4679B]">
             {/* 💡 로그인 화면 큰 마스코트와 동일한 흰색 원형 배경 패턴 — 이 사이드바도
-                bg-[#211E28] 어두운 배경이라 같은 처리를 적용합니다. */}
-            <div className="w-7 h-7 rounded-full bg-white p-1 flex items-center justify-center">
+                bg-[var(--bg-page)] 어두운 배경이라 같은 처리를 적용합니다. */}
+            <div className="w-7 h-7 rounded-full bg-white border border-[var(--border-default)] p-1 flex items-center justify-center">
               <Logomark className="w-full h-full" />
             </div>
-            <span className="text-[16px] font-extrabold text-[#F5F2F7] tracking-tight">Carrotly</span>
+            <span className="text-[16px] font-extrabold text-[var(--text-primary)] tracking-tight">Carrotly</span>
             <button
               type="button"
               onClick={() => openUpgradeModal()}
@@ -2007,8 +2008,8 @@ export default function HomePage() {
               tabIndex={0}
               className={`px-3.5 py-2.5 rounded-lg text-sm font-medium cursor-pointer flex items-center gap-2.5 border-l-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                 activeTab === item.id
-                  ? 'bg-[#331F29] text-[#F4679B] font-semibold border-[#F4679B]'
-                  : 'text-[#AFA6BD] border-transparent hover:bg-[#15131A] hover:text-[#F5F2F7]'
+                  ? 'bg-[var(--bg-accent-subtle)] text-[#F4679B] font-semibold border-[#F4679B]'
+                  : 'text-[var(--text-tertiary)] border-transparent hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]'
               }`}
             >
               <item.icon className="w-[18px] h-[18px] shrink-0" strokeWidth={2} />
@@ -2018,24 +2019,24 @@ export default function HomePage() {
         </div>
 
         {/* 좌측 하단 MCP 연결 상태 배지 UI */}
-        <div className="p-4 border-t border-[#322D3B] text-xs bg-[#1C1922]">
+        <div className="p-4 border-t border-[var(--border-default)] text-xs bg-[var(--bg-page-alt)]">
           <div className="flex items-center gap-2">
-            <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#6EE7B7] animate-pulse' : 'bg-[#FF7A6B]'}`}></span>
-            <span className="font-semibold text-[#F5F2F7]">{t('common.aiConnected')}</span>
+            <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#6EE7B7] animate-pulse' : 'bg-[var(--accent-danger)]'}`}></span>
+            <span className="font-semibold text-[var(--text-primary)]">{t('common.aiConnected')}</span>
           </div>
         </div>
 
         {/* 💡 [신규] AI 답변 언어 설정 — 브라우저 언어로 자동 감지된 값을 기본으로 쓰고,
             여기서 바꾸면 계정별로 기억됩니다(handleExecute/runLensAnalyze/
             recomputeProfessorAnalysis*가 이 값을 responseLanguage로 API에 보냅니다). */}
-        <div className="px-4 py-3 border-t border-[#322D3B]">
-          <label className="block text-[10px] font-semibold text-[#857C93] uppercase tracking-wide mb-1.5">
+        <div className="px-4 py-3 border-t border-[var(--border-default)]">
+          <label className="block text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-1.5">
             {t('common.responseLanguageLabel')}
           </label>
           <select
             value={responseLanguage}
             onChange={(e) => setResponseLanguage(e.target.value)}
-            className="w-full bg-[#15131A] border border-[#322D3B] rounded-md px-2 py-1.5 text-xs text-[#C9C0D6] outline-none focus:border-[#F4679B] cursor-pointer"
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-md px-2 py-1.5 text-xs text-[var(--text-secondary)] outline-none focus:border-[#F4679B] cursor-pointer"
           >
             {Array.from(new Set([responseLanguage, ...COMMON_RESPONSE_LANGUAGES])).map((lang) => (
               <option key={lang} value={lang}>{lang}</option>
@@ -2043,9 +2044,18 @@ export default function HomePage() {
           </select>
         </div>
 
+        {/* 💡 [신규] 화면 테마 설정 — 시스템 설정을 따를지, 라이트/다크 중 직접 고를지.
+            AI 답변 언어 설정과 같은 자리(사이드바 하단 설정 묶음)에 둡니다. */}
+        <div className="px-4 py-3 border-t border-[var(--border-default)] flex items-center justify-between">
+          <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wide">
+            {t('common.themeLabel')}
+          </span>
+          <ThemeToggle />
+        </div>
+
         <Link
           href="/pricing"
-          className="block px-4 py-3 border-t border-[#322D3B] text-xs text-[#857C93] hover:text-[#F4679B] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-inset"
+          className="block px-4 py-3 border-t border-[var(--border-default)] text-xs text-[var(--text-muted)] hover:text-[#F4679B] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-inset"
         >
           Pricing
         </Link>
@@ -2057,7 +2067,7 @@ export default function HomePage() {
           type="button"
           onClick={handleDeleteAccount}
           disabled={isDeletingAccount}
-          className="block w-full text-left px-4 py-3 border-t border-[#322D3B] text-xs text-[#FF7A6B]/70 hover:text-[#FF7A6B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B] focus-visible:ring-inset"
+          className="block w-full text-left px-4 py-3 border-t border-[var(--border-default)] text-xs text-[var(--accent-danger)]/70 hover:text-[var(--accent-danger)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)] focus-visible:ring-inset"
         >
           {isDeletingAccount ? t('account.deleting') : t('account.delete')}
         </button>
@@ -2065,16 +2075,16 @@ export default function HomePage() {
 
       {/* 메인 콘텐츠 영역 */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <div className="hidden md:flex h-[68px] border-b border-[#322D3B] items-center justify-end px-8 gap-3 bg-[#211E28]/70 backdrop-blur">
-          <div className="flex items-center gap-2 bg-[#15131A] px-3.5 py-2 rounded-full border border-[#322D3B]">
-            <span className="text-xs text-[#AFA6BD] max-w-[220px] truncate">{user?.email}</span>
+        <div className="hidden md:flex h-[68px] border-b border-[var(--border-default)] items-center justify-end px-8 gap-3 bg-[var(--bg-page)]/70 backdrop-blur">
+          <div className="flex items-center gap-2 bg-[var(--bg-surface)] px-3.5 py-2 rounded-full border border-[var(--border-default)]">
+            <span className="text-xs text-[var(--text-tertiary)] max-w-[220px] truncate">{user?.email}</span>
           </div>
           <button
             onClick={async () => {
               await supabase.auth.signOut();
               router.push('/login');
             }}
-            className="px-4 py-2 rounded-lg border border-[#63392F] bg-[#211E28] text-[#FF7A6B] hover:bg-[#35201D] text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+            className="px-4 py-2 rounded-lg border border-[var(--border-error-subtle)] bg-[var(--bg-page)] text-[var(--accent-danger)] hover:bg-[var(--bg-error-subtle)] text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
           >
             {t('common.logout')}
           </button>
@@ -2088,7 +2098,7 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   Live AI Playground
                 </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
                   {t('workspace.subtitle')}
                 </p>
               </div>
@@ -2097,11 +2107,11 @@ export default function HomePage() {
                 onDragOver={(e) => { e.preventDefault(); setIsDraggingOverChat(true); }}
                 onDragLeave={() => setIsDraggingOverChat(false)}
                 onDrop={handleChatDrop}
-                className={`bg-[#211E28] rounded-2xl border p-4 sm:p-6 mb-6 shadow-sm transition-colors ${
-                  isDraggingOverChat ? 'border-[#F4679B] bg-[#2A1F26]' : 'border-[#322D3B]'
+                className={`bg-[var(--bg-page)] rounded-2xl border p-4 sm:p-6 mb-6 shadow-sm transition-colors ${
+                  isDraggingOverChat ? 'border-[#F4679B] bg-[#2A1F26]' : 'border-[var(--border-default)]'
                 }`}
               >
-                <div className="text-sm font-semibold text-[#F5F2F7] mb-4">
+                <div className="text-sm font-semibold text-[var(--text-primary)] mb-4">
                   {t('workspace.promptSectionLabel')}
                 </div>
 
@@ -2110,7 +2120,7 @@ export default function HomePage() {
                     {chatAttachments.map((a) => (
                       <span
                         key={a.id}
-                        className="inline-flex items-center gap-1.5 bg-[#15131A] border border-[#322D3B] text-[#C9C0D6] text-xs pl-2.5 pr-1.5 py-1.5 rounded-full max-w-[220px]"
+                        className="inline-flex items-center gap-1.5 bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-secondary)] text-xs pl-2.5 pr-1.5 py-1.5 rounded-full max-w-[220px]"
                       >
                         {a.kind === 'image' ? (
                           <ImageIcon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />
@@ -2122,7 +2132,7 @@ export default function HomePage() {
                           type="button"
                           onClick={() => removeChatAttachment(a.id)}
                           aria-label={t('workspace.removeAttachment', { name: a.name })}
-                          className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[#2A2632] text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+                          className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--surface-chip)] text-[var(--text-muted)] hover:text-[var(--accent-danger)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
                         >
                           <X className="w-3.5 h-3.5" strokeWidth={2.5} />
                         </button>
@@ -2132,7 +2142,7 @@ export default function HomePage() {
                 )}
 
                 {chatLensGraph && (
-                  <div className="bg-[#0D0B11] rounded-xl border border-[#2A2632] p-2 mb-3">
+                  <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-2 mb-3">
                     <CircuitBoard graph={chatLensGraph} onNodeClick={handleNodeClick} compact />
                     <div className="flex flex-wrap gap-1.5 justify-center mt-1.5">
                       {CHAT_LENS_CHOICE_DEFS.map((choice) => (
@@ -2142,8 +2152,8 @@ export default function HomePage() {
                           onClick={() => handleSelectChatLens(choice.id)}
                           className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                             effectiveChatLens === choice.id
-                              ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
-                              : 'bg-[#15131A] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
+                              ? 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[#F4679B]'
+                              : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
                           }`}
                         >
                           {t(`workspace.lensChoices.${choice.key}`)}
@@ -2157,8 +2167,8 @@ export default function HomePage() {
                   <label
                     className={`shrink-0 flex items-center justify-center w-11 sm:w-auto sm:px-3.5 h-11 sm:h-auto rounded-lg border transition-colors ${
                       isAttachingChatFile
-                        ? 'bg-[#15131A] border-[#322D3B] text-[#857C93] cursor-wait'
-                        : 'bg-[#211E28] hover:bg-[#2A2632] border-[#423B4C] text-[#C9C0D6] hover:text-[#F5F2F7] cursor-pointer'
+                        ? 'bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-muted)] cursor-wait'
+                        : 'bg-[var(--bg-page)] hover:bg-[var(--surface-chip)] border-[var(--border-strong)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer'
                     }`}
                     aria-label={t('workspace.attachFile')}
                   >
@@ -2183,8 +2193,8 @@ export default function HomePage() {
                     title={isSearchActive ? t('workspace.webSearchOnTitle') : t('workspace.webSearchOffTitle')}
                     className={`shrink-0 flex items-center justify-center gap-1.5 w-11 sm:w-auto sm:px-3.5 h-11 sm:h-auto rounded-lg border transition-colors cursor-pointer ${
                       isSearchActive
-                        ? 'bg-[#331F29] hover:bg-[#3D2733] border-[#F4679B] text-[#F4679B]'
-                        : 'bg-[#211E28] hover:bg-[#2A2632] border-[#423B4C] text-[#C9C0D6] hover:text-[#F5F2F7]'
+                        ? 'bg-[var(--bg-accent-subtle)] hover:bg-[#3D2733] border-[#F4679B] text-[#F4679B]'
+                        : 'bg-[var(--bg-page)] hover:bg-[var(--surface-chip)] border-[var(--border-strong)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     <Search className="w-4 h-4" strokeWidth={2} />
@@ -2198,7 +2208,7 @@ export default function HomePage() {
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
                     placeholder={t('workspace.promptPlaceholder')}
-                    className="flex-1 bg-[#211E28] border border-[#423B4C] rounded-lg px-4 py-3 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#857C93]"
+                    className="flex-1 bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-4 py-3 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[var(--text-muted)]"
                   />
                   <button
                     type="submit"
@@ -2208,15 +2218,15 @@ export default function HomePage() {
                     {isExecuting ? t('common.sending') : t('common.send')}
                   </button>
                 </form>
-                <p className="text-[11px] text-[#857C93] mt-2">
+                <p className="text-[11px] text-[var(--text-muted)] mt-2">
                   {isAttachingChatFile ? <LoadingText /> : t('workspace.dropHint')}
                 </p>
               </div>
 
-              <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] overflow-hidden shadow-sm">
-                <div className="bg-[#17141D] px-4 py-3 flex items-center gap-2 border-b border-[#2A2632]">
+              <div className="bg-[var(--bg-deep)] rounded-2xl border border-[var(--surface-chip)] overflow-hidden shadow-sm">
+                <div className="bg-[var(--bg-panel)] px-4 py-3 flex items-center gap-2 border-b border-[var(--surface-chip)]">
                   <MessageCircle className="w-4 h-4 text-[#F4679B]" strokeWidth={2} />
-                  <span className="text-[13px] font-semibold text-[#F5F2F7]">
+                  <span className="text-[13px] font-semibold text-[var(--text-primary)]">
                     {t('workspace.aiResponseLabel')}
                   </span>
                 </div>
@@ -2224,7 +2234,7 @@ export default function HomePage() {
                 <div className="p-4 sm:p-5 text-[14px] leading-[1.8] font-medium text-[#FBE4EE] whitespace-pre-wrap min-h-[150px]">
                   {streamingLog === IDLE_CONSOLE_SENTINEL ? t('workspace.idleMessage') : streamingLog}
                   {isAwaitingChatResponse && (
-                    <span className="text-[#C9C0D6] font-normal">
+                    <span className="text-[var(--text-secondary)] font-normal">
                       <LoadingText />
                     </span>
                   )}
@@ -2240,7 +2250,7 @@ export default function HomePage() {
                               setCommand(promptText);
                               commandInputRef.current?.focus();
                             }}
-                            className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#322D3B] hover:border-[#F4679B]/50 text-[#C9C0D6] hover:text-[#F5F2F7] text-xs font-medium pl-2.5 pr-3.5 py-2 rounded-full transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                            className="inline-flex items-center gap-1.5 bg-[var(--bg-page)] hover:bg-[var(--surface-chip)] border border-[var(--border-default)] hover:border-[#F4679B]/50 text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-medium pl-2.5 pr-3.5 py-2 rounded-full transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                           >
                             <example.icon className="w-3.5 h-3.5 text-[#F4679B] shrink-0" strokeWidth={2} />
                             {promptText}
@@ -2254,15 +2264,15 @@ export default function HomePage() {
               </div>
 
               {lensStage !== 'idle' && (
-                <div className="mt-4 bg-[#1C1922] rounded-2xl border border-[#332D3B] p-5 sm:p-6">
+                <div className="mt-4 bg-[var(--bg-page-alt)] rounded-2xl border border-[var(--border-chip-hover)] p-5 sm:p-6">
                   {lensStage === 'analyzing' && (
-                    <div className="flex items-center gap-2 text-sm text-[#C9C0D6]">
+                    <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                       <Loader2 className="w-4 h-4 animate-spin text-[#F4679B] shrink-0" strokeWidth={2} />
                       <LoadingText />
                     </div>
                   )}
                   {lensStage === 'error' && (
-                    <p className="flex items-center gap-1.5 text-sm text-[#FF7A6B]">
+                    <p className="flex items-center gap-1.5 text-sm text-[var(--accent-danger)]">
                       <AlertTriangle className="w-4 h-4 shrink-0" strokeWidth={2} />
                       {lensError}
                     </p>
@@ -2277,17 +2287,17 @@ export default function HomePage() {
               )}
 
               {detectedActionItems.length > 0 && (
-                <div className="mt-4 bg-[#211E28] rounded-2xl border border-[#F4679B]/40 p-5 shadow-sm">
+                <div className="mt-4 bg-[var(--bg-page)] rounded-2xl border border-[#F4679B]/40 p-5 shadow-sm">
                   <h3 className="text-sm font-bold text-[#F4679B] mb-3">{t('workspace.actionItemsFound')}</h3>
                   <div className="flex flex-col gap-2.5">
                     {detectedActionItems.map((item, idx) => (
                       <div
                         key={`${item.title}-${idx}`}
-                        className="flex items-center justify-between gap-3 bg-[#15131A] border border-[#322D3B] rounded-lg p-3"
+                        className="flex items-center justify-between gap-3 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg p-3"
                       >
                         <div className="min-w-0">
-                          <div className="text-sm font-semibold text-[#F5F2F7] truncate">{item.title}</div>
-                          <div className="text-xs text-[#857C93] mt-0.5">
+                          <div className="text-sm font-semibold text-[var(--text-primary)] truncate">{item.title}</div>
+                          <div className="text-xs text-[var(--text-muted)] mt-0.5">
                             {new Date(item.dueAt).toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
@@ -2311,20 +2321,20 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   {t('records.title')}
                 </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
                   {t('records.subtitle')}
                 </p>
               </div>
 
               {/* 히어로 숫자 */}
-              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-6 sm:p-8 mb-5 shadow-sm text-center">
-                <p className="text-xs sm:text-sm text-[#AFA6BD] mb-3">{t('records.heroLabel')}</p>
+              <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-6 sm:p-8 mb-5 shadow-sm text-center">
+                <p className="text-xs sm:text-sm text-[var(--text-tertiary)] mb-3">{t('records.heroLabel')}</p>
                 <div className="text-5xl sm:text-6xl font-extrabold text-[#F4679B] tracking-tight leading-none">
                   {totalKnownCount}
-                  <span className="text-xl sm:text-2xl text-[#F5F2F7] ml-1.5 align-middle">{t('records.unitSuffix')}</span>
+                  <span className="text-xl sm:text-2xl text-[var(--text-primary)] ml-1.5 align-middle">{t('records.unitSuffix')}</span>
                 </div>
                 {daysSinceJoin !== null && (
-                  <p className="text-xs sm:text-sm text-[#857C93] mt-4">
+                  <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-4">
                     {t('records.daysSinceJoin', { days: daysSinceJoin })}
                   </p>
                 )}
@@ -2332,73 +2342,73 @@ export default function HomePage() {
 
               {/* 카드 3개: 마감일 / 문서 / 대화 */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
+                <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 shadow-sm flex flex-col">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">⏰</span>
-                    <h3 className="text-sm font-bold text-[#F5F2F7]">{t('records.deadlinesCard.title')}</h3>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">{t('records.deadlinesCard.title')}</h3>
                   </div>
-                  <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
-                    {deadlines.length}<span className="text-xs font-medium text-[#857C93] ml-1">{t('records.unitSuffix')}</span>
+                  <div className="text-3xl font-extrabold text-[var(--text-primary)] mb-3">
+                    {deadlines.length}<span className="text-xs font-medium text-[var(--text-muted)] ml-1">{t('records.unitSuffix')}</span>
                   </div>
                   {courseBreakdown.length === 0 ? (
-                    <p className="text-xs text-[#857C93]">{t('records.deadlinesCard.empty')}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{t('records.deadlinesCard.empty')}</p>
                   ) : (
                     <div className="flex flex-col gap-1.5">
                       {courseBreakdown.slice(0, 5).map((c) => (
                         <div key={c.course} className="flex items-center justify-between gap-2 text-xs">
-                          <span className="text-[#AFA6BD] truncate">{c.course}</span>
-                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{c.count}{t('records.unitSuffix')}</span>
+                          <span className="text-[var(--text-tertiary)] truncate">{c.course}</span>
+                          <span className="shrink-0 text-[var(--text-primary)] font-semibold tabular-nums">{c.count}{t('records.unitSuffix')}</span>
                         </div>
                       ))}
                       {courseBreakdown.length > 5 && (
-                        <span className="text-[11px] text-[#857C93] mt-0.5">{t('records.deadlinesCard.moreCategories', { count: courseBreakdown.length - 5 })}</span>
+                        <span className="text-[11px] text-[var(--text-muted)] mt-0.5">{t('records.deadlinesCard.moreCategories', { count: courseBreakdown.length - 5 })}</span>
                       )}
                     </div>
                   )}
                 </div>
 
-                <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
+                <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 shadow-sm flex flex-col">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">📁</span>
-                    <h3 className="text-sm font-bold text-[#F5F2F7]">{t('records.documentsCard.title')}</h3>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">{t('records.documentsCard.title')}</h3>
                   </div>
-                  <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
-                    {documentUploads.length}<span className="text-xs font-medium text-[#857C93] ml-1">{t('records.unitSuffix')}</span>
+                  <div className="text-3xl font-extrabold text-[var(--text-primary)] mb-3">
+                    {documentUploads.length}<span className="text-xs font-medium text-[var(--text-muted)] ml-1">{t('records.unitSuffix')}</span>
                   </div>
                   {documentUploads.length === 0 ? (
-                    <p className="text-xs text-[#857C93]">{t('records.documentsCard.empty')}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{t('records.documentsCard.empty')}</p>
                   ) : (
                     <div className="flex flex-col gap-1.5">
                       {fileFormatBreakdown.map((f) => (
                         <div key={f.key} className="flex items-center justify-between gap-2 text-xs">
-                          <span className="text-[#AFA6BD] flex items-center gap-1.5 truncate">
+                          <span className="text-[var(--text-tertiary)] flex items-center gap-1.5 truncate">
                             <span>{f.icon}</span>{f.label}
                           </span>
-                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{f.count}{t('records.unitSuffix')}</span>
+                          <span className="shrink-0 text-[var(--text-primary)] font-semibold tabular-nums">{f.count}{t('records.unitSuffix')}</span>
                         </div>
                       ))}
                       {etcFileCount > 0 && (
                         <div className="flex items-center justify-between gap-2 text-xs">
-                          <span className="text-[#AFA6BD] flex items-center gap-1.5 truncate"><span>📄</span>{t('records.documentsCard.etc')}</span>
-                          <span className="shrink-0 text-[#F5F2F7] font-semibold tabular-nums">{etcFileCount}{t('records.unitSuffix')}</span>
+                          <span className="text-[var(--text-tertiary)] flex items-center gap-1.5 truncate"><span>📄</span>{t('records.documentsCard.etc')}</span>
+                          <span className="shrink-0 text-[var(--text-primary)] font-semibold tabular-nums">{etcFileCount}{t('records.unitSuffix')}</span>
                         </div>
                       )}
                     </div>
                   )}
                 </div>
 
-                <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 shadow-sm flex flex-col">
+                <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 shadow-sm flex flex-col">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">📜</span>
-                    <h3 className="text-sm font-bold text-[#F5F2F7]">{t('records.logsCard.title')}</h3>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">{t('records.logsCard.title')}</h3>
                   </div>
-                  <div className="text-3xl font-extrabold text-[#F5F2F7] mb-3">
-                    {logs.length}<span className="text-xs font-medium text-[#857C93] ml-1">{t('records.unitSuffix')}</span>
+                  <div className="text-3xl font-extrabold text-[var(--text-primary)] mb-3">
+                    {logs.length}<span className="text-xs font-medium text-[var(--text-muted)] ml-1">{t('records.unitSuffix')}</span>
                   </div>
                   {logs.length === 0 ? (
-                    <p className="text-xs text-[#857C93]">{t('records.logsCard.empty')}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{t('records.logsCard.empty')}</p>
                   ) : (
-                    <p className="text-xs text-[#857C93]">
+                    <p className="text-xs text-[var(--text-muted)]">
                       {t('records.logsCard.mostRecent', { date: new Date(logs[0].created_at).toLocaleDateString(locale, { month: 'long', day: 'numeric' }) })}
                     </p>
                   )}
@@ -2413,22 +2423,22 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   {t('deadlines.title')}
                 </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
                   {t('deadlines.subtitle')}
                 </p>
               </div>
 
               {/* 대시보드 — 마감일 · 첨부 파일 · 활성 블록 데이터를 한눈에 요약 */}
-              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7] mb-4">{t('deadlines.dashboardTitle')}</h3>
+              <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold text-[var(--text-primary)] mb-4">{t('deadlines.dashboardTitle')}</h3>
 
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
                   {kpiTiles.map((tile) => (
-                    <div key={tile.label} className="bg-[#15131A] border border-[#322D3B] rounded-xl p-3.5 flex flex-col gap-1.5">
-                      <span className="text-[11px] text-[#857C93] font-medium uppercase tracking-wide flex items-center gap-1">
+                    <div key={tile.label} className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl p-3.5 flex flex-col gap-1.5">
+                      <span className="text-[11px] text-[var(--text-muted)] font-medium uppercase tracking-wide flex items-center gap-1">
                         <span>{tile.icon}</span> {tile.label}
                       </span>
-                      <span className={`text-xl sm:text-2xl font-extrabold tabular-nums ${tile.emphasize ? 'text-[#FF7A6B]' : 'text-[#F5F2F7]'}`}>
+                      <span className={`text-xl sm:text-2xl font-extrabold tabular-nums ${tile.emphasize ? 'text-[var(--accent-danger)]' : 'text-[var(--text-primary)]'}`}>
                         {tile.value}
                       </span>
                     </div>
@@ -2436,12 +2446,12 @@ export default function HomePage() {
                 </div>
 
                 {deadlines.length === 0 ? (
-                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#15131A] rounded-xl border border-[#322D3B] flex flex-col items-center gap-3">
+                  <div className="text-sm text-[var(--text-muted)] text-center py-8 bg-[var(--bg-surface)] rounded-xl border border-[var(--border-default)] flex flex-col items-center gap-3">
                     <span>{t('deadlines.emptyHint')}</span>
                     <button
                       type="button"
                       onClick={() => setActiveTab('workspace')}
-                      className="inline-flex items-center gap-1.5 bg-[#211E28] hover:bg-[#2A2632] border border-[#5C3A4A] text-[#F4679B] text-xs font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                      className="inline-flex items-center gap-1.5 bg-[var(--bg-page)] hover:bg-[var(--surface-chip)] border border-[var(--border-accent-subtle)] text-[#F4679B] text-xs font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                     >
                       {t('deadlines.goToChatTab')}
                     </button>
@@ -2450,15 +2460,15 @@ export default function HomePage() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* 긴급도 분포 */}
                     <div>
-                      <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-3">{t('deadlines.urgencyDistribution')}</h4>
+                      <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-3">{t('deadlines.urgencyDistribution')}</h4>
                       <div className="flex flex-col gap-2.5">
                         {urgencyBuckets.map((bucket) => {
                           const count = urgencyCounts[bucket.key] || 0;
                           const widthPct = maxUrgencyCount > 0 ? (count / maxUrgencyCount) * 100 : 0;
                           return (
                             <div key={bucket.key} className="flex items-center gap-2.5">
-                              <span className="w-[92px] shrink-0 text-xs text-[#AFA6BD] truncate">{bucket.label}</span>
-                              <div className="flex-1 h-2.5 bg-[#15131A] border border-[#322D3B] rounded-full overflow-hidden">
+                              <span className="w-[92px] shrink-0 text-xs text-[var(--text-tertiary)] truncate">{bucket.label}</span>
+                              <div className="flex-1 h-2.5 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-full overflow-hidden">
                                 {count > 0 && (
                                   <div
                                     className="h-full rounded-full"
@@ -2466,7 +2476,7 @@ export default function HomePage() {
                                   />
                                 )}
                               </div>
-                              <span className="w-5 shrink-0 text-right text-xs font-semibold text-[#F5F2F7] tabular-nums">{count}</span>
+                              <span className="w-5 shrink-0 text-right text-xs font-semibold text-[var(--text-primary)] tabular-nums">{count}</span>
                             </div>
                           );
                         })}
@@ -2475,13 +2485,13 @@ export default function HomePage() {
 
                     {/* 다가오는 일정 타임라인 */}
                     <div>
-                      <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-3">{t('deadlines.timeline')}</h4>
-                      <div className="flex items-end justify-between gap-2 h-[96px] border-b border-[#322D3B]">
+                      <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-3">{t('deadlines.timeline')}</h4>
+                      <div className="flex items-end justify-between gap-2 h-[96px] border-b border-[var(--border-default)]">
                         {timelineBuckets.map((bucket) => {
                           const heightPct = maxTimelineCount > 0 ? (bucket.count / maxTimelineCount) * 100 : 0;
                           return (
                             <div key={bucket.key} className="flex-1 flex flex-col items-center justify-end h-full gap-1.5">
-                              <span className="text-[11px] font-semibold text-[#F5F2F7] tabular-nums h-4">{bucket.count > 0 ? bucket.count : ''}</span>
+                              <span className="text-[11px] font-semibold text-[var(--text-primary)] tabular-nums h-4">{bucket.count > 0 ? bucket.count : ''}</span>
                               {bucket.count > 0 && (
                                 <div
                                   className="w-5 rounded-t-[4px] bg-[#F4679B]"
@@ -2494,28 +2504,28 @@ export default function HomePage() {
                       </div>
                       <div className="flex justify-between gap-2 mt-1.5">
                         {timelineBuckets.map((bucket) => (
-                          <span key={bucket.key} className="flex-1 text-center text-[10px] text-[#857C93] truncate">{bucket.label}</span>
+                          <span key={bucket.key} className="flex-1 text-center text-[10px] text-[var(--text-muted)] truncate">{bucket.label}</span>
                         ))}
                       </div>
                     </div>
                   </div>
                 )}
 
-                <div className="mt-6 pt-5 border-t border-[#322D3B]">
+                <div className="mt-6 pt-5 border-t border-[var(--border-default)]">
                   <div>
-                    <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2.5">{t('deadlines.recentFilesLabel')}</h4>
+                    <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">{t('deadlines.recentFilesLabel')}</h4>
                     {files.length === 0 ? (
-                      <span className="text-xs text-[#857C93] italic">{t('deadlines.noAttachedFiles')}</span>
+                      <span className="text-xs text-[var(--text-muted)] italic">{t('deadlines.noAttachedFiles')}</span>
                     ) : (
                       <div className="flex flex-col gap-1.5">
                         {files.slice(0, 3).map((f) => (
-                          <div key={f.id} className="flex items-center justify-between gap-2 text-xs text-[#AFA6BD]">
+                          <div key={f.id} className="flex items-center justify-between gap-2 text-xs text-[var(--text-tertiary)]">
                             <span className="truncate">📄 {f.name}</span>
-                            <span className="shrink-0 text-[#857C93]">{f.date}</span>
+                            <span className="shrink-0 text-[var(--text-muted)]">{f.date}</span>
                           </div>
                         ))}
                         {files.length > 3 && (
-                          <span className="text-[11px] text-[#857C93]">{t('deadlines.moreFiles', { count: files.length - 3 })}</span>
+                          <span className="text-[11px] text-[var(--text-muted)]">{t('deadlines.moreFiles', { count: files.length - 3 })}</span>
                         )}
                       </div>
                     )}
@@ -2523,8 +2533,8 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#F5F2F7]">{t('deadlines.addManually')}</h3>
+              <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[var(--text-primary)]">{t('deadlines.addManually')}</h3>
                 <form onSubmit={handleAddDeadline} className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr_auto] gap-3">
                   <input
                     type="text"
@@ -2532,21 +2542,21 @@ export default function HomePage() {
                     placeholder={t('deadlines.form.titlePlaceholder')}
                     value={newDeadlineTitle}
                     onChange={(e) => setNewDeadlineTitle(e.target.value)}
-                    className="px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                    className="px-3.5 py-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-page)] text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
                   />
                   <input
                     type="text"
                     placeholder={t('deadlines.form.coursePlaceholder')}
                     value={newDeadlineCourse}
                     onChange={(e) => setNewDeadlineCourse(e.target.value)}
-                    className="px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                    className="px-3.5 py-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-page)] text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
                   />
                   <input
                     type="datetime-local"
                     required
                     value={newDeadlineDue}
                     onChange={(e) => setNewDeadlineDue(e.target.value)}
-                    className="px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
+                    className="px-3.5 py-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-page)] text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                   />
                   <button
                     type="submit"
@@ -2559,7 +2569,7 @@ export default function HomePage() {
 
               <div className="flex flex-col gap-2.5">
                 {sortedDeadlines.length === 0 && (
-                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
+                  <div className="text-sm text-[var(--text-muted)] text-center py-8 bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)]">
                     {t('deadlines.noDeadlinesYet')}
                   </div>
                 )}
@@ -2568,15 +2578,15 @@ export default function HomePage() {
                   return (
                     <div
                       key={deadline.id}
-                      className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-4 flex items-center justify-between gap-3 shadow-sm"
+                      className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-4 flex items-center justify-between gap-3 shadow-sm"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span className={`shrink-0 px-2.5 py-1 rounded-md text-xs font-bold border ${urgencyStyles[dday.urgency]}`}>
                           {dday.label}
                         </span>
                         <div className="min-w-0">
-                          <div className="text-sm font-semibold text-[#F5F2F7] truncate">{deadline.title}</div>
-                          <div className="text-xs text-[#857C93] mt-0.5">
+                          <div className="text-sm font-semibold text-[var(--text-primary)] truncate">{deadline.title}</div>
+                          <div className="text-xs text-[var(--text-muted)] mt-0.5">
                             {deadline.course && <span>{deadline.course} · </span>}
                             {new Date(deadline.dueAt).toLocaleString(locale, { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </div>
@@ -2584,7 +2594,7 @@ export default function HomePage() {
                       </div>
                       <button
                         onClick={() => handleDeleteDeadline(deadline.id)}
-                        className="shrink-0 text-[#FF7A6B] hover:text-[#FF9585] text-xs px-2.5 py-1.5 bg-[#35201D] rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+                        className="shrink-0 text-[var(--accent-danger)] hover:text-[var(--text-error)] text-xs px-2.5 py-1.5 bg-[var(--bg-error-subtle)] rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
                       >
                         {t('common.delete')}
                       </button>
@@ -2601,13 +2611,13 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   {t('professors.title')}
                 </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
                   {t('professors.subtitle')}
                 </p>
               </div>
 
-              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7] mb-4">{t('professors.uploadPanel.title')}</h3>
+              <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold text-[var(--text-primary)] mb-4">{t('professors.uploadPanel.title')}</h3>
 
                 <div className="flex flex-col gap-3">
                   <select
@@ -2620,7 +2630,7 @@ export default function HomePage() {
                         setNewProfessorDepartment(professorFormDefaults.department);
                       }
                     }}
-                    className="bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
+                    className="bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                   >
                     <option value="">{t('professors.uploadPanel.selectProfessor')}</option>
                     {professors.map((p) => (
@@ -2630,36 +2640,36 @@ export default function HomePage() {
                   </select>
 
                   {uploadProfessorChoice === '__new__' && (
-                    <div className="flex flex-col gap-2 bg-[#15131A] border border-[#322D3B] rounded-lg p-3.5">
+                    <div className="flex flex-col gap-2 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg p-3.5">
                       <input
                         type="text"
                         placeholder={t('professors.uploadPanel.namePlaceholder')}
                         value={newProfessorName}
                         onChange={(e) => setNewProfessorName(e.target.value)}
-                        className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                        className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
                       />
                       <input
                         type="text"
                         placeholder={t('professors.uploadPanel.schoolPlaceholder')}
                         value={newProfessorSchool}
                         onChange={(e) => setNewProfessorSchool(e.target.value)}
-                        className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                        className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
                       />
                       <input
                         type="text"
                         placeholder={t('professors.uploadPanel.departmentPlaceholder')}
                         value={newProfessorDepartment}
                         onChange={(e) => setNewProfessorDepartment(e.target.value)}
-                        className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                        className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
                       />
-                      <p className="text-[11px] text-[#857C93]">{t('professors.uploadPanel.schoolDeptHint')}</p>
+                      <p className="text-[11px] text-[var(--text-muted)]">{t('professors.uploadPanel.schoolDeptHint')}</p>
                     </div>
                   )}
 
                   <select
                     value={uploadDocType}
                     onChange={(e) => setUploadDocType(e.target.value)}
-                    className="bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
+                    className="bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                   >
                     {docTypeDefs.map((def) => (
                       <option key={def.key} value={def.key}>{def.label}</option>
@@ -2669,7 +2679,7 @@ export default function HomePage() {
                   <label
                     className={`inline-flex self-start items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
                       isUploadingProfessorDoc || !uploadProfessorChoice
-                        ? 'bg-[#2A2632] text-[#857C93] cursor-wait'
+                        ? 'bg-[var(--surface-chip)] text-[var(--text-muted)] cursor-wait'
                         : 'bg-[#F4679B] hover:bg-[#D1477F] text-white cursor-pointer'
                     }`}
                   >
@@ -2694,17 +2704,17 @@ export default function HomePage() {
                       }}
                     />
                   </label>
-                  <p className="text-xs text-[#857C93]">{t('professors.uploadPanel.paperHint')}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{t('professors.uploadPanel.paperHint')}</p>
                 </div>
               </div>
 
               <div className="flex flex-col gap-2.5">
                 {!isProfessorsLoaded ? (
-                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
+                  <div className="text-sm text-[var(--text-muted)] text-center py-8 bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)]">
                     {t('professors.loading')}
                   </div>
                 ) : professors.length === 0 ? (
-                  <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
+                  <div className="text-sm text-[var(--text-muted)] text-center py-8 bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)]">
                     {t('professors.noneRegistered')}
                   </div>
                 ) : (
@@ -2716,18 +2726,18 @@ export default function HomePage() {
                         key={p.id}
                         type="button"
                         onClick={() => setSelectedProfessorId(p.id)}
-                        className="bg-[#211E28] hover:bg-[#2A2632] rounded-2xl border border-[#322D3B] p-4 flex items-center justify-between gap-3 shadow-sm transition-colors text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                        className="bg-[var(--bg-page)] hover:bg-[var(--surface-chip)] rounded-2xl border border-[var(--border-default)] p-4 flex items-center justify-between gap-3 shadow-sm transition-colors text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="shrink-0 w-9 h-9 rounded-full bg-[#331F29] border border-[#5C3A4A] flex items-center justify-center text-[#F4679B]">
+                          <span className="shrink-0 w-9 h-9 rounded-full bg-[var(--bg-accent-subtle)] border border-[var(--border-accent-subtle)] flex items-center justify-center text-[#F4679B]">
                             <GraduationCap className="w-4 h-4" strokeWidth={2} />
                           </span>
                           <div className="min-w-0">
-                            <div className="text-sm font-semibold text-[#F5F2F7] truncate">{p.name}</div>
-                            {subtitle && <div className="text-xs text-[#857C93] mt-0.5 truncate">{subtitle}</div>}
+                            <div className="text-sm font-semibold text-[var(--text-primary)] truncate">{p.name}</div>
+                            {subtitle && <div className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{subtitle}</div>}
                           </div>
                         </div>
-                        <span className="shrink-0 text-xs font-semibold text-[#AFA6BD] bg-[#15131A] border border-[#322D3B] px-2.5 py-1 rounded-full tabular-nums">
+                        <span className="shrink-0 text-xs font-semibold text-[var(--text-tertiary)] bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1 rounded-full tabular-nums">
                           {t('professors.documentCount', { count })}
                         </span>
                       </button>
@@ -2784,7 +2794,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={() => setSelectedProfessorId(null)}
-                    className="inline-flex items-center gap-1.5 text-xs text-[#AFA6BD] hover:text-[#F5F2F7] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+                    className="inline-flex items-center gap-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
                     {t('professors.backToList')}
@@ -2792,7 +2802,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={() => handleDeleteProfessor(professor.id, professor.name)}
-                    className="text-xs text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B] rounded px-2 py-1"
+                    className="text-xs text-[var(--text-muted)] hover:text-[var(--accent-danger)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)] rounded px-2 py-1"
                   >
                     {t('professors.deleteProfessor')}
                   </button>
@@ -2800,19 +2810,19 @@ export default function HomePage() {
 
                 <div className="mb-6">
                   <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">{professor.name}</h1>
-                  <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                  <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
                     {subtitle || t('professors.noSchoolDept')}
                   </p>
                 </div>
 
-                <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
+                <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mb-6 shadow-sm">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                    <h3 className="text-sm sm:text-base font-bold text-[#F5F2F7]">{t('professors.documentListTitle', { count: docs.length })}</h3>
+                    <h3 className="text-sm sm:text-base font-bold text-[var(--text-primary)]">{t('professors.documentListTitle', { count: docs.length })}</h3>
                     <div className="flex items-center gap-2 shrink-0">
                       <select
                         value={uploadDocType}
                         onChange={(e) => setUploadDocType(e.target.value)}
-                        className="bg-[#15131A] border border-[#423B4C] rounded-lg px-2.5 py-2 text-[#F5F2F7] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
+                        className="bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-2.5 py-2 text-[var(--text-primary)] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
                       >
                         {docTypeDefs.map((def) => (
                           <option key={def.key} value={def.key}>{def.label}</option>
@@ -2821,8 +2831,8 @@ export default function HomePage() {
                       <label
                         className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
                           isUploadingProfessorDoc
-                            ? 'bg-[#15131A] border border-[#322D3B] text-[#857C93] cursor-wait'
-                            : 'bg-[#2A2632] hover:bg-[#332D3B] border border-[#423B4C] text-[#F5F2F7] cursor-pointer'
+                            ? 'bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-muted)] cursor-wait'
+                            : 'bg-[var(--surface-chip)] hover:bg-[var(--border-chip-hover)] border border-[var(--border-strong)] text-[var(--text-primary)] cursor-pointer'
                         }`}
                       >
                         {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <UploadCloud className="w-3.5 h-3.5" />}
@@ -2842,30 +2852,30 @@ export default function HomePage() {
                       </label>
                     </div>
                   </div>
-                  <p className="text-[11px] text-[#857C93] mb-4">{t('professors.uploadPanel.paperHint')}</p>
+                  <p className="text-[11px] text-[var(--text-muted)] mb-4">{t('professors.uploadPanel.paperHint')}</p>
 
                   {docs.length === 0 ? (
-                    <p className="text-sm text-[#857C93] text-center py-4">{t('professors.noDocumentsYet')}</p>
+                    <p className="text-sm text-[var(--text-muted)] text-center py-4">{t('professors.noDocumentsYet')}</p>
                   ) : (
                     <div className="flex flex-col gap-2">
                       {docs.map((d) => (
-                        <div key={d.id} className="flex items-center justify-between gap-3 bg-[#15131A] p-3 rounded-lg border border-[#322D3B] text-sm">
-                          <span className="text-[#F5F2F7] truncate flex items-center gap-2 min-w-0">
+                        <div key={d.id} className="flex items-center justify-between gap-3 bg-[var(--bg-surface)] p-3 rounded-lg border border-[var(--border-default)] text-sm">
+                          <span className="text-[var(--text-primary)] truncate flex items-center gap-2 min-w-0">
                             <span className="shrink-0">{FORMAT_ICONS[d.format] || '📄'}</span>
                             <span className="truncate">{d.file_name}</span>
-                            <span className="shrink-0 text-[10px] font-semibold text-[#AFA6BD] bg-[#2A2632] border border-[#332D3B] px-2 py-0.5 rounded-full">
+                            <span className="shrink-0 text-[10px] font-semibold text-[var(--text-tertiary)] bg-[var(--surface-chip)] border border-[var(--border-chip-hover)] px-2 py-0.5 rounded-full">
                               {docTypeLabels[d.doc_type] || d.doc_type}
                             </span>
                           </span>
                           <div className="shrink-0 flex items-center gap-2.5">
-                            <span className="text-xs text-[#857C93]">
+                            <span className="text-xs text-[var(--text-muted)]">
                               {new Date(d.created_at).toLocaleDateString(locale, { month: 'long', day: 'numeric' })}
                             </span>
                             <button
                               type="button"
                               onClick={() => handleDeleteProfessorDocument(d.id, professor.id)}
                               aria-label={t('professors.deleteDocumentAria', { fileName: d.file_name })}
-                              className="w-6 h-6 flex items-center justify-center rounded-full text-[#857C93] hover:text-[#FF7A6B] hover:bg-[#2A2632] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+                              className="w-6 h-6 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--accent-danger)] hover:bg-[var(--surface-chip)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
                             >
                               <X className="w-3.5 h-3.5" strokeWidth={2.5} />
                             </button>
@@ -2876,8 +2886,8 @@ export default function HomePage() {
                   )}
                 </div>
 
-                <div className="bg-[#0D0B11] rounded-2xl border border-[#2A2632] p-3 sm:p-6 mb-6 shadow-sm">
-                  <p className="text-xs text-[#857C93] text-center mb-3">{t('professors.circuitHint')}</p>
+                <div className="bg-[var(--bg-deep)] rounded-2xl border border-[var(--surface-chip)] p-3 sm:p-6 mb-6 shadow-sm">
+                  <p className="text-xs text-[var(--text-muted)] text-center mb-3">{t('professors.circuitHint')}</p>
                   <CircuitBoard graph={professorCircuitGraph} onNodeClick={handleProfessorCircuitNodeClick} />
                   {result && (
                     <div key={analysisRow?.updated_at} className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
@@ -2886,18 +2896,18 @@ export default function HomePage() {
                         return (
                           <div
                             key={def.nodeId}
-                            className="professor-circuit-reveal bg-[#211E28] border border-[#322D3B] rounded-xl p-3.5"
+                            className="professor-circuit-reveal bg-[var(--bg-page)] border border-[var(--border-default)] rounded-xl p-3.5"
                             style={{ animationDelay: `${i * 300}ms` }}
                           >
-                            <h5 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2">{def.label}</h5>
+                            <h5 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">{def.label}</h5>
                             {card.confident ? (
                               <ul className="flex flex-col gap-1">
                                 {card.items.slice(0, 4).map((item, j) => (
-                                  <li key={j} className="text-xs text-[#E4DEEA] leading-relaxed">· {item}</li>
+                                  <li key={j} className="text-xs text-[var(--text-oncard)] leading-relaxed">· {item}</li>
                                 ))}
                               </ul>
                             ) : (
-                              <p className="text-xs text-[#5B5566]">{t('professors.notConfidentYet')}</p>
+                              <p className="text-xs text-[var(--text-faint)]">{t('professors.notConfidentYet')}</p>
                             )}
                           </div>
                         );
@@ -2910,7 +2920,7 @@ export default function HomePage() {
                   type="button"
                   disabled={docs.length === 0 || isAnalyzingProfessor}
                   onClick={() => recomputeProfessorAnalysisFull(professor.id)}
-                  className="inline-flex items-center gap-2 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[#2A2632] disabled:text-[#857C93] disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                  className="inline-flex items-center gap-2 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[var(--surface-chip)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                 >
                   {isAnalyzingProfessor ? (
                     <>
@@ -2923,25 +2933,25 @@ export default function HomePage() {
                 </button>
 
                 {professorAnalysisError && (
-                  <p className="text-sm text-[#FF7A6B] mt-3">{professorAnalysisError}</p>
+                  <p className="text-sm text-[var(--accent-danger)] mt-3">{professorAnalysisError}</p>
                 )}
 
                 {analysisRow && result && (
-                  <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mt-5 shadow-sm">
+                  <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mt-5 shadow-sm">
                     <p className="text-xs sm:text-sm font-semibold text-[#F4679B] mb-4">
                       {getProfessorAnalysisFramingLine(analysisRow.document_count)}
                     </p>
 
                     {confidentDefs.length === 0 ? (
-                      <p className="text-sm text-[#857C93]">{t('professors.notEnoughData')}</p>
+                      <p className="text-sm text-[var(--text-muted)]">{t('professors.notEnoughData')}</p>
                     ) : (
                       <div className="flex flex-col gap-5 sm:gap-4">
                         {confidentDefs.map((def) => (
                           <div key={def.key}>
-                            <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wide mb-2">{def.label}</h4>
+                            <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">{def.label}</h4>
                             <div className="flex flex-wrap gap-2 sm:gap-1.5">
                               {result[def.key].items.map((item, i) => (
-                                <span key={i} className="bg-[#2A2632] border border-[#332D3B] text-[#E4DEEA] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
+                                <span key={i} className="bg-[var(--surface-chip)] border border-[var(--border-chip-hover)] text-[var(--text-oncard)] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
                                   {item}
                                 </span>
                               ))}
@@ -2952,11 +2962,11 @@ export default function HomePage() {
                     )}
 
                     {unconfidentDefs.length > 0 && (
-                      <div className="mt-6 pt-5 border-t border-[#322D3B]">
-                        <h4 className="text-sm font-bold text-[#F5F2F7] mb-2.5">{t('professors.teaserTitle')}</h4>
+                      <div className="mt-6 pt-5 border-t border-[var(--border-default)]">
+                        <h4 className="text-sm font-bold text-[var(--text-primary)] mb-2.5">{t('professors.teaserTitle')}</h4>
                         <div className="flex flex-wrap gap-2 sm:gap-1.5 mb-4">
                           {unconfidentDefs.map((def) => (
-                            <span key={def.key} className="bg-[#15131A] border border-[#322D3B] text-[#5B5566] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
+                            <span key={def.key} className="bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-faint)] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
                               {def.label}
                             </span>
                           ))}
@@ -2964,8 +2974,8 @@ export default function HomePage() {
                         <label
                           className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
                             isUploadingProfessorDoc
-                              ? 'bg-[#15131A] border border-[#322D3B] text-[#857C93] cursor-wait'
-                              : 'bg-[#2A2632] hover:bg-[#332D3B] border border-[#423B4C] text-[#F5F2F7] cursor-pointer'
+                              ? 'bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-muted)] cursor-wait'
+                              : 'bg-[var(--surface-chip)] hover:bg-[var(--border-chip-hover)] border border-[var(--border-strong)] text-[var(--text-primary)] cursor-pointer'
                           }`}
                         >
                           {isUploadingProfessorDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <UploadCloud className="w-3.5 h-3.5" />}
@@ -2997,13 +3007,13 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   {t('monitoring.title')}
                 </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
                   {t('monitoring.subtitle')}
                 </p>
               </div>
 
-              <div className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold mb-4 text-[#F5F2F7]">{t('monitoring.uploadSectionTitle')}</h3>
+              <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mb-6 shadow-sm">
+                <h3 className="text-sm sm:text-base font-bold mb-4 text-[var(--text-primary)]">{t('monitoring.uploadSectionTitle')}</h3>
 
                 <div className="mb-5">
                   <label className="inline-flex bg-[#F4679B] hover:bg-[#D1477F] text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer items-center gap-2 transition-colors">
@@ -3016,10 +3026,10 @@ export default function HomePage() {
                   </label>
                 </div>
 
-                <div className="text-xs text-[#857C93] mb-5 flex items-center gap-3">
-                  <hr className="flex-1 border-[#322D3B]" />
+                <div className="text-xs text-[var(--text-muted)] mb-5 flex items-center gap-3">
+                  <hr className="flex-1 border-[var(--border-default)]" />
                   <span>{t('monitoring.orDivider')}</span>
-                  <hr className="flex-1 border-[#322D3B]" />
+                  <hr className="flex-1 border-[var(--border-default)]" />
                 </div>
 
                 <form onSubmit={handleAddFile} className="flex flex-col gap-3">
@@ -3028,32 +3038,32 @@ export default function HomePage() {
                     placeholder={t('monitoring.form.titlePlaceholder')}
                     value={newFileName}
                     onChange={(e) => setNewFileName(e.target.value)}
-                    className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                    className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
                   />
                   <textarea
                     placeholder={t('monitoring.form.contentPlaceholder')}
                     value={newFileContent}
                     onChange={(e) => setNewFileContent(e.target.value)}
                     rows={3}
-                    className="bg-[#211E28] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 resize-none placeholder:text-[#857C93]"
+                    className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 resize-none placeholder:text-[var(--text-muted)]"
                   />
-                  <button type="submit" className="self-end bg-[#211E28] hover:bg-[#15131A] text-[#F5F2F7] px-5 py-2.5 rounded-lg text-sm font-semibold border border-[#423B4C] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]">
+                  <button type="submit" className="self-end bg-[var(--bg-page)] hover:bg-[var(--bg-surface)] text-[var(--text-primary)] px-5 py-2.5 rounded-lg text-sm font-semibold border border-[var(--border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]">
                     {t('monitoring.form.submit')}
                   </button>
                 </form>
 
                 <div className="mt-8 flex flex-col gap-2">
-                  <h4 className="text-xs font-bold text-[#857C93] uppercase tracking-wider mb-1">{t('monitoring.fileListTitle')}</h4>
+                  <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1">{t('monitoring.fileListTitle')}</h4>
                   {files.length === 0 && (
-                    <div className="text-sm text-[#857C93] text-center py-4">{t('monitoring.noFiles')}</div>
+                    <div className="text-sm text-[var(--text-muted)] text-center py-4">{t('monitoring.noFiles')}</div>
                   )}
                   {files.map(file => (
-                    <div key={file.id} className="flex flex-col bg-[#1C1922] p-3.5 rounded-lg border border-[#322D3B] text-sm gap-1">
+                    <div key={file.id} className="flex flex-col bg-[var(--bg-page-alt)] p-3.5 rounded-lg border border-[var(--border-default)] text-sm gap-1">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold text-[#F4679B]">📄 {file.name} <span className="text-xs text-[#857C93] font-normal">({file.size})</span></span>
-                        <button onClick={() => handleDeleteFile(file.id)} className="text-[#FF7A6B] hover:text-[#FF9585] text-xs px-2 py-1 bg-[#35201D] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]">{t('common.delete')}</button>
+                        <span className="font-semibold text-[#F4679B]">📄 {file.name} <span className="text-xs text-[var(--text-muted)] font-normal">({file.size})</span></span>
+                        <button onClick={() => handleDeleteFile(file.id)} className="text-[var(--accent-danger)] hover:text-[var(--text-error)] text-xs px-2 py-1 bg-[var(--bg-error-subtle)] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]">{t('common.delete')}</button>
                       </div>
-                      <p className="text-xs text-[#AFA6BD] truncate mt-1">{t('monitoring.fileType', { mimeType: file.mimeType || 'text/plain' })}</p>
+                      <p className="text-xs text-[var(--text-tertiary)] truncate mt-1">{t('monitoring.fileType', { mimeType: file.mimeType || 'text/plain' })}</p>
                     </div>
                   ))}
                 </div>
@@ -3067,7 +3077,7 @@ export default function HomePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   {t('logs.title')}
                 </h1>
-                <p className="text-[#AFA6BD] text-xs sm:text-sm mt-1.5">
+                <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
                   {t('logs.subtitle')}
                 </p>
               </div>
@@ -3079,8 +3089,8 @@ export default function HomePage() {
                   onClick={() => setLogFolderFilter('all')}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                     logFolderFilter === 'all'
-                      ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
-                      : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
+                      ? 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[#F4679B]'
+                      : 'bg-[var(--bg-page)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
                   }`}
                 >
                   {t('logs.filterAll', { count: logs.length })}
@@ -3090,8 +3100,8 @@ export default function HomePage() {
                   onClick={() => setLogFolderFilter('unfiled')}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                     logFolderFilter === 'unfiled'
-                      ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
-                      : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B] hover:text-[#F5F2F7]'
+                      ? 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[#F4679B]'
+                      : 'bg-[var(--bg-page)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
                   }`}
                 >
                   {t('logs.filterUnfiled', { count: logs.filter((l) => !l.folder_id).length })}
@@ -3101,14 +3111,14 @@ export default function HomePage() {
                     key={folder.id}
                     className={`inline-flex items-center gap-1 rounded-full border pl-3 pr-1.5 py-1 transition-colors ${
                       logFolderFilter === folder.id
-                        ? 'bg-[#331F29] text-[#F4679B] border-[#F4679B]'
-                        : 'bg-[#211E28] text-[#AFA6BD] border-[#322D3B]'
+                        ? 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[#F4679B]'
+                        : 'bg-[var(--bg-page)] text-[var(--text-tertiary)] border-[var(--border-default)]'
                     }`}
                   >
                     <button
                       type="button"
                       onClick={() => setLogFolderFilter(folder.id)}
-                      className="text-xs font-semibold cursor-pointer hover:text-[#F5F2F7] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+                      className="text-xs font-semibold cursor-pointer hover:text-[var(--text-primary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
                     >
                       {t('logs.folderButtonLabel', { name: folder.name, count: logs.filter((l) => l.folder_id === folder.id).length })}
                     </button>
@@ -3116,7 +3126,7 @@ export default function HomePage() {
                       type="button"
                       onClick={() => handleDeleteFolder(folder.id, folder.name)}
                       aria-label={t('logs.deleteFolderAria', { folderName: folder.name })}
-                      className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[#2A2632] text-[#857C93] hover:text-[#FF7A6B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+                      className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full hover:bg-[var(--surface-chip)] text-[var(--text-muted)] hover:text-[var(--accent-danger)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
                     >
                       <X className="w-3 h-3" strokeWidth={2.5} />
                     </button>
@@ -3131,12 +3141,12 @@ export default function HomePage() {
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
                     placeholder={t('logs.newFolderPlaceholder')}
-                    className="w-24 bg-[#15131A] border border-[#423B4C] rounded-full px-3 py-1.5 text-[#F5F2F7] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93]"
+                    className="w-24 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-full px-3 py-1.5 text-[var(--text-primary)] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
                   />
                   <button
                     type="submit"
                     disabled={!newFolderName.trim() || isCreatingFolder}
-                    className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#2A2632] hover:bg-[#332D3B] text-[#F5F2F7] border border-[#423B4C] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                    className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[var(--surface-chip)] hover:bg-[var(--border-chip-hover)] text-[var(--text-primary)] border border-[var(--border-strong)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                   >
                     {t('common.create')}
                   </button>
@@ -3152,7 +3162,7 @@ export default function HomePage() {
                   });
                   if (filteredLogs.length === 0) {
                     return (
-                      <div className="text-sm text-[#857C93] text-center py-8 bg-[#211E28] rounded-2xl border border-[#322D3B]">
+                      <div className="text-sm text-[var(--text-muted)] text-center py-8 bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)]">
                         {logs.length === 0 ? t('logs.noConversationsAtAll') : t('logs.noConversationsInFolder')}
                       </div>
                     );
@@ -3160,18 +3170,18 @@ export default function HomePage() {
                   return filteredLogs.map((log) => {
                   const isExpanded = expandedLogId === log.id;
                   return (
-                    <div key={log.id} className="bg-[#211E28] rounded-2xl border border-[#322D3B] p-4 flex flex-col gap-3 shadow-sm">
+                    <div key={log.id} className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-4 flex flex-col gap-3 shadow-sm">
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <div className="flex items-center gap-2 font-mono-console text-xs text-[#F4679B]">
-                          <span className="text-[#857C93]">[{new Date(log.created_at).toLocaleTimeString(locale)}]</span>
-                          <span className="font-semibold text-[#F5F2F7]">{log.content}</span>
+                          <span className="text-[var(--text-muted)]">[{new Date(log.created_at).toLocaleTimeString(locale)}]</span>
+                          <span className="font-semibold text-[var(--text-primary)]">{log.content}</span>
                         </div>
                         <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                           <select
                             value={log.folder_id || ''}
                             onChange={(e) => handleMoveLogToFolder(log.id, e.target.value || null)}
                             aria-label={t('logs.moveToFolderAria')}
-                            className="bg-[#15131A] border border-[#322D3B] rounded-lg px-2 py-1.5 text-[#AFA6BD] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 cursor-pointer"
+                            className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg px-2 py-1.5 text-[var(--text-tertiary)] text-xs outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 cursor-pointer"
                           >
                             <option value="">{t('logs.unfiledOption')}</option>
                             {conversationFolders.map((folder) => (
@@ -3181,7 +3191,7 @@ export default function HomePage() {
                           {log.response && (
                             <button
                               onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
-                              className="bg-[#331F29] hover:bg-[#3D2733] text-[#F4679B] border border-[#5C3A4A] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                              className="bg-[var(--bg-accent-subtle)] hover:bg-[#3D2733] text-[#F4679B] border border-[var(--border-accent-subtle)] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                             >
                               {isExpanded ? t('logs.collapseAnswer') : t('logs.viewAnswer')}
                             </button>
@@ -3189,7 +3199,7 @@ export default function HomePage() {
                           <button
                             onClick={() => handleDeleteLog(log.id)}
                             aria-label={t('logs.deleteLogAria')}
-                            className="w-7 h-7 flex items-center justify-center bg-[#15131A] hover:bg-[#35201D] text-[#857C93] hover:text-[#FF7A6B] border border-[#322D3B] rounded-lg text-xs transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A6B]"
+                            className="w-7 h-7 flex items-center justify-center bg-[var(--bg-surface)] hover:bg-[var(--bg-error-subtle)] text-[var(--text-muted)] hover:text-[var(--accent-danger)] border border-[var(--border-default)] rounded-lg text-xs transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
                           >
                             ✕
                           </button>
@@ -3197,7 +3207,7 @@ export default function HomePage() {
                       </div>
 
                       {isExpanded && log.response && (
-                        <div className="bg-[#0D0B11] p-4 rounded-lg border border-[#2A2632] text-[14px] font-medium text-[#FBE4EE] leading-[1.8] whitespace-pre-wrap mt-1">
+                        <div className="bg-[var(--bg-deep)] p-4 rounded-lg border border-[var(--surface-chip)] text-[14px] font-medium text-[#FBE4EE] leading-[1.8] whitespace-pre-wrap mt-1">
                           <div className="text-[11px] text-[#8D8499] mb-2">{t('logs.responseRecordLabel')}</div>
                           {log.response}
                         </div>
@@ -3224,14 +3234,14 @@ export default function HomePage() {
         onClick={closeUpgradeModal}
       >
         <div
-          className="bg-[#211E28] border border-[#322D3B] rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto shadow-xl"
+          className="bg-[var(--bg-page)] border border-[var(--border-default)] rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
           {upgradeRequestSubmitted ? (
             <div className="flex flex-col items-center text-center gap-3 py-4">
               <span className="text-3xl">✨</span>
-              <h3 className="text-base font-bold text-[#F5F2F7]">{t('upgrade.requestReceivedTitle')}</h3>
-              <p className="text-sm text-[#C9C0D6] leading-relaxed">{t('upgrade.requestReceivedDesc')}</p>
+              <h3 className="text-base font-bold text-[var(--text-primary)]">{t('upgrade.requestReceivedTitle')}</h3>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{t('upgrade.requestReceivedDesc')}</p>
               <button
                 type="button"
                 onClick={closeUpgradeModal}
@@ -3242,9 +3252,9 @@ export default function HomePage() {
             </div>
           ) : (
             <>
-              <h3 className="text-base font-bold text-[#F5F2F7] mb-1.5">{t('upgrade.title')}</h3>
+              <h3 className="text-base font-bold text-[var(--text-primary)] mb-1.5">{t('upgrade.title')}</h3>
               <p className="text-sm font-bold text-[#F4679B] mb-3">{t('upgrade.priceLine', { price: PRO_PRICE_LABEL })}</p>
-              <p className="text-xs text-[#AFA6BD] mb-4 leading-relaxed">
+              <p className="text-xs text-[var(--text-tertiary)] mb-4 leading-relaxed">
                 {upgradeContext || t('upgrade.defaultContext')}
               </p>
               {/* 💡 [신규] Polar 결제 연동 — 실제 결제는 이 링크 하나로 끝. reference_id로
@@ -3260,44 +3270,44 @@ export default function HomePage() {
                 {t('upgrade.checkoutButton')}
               </a>
               <div className="flex items-center gap-2 my-4">
-                <div className="flex-1 h-px bg-[#322D3B]" />
-                <span className="text-[10px] text-[#5B5566]">{t('upgrade.orContactDivider')}</span>
-                <div className="flex-1 h-px bg-[#322D3B]" />
+                <div className="flex-1 h-px bg-[var(--border-default)]" />
+                <span className="text-[10px] text-[var(--text-faint)]">{t('upgrade.orContactDivider')}</span>
+                <div className="flex-1 h-px bg-[var(--border-default)]" />
               </div>
               <form onSubmit={handleSubmitUpgradeRequest} className="flex flex-col gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">{t('upgrade.emailLabel')}</label>
+                  <label className="block text-xs font-semibold text-[var(--text-tertiary)] mb-1.5">{t('upgrade.emailLabel')}</label>
                   <input
                     type="email"
                     required
                     value={upgradeEmail}
                     onChange={(e) => setUpgradeEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566]"
+                    className="w-full bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[var(--text-faint)]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#AFA6BD] mb-1.5">{t('upgrade.memoLabel')}</label>
+                  <label className="block text-xs font-semibold text-[var(--text-tertiary)] mb-1.5">{t('upgrade.memoLabel')}</label>
                   <textarea
                     value={upgradeMemo}
                     onChange={(e) => setUpgradeMemo(e.target.value)}
                     rows={3}
                     placeholder={t('upgrade.memoPlaceholder')}
-                    className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566] resize-none"
+                    className="w-full bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[var(--text-faint)] resize-none"
                   />
                 </div>
                 <div className="flex items-center gap-2 mt-1">
                   <button
                     type="button"
                     onClick={closeUpgradeModal}
-                    className="flex-1 bg-[#15131A] hover:bg-[#0D0B11] text-[#C9C0D6] border border-[#322D3B] text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#857C93]"
+                    className="flex-1 bg-[var(--bg-surface)] hover:bg-[var(--bg-deep)] text-[var(--text-secondary)] border border-[var(--border-default)] text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]"
                   >
                     {t('common.close')}
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingUpgradeRequest || !upgradeEmail.trim()}
-                    className="flex-1 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[#2A2632] disabled:text-[#857C93] disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                    className="flex-1 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[var(--surface-chip)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                   >
                     {isSubmittingUpgradeRequest ? t('upgrade.sending') : t('upgrade.sendRequest')}
                   </button>

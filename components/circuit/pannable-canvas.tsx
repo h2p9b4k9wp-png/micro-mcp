@@ -121,7 +121,7 @@ export function PannableCanvas({ children }: { children: React.ReactNode }) {
           type="button"
           onClick={() => setTransform({ scale: 1, x: 0, y: 0 })}
           aria-label="확대/이동 초기화"
-          className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[#211E28]/90 hover:bg-[#2A2632] border border-[#322D3B] text-[#C9C0D6] text-[11px] font-medium px-2.5 py-1.5 rounded-full backdrop-blur cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+          className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[var(--bg-page)]/90 hover:bg-[var(--surface-chip)] border border-[var(--border-default)] text-[var(--text-secondary)] text-[11px] font-medium px-2.5 py-1.5 rounded-full backdrop-blur cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
         >
           <RotateCcw className="w-3 h-3" strokeWidth={2} />
           초기화

@@ -20,7 +20,8 @@
     "openMenu": "メニューを開く",
     "logout": "ログアウト",
     "unknownError": "不明なエラー",
-    "responseLanguageLabel": "AI回答言語"
+    "responseLanguageLabel": "AI回答言語",
+    "themeLabel": "画面テーマ"
   },
   "workspace": {
     "subtitle": "添付されたドキュメントの内容と会話の文脈をもとに、AIが実際の回答を導き出します。",

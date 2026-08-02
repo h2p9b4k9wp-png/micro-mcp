@@ -28,11 +28,11 @@ export function GuestLimitBanner({
       : limitType;
 
   return (
-    <div className="bg-[#331F29] border border-[#F4679B]/40 rounded-xl p-4 text-center">
-      <p className="break-keep text-sm text-[#F5F2F7] font-semibold mb-1">
+    <div className="bg-[var(--bg-accent-subtle)] border border-[#F4679B]/40 rounded-xl p-4 text-center">
+      <p className="break-keep text-sm text-[var(--text-primary)] font-semibold mb-1">
         {t(`login.trial.limit.${key}Title`)}
       </p>
-      <p className="break-keep text-xs text-[#C9C0D6] mb-3">
+      <p className="break-keep text-xs text-[var(--text-secondary)] mb-3">
         {t(`login.trial.limit.${key}Desc`)}
       </p>
       <button

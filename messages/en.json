@@ -20,7 +20,8 @@
     "openMenu": "Open menu",
     "logout": "Log Out",
     "unknownError": "Unknown error",
-    "responseLanguageLabel": "AI Response Language"
+    "responseLanguageLabel": "AI Response Language",
+    "themeLabel": "Theme"
   },
   "workspace": {
     "subtitle": "The AI generates answers based on the conversation context and any attached document content.",

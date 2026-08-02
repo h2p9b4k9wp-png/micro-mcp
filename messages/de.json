@@ -20,7 +20,8 @@
     "openMenu": "Menü öffnen",
     "logout": "Abmelden",
     "unknownError": "Unbekannter Fehler",
-    "responseLanguageLabel": "KI-Antwortsprache"
+    "responseLanguageLabel": "KI-Antwortsprache",
+    "themeLabel": "Design"
   },
   "workspace": {
     "subtitle": "Die KI erstellt Antworten basierend auf dem Gesprächskontext und dem Inhalt angehängter Dokumente.",

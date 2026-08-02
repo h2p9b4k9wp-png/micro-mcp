@@ -20,7 +20,8 @@
     "openMenu": "Menu openen",
     "logout": "Uitloggen",
     "unknownError": "Onbekende fout",
-    "responseLanguageLabel": "AI-antwoordtaal"
+    "responseLanguageLabel": "AI-antwoordtaal",
+    "themeLabel": "Thema"
   },
   "workspace": {
     "subtitle": "De AI genereert antwoorden op basis van de gesprekscontext en de inhoud van bijgevoegde documenten.",

@@ -76,7 +76,7 @@ export function Wire({
           x={midPoint.x}
           y={midPoint.y - 8}
           fontSize={12}
-          fill="#857C93"
+          fill="var(--text-muted)"
           textAnchor="middle"
           style={{ pointerEvents: 'none' }}
         >

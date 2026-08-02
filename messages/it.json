@@ -20,7 +20,8 @@
     "openMenu": "Apri menu",
     "logout": "Esci",
     "unknownError": "Errore sconosciuto",
-    "responseLanguageLabel": "Lingua di risposta dell'IA"
+    "responseLanguageLabel": "Lingua di risposta dell'IA",
+    "themeLabel": "Tema"
   },
   "workspace": {
     "subtitle": "L'IA genera risposte in base al contesto della conversazione e al contenuto dei documenti allegati.",

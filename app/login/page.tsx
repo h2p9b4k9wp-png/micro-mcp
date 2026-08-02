@@ -10,6 +10,7 @@ import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import type { GuidedTrialLimitType } from '@/lib/use-guided-trial';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
 import { Logomark } from '@/components/logomark';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestGuidedTrial } from '@/components/guest-guided-trial';
 import { GuestLimitBanner } from '@/components/guest-limit-banner';
@@ -344,7 +345,7 @@ function LoginPageContent() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#211E28] text-[#F5F2F7]">
+    <div className="min-h-screen flex bg-[var(--bg-page)] text-[var(--text-primary)]">
       <style jsx global>{`
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
         * { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
@@ -353,7 +354,11 @@ function LoginPageContent() {
         }
       `}</style>
 
-      {/* 좌측 브랜드 패널 (데스크톱 전용) */}
+      {/* 좌측 브랜드 패널 (데스크톱 전용) — 앱 테마 설정과 무관하게 항상 고정 다크입니다.
+          안의 헤드라인·설명·저작권 텍스트가 전부 text-white 계열이라(라이트 모드에서
+          배경만 밝아지면 흰 글씨가 안 보이게 됨), /welcome 페이지가 앱 테마와 무관하게
+          항상 라이트인 것과 같은 이유로 이 브랜드 패널도 의도적으로 테마 변수를 쓰지
+          않습니다. */}
       <div className="hidden md:flex md:w-[44%] lg:w-[40%] relative overflow-hidden bg-[#17141D] text-white flex-col justify-between p-12 lg:p-16">
         {/* 은은한 색색 조명 효과 (귀여운 분위기용, 단색 그라데이션 대신 부드러운 블러 블롭) */}
         <div className="absolute w-72 h-72 bg-[#F4679B] rounded-full blur-3xl opacity-[0.18] -top-10 -left-16 pointer-events-none" />
@@ -363,7 +368,7 @@ function LoginPageContent() {
             다운스케일 아티팩트로 이미 확인·해결됐지만(components/logomark.tsx 상단 주석),
             투명 PNG를 어두운 배경 위에 직접 놓는 구조 자체를 없애 원인이 뭐든 상관없게
             만들고, 다크 테마에서 마스코트가 더 잘 보이는 디자인 효과도 노립니다. */}
-        <div className="absolute right-8 bottom-24 w-40 h-40 rounded-full bg-white p-2 flex items-center justify-center">
+        <div className="absolute right-8 bottom-24 w-40 h-40 rounded-full bg-white border border-[var(--border-default)] p-2 flex items-center justify-center">
           <Logomark className="w-full h-full" size="lg" />
         </div>
         <span className="absolute right-16 bottom-[168px] w-2 h-2 rounded-full bg-[#6EE7B7]" />
@@ -373,7 +378,7 @@ function LoginPageContent() {
           {/* 💡 큰 마스코트와 동일한 흰색 원형 배경 패턴 — 바깥 박스 크기(w-8 h-8)는 기존과
               동일하게 유지하고 안쪽 이미지만 패딩만큼 줄여서, "Carrotly" 텍스트와의 정렬에
               영향 없이 어두운 좌측 패널 위에서 잘 보이게 합니다. */}
-          <div className="w-8 h-8 rounded-full bg-white p-1 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-white border border-[var(--border-default)] p-1 flex items-center justify-center">
             <Logomark className="w-full h-full" />
           </div>
           <span className="text-lg font-extrabold tracking-tight">Carrotly</span>
@@ -408,18 +413,19 @@ function LoginPageContent() {
       </div>
 
       {/* 우측 로그인 폼 패널 */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[#1C1922] md:bg-[#211E28]">
+      <div className="relative flex-1 flex items-center justify-center px-6 py-12 bg-[var(--bg-page-alt)] md:bg-[var(--bg-page)]">
+        <ThemeToggle className="absolute top-4 right-4 md:top-6 md:right-6" />
         <div className="w-full max-w-[380px]">
 
           {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) — 스크롤 없이 폼이 보이도록 최대한 짧게 구성 */}
           <div className="flex md:hidden flex-col items-center mb-7">
-            <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight mb-3">Carrotly</span>
-            {/* 💡 이 화면도 어두운 배경(bg-[#1C1922]) 위라 큰 마스코트와 동일한 흰색 원형
+            <span className="text-base font-extrabold text-[var(--text-primary)] tracking-tight mb-3">Carrotly</span>
+            {/* 💡 이 화면도 어두운 배경(bg-[var(--bg-page-alt)]) 위라 큰 마스코트와 동일한 흰색 원형
                 배경 패턴을 적용합니다. */}
-            <div className="w-14 h-14 rounded-full bg-white p-1.5 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-white border border-[var(--border-default)] p-1.5 flex items-center justify-center">
               <Logomark className="w-full h-full" />
             </div>
-            <p className="text-[#C9C0D6] text-sm text-center mt-3 max-w-[280px] leading-snug">
+            <p className="text-[var(--text-secondary)] text-sm text-center mt-3 max-w-[280px] leading-snug">
               {t('login.brand.shortTagline')}
             </p>
           </div>
@@ -429,7 +435,7 @@ function LoginPageContent() {
               <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
                 {isSignUp ? t('login.form.signUpTitle') : t('login.form.signInTitle')}
               </h2>
-              <p className="text-[#AFA6BD] text-sm text-center md:text-left mb-7">
+              <p className="text-[var(--text-tertiary)] text-sm text-center md:text-left mb-7">
                 {isSignUp ? t('login.form.signUpSubtitle') : t('login.form.signInSubtitle')}
               </p>
 
@@ -437,8 +443,8 @@ function LoginPageContent() {
                 <div
                   className={`px-4 py-3 rounded-lg text-sm mb-5 border ${
                     message.type === 'error'
-                      ? 'bg-[#35201D] text-[#FF9585] border-[#63392F]'
-                      : 'bg-[#1B3328] text-[#6EE7B7] border-[#37604D]'
+                      ? 'bg-[var(--bg-error-subtle)] text-[var(--text-error)] border-[var(--border-error-subtle)]'
+                      : 'bg-[var(--bg-success-subtle)] text-[#6EE7B7] border-[var(--border-success-subtle)]'
                   }`}
                 >
                   {message.text}
@@ -447,7 +453,7 @@ function LoginPageContent() {
 
               <form onSubmit={handleAuth} className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
+                  <label className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5">
                     {t('login.form.emailLabel')}
                   </label>
                   <input
@@ -456,12 +462,12 @@ function LoginPageContent() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93] transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-page)] text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[13px] font-medium text-[#C9C0D6] mb-1.5">
+                  <label className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5">
                     {t('login.form.passwordLabel')}
                   </label>
                   <input
@@ -470,7 +476,7 @@ function LoginPageContent() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#F5F2F7] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[#857C93] transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-page)] text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)] transition-colors"
                   />
                 </div>
 
@@ -484,14 +490,14 @@ function LoginPageContent() {
               </form>
 
               <div className="my-6 flex items-center gap-3">
-                <hr className="flex-1 border-[#322D3B]" />
-                <span className="text-xs text-[#857C93]">{t('login.form.orDivider')}</span>
-                <hr className="flex-1 border-[#322D3B]" />
+                <hr className="flex-1 border-[var(--border-default)]" />
+                <span className="text-xs text-[var(--text-muted)]">{t('login.form.orDivider')}</span>
+                <hr className="flex-1 border-[var(--border-default)]" />
               </div>
 
               <button
                 onClick={() => handleOAuthLogin('google')}
-                className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-medium cursor-pointer flex items-center justify-center gap-2.5 hover:bg-[#15131A] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                className="w-full py-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-page)] text-[var(--text-secondary)] text-sm font-medium cursor-pointer flex items-center justify-center gap-2.5 hover:bg-[var(--bg-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
               >
                 <GoogleIcon />
                 {t('login.form.continueWithGoogle')}
@@ -512,7 +518,7 @@ function LoginPageContent() {
                     setShowTrial(true);
                     setMessage(null);
                   }}
-                  className="bg-transparent border-none text-[#857C93] text-[13px] font-medium cursor-pointer hover:text-[#C9C0D6] hover:underline focus:outline-none"
+                  className="bg-transparent border-none text-[var(--text-muted)] text-[13px] font-medium cursor-pointer hover:text-[var(--text-secondary)] hover:underline focus:outline-none"
                 >
                   {t('login.form.tryWithoutAccount')}
                 </button>
@@ -523,7 +529,7 @@ function LoginPageContent() {
               <h2 className="text-xl font-extrabold tracking-tight text-center md:text-left mb-1.5">
                 {t('login.trial.title')}
               </h2>
-              <p className="text-[#AFA6BD] text-sm text-center md:text-left mb-7">
+              <p className="text-[var(--text-tertiary)] text-sm text-center md:text-left mb-7">
                 {t('login.trial.subtitle')}
               </p>
 
@@ -543,7 +549,7 @@ function LoginPageContent() {
                 </div>
               )}
 
-              <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
+              <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
                 {t('login.trial.fileSectionTitle')}
               </p>
 
@@ -565,15 +571,15 @@ function LoginPageContent() {
                   <label
                     className={`flex flex-col items-center justify-center gap-2 border border-dashed rounded-xl py-10 px-4 text-center transition-colors ${
                       isTrialAnalyzing || Boolean(guestSuspended)
-                        ? 'border-[#322D3B] cursor-wait'
-                        : 'border-[#423B4C] hover:border-[#F4679B]/50 cursor-pointer'
+                        ? 'border-[var(--border-default)] cursor-wait'
+                        : 'border-[var(--border-strong)] hover:border-[#F4679B]/50 cursor-pointer'
                     }`}
                   >
                     <span className="text-2xl">📄</span>
-                    <span className="text-sm font-medium text-[#C9C0D6]">
+                    <span className="text-sm font-medium text-[var(--text-secondary)]">
                       {isTrialAnalyzing ? t('login.trial.analyzing') : t('login.trial.chooseFile')}
                     </span>
-                    <span className="text-xs text-[#5B5566]">{t('login.trial.fileHint')}</span>
+                    <span className="text-xs text-[var(--text-faint)]">{t('login.trial.fileHint')}</span>
                     <input
                       type="file"
                       className="hidden"
@@ -585,20 +591,20 @@ function LoginPageContent() {
               )}
 
               {trialError && (
-                <div className="px-4 py-3 rounded-lg text-sm mt-4 border bg-[#35201D] text-[#FF9585] border-[#63392F]">
+                <div className="px-4 py-3 rounded-lg text-sm mt-4 border bg-[var(--bg-error-subtle)] text-[var(--text-error)] border-[var(--border-error-subtle)]">
                   {trialError}
                 </div>
               )}
 
               {trialResult && (
                 <div className="flex flex-col gap-4">
-                  <div className="bg-[#15131A] border border-[#322D3B] rounded-xl p-4">
-                    <p className="text-xs text-[#857C93] mb-3 truncate">{trialResult.fileName}</p>
+                  <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl p-4">
+                    <p className="text-xs text-[var(--text-muted)] mb-3 truncate">{trialResult.fileName}</p>
                     {renderTrialResult(trialResult.lens, trialResult.result, t)}
                   </div>
 
-                  <div className="bg-[#331F29] border border-[#F4679B]/40 rounded-xl p-4 text-center">
-                    <p className="text-sm text-[#F5F2F7] font-semibold mb-3">
+                  <div className="bg-[var(--bg-accent-subtle)] border border-[#F4679B]/40 rounded-xl p-4 text-center">
+                    <p className="text-sm text-[var(--text-primary)] font-semibold mb-3">
                       {t('login.trial.saveResultTitle')}
                     </p>
                     <button
@@ -612,15 +618,15 @@ function LoginPageContent() {
               )}
 
               <div className="my-6 flex items-center gap-3">
-                <hr className="flex-1 border-[#322D3B]" />
-                <span className="text-xs text-[#857C93]">{t('login.trial.orDivider')}</span>
-                <hr className="flex-1 border-[#322D3B]" />
+                <hr className="flex-1 border-[var(--border-default)]" />
+                <span className="text-xs text-[var(--text-muted)]">{t('login.trial.orDivider')}</span>
+                <hr className="flex-1 border-[var(--border-default)]" />
               </div>
 
               {/* 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 던져보는 체험.
                   세션당 최대 3턴 — 업로드를 안 해도 이것부터 시작할 수 있고, 그 경우 이 세션은
                   채팅 예산만 쓰고 업로드 예산은 그대로 남습니다. */}
-              <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
+              <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
                 {t('login.trial.chatSectionTitle')}
               </p>
               {chatSessionUsed && !guestSuspended ? (
@@ -641,20 +647,20 @@ function LoginPageContent() {
                     placeholder={t('login.trial.chatPlaceholder')}
                     rows={3}
                     disabled={isGuestChatLoading || Boolean(guestSuspended)}
-                    className="w-full bg-[#15131A] border border-[#423B4C] rounded-lg px-3.5 py-2.5 text-sm text-[#F5F2F7] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[#5B5566] resize-none disabled:opacity-50"
+                    className="w-full bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[var(--text-faint)] resize-none disabled:opacity-50"
                   />
 
                   {/* 💡 [신규] 파일/사진 첨부 — 로그인 후 실제 채팅과 같은 형식을 지원하되, 게스트
                       업로드 예산이 세션당 1건뿐이라 uploadSessionUsed가 이미 켜져 있으면(파일
                       분석·사진 체험 중 하나를 이미 썼으면) 이 첨부도 함께 막습니다. */}
                   {guestChatAttachment ? (
-                    <div className="flex items-center justify-between gap-2 bg-[#15131A] border border-[#423B4C] rounded-lg px-3 py-2">
-                      <span className="text-xs text-[#C9C0D6] truncate">📎 {guestChatAttachment.fileName}</span>
+                    <div className="flex items-center justify-between gap-2 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3 py-2">
+                      <span className="text-xs text-[var(--text-secondary)] truncate">📎 {guestChatAttachment.fileName}</span>
                       <button
                         type="button"
                         onClick={() => setGuestChatAttachment(null)}
                         disabled={isGuestChatLoading}
-                        className="bg-transparent border-none text-[#857C93] text-xs cursor-pointer hover:text-[#FF9585] disabled:opacity-50 focus:outline-none shrink-0"
+                        className="bg-transparent border-none text-[var(--text-muted)] text-xs cursor-pointer hover:text-[var(--text-error)] disabled:opacity-50 focus:outline-none shrink-0"
                       >
                         {t('login.trial.attach.remove')}
                       </button>
@@ -663,8 +669,8 @@ function LoginPageContent() {
                     <label
                       className={`flex items-center gap-1.5 text-xs font-medium w-fit ${
                         uploadSessionUsed || guestSuspended || isGuestChatLoading || isReadingGuestChatAttachment
-                          ? 'text-[#5B5566] cursor-wait'
-                          : 'text-[#857C93] hover:text-[#C9C0D6] cursor-pointer'
+                          ? 'text-[var(--text-faint)] cursor-wait'
+                          : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] cursor-pointer'
                       }`}
                     >
                       <span>📎 {isReadingGuestChatAttachment ? t('login.trial.attach.reading') : t('login.trial.attach.label')}</span>
@@ -677,16 +683,16 @@ function LoginPageContent() {
                     </label>
                   )}
                   {!guestChatAttachment && !uploadSessionUsed && (
-                    <p className="text-[11px] text-[#5B5566] -mt-1.5">{t('login.trial.attach.hint')}</p>
+                    <p className="text-[11px] text-[var(--text-faint)] -mt-1.5">{t('login.trial.attach.hint')}</p>
                   )}
                   {guestChatAttachError && (
-                    <p className="text-[11px] text-[#FF9585] -mt-1.5">{guestChatAttachError}</p>
+                    <p className="text-[11px] text-[var(--text-error)] -mt-1.5">{guestChatAttachError}</p>
                   )}
 
                   <button
                     type="submit"
                     disabled={isGuestChatLoading || isReadingGuestChatAttachment || Boolean(guestSuspended) || !guestChatPrompt.trim()}
-                    className="w-full py-2.5 rounded-lg border border-[#423B4C] bg-[#211E28] text-[#C9C0D6] text-sm font-semibold cursor-pointer hover:bg-[#15131A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                    className="w-full py-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-page)] text-[var(--text-secondary)] text-sm font-semibold cursor-pointer hover:bg-[var(--bg-surface)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                   >
                     {isGuestChatLoading ? t('login.trial.chatLoading') : t('login.trial.chatButton')}
                   </button>
@@ -694,15 +700,15 @@ function LoginPageContent() {
               )}
 
               {guestChatAnswer && (
-                <div className="bg-[#15131A] border border-[#322D3B] rounded-xl p-4 mt-3 text-sm text-[#E4DEEA] leading-relaxed whitespace-pre-wrap">
+                <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl p-4 mt-3 text-sm text-[var(--text-oncard)] leading-relaxed whitespace-pre-wrap">
                   {guestChatAnswer}
                 </div>
               )}
 
               <div className="my-6 flex items-center gap-3">
-                <hr className="flex-1 border-[#322D3B]" />
-                <span className="text-xs text-[#857C93]">{t('login.trial.orDivider')}</span>
-                <hr className="flex-1 border-[#322D3B]" />
+                <hr className="flex-1 border-[var(--border-default)]" />
+                <span className="text-xs text-[var(--text-muted)]">{t('login.trial.orDivider')}</span>
+                <hr className="flex-1 border-[var(--border-default)]" />
               </div>
 
               {/* 💡 [신규] "사진으로 체험하기" — 이미지 1장 → 회로도 애니메이션 + 예상 문제 + 요약정리.
@@ -731,7 +737,7 @@ function LoginPageContent() {
                     setUploadSessionUsed(false);
                     setChatSessionUsed(false);
                   }}
-                  className="bg-transparent border-none text-[#857C93] text-[13px] font-medium cursor-pointer hover:text-[#C9C0D6] hover:underline focus:outline-none"
+                  className="bg-transparent border-none text-[var(--text-muted)] text-[13px] font-medium cursor-pointer hover:text-[var(--text-secondary)] hover:underline focus:outline-none"
                 >
                   {t('login.trial.backToLogin')}
                 </button>
