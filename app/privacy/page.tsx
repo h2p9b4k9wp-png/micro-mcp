@@ -115,6 +115,17 @@ export default function PrivacyPage() {
               (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather
               have us do it for you, email us and we&rsquo;ll delete it manually.
             </p>
+            <p className="mt-3">
+              If you have an active Pro subscription, deleting your account does not cancel it —
+              Polar (our Merchant of Record, see{' '}
+              <Link href="/terms" className="text-[#F4679B] hover:underline">
+                Terms of Service
+              </Link>
+              ) handles billing independently of your Carrotly login, so we have no way to cancel
+              it on your behalf. You&rsquo;ll need to cancel your subscription first (via the
+              link in the receipt/confirmation email Polar sent you, or by emailing us) before we
+              can delete your account.
+            </p>
           </section>
 
           <section>

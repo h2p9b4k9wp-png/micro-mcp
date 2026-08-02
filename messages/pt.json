@@ -451,7 +451,8 @@
     "deleteConfirm": "Tem certeza de que deseja excluir sua conta?\n\nTodos os arquivos enviados, materiais de professores, histórico de conversas e pastas de conversas, junto com sua conta de login (e-mail, dados de acesso), serão excluídos permanentemente e não poderão ser recuperados.",
     "deleteErrorAlert": "Ocorreu um problema ao excluir sua conta: {error}\nTente novamente.",
     "deleting": "Excluindo...",
-    "delete": "Excluir conta"
+    "delete": "Excluir conta",
+    "deleteBlockedProSubscription": "Você tem uma assinatura Pro ativa.\n\nExcluir sua conta não cancela automaticamente sua assinatura na Polar — as cobranças podem continuar. Cancele primeiro pelo link no e-mail de recibo/confirmação enviado pela Polar, ou entre em contato com kcw022@naver.com para obter ajuda.\n\nTente novamente depois de cancelar sua assinatura."
   },
   "upgrade": {
     "requestSendFailed": "Não foi possível enviar a solicitação: {error}",

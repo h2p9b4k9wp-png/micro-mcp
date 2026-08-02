@@ -451,7 +451,8 @@
     "deleteConfirm": "Weet je zeker dat je je account wilt verwijderen?\n\nAlle geüploade bestanden, docentmateriaal, gespreksgeschiedenis en gespreksmappen, samen met je inlogaccount zelf (e-mail, inloggegevens), worden permanent verwijderd en kunnen niet worden hersteld.",
     "deleteErrorAlert": "Er is een probleem opgetreden bij het verwijderen van je account: {error}\nProbeer het opnieuw.",
     "deleting": "Bezig met verwijderen...",
-    "delete": "Account verwijderen"
+    "delete": "Account verwijderen",
+    "deleteBlockedProSubscription": "Je hebt een actief Pro-abonnement.\n\nJe account verwijderen annuleert je Polar-abonnement niet automatisch — er kan nog steeds worden afgeschreven. Zeg het eerst op via de link in de ontvangst-/bevestigingsmail van Polar, of neem contact op met kcw022@naver.com voor hulp.\n\nProbeer het opnieuw nadat je je abonnement hebt opgezegd."
   },
   "upgrade": {
     "requestSendFailed": "Kon het verzoek niet verzenden: {error}",

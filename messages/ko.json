@@ -451,7 +451,8 @@
     "deleteConfirm": "정말로 계정을 삭제할까요?\n\n업로드한 모든 파일, 교수님 자료, 대화 기록, 대화 폴더는 물론 로그인 계정 자체(이메일, 로그인 정보)까지 영구적으로 삭제되며 되돌릴 수 없습니다.",
     "deleteErrorAlert": "계정 삭제 중 문제가 발생했어요: {error}\n다시 시도해주세요.",
     "deleting": "삭제하는 중...",
-    "delete": "계정 삭제"
+    "delete": "계정 삭제",
+    "deleteBlockedProSubscription": "Pro 요금제를 구독 중이에요.\n\n계정을 삭제해도 Polar 결제 구독은 자동으로 취소되지 않아 계속 결제될 수 있어요. 결제 후 Polar가 보낸 영수증/확인 이메일의 링크로 먼저 구독을 취소하거나, kcw022@naver.com으로 문의해주세요.\n\n구독을 취소한 뒤 다시 시도해주세요."
   },
   "upgrade": {
     "requestSendFailed": "요청을 보내지 못했어요: {error}",

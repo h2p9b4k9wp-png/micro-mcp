@@ -451,7 +451,8 @@
     "deleteConfirm": "Are you sure you want to delete your account?\n\nAll uploaded files, professor materials, conversation history, and conversation folders — along with your login account itself (email, sign-in info) — will be permanently deleted and cannot be undone.",
     "deleteErrorAlert": "A problem occurred while deleting your account: {error}\nPlease try again.",
     "deleting": "Deleting...",
-    "delete": "Delete Account"
+    "delete": "Delete Account",
+    "deleteBlockedProSubscription": "You have an active Pro subscription.\n\nDeleting your account does not automatically cancel your Polar subscription — you may keep being charged. Please cancel it first using the link in the receipt/confirmation email Polar sent you, or contact kcw022@naver.com for help.\n\nTry again after cancelling your subscription."
   },
   "upgrade": {
     "requestSendFailed": "Could not send the request: {error}",

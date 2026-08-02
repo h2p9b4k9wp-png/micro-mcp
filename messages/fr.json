@@ -451,7 +451,8 @@
     "deleteConfirm": "Voulez-vous vraiment supprimer votre compte ?\n\nTous les fichiers téléversés, les documents de professeurs, l'historique des conversations et les dossiers de conversation, ainsi que votre compte de connexion lui-même (e-mail, informations de connexion), seront définitivement supprimés et ne pourront pas être récupérés.",
     "deleteErrorAlert": "Un problème est survenu lors de la suppression de votre compte : {error}\nVeuillez réessayer.",
     "deleting": "Suppression en cours...",
-    "delete": "Supprimer le compte"
+    "delete": "Supprimer le compte",
+    "deleteBlockedProSubscription": "Vous avez un abonnement Pro actif.\n\nSupprimer votre compte n'annule pas automatiquement votre abonnement Polar — les prélèvements peuvent continuer. Annulez-le d'abord via le lien dans l'e-mail de reçu/confirmation envoyé par Polar, ou contactez kcw022@naver.com pour obtenir de l'aide.\n\nRéessayez après avoir annulé votre abonnement."
   },
   "upgrade": {
     "requestSendFailed": "Impossible d'envoyer la demande : {error}",

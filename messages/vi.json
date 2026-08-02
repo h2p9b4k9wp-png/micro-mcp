@@ -451,7 +451,8 @@
     "deleteConfirm": "Bạn có chắc muốn xóa tài khoản không?\n\nTất cả tệp đã tải lên, tài liệu giáo sư, lịch sử trò chuyện và thư mục trò chuyện, cùng với chính tài khoản đăng nhập của bạn (email, thông tin đăng nhập), sẽ bị xóa vĩnh viễn và không thể khôi phục.",
     "deleteErrorAlert": "Đã xảy ra sự cố khi xóa tài khoản: {error}\nVui lòng thử lại.",
     "deleting": "Đang xóa...",
-    "delete": "Xóa tài khoản"
+    "delete": "Xóa tài khoản",
+    "deleteBlockedProSubscription": "Bạn đang có gói Pro đang hoạt động.\n\nXóa tài khoản không tự động hủy gói đăng ký Polar — bạn vẫn có thể bị trừ tiền tiếp. Hãy hủy trước bằng liên kết trong email biên nhận/xác nhận mà Polar đã gửi, hoặc liên hệ kcw022@naver.com để được hỗ trợ.\n\nThử lại sau khi đã hủy gói đăng ký."
   },
   "upgrade": {
     "requestSendFailed": "Không thể gửi yêu cầu: {error}",

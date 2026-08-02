@@ -22,6 +22,15 @@ import { getSessionUserId } from '@/lib/auth/session';
 // isPublicRoute에 넣지 않아 세션 없이는 애초에 호출할 수 없지만, userId 자체는 어차피
 // 세션에서만 읽어야 하는 값이라 별도 인증 체크 없이 getSessionUserId()의 null 반환으로
 // 방어합니다.
+//
+// 💡 [수정] Pro 구독 중인 계정은 삭제를 막습니다 — Polar가 Merchant of Record라 우리는
+// 구독 ID/고객 ID를 저장하지도 않고 Polar API 접근 토큰(POLAR_ACCESS_TOKEN)도 없어서,
+// 계정 삭제 시점에 Polar 결제 구독을 우리 쪽에서 대신 취소할 방법이 없습니다. 이 상태로
+// auth.users를 지워버리면 결제 구독은 그대로 남아 계속 청구되는데 로그인 계정은 이미
+// 사라진, 취소도 환불 문의도 훨씬 번거로워지는 상황이 됩니다. app/page.tsx의
+// handleDeleteAccount도 같은 이유로 요청 전에 먼저 이 체크를 하지만, 여기서도 다시
+// 확인합니다 — 이 라우트는 서비스 롤 키로 RLS를 우회하므로 클라이언트 체크만 믿지 않고
+// 서버에서도 최종 방어선을 둡니다.
 export async function POST() {
   const userId = await getSessionUserId();
   if (!userId) {
@@ -37,6 +46,20 @@ export async function POST() {
 
   try {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .select('is_pro')
+      .eq('id', userId)
+      .single();
+    if (profileError && profileError.code !== 'PGRST116') throw profileError;
+    if (profile?.is_pro) {
+      return NextResponse.json(
+        { error: 'Pro 구독이 활성 상태예요. 먼저 구독을 취소해주세요.', proSubscriptionActive: true },
+        { status: 409 }
+      );
+    }
+
     const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
     if (error) throw error;
 

@@ -451,7 +451,8 @@
     "deleteConfirm": "¿Seguro que quieres eliminar tu cuenta?\n\nTodos los archivos subidos, materiales de profesores, historial de conversaciones y carpetas de conversación, junto con tu cuenta de acceso (correo electrónico, datos de inicio de sesión), se eliminarán permanentemente y no se podrán recuperar.",
     "deleteErrorAlert": "Ocurrió un problema al eliminar tu cuenta: {error}\nInténtalo de nuevo.",
     "deleting": "Eliminando...",
-    "delete": "Eliminar cuenta"
+    "delete": "Eliminar cuenta",
+    "deleteBlockedProSubscription": "Tienes una suscripción Pro activa.\n\nEliminar tu cuenta no cancela automáticamente tu suscripción de Polar — podrías seguir recibiendo cargos. Cancélala primero con el enlace del correo de recibo/confirmación que te envió Polar, o escribe a kcw022@naver.com para que te ayudemos.\n\nInténtalo de nuevo después de cancelar tu suscripción."
   },
   "upgrade": {
     "requestSendFailed": "No se pudo enviar la solicitud: {error}",

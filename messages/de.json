@@ -451,7 +451,8 @@
     "deleteConfirm": "Möchten Sie Ihr Konto wirklich löschen?\n\nAlle hochgeladenen Dateien, Professorenmaterialien, der Gesprächsverlauf und die Gesprächsordner sowie Ihr Login-Konto selbst (E-Mail, Anmeldedaten) werden dauerhaft gelöscht und können nicht wiederhergestellt werden.",
     "deleteErrorAlert": "Beim Löschen Ihres Kontos ist ein Problem aufgetreten: {error}\nBitte versuchen Sie es erneut.",
     "deleting": "Wird gelöscht...",
-    "delete": "Konto löschen"
+    "delete": "Konto löschen",
+    "deleteBlockedProSubscription": "Sie haben ein aktives Pro-Abonnement.\n\nDas Löschen Ihres Kontos kündigt Ihr Polar-Abonnement nicht automatisch — es könnte weiterhin abgebucht werden. Kündigen Sie es zuerst über den Link in der Quittungs-/Bestätigungs-E-Mail von Polar, oder kontaktieren Sie kcw022@naver.com für Hilfe.\n\nVersuchen Sie es erneut, nachdem Sie Ihr Abonnement gekündigt haben."
   },
   "upgrade": {
     "requestSendFailed": "Die Anfrage konnte nicht gesendet werden: {error}",

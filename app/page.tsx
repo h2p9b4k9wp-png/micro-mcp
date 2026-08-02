@@ -985,8 +985,26 @@ export default function HomePage() {
   // 모든 사용자 데이터 테이블이 auth.users를 향한 on delete cascade로 걸려있어 자동으로도
   // 다 지워지지만, 위 명시적 테이블 삭제는 그대로 남겨둡니다 — "라이브 DB의 cascade 설정이
   // 이 저장소의 마이그레이션과 실제로 일치하는지 가정하지 않는다"는 기존 원칙 그대로입니다.
+  //
+  // 💡 [수정] Pro 구독 중이면 삭제를 막습니다 — Polar가 Merchant of Record라 우리는 구독
+  // ID를 저장하지도, Polar API로 대신 취소하지도 못합니다(POLAR_ACCESS_TOKEN 자체가 없음).
+  // 이 상태로 로그인 계정을 지우면 Polar 결제 구독은 그대로 남아 계속 청구되는데, 계정이
+  // 사라졌으니 우리 쪽에서 취소를 유도할 방법도 없어져 환불/취소 문의가 훨씬 꼬입니다 —
+  // 그래서 "자동 취소" 대신 "먼저 취소하도록 안내 후 차단"을 선택했습니다. isPro 상태값은
+  // 세션 로드 시점에 한 번 가져온 값이라 그 사이 다른 경로(영수증 이메일 링크 등)로 이미
+  // 구독을 취소했을 수 있으므로, 여기서 profiles.is_pro를 다시 조회해 최신 값으로
+  // 판단합니다. /api/account/delete도 서비스 롤 키로 RLS를 우회하는 라우트라 같은 체크를
+  // 서버에서 한 번 더 하므로(방어선 이중화), 혹시 이 클라이언트 체크를 통과한 뒤 아주
+  // 짧은 순간에 구독이 활성화되는 경쟁 상태가 있어도 최종적으로는 막힙니다.
   const handleDeleteAccount = async () => {
     if (!user) return;
+
+    const { data: freshProfile } = await supabase.from('profiles').select('is_pro').eq('id', user.id).single();
+    if (freshProfile?.is_pro) {
+      alert(t('account.deleteBlockedProSubscription'));
+      return;
+    }
+
     const confirmed = window.confirm(t('account.deleteConfirm'));
     if (!confirmed) return;
 
@@ -1009,7 +1027,11 @@ export default function HomePage() {
       const res = await fetch('/api/account/delete', { method: 'POST' });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(t('account.deleteErrorAlert', { error: data.error || res.statusText }));
+        if (data.proSubscriptionActive) {
+          alert(t('account.deleteBlockedProSubscription'));
+        } else {
+          alert(t('account.deleteErrorAlert', { error: data.error || res.statusText }));
+        }
         return;
       }
 
