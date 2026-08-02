@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "Lắp ráp như những khối,",
-      "headlineLine2": "tự động hóa công việc của riêng bạn.",
-      "subheadline": "Không cần viết code, không cần suy nghĩ về prompt phức tạp. Chỉ cần kết nối các khối chức năng cần thiết, AI sẽ lo phần còn lại.",
+      "headlineLine1": "Mai thi rồi,",
+      "headlineLine2": "tài liệu vẫn còn nguyên?",
+      "subheadline": "Tải tệp lên là có ngay tóm tắt và câu hỏi dự đoán.",
       "features": {
         "automation": {
-          "title": "Tự động hóa kết nối",
-          "desc": "Kết nối cơ sở dữ liệu, lịch, tìm kiếm và tệp bằng các khối"
+          "title": "Tùy chỉnh theo từng giáo sư",
+          "desc": "Tổng hợp theo trọng tâm riêng của từng giáo sư"
         },
         "outputs": {
-          "title": "Kết quả hướng đến hành động",
-          "desc": "Không chỉ dừng ở trò chuyện — chuyển thành tài liệu và lịch trình thực tế"
+          "title": "Câu hỏi dự đoán · Tóm tắt",
+          "desc": "AI trích xuất ngay khi bạn tải tệp lên"
         },
         "hybridEngine": {
-          "title": "Công cụ AI lai",
-          "desc": "Tự động chọn mô hình tối ưu theo độ khó của công việc"
+          "title": "Trải nghiệm không cần đăng ký",
+          "desc": "Tải một tệp ngay bây giờ và tự kiểm chứng"
         }
       },
-      "shortTagline": "Lắp ráp như những khối, tự động hóa công việc của riêng bạn",
+      "shortTagline": "Mai thi rồi, tài liệu vẫn còn nguyên?",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "Đăng nhập",
-    "headline": "Để AI đọc và sắp xếp tài liệu của bạn",
-    "subheadline": "Tải tệp lên để tự động nhận hạn chót, câu hỏi dự kiến và tóm tắt chính — hoặc hỏi bất cứ điều gì.",
+    "headline": "Mai thi rồi, tài liệu vẫn còn nguyên?",
+    "subheadline": "Tải tệp lên là có ngay tóm tắt và câu hỏi dự đoán.",
     "ctaButton": "Trải nghiệm ngay",
-    "ctaHint": "Không cần đăng ký — dùng thử ngay",
-    "professorAppeal": "Sắp xếp tài liệu theo từng giáo sư",
+    "ctaHint": "Không cần đăng ký, thử ngay bây giờ",
+    "professorAppeal": "Mỗi giáo sư một kiểu tổng hợp riêng",
     "startOver": "← Bắt đầu lại",
     "capabilities": {
       "upload": "Tải tệp, ảnh, ảnh chụp màn hình để phân tích",

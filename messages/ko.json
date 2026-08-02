@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "블록을 조립하듯,",
-      "headlineLine2": "나만의 업무를 자동화하세요.",
-      "subheadline": "코딩도, 복잡한 프롬프트 고민도 필요 없습니다. 필요한 기능을 블록으로 연결하면 AI가 나머지를 처리합니다.",
+      "headlineLine1": "시험은 내일인데,",
+      "headlineLine2": "자료는 아직 그대로라면",
+      "subheadline": "자료를 올리면 핵심 요약과 예상 문제가 바로 나와요.",
       "features": {
         "automation": {
-          "title": "연동 자동화",
-          "desc": "데이터베이스·캘린더·검색·파일을 블록으로 연결"
+          "title": "교수님별 맞춤 정리",
+          "desc": "교수님마다 다르게, 강조점에 맞춰 정리해요"
         },
         "outputs": {
-          "title": "실행 중심 결과물",
-          "desc": "대화로 끝나지 않고, 실제 문서와 일정으로 정리"
+          "title": "예상 문제 · 핵심 요약",
+          "desc": "자료만 올리면 AI가 바로 뽑아드려요"
         },
         "hybridEngine": {
-          "title": "하이브리드 AI 엔진",
-          "desc": "작업 난이도에 맞춰 최적의 모델을 자동 선택"
+          "title": "가입 없이 체험",
+          "desc": "지금 바로 파일 하나 올려서 확인해보세요"
         }
       },
-      "shortTagline": "블록을 조립하듯, 나만의 업무를 자동화하세요",
+      "shortTagline": "시험은 내일인데, 자료는 아직 그대로라면",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "로그인",
-    "headline": "당신의 자료를, AI가 대신 읽고 정리합니다",
-    "subheadline": "파일을 올리면 마감일 · 예상 질문 · 핵심 요약을 자동으로 뽑아내고, 무엇이든 바로 물어볼 수 있어요.",
+    "headline": "시험 전날, 자료는 쌓여있고 시간이 없다면",
+    "subheadline": "자료를 올리면, 핵심 요약과 예상 문제가 바로 나와요.",
     "ctaButton": "지금 체험하기",
-    "ctaHint": "회원가입 없이 바로 사용해볼 수 있어요",
-    "professorAppeal": "교수님별로 자료를 따로 정리해드려요",
+    "ctaHint": "가입 없이, 지금 바로 확인하세요",
+    "professorAppeal": "교수님마다 다르게, 맞춤으로 정리돼요",
     "startOver": "← 다시 처음으로",
     "capabilities": {
       "upload": "파일·사진·캡처 업로드해서 분석",

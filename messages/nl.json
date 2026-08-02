@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "Bouw je werk",
-      "headlineLine2": "als blokken, automatisch.",
-      "subheadline": "Geen code, geen worstelen met complexe prompts. Verbind gewoon de blokken die je nodig hebt en AI doet de rest.",
+      "headlineLine1": "Morgen examen,",
+      "headlineLine2": "stapel nog ongelezen?",
+      "subheadline": "Upload je bestanden en krijg direct een samenvatting en verwachte vragen.",
       "features": {
         "automation": {
-          "title": "Verbonden automatisering",
-          "desc": "Koppel databases, agenda's, zoeken en bestanden als blokken"
+          "title": "Afgestemd per docent",
+          "desc": "Samengesteld naar de nadruk van elke docent"
         },
         "outputs": {
-          "title": "Actiegerichte resultaten",
-          "desc": "Stopt niet bij een gesprek — wordt echte documenten en planningen"
+          "title": "Verwachte vragen · Samenvatting",
+          "desc": "AI haalt ze eruit zodra je uploadt"
         },
         "hybridEngine": {
-          "title": "Hybride AI-engine",
-          "desc": "Kiest automatisch het beste model op basis van de moeilijkheidsgraad"
+          "title": "Probeer zonder account",
+          "desc": "Upload nu meteen één bestand en zie het zelf"
         }
       },
-      "shortTagline": "Bouw je werk als blokken, automatisch",
+      "shortTagline": "Morgen examen, stapel nog ongelezen?",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "Inloggen",
-    "headline": "Laat AI je bestanden voor je lezen en ordenen",
-    "subheadline": "Upload een bestand en krijg automatisch deadlines, verwachte vragen en een kernsamenvatting — of stel gewoon een vraag.",
-    "ctaButton": "Nu proberen",
-    "ctaHint": "Geen registratie nodig — probeer het meteen",
-    "professorAppeal": "Ordent materiaal per docent",
+    "headline": "Morgen examen, stapel nog ongelezen?",
+    "subheadline": "Upload je bestanden en krijg direct een samenvatting en verwachte vragen.",
+    "ctaButton": "Probeer het nu",
+    "ctaHint": "Zonder account, probeer het meteen",
+    "professorAppeal": "Voor elke docent anders samengesteld",
     "startOver": "← Opnieuw beginnen",
     "capabilities": {
       "upload": "Upload bestanden, foto's of screenshots om te analyseren",

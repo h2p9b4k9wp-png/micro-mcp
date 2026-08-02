@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "Assemblez votre travail",
-      "headlineLine2": "comme des blocs, automatiquement.",
-      "subheadline": "Pas besoin de coder ni de peaufiner des prompts complexes. Connectez simplement les blocs dont vous avez besoin, l'IA s'occupe du reste.",
+      "headlineLine1": "Examen demain,",
+      "headlineLine2": "dossiers encore intacts ?",
+      "subheadline": "Déposez vos fichiers, obtenez résumé et questions probables à l'instant.",
       "features": {
         "automation": {
-          "title": "Automatisation connectée",
-          "desc": "Connectez bases de données, calendriers, recherche et fichiers via des blocs"
+          "title": "Adapté à chaque professeur",
+          "desc": "Organisé selon ce que chaque professeur privilégie"
         },
         "outputs": {
-          "title": "Résultats orientés action",
-          "desc": "Ne s'arrête pas à la conversation — se transforme en documents et plannings réels"
+          "title": "Questions probables · Résumé",
+          "desc": "L'IA les extrait dès que vous déposez le fichier"
         },
         "hybridEngine": {
-          "title": "Moteur IA hybride",
-          "desc": "Sélectionne automatiquement le meilleur modèle selon la difficulté de la tâche"
+          "title": "Essai sans inscription",
+          "desc": "Déposez un fichier maintenant et voyez par vous-même"
         }
       },
-      "shortTagline": "Assemblez votre travail comme des blocs, automatiquement",
+      "shortTagline": "Examen demain, dossiers encore intacts ?",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "Connexion",
-    "headline": "Laissez l'IA lire et organiser vos documents à votre place",
-    "subheadline": "Téléversez un fichier et obtenez automatiquement échéances, questions attendues et résumé clé — ou posez simplement une question.",
+    "headline": "Examen demain, dossiers encore intacts ?",
+    "subheadline": "Déposez vos fichiers, obtenez résumé et questions probables à l'instant.",
     "ctaButton": "Essayer maintenant",
-    "ctaHint": "Aucune inscription nécessaire — essayez tout de suite",
-    "professorAppeal": "Organise les documents par professeur",
+    "ctaHint": "Sans inscription, essayez tout de suite",
+    "professorAppeal": "Organisé différemment pour chaque professeur",
     "startOver": "← Recommencer",
     "capabilities": {
       "upload": "Téléversez fichiers, photos ou captures à analyser",

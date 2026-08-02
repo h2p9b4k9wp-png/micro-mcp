@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "Ensambla tu trabajo",
-      "headlineLine2": "como bloques, de forma automática.",
-      "subheadline": "No necesitas programar ni pelear con prompts complejos. Solo conecta los bloques que necesitas y la IA se encarga del resto.",
+      "headlineLine1": "¿Examen mañana",
+      "headlineLine2": "y el material sigue amontonado?",
+      "subheadline": "Sube tus archivos y obtén un resumen y preguntas esperadas al instante.",
       "features": {
         "automation": {
-          "title": "Automatización conectada",
-          "desc": "Conecta bases de datos, calendarios, búsqueda y archivos como bloques"
+          "title": "Adaptado a cada profesor",
+          "desc": "Organizado según el enfoque de cada profesor"
         },
         "outputs": {
-          "title": "Resultados orientados a la acción",
-          "desc": "No se queda en la conversación — se convierte en documentos y horarios reales"
+          "title": "Preguntas esperadas · Resumen",
+          "desc": "La IA los extrae en cuanto subes el archivo"
         },
         "hybridEngine": {
-          "title": "Motor de IA híbrido",
-          "desc": "Selecciona automáticamente el mejor modelo según la dificultad de la tarea"
+          "title": "Prueba sin registrarte",
+          "desc": "Sube un archivo ahora mismo y compruébalo"
         }
       },
-      "shortTagline": "Ensambla tu trabajo como bloques, de forma automática",
+      "shortTagline": "¿Examen mañana y el material sigue amontonado?",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "Iniciar sesión",
-    "headline": "Deja que la IA lea y organice tus archivos por ti",
-    "subheadline": "Sube un archivo y obtén plazos, preguntas esperadas y un resumen clave automáticamente, o simplemente pregunta lo que quieras.",
-    "ctaButton": "Probar ahora",
-    "ctaHint": "Sin necesidad de registrarte — pruébalo ahora mismo",
-    "professorAppeal": "Organiza materiales por cada profesor",
+    "headline": "¿Examen mañana y el material sigue sin tocar?",
+    "subheadline": "Sube tus archivos y obtén un resumen y preguntas esperadas al instante.",
+    "ctaButton": "Pruébalo ahora",
+    "ctaHint": "Sin registro, compruébalo ahora mismo",
+    "professorAppeal": "Organizado de forma distinta para cada profesor",
     "startOver": "← Empezar de nuevo",
     "capabilities": {
       "upload": "Sube archivos, fotos o capturas para analizar",

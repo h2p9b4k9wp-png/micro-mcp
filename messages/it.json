@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "Assembla il tuo lavoro",
-      "headlineLine2": "come blocchi, in automatico.",
-      "subheadline": "Niente codice, niente prompt complicati. Basta collegare i blocchi di cui hai bisogno e l'IA farà il resto.",
+      "headlineLine1": "Esame domani,",
+      "headlineLine2": "materiale ancora intatto?",
+      "subheadline": "Carica i file e ottieni subito riassunto e domande previste.",
       "features": {
         "automation": {
-          "title": "Automazione connessa",
-          "desc": "Collega database, calendari, ricerca e file come blocchi"
+          "title": "Su misura per ogni professore",
+          "desc": "Organizzato secondo ciò che ogni professore privilegia"
         },
         "outputs": {
-          "title": "Risultati orientati all'azione",
-          "desc": "Non si ferma alla chat — diventa documenti e programmi reali"
+          "title": "Domande previste · Riassunto",
+          "desc": "L'IA le estrae non appena carichi il file"
         },
         "hybridEngine": {
-          "title": "Motore IA ibrido",
-          "desc": "Seleziona automaticamente il modello migliore in base alla difficoltà del compito"
+          "title": "Prova senza registrazione",
+          "desc": "Carica subito un file e verifica di persona"
         }
       },
-      "shortTagline": "Assembla il tuo lavoro come blocchi, in automatico",
+      "shortTagline": "Esame domani, materiale ancora intatto?",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "Accedi",
-    "headline": "Lascia che l'IA legga e organizzi i tuoi file al posto tuo",
-    "subheadline": "Carica un file e ottieni automaticamente scadenze, domande previste e un riepilogo chiave — oppure chiedi semplicemente qualcosa.",
-    "ctaButton": "Prova ora",
-    "ctaHint": "Nessuna registrazione necessaria — provalo subito",
-    "professorAppeal": "Organizza i materiali per ogni professore",
+    "headline": "Esame domani, materiale ancora intatto?",
+    "subheadline": "Carica i file e ottieni subito riassunto e domande previste.",
+    "ctaButton": "Provalo ora",
+    "ctaHint": "Senza registrazione, provalo subito",
+    "professorAppeal": "Organizzato in modo diverso per ogni professore",
     "startOver": "← Ricomincia",
     "capabilities": {
       "upload": "Carica file, foto o screenshot da analizzare",

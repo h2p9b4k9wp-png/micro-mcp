@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "Automate your work",
-      "headlineLine2": "like assembling blocks.",
-      "subheadline": "No coding, no wrestling with complex prompts. Just connect the blocks you need and let AI handle the rest.",
+      "headlineLine1": "Exam tomorrow,",
+      "headlineLine2": "materials still piled up?",
+      "subheadline": "Upload your files and get a summary and expected questions instantly.",
       "features": {
         "automation": {
-          "title": "Connected Automation",
-          "desc": "Link databases, calendars, search, and files as blocks"
+          "title": "Tailored per professor",
+          "desc": "Organized differently for each professor's focus"
         },
         "outputs": {
-          "title": "Action-Oriented Results",
-          "desc": "Doesn't just end in chat — turns into real documents and schedules"
+          "title": "Expected Questions · Summary",
+          "desc": "AI pulls them out the moment you upload"
         },
         "hybridEngine": {
-          "title": "Hybrid AI Engine",
-          "desc": "Automatically picks the best model for each task's difficulty"
+          "title": "Try without signing up",
+          "desc": "Upload one file right now and see for yourself"
         }
       },
-      "shortTagline": "Automate your work, like assembling blocks",
+      "shortTagline": "Exam tomorrow, materials still piled up?",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "Log In",
-    "headline": "Let AI read and organize your files for you",
-    "subheadline": "Upload a file and get deadlines, expected questions, and a key summary automatically — or just ask anything.",
+    "headline": "Exam tomorrow, materials still untouched?",
+    "subheadline": "Upload your files and get a summary and expected questions instantly.",
     "ctaButton": "Try It Now",
-    "ctaHint": "No sign-up needed — try it right away",
-    "professorAppeal": "Organizes materials by each professor",
+    "ctaHint": "No sign-up — check it out right now",
+    "professorAppeal": "Tailored differently for every professor",
     "startOver": "← Start over",
     "capabilities": {
       "upload": "Upload files, photos, or screenshots to analyze",

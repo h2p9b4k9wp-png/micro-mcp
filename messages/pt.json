@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "Monte seu trabalho",
-      "headlineLine2": "como blocos, automaticamente.",
-      "subheadline": "Sem programação, sem lutar com prompts complexos. Basta conectar os blocos que você precisa e a IA cuida do resto.",
+      "headlineLine1": "Prova amanhã,",
+      "headlineLine2": "material ainda intocado?",
+      "subheadline": "Envie seus arquivos e receba resumo e questões esperadas na hora.",
       "features": {
         "automation": {
-          "title": "Automação conectada",
-          "desc": "Conecte bancos de dados, calendários, busca e arquivos como blocos"
+          "title": "Personalizado por professor",
+          "desc": "Organizado conforme o foco de cada professor"
         },
         "outputs": {
-          "title": "Resultados orientados à ação",
-          "desc": "Não termina na conversa — vira documentos e cronogramas reais"
+          "title": "Questões esperadas · Resumo",
+          "desc": "A IA extrai assim que você envia o arquivo"
         },
         "hybridEngine": {
-          "title": "Motor de IA híbrido",
-          "desc": "Seleciona automaticamente o melhor modelo conforme a dificuldade da tarefa"
+          "title": "Experimente sem cadastro",
+          "desc": "Envie um arquivo agora e veja por si mesmo"
         }
       },
-      "shortTagline": "Monte seu trabalho como blocos, automaticamente",
+      "shortTagline": "Prova amanhã, material ainda intocado?",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "Entrar",
-    "headline": "Deixe a IA ler e organizar seus arquivos para você",
-    "subheadline": "Envie um arquivo e receba prazos, perguntas esperadas e um resumo principal automaticamente — ou apenas pergunte qualquer coisa.",
+    "headline": "Prova amanhã, material ainda intocado?",
+    "subheadline": "Envie seus arquivos e receba resumo e questões esperadas na hora.",
     "ctaButton": "Experimentar agora",
-    "ctaHint": "Sem necessidade de cadastro — experimente agora mesmo",
-    "professorAppeal": "Organiza materiais por cada professor",
+    "ctaHint": "Sem cadastro, confira agora mesmo",
+    "professorAppeal": "Organizado de forma diferente para cada professor",
     "startOver": "← Começar de novo",
     "capabilities": {
       "upload": "Envie arquivos, fotos ou capturas para analisar",

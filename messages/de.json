@@ -351,24 +351,24 @@
   },
   "login": {
     "brand": {
-      "headlineLine1": "Setzen Sie Ihre Arbeit",
-      "headlineLine2": "wie Blöcke zusammen – automatisch.",
-      "subheadline": "Kein Programmieren, kein Ringen mit komplexen Prompts. Verbinden Sie einfach die benötigten Blöcke, den Rest übernimmt die KI.",
+      "headlineLine1": "Prüfung morgen,",
+      "headlineLine2": "Unterlagen noch unberührt?",
+      "subheadline": "Datei hochladen – Zusammenfassung und erwartete Fragen sofort erhalten.",
       "features": {
         "automation": {
-          "title": "Vernetzte Automatisierung",
-          "desc": "Verbinden Sie Datenbanken, Kalender, Suche und Dateien als Blöcke"
+          "title": "Auf jeden Professor abgestimmt",
+          "desc": "Aufbereitet nach dem Schwerpunkt jedes Professors"
         },
         "outputs": {
-          "title": "Handlungsorientierte Ergebnisse",
-          "desc": "Endet nicht im Chat — wird zu echten Dokumenten und Terminplänen"
+          "title": "Erwartete Fragen · Zusammenfassung",
+          "desc": "Die KI liefert sie sofort nach dem Hochladen"
         },
         "hybridEngine": {
-          "title": "Hybride KI-Engine",
-          "desc": "Wählt automatisch das beste Modell je nach Aufgabenschwierigkeit"
+          "title": "Ohne Anmeldung testen",
+          "desc": "Jetzt eine Datei hochladen und selbst sehen"
         }
       },
-      "shortTagline": "Setzen Sie Ihre Arbeit wie Blöcke zusammen – automatisch",
+      "shortTagline": "Prüfung morgen, Unterlagen noch unberührt?",
       "copyright": "© {year} Carrotly"
     },
     "form": {
@@ -466,11 +466,11 @@
   },
   "landing": {
     "loginButton": "Anmelden",
-    "headline": "Lassen Sie die KI Ihre Dateien für Sie lesen und ordnen",
-    "subheadline": "Laden Sie eine Datei hoch und erhalten Sie automatisch Fristen, erwartete Fragen und eine Kernzusammenfassung — oder fragen Sie einfach etwas.",
-    "ctaButton": "Jetzt testen",
-    "ctaHint": "Keine Anmeldung nötig — sofort testen",
-    "professorAppeal": "Ordnet Material nach jedem Dozenten",
+    "headline": "Prüfung morgen, Unterlagen noch unberührt?",
+    "subheadline": "Datei hochladen – Zusammenfassung und erwartete Fragen sofort erhalten.",
+    "ctaButton": "Jetzt ausprobieren",
+    "ctaHint": "Ohne Anmeldung, gleich jetzt testen",
+    "professorAppeal": "Für jeden Professor anders aufbereitet",
     "startOver": "← Von vorn beginnen",
     "capabilities": {
       "upload": "Dateien, Fotos oder Screenshots hochladen und analysieren",
