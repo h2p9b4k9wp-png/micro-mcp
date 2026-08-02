@@ -227,7 +227,7 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
                     ? 'radial-gradient(circle, var(--bg-accent-subtle) 0%, var(--bg-page) 70%)'
                     : node.status === 'idle'
                       ? 'var(--bg-page-alt)'
-                      : '#2A1520',
+                      : 'var(--bg-accent-subtle)',
                 boxShadow: !isGated && status.glow
                   ? isLens
                     ? '0 0 32px 6px rgba(244,103,155,0.4)'
