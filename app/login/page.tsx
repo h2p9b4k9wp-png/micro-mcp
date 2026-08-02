@@ -370,7 +370,12 @@ function LoginPageContent() {
         <span className="absolute right-32 bottom-[228px] w-1.5 h-1.5 rounded-full bg-[#FFD97D]" />
 
         <div className="flex items-center gap-2.5 relative">
-          <Logomark className="w-8 h-8 text-[#F4679B]" />
+          {/* 💡 큰 마스코트와 동일한 흰색 원형 배경 패턴 — 바깥 박스 크기(w-8 h-8)는 기존과
+              동일하게 유지하고 안쪽 이미지만 패딩만큼 줄여서, "Carrotly" 텍스트와의 정렬에
+              영향 없이 어두운 좌측 패널 위에서 잘 보이게 합니다. */}
+          <div className="w-8 h-8 rounded-full bg-white p-1 flex items-center justify-center">
+            <Logomark className="w-full h-full" />
+          </div>
           <span className="text-lg font-extrabold tracking-tight">Carrotly</span>
         </div>
 
@@ -409,7 +414,11 @@ function LoginPageContent() {
           {/* 모바일 전용 브랜드 표기 (좌측 패널이 숨겨지므로) — 스크롤 없이 폼이 보이도록 최대한 짧게 구성 */}
           <div className="flex md:hidden flex-col items-center mb-7">
             <span className="text-base font-extrabold text-[#F5F2F7] tracking-tight mb-3">Carrotly</span>
-            <Logomark className="w-14 h-14" />
+            {/* 💡 이 화면도 어두운 배경(bg-[#1C1922]) 위라 큰 마스코트와 동일한 흰색 원형
+                배경 패턴을 적용합니다. */}
+            <div className="w-14 h-14 rounded-full bg-white p-1.5 flex items-center justify-center">
+              <Logomark className="w-full h-full" />
+            </div>
             <p className="text-[#C9C0D6] text-sm text-center mt-3 max-w-[280px] leading-snug">
               {t('login.brand.shortTagline')}
             </p>

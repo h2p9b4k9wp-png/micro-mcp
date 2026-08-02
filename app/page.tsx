@@ -1982,7 +1982,11 @@ export default function HomePage() {
       `}>
         <div className="hidden md:flex px-6 py-6 items-center justify-between border-b border-[#322D3B]">
           <div className="flex items-center gap-2.5 text-[#F4679B]">
-            <Logomark className="w-7 h-7" />
+            {/* 💡 로그인 화면 큰 마스코트와 동일한 흰색 원형 배경 패턴 — 이 사이드바도
+                bg-[#211E28] 어두운 배경이라 같은 처리를 적용합니다. */}
+            <div className="w-7 h-7 rounded-full bg-white p-1 flex items-center justify-center">
+              <Logomark className="w-full h-full" />
+            </div>
             <span className="text-[16px] font-extrabold text-[#F5F2F7] tracking-tight">Carrotly</span>
             <button
               type="button"
