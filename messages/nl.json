@@ -625,5 +625,60 @@
       "body": "Vragen over dit beleid, of verzoeken om toegang tot of verwijdering van je gegevens, kun je sturen naar <mailto>kcw022@naver.com</mailto>."
     },
     "region": "Noordoost-Azië (Seoul), Zuid-Korea"
+  },
+  "terms": {
+    "metaTitle": "Servicevoorwaarden — Carrotly",
+    "metaDescription": "De voorwaarden die gelden wanneer je Carrotly gebruikt.",
+    "backLink": "← Terug naar Carrotly",
+    "title": "Servicevoorwaarden",
+    "lastUpdated": "Laatst bijgewerkt: augustus 2026",
+    "intro": "Deze voorwaarden zijn van toepassing op je gebruik van Carrotly (&ldquo;wij&rdquo;, &ldquo;onze&rdquo;, &ldquo;de dienst&rdquo;), een persoonlijke AI-werkassistent die door jou geüploade documenten leest en ordent. Door een account aan te maken of de dienst te gebruiken, ga je akkoord met deze voorwaarden. Als je niet akkoord gaat, gebruik de dienst dan niet.",
+    "service": {
+      "heading": "De dienst",
+      "body": "Met Carrotly kun je documenten, foto&rsquo;s en andere bestanden uploaden; de dienst gebruikt AI om deadlines te extraheren, inhoud samen te vatten, waarschijnlijke tentamen-/opdrachtvragen te voorspellen en vragen te beantwoorden over wat je hebt geüpload. Sommige functies vereisen een account; een beperkt aantal functies kan zonder account worden uitgeprobeerd, met inachtneming van de gebruikslimieten die in het product zelf worden beschreven."
+    },
+    "account": {
+      "heading": "Je account",
+      "body": "Je bent verantwoordelijk voor het veilig bewaren van je inloggegevens en voor alle activiteiten onder je account. Je moet een geldig e-mailadres opgeven en bent verantwoordelijk voor de juistheid ervan. Je kunt je account op elk moment verwijderen — zie <privacylink>ons Privacybeleid</privacylink> voor hoe."
+    },
+    "subscriptions": {
+      "heading": "Abonnementen en betaling",
+      "intro": "Carrotly biedt een gratis abonnement en een betaald &ldquo;Pro&rdquo;-abonnement ({price}) met hogere gebruikslimieten — zie <pricinglink>Pricing</pricinglink> voor de actuele details.",
+      "mor": "<b>Alle betalingen worden verwerkt door Polar Software, Inc. (&ldquo;Polar&rdquo;), dat voor deze aankoop optreedt als Merchant of Record.</b> Dit betekent dat Polar — en niet Carrotly — de verkoper is met wie je voor de daadwerkelijke transactie een overeenkomst aangaat: Polar verschijnt als handelaar op je kaart-/bankafschrift, int en draagt eventuele omzetbelasting of btw af, en verzorgt facturering en betalingsgerelateerde klantenservice. Verzoeken om terugbetaling, geschillen over facturering en chargebacks worden afgehandeld volgens de <polarlink>eigen voorwaarden van Polar</polarlink>. Wij ontvangen alleen de bevestiging dat een betaling is geslaagd (en de referentie die aan je account is gekoppeld) zodat we je naar Pro kunnen upgraden — we ontvangen of bewaren je volledige betaalkaartgegevens niet. Als je als consument in een rechtsgebied woont met een wettelijk herroepingsrecht of bedenktijd voor deze aankoop, oefen je dat recht uit bij Polar, aangezien zij de Merchant of Record van de transactie zijn.",
+      "renewal": "Abonnementen worden automatisch verlengd bij elke factureringsperiode totdat ze worden opgezegd. Je kunt je abonnement beheren of opzeggen via de ontvangst-/bevestigingsmail die Polar je na aankoop stuurt, of door contact met ons op te nemen via onderstaand adres — wij helpen je dan om Polar te bereiken."
+    },
+    "aiContent": {
+      "heading": "Door AI gegenereerde inhoud",
+      "body": "Samenvattingen, verwachte vragen, deadlines en antwoorden worden gegenereerd door AI-modellen en kunnen onvolledig, verouderd of onjuist zijn. Carrotly is een studie-/werkhulpmiddel, geen vervanging voor het zelf lezen van je daadwerkelijke bronmateriaal of het zelf controleren van belangrijke data en vereisten. Vertrouw niet uitsluitend op AI-output voor zaken met echte gevolgen (examendata, opdrachtvereisten, juridische of medische beslissingen, enz.)."
+    },
+    "content": {
+      "heading": "Jouw inhoud",
+      "body": "Je behoudt de eigendom van alles wat je uploadt. Je bent verantwoordelijk voor het recht om het te uploaden, en voor het niet uploaden van illegale inhoud of inhoud die de rechten van anderen schendt. Wij gebruiken je inhoud alleen om je de dienst te leveren (zie <privacylink>ons Privacybeleid</privacylink> voor precies met wie en waarom deze wordt gedeeld) — we claimen geen eigendom en gebruiken het niet om AI-modellen te trainen."
+    },
+    "acceptableUse": {
+      "heading": "Aanvaardbaar gebruik",
+      "intro": "Gebruik Carrotly niet om:",
+      "item1": "De wet te overtreden, of inhoud te uploaden die je niet het recht hebt te delen.",
+      "item2": "Te proberen de dienst te verstoren, te overbelasten of ongeoorloofd toegang te krijgen.",
+      "item3": "De dienst zonder onze toestemming door te verkopen of aan derden te leveren.",
+      "item4": "Gebruikslimieten (zoals de limieten van het gratis/Pro-abonnement) te omzeilen door misbruik of automatisering.",
+      "outro": "We kunnen accounts die deze voorwaarden schenden opschorten of beëindigen."
+    },
+    "disclaimer": {
+      "heading": "Disclaimer en aansprakelijkheidsbeperking",
+      "body": "Carrotly wordt geleverd &ldquo;zoals het is&rdquo;, zonder enige vorm van garantie. We garanderen niet dat de dienst ononderbroken of foutloos zal zijn, of dat AI-output accuraat is. Voor zover wettelijk toegestaan is Carrotly niet aansprakelijk voor indirecte, incidentele of gevolgschade die voortvloeit uit je gebruik van de dienst — inclusief beslissingen die zijn genomen op basis van door AI gegenereerde inhoud."
+    },
+    "changes": {
+      "heading": "Wijzigingen in deze voorwaarden",
+      "body": "We kunnen deze voorwaarden bijwerken naarmate de dienst verandert. Bij ingrijpende wijzigingen werken we de datum &ldquo;Laatst bijgewerkt&rdquo; hierboven bij; voortgezet gebruik van de dienst na een wijziging betekent dat je de bijgewerkte voorwaarden accepteert."
+    },
+    "governingLaw": {
+      "heading": "Toepasselijk recht",
+      "body": "[Vul het toepasselijke recht / rechtsgebied in, bijv. &ldquo;het recht van de Republiek Korea&rdquo;]."
+    },
+    "contact": {
+      "heading": "Contact",
+      "body": "Vragen over deze voorwaarden kun je sturen naar <mailto>kcw022@naver.com</mailto>."
+    }
   }
 }

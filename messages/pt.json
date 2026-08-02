@@ -625,5 +625,60 @@
       "body": "Dúvidas sobre esta política, ou solicitações de acesso ou exclusão dos seus dados, podem ser enviadas para <mailto>kcw022@naver.com</mailto>."
     },
     "region": "Ásia Nordeste (Seul), Coreia do Sul"
+  },
+  "terms": {
+    "metaTitle": "Termos de Serviço — Carrotly",
+    "metaDescription": "Os termos aplicáveis ao usar a Carrotly.",
+    "backLink": "← Voltar para a Carrotly",
+    "title": "Termos de Serviço",
+    "lastUpdated": "Última atualização: agosto de 2026",
+    "intro": "Estes termos regem o uso que você faz da Carrotly (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo;, &ldquo;o serviço&rdquo;), um assistente pessoal de trabalho com IA que lê e organiza os documentos que você envia. Ao criar uma conta ou usar o serviço, você concorda com estes termos. Se você não concordar, não utilize o serviço.",
+    "service": {
+      "heading": "O serviço",
+      "body": "A Carrotly permite que você envie documentos, fotos e outros arquivos, e usa IA para extrair prazos, resumir conteúdo, prever possíveis questões de prova/tarefa e responder a perguntas sobre o que você enviou. Alguns recursos exigem uma conta; um conjunto limitado de recursos pode ser testado sem uma, sujeito aos limites de uso descritos no próprio produto."
+    },
+    "account": {
+      "heading": "Sua conta",
+      "body": "Você é responsável por manter suas credenciais de login seguras e por todas as atividades realizadas em sua conta. Você deve fornecer um endereço de e-mail válido e é responsável por sua exatidão. Você pode excluir sua conta a qualquer momento — veja <privacylink>nossa Política de Privacidade</privacylink> para saber como."
+    },
+    "subscriptions": {
+      "heading": "Assinaturas e pagamento",
+      "intro": "A Carrotly oferece um plano gratuito e um plano &ldquo;Pro&rdquo; pago ({price}) com limites de uso mais altos — veja <pricinglink>Pricing</pricinglink> para os detalhes atuais.",
+      "mor": "<b>Todos os pagamentos são processados pela Polar Software, Inc. (&ldquo;Polar&rdquo;), que atua como Merchant of Record desta compra.</b> Isso significa que a Polar — e não a Carrotly — é a vendedora com quem você contrata a transação em si: a Polar aparece como o estabelecimento comercial no extrato do seu cartão/banco, coleta e repassa o imposto sobre vendas ou IVA aplicável, e cuida da cobrança, faturamento e suporte ao cliente relacionado a pagamentos. Solicitações de reembolso, disputas de cobrança e estornos são tratados conforme os <polarlink>termos próprios da Polar</polarlink>. Nós recebemos apenas a confirmação de que o pagamento foi concluído (e a referência vinculada à sua conta) para atualizá-lo para Pro — não recebemos nem armazenamos os dados completos do seu cartão de pagamento. Se você for consumidor em uma jurisdição com direito legal de arrependimento ou período de reflexão para esta compra, esse direito é exercido junto à Polar, já que ela é a Merchant of Record da transação.",
+      "renewal": "As assinaturas são renovadas automaticamente a cada período de cobrança até serem canceladas. Você pode gerenciar ou cancelar sua assinatura pelo e-mail de recibo/confirmação que a Polar envia após a compra, ou entrando em contato conosco pelo endereço abaixo — ajudaremos você a contatar a Polar."
+    },
+    "aiContent": {
+      "heading": "Conteúdo gerado por IA",
+      "body": "Resumos, questões previstas, prazos e respostas são gerados por modelos de IA e podem estar incompletos, desatualizados ou incorretos. A Carrotly é uma ferramenta de apoio a estudos/trabalho, não um substituto para a leitura do seu material original ou para a verificação, por você mesmo, de datas e requisitos importantes. Não confie apenas nos resultados da IA para nada com consequências reais (datas de prova, requisitos de tarefas, decisões jurídicas ou médicas, etc.)."
+    },
+    "content": {
+      "heading": "Seu conteúdo",
+      "body": "Você mantém a propriedade de tudo o que envia. Você é responsável por ter o direito de enviá-lo, e por não enviar conteúdo ilegal ou que infrinja os direitos de terceiros. Usamos seu conteúdo apenas para fornecer o serviço a você (veja <privacylink>nossa Política de Privacidade</privacylink> para saber exatamente com quem ele é compartilhado e por quê) — não reivindicamos sua propriedade nem o usamos para treinar modelos de IA."
+    },
+    "acceptableUse": {
+      "heading": "Uso aceitável",
+      "intro": "Por favor, não use a Carrotly para:",
+      "item1": "Violar a lei, ou enviar conteúdo que você não tem o direito de compartilhar.",
+      "item2": "Tentar interromper, sobrecarregar ou obter acesso não autorizado ao serviço.",
+      "item3": "Revender ou fornecer o serviço a terceiros sem o nosso acordo.",
+      "item4": "Burlar limites de uso (por exemplo, os tetos dos planos gratuito/Pro) por abuso ou automação.",
+      "outro": "Podemos suspender ou encerrar contas que violem estes termos."
+    },
+    "disclaimer": {
+      "heading": "Isenção de responsabilidade e limitação de responsabilidade",
+      "body": "A Carrotly é fornecida &ldquo;como está&rdquo;, sem garantias de qualquer tipo. Não garantimos que o serviço será ininterrupto, livre de erros, ou que os resultados da IA serão precisos. Na máxima extensão permitida por lei, a Carrotly não será responsável por danos indiretos, incidentais ou consequenciais decorrentes do uso do serviço — incluindo decisões tomadas com base em conteúdo gerado por IA."
+    },
+    "changes": {
+      "heading": "Alterações a estes termos",
+      "body": "Podemos atualizar estes termos conforme o serviço evolui. Se fizermos alterações relevantes, atualizaremos a data de &ldquo;Última atualização&rdquo; acima; o uso continuado do serviço após uma alteração significa que você aceita os termos atualizados."
+    },
+    "governingLaw": {
+      "heading": "Lei aplicável",
+      "body": "[Insira a lei aplicável / jurisdição, por exemplo, &ldquo;as leis da República da Coreia&rdquo;]."
+    },
+    "contact": {
+      "heading": "Contato",
+      "body": "Dúvidas sobre estes termos podem ser enviadas para <mailto>kcw022@naver.com</mailto>."
+    }
   }
 }

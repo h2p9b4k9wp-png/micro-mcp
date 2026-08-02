@@ -625,5 +625,60 @@
       "body": "Domande su questa informativa, o richieste di accesso o eliminazione dei tuoi dati, possono essere inviate a <mailto>kcw022@naver.com</mailto>."
     },
     "region": "Asia nordorientale (Seul), Corea del Sud"
+  },
+  "terms": {
+    "metaTitle": "Termini di Servizio — Carrotly",
+    "metaDescription": "I termini applicabili quando utilizzi Carrotly.",
+    "backLink": "← Torna a Carrotly",
+    "title": "Termini di Servizio",
+    "lastUpdated": "Ultimo aggiornamento: agosto 2026",
+    "intro": "Questi termini regolano il tuo utilizzo di Carrotly (&laquo;noi&raquo;, &laquo;nostro&raquo;, &laquo;il servizio&raquo;), un assistente di lavoro personale basato sull&rsquo;IA che legge e organizza i documenti che carichi. Creando un account o utilizzando il servizio, accetti questi termini. Se non sei d&rsquo;accordo, non utilizzare il servizio.",
+    "service": {
+      "heading": "Il servizio",
+      "body": "Carrotly ti consente di caricare documenti, foto e altri file, e utilizza l&rsquo;IA per estrarre scadenze, riassumere contenuti, prevedere possibili domande d&rsquo;esame/compito e rispondere a domande su ciò che hai caricato. Alcune funzionalità richiedono un account; un insieme limitato di funzionalità può essere provato senza account, nei limiti di utilizzo descritti nel prodotto stesso."
+    },
+    "account": {
+      "heading": "Il tuo account",
+      "body": "Sei responsabile della sicurezza delle tue credenziali di accesso e di tutta l&rsquo;attività svolta con il tuo account. Devi fornire un indirizzo email valido e sei responsabile della sua correttezza. Puoi eliminare il tuo account in qualsiasi momento — consulta la nostra <privacylink>Informativa sulla privacy</privacylink> per sapere come."
+    },
+    "subscriptions": {
+      "heading": "Abbonamenti e pagamenti",
+      "intro": "Carrotly offre un piano gratuito e un piano &laquo;Pro&raquo; a pagamento ({price}) con limiti di utilizzo più elevati — consulta <pricinglink>Pricing</pricinglink> per i dettagli aggiornati.",
+      "mor": "<b>Tutti i pagamenti sono elaborati da Polar Software, Inc. (&laquo;Polar&raquo;), che agisce come Merchant of Record per questo acquisto.</b> Ciò significa che Polar — e non Carrotly — è il venditore con cui stipuli il contratto per la transazione vera e propria: Polar compare come esercente sull&rsquo;estratto conto della tua carta/banca, riscuote e versa l&rsquo;eventuale imposta sulle vendite o IVA applicabile, e gestisce fatturazione e assistenza clienti relativa ai pagamenti. Richieste di rimborso, controversie di fatturazione e storni sono gestiti secondo i <polarlink>termini propri di Polar</polarlink>. Riceviamo solo la conferma che il pagamento è andato a buon fine (e il riferimento collegato al tuo account) per poterti aggiornare a Pro — non riceviamo né conserviamo i dati completi della tua carta di pagamento. Se sei un consumatore in una giurisdizione con un diritto di recesso legale o un periodo di riflessione per questo acquisto, tale diritto si esercita nei confronti di Polar, in quanto Merchant of Record della transazione.",
+      "renewal": "Gli abbonamenti si rinnovano automaticamente a ogni periodo di fatturazione fino alla disdetta. Puoi gestire o annullare il tuo abbonamento tramite l&rsquo;email di ricevuta/conferma che Polar ti invia dopo l&rsquo;acquisto, oppure contattandoci all&rsquo;indirizzo qui sotto: ti aiuteremo a contattare Polar."
+    },
+    "aiContent": {
+      "heading": "Contenuti generati dall'IA",
+      "body": "Riassunti, domande previste, scadenze e risposte sono generati da modelli di IA e possono essere incompleti, non aggiornati o errati. Carrotly è un supporto allo studio/lavoro, non un sostituto della lettura diretta del materiale originale o della verifica personale di date e requisiti importanti. Non affidarti esclusivamente ai risultati dell&rsquo;IA per questioni con conseguenze reali (date d&rsquo;esame, requisiti dei compiti, decisioni legali o mediche, ecc.)."
+    },
+    "content": {
+      "heading": "I tuoi contenuti",
+      "body": "Mantieni la proprietà di tutto ciò che carichi. Sei responsabile di avere il diritto di caricarlo e di non caricare contenuti illegali o che violino i diritti di terzi. Utilizziamo i tuoi contenuti solo per fornirti il servizio (consulta la nostra <privacylink>Informativa sulla privacy</privacylink> per sapere esattamente con chi vengono condivisi e perché) — non ne rivendichiamo la proprietà e non li utilizziamo per addestrare modelli di IA."
+    },
+    "acceptableUse": {
+      "heading": "Uso consentito",
+      "intro": "Ti preghiamo di non utilizzare Carrotly per:",
+      "item1": "Violare la legge, o caricare contenuti che non hai il diritto di condividere.",
+      "item2": "Tentare di interrompere, sovraccaricare o accedere senza autorizzazione al servizio.",
+      "item3": "Rivendere o fornire il servizio a terzi senza il nostro accordo.",
+      "item4": "Eludere i limiti di utilizzo (ad es. i tetti dei piani gratuito/Pro) tramite abuso o automazione.",
+      "outro": "Possiamo sospendere o chiudere gli account che violano questi termini."
+    },
+    "disclaimer": {
+      "heading": "Esclusione di garanzia e limitazione di responsabilità",
+      "body": "Carrotly è fornito &laquo;così com&rsquo;è&raquo;, senza garanzie di alcun tipo. Non garantiamo che il servizio sarà ininterrotto, privo di errori, o che i risultati dell&rsquo;IA saranno accurati. Nella misura massima consentita dalla legge, Carrotly non è responsabile per danni indiretti, incidentali o consequenziali derivanti dall&rsquo;uso del servizio — incluse le decisioni prese sulla base di contenuti generati dall&rsquo;IA."
+    },
+    "changes": {
+      "heading": "Modifiche a questi termini",
+      "body": "Possiamo aggiornare questi termini in base all&rsquo;evoluzione del servizio. In caso di modifiche sostanziali, aggiorneremo la data di &laquo;Ultimo aggiornamento&raquo; sopra indicata; l&rsquo;uso continuato del servizio dopo una modifica comporta l&rsquo;accettazione dei termini aggiornati."
+    },
+    "governingLaw": {
+      "heading": "Legge applicabile",
+      "body": "[Inserisci la legge applicabile / giurisdizione, ad es. &laquo;le leggi della Repubblica di Corea&raquo;]."
+    },
+    "contact": {
+      "heading": "Contatti",
+      "body": "Le domande su questi termini possono essere inviate a <mailto>kcw022@naver.com</mailto>."
+    }
   }
 }

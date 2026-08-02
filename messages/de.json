@@ -625,5 +625,60 @@
       "body": "Fragen zu dieser Richtlinie oder Anfragen zum Zugriff auf oder zur Löschung Ihrer Daten können an <mailto>kcw022@naver.com</mailto> gesendet werden."
     },
     "region": "Nordostasien (Seoul), Südkorea"
+  },
+  "terms": {
+    "metaTitle": "Nutzungsbedingungen — Carrotly",
+    "metaDescription": "Die Bedingungen, die bei der Nutzung von Carrotly gelten.",
+    "backLink": "← Zurück zu Carrotly",
+    "title": "Nutzungsbedingungen",
+    "lastUpdated": "Zuletzt aktualisiert: August 2026",
+    "intro": "Diese Bedingungen regeln Ihre Nutzung von Carrotly (&bdquo;wir&ldquo;, &bdquo;uns&ldquo;, &bdquo;der Dienst&ldquo;), einem persönlichen KI-Arbeitsassistenten, der von Ihnen hochgeladene Dokumente liest und organisiert. Durch die Erstellung eines Kontos oder die Nutzung des Dienstes stimmen Sie diesen Bedingungen zu. Wenn Sie nicht einverstanden sind, nutzen Sie den Dienst bitte nicht.",
+    "service": {
+      "heading": "Der Dienst",
+      "body": "Mit Carrotly können Sie Dokumente, Fotos und andere Dateien hochladen; der Dienst nutzt KI, um Fristen zu extrahieren, Inhalte zusammenzufassen, wahrscheinliche Prüfungs-/Aufgabenfragen vorherzusagen und Fragen zu Ihren hochgeladenen Inhalten zu beantworten. Einige Funktionen erfordern ein Konto; ein begrenzter Funktionsumfang kann ohne Konto getestet werden, vorbehaltlich der im Produkt selbst beschriebenen Nutzungsgrenzen."
+    },
+    "account": {
+      "heading": "Ihr Konto",
+      "body": "Sie sind dafür verantwortlich, Ihre Anmeldedaten sicher aufzubewahren und für sämtliche Aktivitäten unter Ihrem Konto. Sie müssen eine gültige E-Mail-Adresse angeben und sind für deren Richtigkeit verantwortlich. Sie können Ihr Konto jederzeit löschen — siehe <privacylink>unsere Datenschutzerklärung</privacylink> für die Vorgehensweise."
+    },
+    "subscriptions": {
+      "heading": "Abonnements und Zahlung",
+      "intro": "Carrotly bietet einen kostenlosen Tarif sowie einen kostenpflichtigen &bdquo;Pro&ldquo;-Tarif ({price}) mit höheren Nutzungsgrenzen — aktuelle Details finden Sie unter <pricinglink>Pricing</pricinglink>.",
+      "mor": "<b>Alle Zahlungen werden von Polar Software, Inc. (&bdquo;Polar&ldquo;) abgewickelt, das für diesen Kauf als Merchant of Record (Vertragspartner des Zahlungsvorgangs) auftritt.</b> Das bedeutet, dass Polar — und nicht Carrotly — der Verkäufer ist, mit dem Sie für die eigentliche Transaktion einen Vertrag eingehen: Polar erscheint als Händler auf Ihrer Karten-/Kontoabrechnung, erhebt und führt die anfallende Umsatzsteuer bzw. Mehrwertsteuer ab und übernimmt Abrechnung, Rechnungsstellung und den zahlungsbezogenen Kundensupport. Rückerstattungsanfragen, Abrechnungsstreitigkeiten und Rückbuchungen werden gemäß den <polarlink>eigenen Bedingungen von Polar</polarlink> bearbeitet. Wir erhalten lediglich die Bestätigung, dass eine Zahlung erfolgreich war (sowie die mit Ihrem Konto verknüpfte Referenz), um Sie auf Pro hochzustufen — wir erhalten oder speichern nicht Ihre vollständigen Zahlungskartendaten. Sofern Ihnen als Verbraucher in Ihrer Rechtsordnung für diesen Kauf ein gesetzliches Widerrufsrecht zusteht, üben Sie dieses gegenüber Polar aus, da Polar der Merchant of Record der Transaktion ist.",
+      "renewal": "Abonnements verlängern sich automatisch mit jedem Abrechnungszeitraum, bis sie gekündigt werden. Sie können Ihr Abonnement über die Quittungs-/Bestätigungs-E-Mail verwalten oder kündigen, die Polar Ihnen nach dem Kauf zusendet, oder uns unter der unten angegebenen Adresse kontaktieren — wir helfen Ihnen dann, Polar zu erreichen."
+    },
+    "aiContent": {
+      "heading": "KI-generierte Inhalte",
+      "body": "Zusammenfassungen, vorhergesagte Fragen, Fristen und Antworten werden von KI-Modellen erstellt und können unvollständig, veraltet oder falsch sein. Carrotly ist eine Lern-/Arbeitshilfe und kein Ersatz dafür, Ihr tatsächliches Quellmaterial selbst zu lesen oder wichtige Termine und Anforderungen selbst zu überprüfen. Verlassen Sie sich nicht allein auf KI-Ausgaben bei Dingen mit realen Konsequenzen (Prüfungstermine, Aufgabenanforderungen, rechtliche oder medizinische Entscheidungen usw.)."
+    },
+    "content": {
+      "heading": "Ihre Inhalte",
+      "body": "Sie behalten das Eigentum an allem, was Sie hochladen. Sie sind dafür verantwortlich, das Recht zum Hochladen zu besitzen und keine rechtswidrigen Inhalte oder Inhalte, die Rechte Dritter verletzen, hochzuladen. Wir nutzen Ihre Inhalte nur, um Ihnen den Dienst bereitzustellen (siehe <privacylink>unsere Datenschutzerklärung</privacylink> für Details, mit wem und warum sie geteilt werden) — wir beanspruchen kein Eigentum daran und verwenden sie nicht zum Training von KI-Modellen."
+    },
+    "acceptableUse": {
+      "heading": "Zulässige Nutzung",
+      "intro": "Bitte nutzen Sie Carrotly nicht, um:",
+      "item1": "gegen geltendes Recht zu verstoßen oder Inhalte hochzuladen, zu deren Weitergabe Sie nicht berechtigt sind.",
+      "item2": "den Dienst zu stören, zu überlasten oder unbefugt darauf zuzugreifen.",
+      "item3": "den Dienst ohne unsere Zustimmung weiterzuverkaufen oder Dritten bereitzustellen.",
+      "item4": "Nutzungsgrenzen (z. B. Obergrenzen des kostenlosen/Pro-Tarifs) durch Missbrauch oder Automatisierung zu umgehen.",
+      "outro": "Wir können Konten, die gegen diese Bedingungen verstoßen, sperren oder kündigen."
+    },
+    "disclaimer": {
+      "heading": "Haftungsausschluss und Haftungsbeschränkung",
+      "body": "Carrotly wird &bdquo;wie besehen&ldquo; ohne jegliche Gewährleistung bereitgestellt. Wir garantieren nicht, dass der Dienst unterbrechungsfrei oder fehlerfrei ist oder dass die KI-Ausgaben korrekt sind. Im gesetzlich zulässigen Höchstmaß haftet Carrotly nicht für indirekte, beiläufige oder Folgeschäden, die aus Ihrer Nutzung des Dienstes entstehen — einschließlich Entscheidungen, die auf Grundlage KI-generierter Inhalte getroffen wurden."
+    },
+    "changes": {
+      "heading": "Änderungen dieser Bedingungen",
+      "body": "Wir können diese Bedingungen im Zuge von Änderungen am Dienst aktualisieren. Bei wesentlichen Änderungen aktualisieren wir das oben genannte Datum &bdquo;Zuletzt aktualisiert&ldquo;; die weitere Nutzung des Dienstes nach einer Änderung gilt als Zustimmung zu den aktualisierten Bedingungen."
+    },
+    "governingLaw": {
+      "heading": "Anwendbares Recht",
+      "body": "[Bitte anwendbares Recht / Gerichtsstand eintragen, z. B. &bdquo;das Recht der Republik Korea&ldquo;]."
+    },
+    "contact": {
+      "heading": "Kontakt",
+      "body": "Fragen zu diesen Bedingungen können an <mailto>kcw022@naver.com</mailto> gesendet werden."
+    }
   }
 }

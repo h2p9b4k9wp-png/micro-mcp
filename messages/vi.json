@@ -625,5 +625,60 @@
       "body": "Các câu hỏi về chính sách này, hoặc yêu cầu truy cập hay xóa dữ liệu của bạn, có thể gửi đến <mailto>kcw022@naver.com</mailto>."
     },
     "region": "Đông Bắc Á (Seoul), Hàn Quốc"
+  },
+  "terms": {
+    "metaTitle": "Điều khoản Dịch vụ — Carrotly",
+    "metaDescription": "Các điều khoản áp dụng khi bạn sử dụng Carrotly.",
+    "backLink": "← Quay lại Carrotly",
+    "title": "Điều khoản Dịch vụ",
+    "lastUpdated": "Cập nhật lần cuối: tháng 8 năm 2026",
+    "intro": "Các điều khoản này áp dụng cho việc bạn sử dụng Carrotly (&ldquo;chúng tôi&rdquo;, &ldquo;dịch vụ&rdquo;), một trợ lý công việc AI cá nhân giúp đọc và sắp xếp các tài liệu bạn tải lên. Khi tạo tài khoản hoặc sử dụng dịch vụ, bạn đồng ý với các điều khoản này. Nếu không đồng ý, vui lòng không sử dụng dịch vụ.",
+    "service": {
+      "heading": "Về dịch vụ",
+      "body": "Carrotly cho phép bạn tải lên tài liệu, ảnh và các tệp khác, đồng thời dùng AI để trích xuất hạn chót, tóm tắt nội dung, dự đoán câu hỏi thi/bài tập có khả năng xuất hiện, và trả lời câu hỏi dựa trên nội dung bạn đã tải lên. Một số tính năng yêu cầu tài khoản; một số tính năng giới hạn có thể dùng thử không cần tài khoản, tuân theo giới hạn sử dụng được nêu trong chính sản phẩm."
+    },
+    "account": {
+      "heading": "Tài khoản của bạn",
+      "body": "Bạn chịu trách nhiệm bảo mật thông tin đăng nhập và mọi hoạt động diễn ra dưới tài khoản của mình. Bạn phải cung cấp địa chỉ email hợp lệ và chịu trách nhiệm về tính chính xác của nó. Bạn có thể xóa tài khoản bất cứ lúc nào — xem <privacylink>Chính sách Bảo mật</privacylink> để biết cách thực hiện."
+    },
+    "subscriptions": {
+      "heading": "Gói đăng ký và thanh toán",
+      "intro": "Carrotly cung cấp gói miễn phí và gói trả phí &ldquo;Pro&rdquo; ({price}) với giới hạn sử dụng cao hơn — xem <pricinglink>Pricing</pricinglink> để biết chi tiết hiện tại.",
+      "mor": "<b>Mọi khoản thanh toán đều do Polar Software, Inc. (&ldquo;Polar&rdquo;) xử lý, với tư cách là Merchant of Record (đơn vị bán hàng chính thức) cho giao dịch này.</b> Điều này có nghĩa là Polar — chứ không phải Carrotly — mới là bên bán mà bạn thực sự giao kết hợp đồng cho giao dịch: Polar sẽ hiện tên trên sao kê thẻ/ngân hàng của bạn, thu và nộp thuế bán hàng hoặc VAT áp dụng (nếu có), đồng thời phụ trách việc lập hóa đơn và hỗ trợ khách hàng liên quan đến thanh toán. Yêu cầu hoàn tiền, tranh chấp thanh toán và chargeback được xử lý theo <polarlink>điều khoản riêng của Polar</polarlink>. Chúng tôi chỉ nhận được xác nhận thanh toán thành công (cùng mã tham chiếu gắn với tài khoản của bạn) để nâng cấp bạn lên Pro — chúng tôi không nhận hay lưu trữ đầy đủ thông tin thẻ thanh toán của bạn.",
+      "renewal": "Gói đăng ký sẽ tự động gia hạn theo mỗi chu kỳ thanh toán cho đến khi bị hủy. Bạn có thể quản lý hoặc hủy gói đăng ký qua email biên nhận/xác nhận mà Polar gửi sau khi thanh toán, hoặc liên hệ với chúng tôi theo địa chỉ bên dưới — chúng tôi sẽ hỗ trợ bạn liên hệ với Polar."
+    },
+    "aiContent": {
+      "heading": "Nội dung do AI tạo ra",
+      "body": "Bản tóm tắt, câu hỏi dự đoán, hạn chót và câu trả lời đều do mô hình AI tạo ra và có thể không đầy đủ, đã lỗi thời hoặc sai. Carrotly là công cụ hỗ trợ học tập/công việc, không thay thế việc bạn tự đọc tài liệu gốc hoặc tự xác minh những ngày và yêu cầu quan trọng. Đừng chỉ dựa vào kết quả của AI cho những việc có hậu quả thực tế (ngày thi, yêu cầu bài tập, quyết định pháp lý hoặc y tế, v.v.)."
+    },
+    "content": {
+      "heading": "Nội dung của bạn",
+      "body": "Bạn giữ quyền sở hữu đối với mọi nội dung bạn tải lên. Bạn chịu trách nhiệm về việc có quyền tải lên nội dung đó, và không tải lên nội dung bất hợp pháp hoặc xâm phạm quyền của người khác. Chúng tôi chỉ sử dụng nội dung của bạn để cung cấp dịch vụ cho bạn (xem <privacylink>Chính sách Bảo mật</privacylink> để biết chính xác nội dung được chia sẻ với ai và vì sao) — chúng tôi không tuyên bố quyền sở hữu đối với nội dung đó và không dùng nó để huấn luyện mô hình AI."
+    },
+    "acceptableUse": {
+      "heading": "Quy định sử dụng",
+      "intro": "Vui lòng không sử dụng Carrotly để:",
+      "item1": "Vi phạm pháp luật, hoặc tải lên nội dung bạn không có quyền chia sẻ.",
+      "item2": "Cố gắng làm gián đoạn, quá tải hoặc truy cập trái phép vào dịch vụ.",
+      "item3": "Bán lại hoặc cung cấp dịch vụ cho bên thứ ba mà không có sự đồng ý của chúng tôi.",
+      "item4": "Lách giới hạn sử dụng (ví dụ: giới hạn gói miễn phí/Pro) thông qua hành vi lạm dụng hoặc tự động hóa.",
+      "outro": "Chúng tôi có thể tạm ngưng hoặc chấm dứt các tài khoản vi phạm điều khoản này."
+    },
+    "disclaimer": {
+      "heading": "Miễn trừ trách nhiệm và giới hạn trách nhiệm",
+      "body": "Carrotly được cung cấp &ldquo;nguyên trạng&rdquo;, không có bất kỳ bảo đảm nào. Chúng tôi không đảm bảo dịch vụ sẽ hoạt động liên tục, không có lỗi, hoặc kết quả AI sẽ chính xác. Trong phạm vi tối đa được pháp luật cho phép, Carrotly không chịu trách nhiệm cho các thiệt hại gián tiếp, ngẫu nhiên hoặc hệ quả phát sinh từ việc bạn sử dụng dịch vụ — kể cả các quyết định dựa trên nội dung do AI tạo ra."
+    },
+    "changes": {
+      "heading": "Thay đổi điều khoản",
+      "body": "Chúng tôi có thể cập nhật các điều khoản này khi dịch vụ thay đổi. Nếu có thay đổi quan trọng, chúng tôi sẽ cập nhật ngày &ldquo;Cập nhật lần cuối&rdquo; ở trên; việc tiếp tục sử dụng dịch vụ sau khi có thay đổi đồng nghĩa với việc bạn chấp nhận các điều khoản đã cập nhật."
+    },
+    "governingLaw": {
+      "heading": "Luật áp dụng",
+      "body": "[Điền luật áp dụng / thẩm quyền tài phán, ví dụ: &ldquo;pháp luật Đại Hàn Dân Quốc&rdquo;]."
+    },
+    "contact": {
+      "heading": "Liên hệ",
+      "body": "Câu hỏi về các điều khoản này có thể gửi đến <mailto>kcw022@naver.com</mailto>."
+    }
   }
 }

@@ -625,5 +625,60 @@
       "body": "Les questions concernant cette politique, ou les demandes d&rsquo;accès ou de suppression de vos données, peuvent être envoyées à <mailto>kcw022@naver.com</mailto>."
     },
     "region": "Asie du Nord-Est (Séoul), Corée du Sud"
+  },
+  "terms": {
+    "metaTitle": "Conditions d'utilisation — Carrotly",
+    "metaDescription": "Les conditions applicables lorsque vous utilisez Carrotly.",
+    "backLink": "← Retour à Carrotly",
+    "title": "Conditions d'utilisation",
+    "lastUpdated": "Dernière mise à jour : août 2026",
+    "intro": "Les présentes conditions régissent votre utilisation de Carrotly (&laquo;&nbsp;nous&nbsp;&raquo;, &laquo;&nbsp;notre&nbsp;&raquo;, &laquo;&nbsp;le service&nbsp;&raquo;), un assistant de travail personnel basé sur l&rsquo;IA qui lit et organise les documents que vous téléversez. En créant un compte ou en utilisant le service, vous acceptez ces conditions. Si vous n&rsquo;êtes pas d&rsquo;accord, veuillez ne pas utiliser le service.",
+    "service": {
+      "heading": "Le service",
+      "body": "Carrotly vous permet de téléverser des documents, photos et autres fichiers, et utilise l&rsquo;IA pour extraire des échéances, résumer du contenu, prédire des questions probables d&rsquo;examen/de devoir, et répondre à des questions sur ce que vous avez téléversé. Certaines fonctionnalités nécessitent un compte ; un nombre limité de fonctionnalités peut être testé sans compte, sous réserve des limites d&rsquo;utilisation décrites dans le produit lui-même."
+    },
+    "account": {
+      "heading": "Votre compte",
+      "body": "Vous êtes responsable de la sécurité de vos identifiants de connexion et de toute activité effectuée sous votre compte. Vous devez fournir une adresse e-mail valide et êtes responsable de son exactitude. Vous pouvez supprimer votre compte à tout moment — voir <privacylink>notre Politique de confidentialité</privacylink> pour savoir comment."
+    },
+    "subscriptions": {
+      "heading": "Abonnements et paiement",
+      "intro": "Carrotly propose une offre gratuite et une offre payante &laquo;&nbsp;Pro&nbsp;&raquo; ({price}) avec des limites d&rsquo;utilisation plus élevées — voir <pricinglink>Pricing</pricinglink> pour les détails actuels.",
+      "mor": "<b>Tous les paiements sont traités par Polar Software, Inc. (&laquo;&nbsp;Polar&nbsp;&raquo;), agissant en tant que Merchant of Record pour cet achat.</b> Cela signifie que Polar — et non Carrotly — est le vendeur avec lequel vous contractez pour la transaction elle-même : Polar apparaît comme le marchand sur votre relevé de carte/bancaire, perçoit et reverse la taxe de vente ou TVA applicable, et gère la facturation ainsi que le support client lié aux paiements. Les demandes de remboursement, litiges de facturation et rétrofacturations sont traités selon les <polarlink>conditions propres à Polar</polarlink>. Nous recevons uniquement la confirmation que le paiement a abouti (et la référence liée à votre compte) afin de vous faire passer en Pro — nous ne recevons ni ne conservons vos coordonnées bancaires complètes. Si vous êtes un consommateur dans une juridiction disposant d&rsquo;un droit de rétractation légal ou d&rsquo;un délai de réflexion pour cet achat, ce droit s&rsquo;exerce auprès de Polar, celui-ci étant le Merchant of Record de la transaction.",
+      "renewal": "Les abonnements se renouvellent automatiquement à chaque période de facturation jusqu&rsquo;à leur résiliation. Vous pouvez gérer ou résilier votre abonnement via l&rsquo;e-mail de reçu/confirmation que Polar vous envoie après l&rsquo;achat, ou en nous contactant à l&rsquo;adresse ci-dessous, et nous vous aiderons à joindre Polar."
+    },
+    "aiContent": {
+      "heading": "Contenu généré par l'IA",
+      "body": "Les résumés, questions probables, échéances et réponses sont générés par des modèles d&rsquo;IA et peuvent être incomplets, obsolètes ou erronés. Carrotly est une aide à l&rsquo;étude/au travail, pas un substitut à la lecture de votre document source réel ou à la vérification par vous-même des dates et exigences importantes. Ne vous fiez pas uniquement aux résultats de l&rsquo;IA pour tout ce qui a des conséquences réelles (dates d&rsquo;examen, exigences de devoirs, décisions juridiques ou médicales, etc.)."
+    },
+    "content": {
+      "heading": "Votre contenu",
+      "body": "Vous conservez la propriété de tout ce que vous téléversez. Vous êtes responsable d&rsquo;avoir le droit de le téléverser, et de ne pas téléverser de contenu illégal ou portant atteinte aux droits d&rsquo;autrui. Nous n&rsquo;utilisons votre contenu que pour vous fournir le service (voir <privacylink>notre Politique de confidentialité</privacylink> pour savoir exactement avec qui il est partagé et pourquoi) — nous n&rsquo;en revendiquons pas la propriété et ne l&rsquo;utilisons pas pour entraîner des modèles d&rsquo;IA."
+    },
+    "acceptableUse": {
+      "heading": "Utilisation acceptable",
+      "intro": "Merci de ne pas utiliser Carrotly pour :",
+      "item1": "Enfreindre la loi, ou téléverser du contenu que vous n&rsquo;avez pas le droit de partager.",
+      "item2": "Tenter de perturber, surcharger ou accéder de façon non autorisée au service.",
+      "item3": "Revendre ou fournir le service à des tiers sans notre accord.",
+      "item4": "Contourner les limites d&rsquo;utilisation (par ex. les plafonds des offres gratuite/Pro) par abus ou automatisation.",
+      "outro": "Nous pouvons suspendre ou résilier les comptes qui enfreignent ces conditions."
+    },
+    "disclaimer": {
+      "heading": "Avertissement et limitation de responsabilité",
+      "body": "Carrotly est fourni &laquo;&nbsp;en l&rsquo;état&nbsp;&raquo;, sans garantie d&rsquo;aucune sorte. Nous ne garantissons pas que le service sera ininterrompu, exempt d&rsquo;erreurs, ou que les résultats de l&rsquo;IA seront exacts. Dans toute la mesure permise par la loi, Carrotly ne saurait être tenu responsable des dommages indirects, accessoires ou consécutifs résultant de votre utilisation du service — y compris les décisions prises sur la base de contenu généré par l&rsquo;IA."
+    },
+    "changes": {
+      "heading": "Modifications des présentes conditions",
+      "body": "Nous pouvons mettre à jour ces conditions à mesure que le service évolue. En cas de changement important, nous mettrons à jour la date de &laquo;&nbsp;Dernière mise à jour&nbsp;&raquo; ci-dessus ; la poursuite de l&rsquo;utilisation du service après un changement vaut acceptation des conditions mises à jour."
+    },
+    "governingLaw": {
+      "heading": "Droit applicable",
+      "body": "[Insérez le droit applicable / la juridiction, par exemple &laquo;&nbsp;le droit de la République de Corée&nbsp;&raquo;]."
+    },
+    "contact": {
+      "heading": "Contact",
+      "body": "Les questions concernant ces conditions peuvent être envoyées à <mailto>kcw022@naver.com</mailto>."
+    }
   }
 }
