@@ -1,6 +1,8 @@
 {
   "app": {
-    "loadingSession": "Wird geladen..."
+    "loadingSession": "Wird geladen...",
+    "title": "Carrotly — Ihr persönlicher KI-Arbeitsassistent",
+    "description": "Eine KI-Workflow-Plattform, die Ihre Arbeit und Ihren Alltag Baustein für Baustein automatisiert."
   },
   "nav": {
     "workspace": "KI fragen",
@@ -347,7 +349,9 @@
       "action": "Ergebnis"
     },
     "gatedTooltip": "{label} benötigt mindestens {count} Dokumente in Meine Bibliothek",
-    "estimatedSeconds": "~{seconds}s"
+    "estimatedSeconds": "~{seconds}s",
+    "resetZoomAriaLabel": "Zoom/Verschiebung zurücksetzen",
+    "resetZoomButtonLabel": "Zurücksetzen"
   },
   "login": {
     "brand": {
@@ -481,7 +485,92 @@
     },
     "professorSection": {
       "title": "Jeder Dozent prüft anders",
-      "description": "Ordnen Sie Material nach Dozent, und ein Klick liefert erwartete Fragen und eine Zusammenfassung, abgestimmt auf das, was dieser Dozent betont und wie er prüft."
+      "description": "Ordnen Sie Material nach Dozent, und ein Klick liefert erwartete Fragen und eine Zusammenfassung, abgestimmt auf das, was dieser Dozent betont und wie er prüft.",
+      "demo": {
+        "autoPromptLabel": "Automatischer Prompt angewendet",
+        "promptTemplate": "„Erwartete Fragen und eine Kernzusammenfassung aus {name}s Material erstellen“",
+        "professors": [
+          {
+            "name": "Prof. Müller",
+            "subject": "Softwaretechnik",
+            "emphasis": [
+              "Betont stets Designprinzipien (SOLID) und ihre praktische Anwendung",
+              "Legt mehr Wert auf reale Code-Review-Beispiele als auf Theorie"
+            ],
+            "questions": [
+              "Wählen Sie ein SOLID-Prinzip und erklären Sie es anhand von echtem Code",
+              "Beschreiben Sie den Unterschied zwischen Agile und Wasserfall aus praktischer Sicht"
+            ],
+            "summary": "Dieses Semester liegt der Fokus auf Designprinzipien und Codequalität — die Fragen orientieren sich eher an Beispielen als an reiner Theorie."
+          },
+          {
+            "name": "Prof. Schmidt",
+            "subject": "Datenbanken",
+            "emphasis": [
+              "Erklärt den Normalisierungsprozess gerne Schritt für Schritt",
+              "Bevorzugt praxisnahe Aufgaben mit starkem Fokus aufs Schreiben von Abfragen"
+            ],
+            "questions": [
+              "Erklären Sie den Normalisierungsprozess bis zur 3NF anhand einer Beispieltabelle",
+              "Beschreiben Sie die Unterschiede zwischen JOIN-Typen mit SQL-Beispielen"
+            ],
+            "summary": "Starker Fokus auf Normalisierung und SQL-Praxis — erwarten Sie Aufgaben zum selbst Lösen statt reiner Konzeptfragen."
+          },
+          {
+            "name": "Prof. Wagner",
+            "subject": "Algorithmen",
+            "emphasis": [
+              "Lässt die Zeitkomplexität stets von Hand berechnen",
+              "Stellt häufig Fragen, die Greedy-Algorithmen mit dynamischer Programmierung vergleichen"
+            ],
+            "questions": [
+              "Analysieren Sie die Zeitkomplexität eines gegebenen Algorithmus mit der Big-O-Notation",
+              "Nennen Sie ein Beispiel, bei dem ein Greedy-Algorithmus keine optimale Lösung garantiert"
+            ],
+            "summary": "Komplexitätsanalyse und der Vergleich Greedy/DP stehen im Mittelpunkt — bevorzugt wird das Lösen von Hand."
+          }
+        ]
+      }
     }
+  },
+  "themeToggle": {
+    "ariaLabel": "Anzeigethema",
+    "system": "System",
+    "light": "Hell",
+    "dark": "Dunkel"
+  },
+  "loading": {
+    "messages": [
+      "Durchsucht die Unterlagen des Dozenten",
+      "Sucht nach Prüfungsmustern",
+      "Findet Hinweise zwischen den Zeilen",
+      "Unterstreicht die wichtigen Stellen",
+      "Sieht sich alte Prüfungen noch einmal an",
+      "Ordnet die Lernunterlagen",
+      "Wählt das Wesentliche aus",
+      "Liest zwischen den Zeilen",
+      "Liest das Material genau durch",
+      "Findet und verknüpft Muster",
+      "Ordnet nach Wichtigkeit",
+      "Zählt wiederkehrende Wörter",
+      "Umgeht Tippfehler gekonnt",
+      "Durchforstet jeden Winkel des Dokuments",
+      "Extrahiert Schlüsselbegriffe",
+      "Setzt den Kontext zusammen",
+      "Fasst das Wichtigste knapp zusammen",
+      "Sucht Gemeinsamkeiten zwischen den Unterlagen",
+      "Prüft Buchstabe für Buchstabe",
+      "Erkennt die versteckte Absicht",
+      "Markiert wichtige Sätze",
+      "Folgt dem roten Faden",
+      "Wendet das Material von allen Seiten",
+      "Extrahiert Schlüsselsätze",
+      "Sammelt nach und nach Hinweise",
+      "Nähert sich einer Schlussfolgerung",
+      "Analysiert bei einer Tasse Kaffee",
+      "Bereitet Textmarker vor",
+      "Ordnet die Gedanken",
+      "Gleich geschafft"
+    ]
   }
 }

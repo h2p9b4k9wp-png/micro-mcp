@@ -1,6 +1,8 @@
 {
   "app": {
-    "loadingSession": "Laden..."
+    "loadingSession": "Laden...",
+    "title": "Carrotly — Jouw persoonlijke AI-werkassistent",
+    "description": "Een AI-workflowplatform dat je werk en dagelijks leven blok voor blok automatiseert."
   },
   "nav": {
     "workspace": "AI vragen",
@@ -347,7 +349,9 @@
       "action": "Resultaat"
     },
     "gatedTooltip": "{label} heeft minstens {count} documenten in Mijn bibliotheek nodig om te gebruiken",
-    "estimatedSeconds": "~{seconds}s"
+    "estimatedSeconds": "~{seconds}s",
+    "resetZoomAriaLabel": "Zoom/verplaatsing resetten",
+    "resetZoomButtonLabel": "Resetten"
   },
   "login": {
     "brand": {
@@ -481,7 +485,92 @@
     },
     "professorSection": {
       "title": "Elke docent toetst anders",
-      "description": "Organiseer materiaal per docent, en met één klik krijg je verwachte vragen en een samenvatting afgestemd op wat die docent benadrukt en hoe die toetst."
+      "description": "Organiseer materiaal per docent, en met één klik krijg je verwachte vragen en een samenvatting afgestemd op wat die docent benadrukt en hoe die toetst.",
+      "demo": {
+        "autoPromptLabel": "Automatische prompt toegepast",
+        "promptTemplate": "“Haal verwachte vragen en een kernsamenvatting uit het materiaal van {name}”",
+        "professors": [
+          {
+            "name": "Prof. Jansen",
+            "subject": "Software-engineering",
+            "emphasis": [
+              "Benadrukt altijd ontwerpprincipes (SOLID) en de praktische toepassing ervan",
+              "Hecht meer waarde aan echte code-review-voorbeelden dan aan theorie"
+            ],
+            "questions": [
+              "Kies een SOLID-principe en leg het uit met echte code",
+              "Beschrijf het verschil tussen Agile en Waterfall vanuit een praktisch oogpunt"
+            ],
+            "summary": "Dit semester ligt de focus op ontwerpprincipes en codekwaliteit — vragen zijn eerder voorbeeldgericht dan theoretisch."
+          },
+          {
+            "name": "Prof. de Vries",
+            "subject": "Databases",
+            "emphasis": [
+              "Legt het normalisatieproces graag stap voor stap uit",
+              "Geeft de voorkeur aan praktische opgaven, met veel nadruk op het schrijven van queries"
+            ],
+            "questions": [
+              "Leg het normalisatieproces tot en met de 3NF uit aan de hand van een voorbeeldtabel",
+              "Beschrijf de verschillen tussen JOIN-types met SQL-voorbeelden"
+            ],
+            "summary": "Veel nadruk op normalisatie en SQL-oefening — verwacht opgaven die je echt moet oplossen, niet alleen begrippen."
+          },
+          {
+            "name": "Prof. Bakker",
+            "subject": "Algoritmen",
+            "emphasis": [
+              "Laat de tijdscomplexiteit altijd met de hand berekenen",
+              "Stelt vaak vragen die greedy-algoritmen met dynamisch programmeren vergelijken"
+            ],
+            "questions": [
+              "Analyseer de tijdscomplexiteit van een gegeven algoritme met Big-O-notatie",
+              "Geef een voorbeeld waarin een greedy-algoritme geen optimale oplossing garandeert"
+            ],
+            "summary": "Complexiteitsanalyse en de greedy/DP-vergelijking staan centraal, met voorkeur voor met de hand oplossen."
+          }
+        ]
+      }
     }
+  },
+  "themeToggle": {
+    "ariaLabel": "Schermthema",
+    "system": "Systeem",
+    "light": "Licht",
+    "dark": "Donker"
+  },
+  "loading": {
+    "messages": [
+      "Doorzoekt het materiaal van de docent",
+      "Zoekt naar patronen in vraagstelling",
+      "Zoekt aanwijzingen tussen de regels",
+      "Onderstreept de belangrijke delen",
+      "Neemt oude tentamens nog eens door",
+      "Ordent de aantekeningen",
+      "Selecteert de essentie",
+      "Leest tussen de regels",
+      "Leest het materiaal nauwkeurig",
+      "Vindt en verbindt patronen",
+      "Rangschikt op belangrijkheid",
+      "Telt herhaalde woorden",
+      "Ontwijkt typefouten",
+      "Doorzoekt elk hoekje van het document",
+      "Haalt kernbegrippen eruit",
+      "Zet de context in elkaar",
+      "Vat de kern kort samen",
+      "Zoekt overeenkomsten tussen het materiaal",
+      "Controleert letter voor letter",
+      "Achterhaalt de verborgen bedoeling",
+      "Markeert belangrijke zinnen",
+      "Volgt de rode draad",
+      "Bekijkt het materiaal van alle kanten",
+      "Haalt kernzinnen eruit",
+      "Verzamelt aanwijzingen één voor één",
+      "Werkt toe naar een conclusie",
+      "Analyseert met een kop koffie",
+      "Maakt markeerstiften klaar",
+      "Ordent de gedachten",
+      "Bijna klaar"
+    ]
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { RotateCcw } from 'lucide-react';
 
 const MIN_SCALE = 0.6;
@@ -28,6 +29,7 @@ interface Gesture {
 // React의 합성 터치 이벤트는 touchmove를 passive로 등록해 preventDefault가 먹지 않을 수 있어,
 // ref에 네이티브 리스너를 직접 { passive: false }로 붙입니다.
 export function PannableCanvas({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('circuit');
   const viewportRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState({ scale: 1, x: 0, y: 0 });
   const transformRef = useRef(transform);
@@ -120,11 +122,11 @@ export function PannableCanvas({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           onClick={() => setTransform({ scale: 1, x: 0, y: 0 })}
-          aria-label="확대/이동 초기화"
+          aria-label={t('resetZoomAriaLabel')}
           className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-[var(--bg-page)]/90 hover:bg-[var(--surface-chip)] border border-[var(--border-default)] text-[var(--text-secondary)] text-[11px] font-medium px-2.5 py-1.5 rounded-full backdrop-blur cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
         >
           <RotateCcw className="w-3 h-3" strokeWidth={2} />
-          초기화
+          {t('resetZoomButtonLabel')}
         </button>
       )}
     </div>

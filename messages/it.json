@@ -1,6 +1,8 @@
 {
   "app": {
-    "loadingSession": "Caricamento..."
+    "loadingSession": "Caricamento...",
+    "title": "Carrotly — Il tuo assistente di lavoro IA",
+    "description": "Una piattaforma di workflow IA che automatizza il tuo lavoro e la tua vita quotidiana, un blocco alla volta."
   },
   "nav": {
     "workspace": "Chiedi all'IA",
@@ -347,7 +349,9 @@
       "action": "Risultato"
     },
     "gatedTooltip": "{label} richiede almeno {count} documenti in La mia libreria per essere usato",
-    "estimatedSeconds": "~{seconds}s"
+    "estimatedSeconds": "~{seconds}s",
+    "resetZoomAriaLabel": "Reimposta zoom/spostamento",
+    "resetZoomButtonLabel": "Reimposta"
   },
   "login": {
     "brand": {
@@ -481,7 +485,92 @@
     },
     "professorSection": {
       "title": "Ogni professore valuta in modo diverso",
-      "description": "Organizza i materiali per professore: un clic basta per ottenere domande previste e un riepilogo su misura di ciò che quel professore sottolinea e di come valuta."
+      "description": "Organizza i materiali per professore: un clic basta per ottenere domande previste e un riepilogo su misura di ciò che quel professore sottolinea e di come valuta.",
+      "demo": {
+        "autoPromptLabel": "Prompt automatico applicato",
+        "promptTemplate": "“Estrai le domande previste e un riepilogo chiave dai materiali di {name}”",
+        "professors": [
+          {
+            "name": "Prof. Rossi",
+            "subject": "Ingegneria del Software",
+            "emphasis": [
+              "Sottolinea sempre i principi di design (SOLID) e la loro applicazione pratica",
+              "Dà più importanza a esempi reali di code review che alla teoria"
+            ],
+            "questions": [
+              "Scegli un principio SOLID e spiegalo con codice reale",
+              "Descrivi la differenza tra Agile e Waterfall da un punto di vista pratico"
+            ],
+            "summary": "Questo semestre si concentra su principi di design e qualità del codice — le domande tendono a basarsi su casi pratici più che sulla teoria."
+          },
+          {
+            "name": "Prof. Bianchi",
+            "subject": "Basi di Dati",
+            "emphasis": [
+              "Ama ripercorrere il processo di normalizzazione passo dopo passo",
+              "Preferisce esercizi pratici, con forte enfasi sulla scrittura di query"
+            ],
+            "questions": [
+              "Descrivi il processo di normalizzazione fino alla 3FN con una tabella di esempio",
+              "Descrivi le differenze tra i tipi di JOIN con esempi SQL"
+            ],
+            "summary": "Forte enfasi su normalizzazione e pratica SQL — aspettati problemi da risolvere concretamente, non solo concetti da ricordare."
+          },
+          {
+            "name": "Prof. Ferrari",
+            "subject": "Algoritmi",
+            "emphasis": [
+              "Fa sempre calcolare la complessità temporale a mano",
+              "Propone spesso domande che confrontano algoritmi greedy e programmazione dinamica"
+            ],
+            "questions": [
+              "Analizza la complessità temporale di un dato algoritmo con la notazione Big-O",
+              "Fai un esempio in cui un algoritmo greedy non garantisce una soluzione ottima"
+            ],
+            "summary": "L'analisi della complessità e il confronto greedy/DP sono il fulcro del corso, con preferenza per la risoluzione a mano."
+          }
+        ]
+      }
     }
+  },
+  "themeToggle": {
+    "ariaLabel": "Tema schermo",
+    "system": "Sistema",
+    "light": "Chiaro",
+    "dark": "Scuro"
+  },
+  "loading": {
+    "messages": [
+      "Sta scavando tra i materiali del professore",
+      "Cerca schemi ricorrenti nelle domande",
+      "Cerca indizi tra le righe",
+      "Sottolinea le parti importanti",
+      "Rivede i vecchi esami",
+      "Organizza gli appunti",
+      "Seleziona l'essenziale",
+      "Legge tra le righe",
+      "Legge il materiale con attenzione",
+      "Trova e collega schemi",
+      "Ordina per importanza",
+      "Conta le parole ripetute",
+      "Schiva i refusi",
+      "Passa al setaccio ogni angolo del documento",
+      "Estrae le parole chiave",
+      "Ricompone il contesto",
+      "Riassume l'essenziale",
+      "Cerca punti in comune tra i materiali",
+      "Controlla lettera per lettera",
+      "Coglie l'intento nascosto",
+      "Segna le frasi importanti",
+      "Segue il filo del discorso",
+      "Rigira il materiale in ogni modo",
+      "Estrae le frasi chiave",
+      "Raccoglie indizi uno alla volta",
+      "Si avvicina a una conclusione",
+      "Analizza con un caffè in mano",
+      "Prepara evidenziatori",
+      "Mette in ordine le idee",
+      "Ci siamo quasi"
+    ]
   }
 }

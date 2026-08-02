@@ -1,6 +1,8 @@
 {
   "app": {
-    "loadingSession": "Loading..."
+    "loadingSession": "Loading...",
+    "title": "Carrotly — Your Personal AI Work Assistant",
+    "description": "An AI workflow platform that automates your work and daily life, block by block."
   },
   "nav": {
     "workspace": "Ask AI",
@@ -347,7 +349,9 @@
       "action": "Result"
     },
     "gatedTooltip": "{label} needs at least {count} documents in My Library to use",
-    "estimatedSeconds": "~{seconds}s"
+    "estimatedSeconds": "~{seconds}s",
+    "resetZoomAriaLabel": "Reset zoom/pan",
+    "resetZoomButtonLabel": "Reset"
   },
   "login": {
     "brand": {
@@ -481,7 +485,92 @@
     },
     "professorSection": {
       "title": "Every professor tests differently",
-      "description": "Organize materials by professor and one click gives you expected questions and a summary tuned to what that professor emphasizes and how they test."
+      "description": "Organize materials by professor and one click gives you expected questions and a summary tuned to what that professor emphasizes and how they test.",
+      "demo": {
+        "autoPromptLabel": "Auto-prompt applied",
+        "promptTemplate": "“Pull expected questions and a key summary from {name}’s materials”",
+        "professors": [
+          {
+            "name": "Prof. Smith",
+            "subject": "Software Engineering",
+            "emphasis": [
+              "Always emphasizes design principles (SOLID) and how they apply in practice",
+              "Cares more about real code-review examples than pure theory"
+            ],
+            "questions": [
+              "Pick one SOLID principle and explain it using real code",
+              "Compare Agile and Waterfall from a practical, real-world perspective"
+            ],
+            "summary": "This term leans heavily on design principles and code quality — exam questions tend to be example-driven rather than theoretical."
+          },
+          {
+            "name": "Prof. Johnson",
+            "subject": "Database Systems",
+            "emphasis": [
+              "Likes walking through normalization step by step",
+              "Favors hands-on problems, with a strong emphasis on writing queries"
+            ],
+            "questions": [
+              "Walk through normalization up to 3NF using an example table",
+              "Explain the differences between JOIN types with SQL examples"
+            ],
+            "summary": "Heavy focus on normalization and hands-on SQL — expect problems you actually solve, not just concepts to recall."
+          },
+          {
+            "name": "Prof. Carter",
+            "subject": "Algorithms",
+            "emphasis": [
+              "Always has you work out time complexity by hand",
+              "Frequently asks you to compare greedy algorithms with dynamic programming"
+            ],
+            "questions": [
+              "Analyze the time complexity of a given algorithm using Big-O notation",
+              "Give an example where a greedy algorithm fails to guarantee an optimal solution"
+            ],
+            "summary": "Complexity analysis and greedy-vs-DP comparisons are the core focus — prefers working problems out by hand."
+          }
+        ]
+      }
     }
+  },
+  "themeToggle": {
+    "ariaLabel": "Display theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "loading": {
+    "messages": [
+      "Digging through professor materials",
+      "Looking for question patterns",
+      "Finding hints hidden between the lines",
+      "Underlining the important parts",
+      "Reviewing past exams again",
+      "Organizing the study notes",
+      "Picking out the essentials",
+      "Reading between the lines",
+      "Reading the material closely",
+      "Finding and connecting patterns",
+      "Ranking things by importance",
+      "Counting repeated words",
+      "Dodging typos left and right",
+      "Combing through every corner of the document",
+      "Pulling out key terms",
+      "Piecing the context together",
+      "Boiling it down to the point",
+      "Finding what the materials have in common",
+      "Checking things character by character",
+      "Figuring out the hidden intent",
+      "Starring the important sentences",
+      "Following the flow",
+      "Turning the material over every which way",
+      "Pulling out key sentences",
+      "Gathering clues one by one",
+      "Working toward a conclusion",
+      "Analyzing over a cup of coffee",
+      "Getting the highlighters ready",
+      "Organizing your thoughts",
+      "Almost there"
+    ]
   }
 }

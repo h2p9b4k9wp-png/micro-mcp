@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
@@ -16,10 +16,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Carrotly — 나만의 AI 업무 비서",
-  description: "블록을 조립하듯, 나만의 업무와 일상을 자동화하는 AI 워크플로우 플랫폼",
-};
+// 💡 [수정] title/description이 원래 static export로 한국어 고정이라, 다른 로케일로
+// 전환해도 브라우저 탭 제목/검색엔진 설명은 항상 한국어로 나왔습니다 — messages/*.json의
+// app.title/app.description(next-intl의 getTranslations, 요청별 로케일 인식)으로 옮겨
+// generateMetadata()로 바꿨습니다. app/manifest.ts(PWA 설치 시 이름)도 같은 이유로 별도로
+// 고쳤습니다 — 거긴 next-intl 요청 컨텍스트 밖이라 locale 쿠키를 직접 읽습니다.
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('app');
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
 // 💡 [수정] 사용자가 다크/라이트를 직접 고를 수 있게 되면서 "dark"로 고정 선언하던 걸
 // "light dark"(둘 다 지원)로 되돌렸습니다 — 실제 색은 app/globals.css의 html.dark/html.light

@@ -1,6 +1,8 @@
 {
   "app": {
-    "loadingSession": "Cargando..."
+    "loadingSession": "Cargando...",
+    "title": "Carrotly — Tu asistente de trabajo con IA",
+    "description": "Una plataforma de flujo de trabajo con IA que automatiza tu trabajo y tu día a día, como si armaras bloques."
   },
   "nav": {
     "workspace": "Preguntar a la IA",
@@ -347,7 +349,9 @@
       "action": "Resultado"
     },
     "gatedTooltip": "{label} necesita al menos {count} documentos en Mi biblioteca para usarse",
-    "estimatedSeconds": "~{seconds}s"
+    "estimatedSeconds": "~{seconds}s",
+    "resetZoomAriaLabel": "Restablecer zoom/desplazamiento",
+    "resetZoomButtonLabel": "Restablecer"
   },
   "login": {
     "brand": {
@@ -481,7 +485,92 @@
     },
     "professorSection": {
       "title": "Cada profesor evalúa distinto",
-      "description": "Organiza tus materiales por profesor y con un clic obtén preguntas esperadas y un resumen ajustado a lo que ese profesor destaca y cómo evalúa."
+      "description": "Organiza tus materiales por profesor y con un clic obtén preguntas esperadas y un resumen ajustado a lo que ese profesor destaca y cómo evalúa.",
+      "demo": {
+        "autoPromptLabel": "Prompt automático aplicado",
+        "promptTemplate": "“Saca preguntas esperadas y un resumen clave de los materiales de {name}”",
+        "professors": [
+          {
+            "name": "Prof. García",
+            "subject": "Ingeniería de Software",
+            "emphasis": [
+              "Siempre resalta los principios de diseño (SOLID) y su aplicación práctica",
+              "Da más importancia a ejemplos reales de revisión de código que a la teoría"
+            ],
+            "questions": [
+              "Elige un principio SOLID y explícalo con código real",
+              "Describe la diferencia entre Ágil y Cascada desde una perspectiva práctica"
+            ],
+            "summary": "Este semestre se centra en principios de diseño y calidad de código — las preguntas tienden a basarse en casos prácticos más que en teoría."
+          },
+          {
+            "name": "Prof. Fernández",
+            "subject": "Bases de Datos",
+            "emphasis": [
+              "Le gusta repasar el proceso de normalización paso a paso",
+              "Prefiere problemas prácticos, con fuerte peso en la escritura de consultas"
+            ],
+            "questions": [
+              "Explica el proceso de normalización hasta la 3FN con una tabla de ejemplo",
+              "Describe las diferencias entre los tipos de JOIN con ejemplos en SQL"
+            ],
+            "summary": "Gran peso en normalización y práctica de SQL — espera resolver problemas concretos, no solo repasar conceptos."
+          },
+          {
+            "name": "Prof. Martínez",
+            "subject": "Algoritmos",
+            "emphasis": [
+              "Siempre pide calcular la complejidad temporal a mano",
+              "Suele plantear problemas que comparan algoritmos voraces con programación dinámica"
+            ],
+            "questions": [
+              "Analiza la complejidad temporal de un algoritmo dado usando notación Big-O",
+              "Da un ejemplo donde un algoritmo voraz no garantiza una solución óptima"
+            ],
+            "summary": "El análisis de complejidad y la comparación voraz/DP son el foco principal, con preferencia por resolver a mano."
+          }
+        ]
+      }
     }
+  },
+  "themeToggle": {
+    "ariaLabel": "Tema de pantalla",
+    "system": "Sistema",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
+  "loading": {
+    "messages": [
+      "Rebuscando en los materiales del profesor",
+      "Buscando patrones de preguntas",
+      "Encontrando pistas entre líneas",
+      "Subrayando las partes importantes",
+      "Repasando exámenes anteriores",
+      "Organizando los apuntes",
+      "Seleccionando lo esencial",
+      "Leyendo entre líneas",
+      "Leyendo el material con detenimiento",
+      "Buscando y conectando patrones",
+      "Ordenando por importancia",
+      "Contando palabras repetidas",
+      "Esquivando erratas",
+      "Revisando el documento de arriba a abajo",
+      "Extrayendo palabras clave",
+      "Uniendo el contexto",
+      "Resumiendo lo esencial",
+      "Buscando puntos en común entre los materiales",
+      "Revisando letra por letra",
+      "Descifrando la intención oculta",
+      "Marcando las frases importantes",
+      "Siguiendo el hilo",
+      "Dándole vueltas al material",
+      "Extrayendo frases clave",
+      "Reuniendo pistas una por una",
+      "Acercándose a una conclusión",
+      "Analizando con un café en la mano",
+      "Preparando subrayadores",
+      "Ordenando las ideas",
+      "Ya casi está"
+    ]
   }
 }

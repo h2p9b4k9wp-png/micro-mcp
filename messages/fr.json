@@ -1,6 +1,8 @@
 {
   "app": {
-    "loadingSession": "Chargement..."
+    "loadingSession": "Chargement...",
+    "title": "Carrotly — Votre assistant de travail IA",
+    "description": "Une plateforme de flux de travail IA qui automatise votre travail et votre quotidien, bloc par bloc."
   },
   "nav": {
     "workspace": "Demander à l'IA",
@@ -347,7 +349,9 @@
       "action": "Résultat"
     },
     "gatedTooltip": "{label} nécessite au moins {count} documents dans Ma bibliothèque pour être utilisé",
-    "estimatedSeconds": "~{seconds}s"
+    "estimatedSeconds": "~{seconds}s",
+    "resetZoomAriaLabel": "Réinitialiser zoom/déplacement",
+    "resetZoomButtonLabel": "Réinitialiser"
   },
   "login": {
     "brand": {
@@ -481,7 +485,92 @@
     },
     "professorSection": {
       "title": "Chaque professeur évalue différemment",
-      "description": "Organisez vos documents par professeur, et un clic suffit pour obtenir des questions attendues et un résumé adaptés à ce que ce professeur souligne et à sa façon d'évaluer."
+      "description": "Organisez vos documents par professeur, et un clic suffit pour obtenir des questions attendues et un résumé adaptés à ce que ce professeur souligne et à sa façon d'évaluer.",
+      "demo": {
+        "autoPromptLabel": "Prompt automatique appliqué",
+        "promptTemplate": "«Tire les questions attendues et un résumé clé des documents de {name}»",
+        "professors": [
+          {
+            "name": "Prof. Dubois",
+            "subject": "Génie Logiciel",
+            "emphasis": [
+              "Met toujours l'accent sur les principes de conception (SOLID) et leur application pratique",
+              "Privilégie les exemples réels de revue de code plutôt que la théorie"
+            ],
+            "questions": [
+              "Choisissez un principe SOLID et expliquez-le avec du code réel",
+              "Décrivez la différence entre Agile et Cascade d'un point de vue pratique"
+            ],
+            "summary": "Ce semestre met l'accent sur les principes de conception et la qualité du code — les questions tendent à s'appuyer sur des cas concrets plutôt que sur la théorie."
+          },
+          {
+            "name": "Prof. Lefèvre",
+            "subject": "Bases de Données",
+            "emphasis": [
+              "Aime détailler le processus de normalisation étape par étape",
+              "Privilégie les exercices pratiques, avec un fort accent sur l'écriture de requêtes"
+            ],
+            "questions": [
+              "Détaillez le processus de normalisation jusqu'à la 3FN avec une table d'exemple",
+              "Décrivez les différences entre les types de JOIN avec des exemples SQL"
+            ],
+            "summary": "Fort accent sur la normalisation et la pratique SQL — attendez-vous à résoudre de vrais problèmes plutôt qu'à réciter des concepts."
+          },
+          {
+            "name": "Prof. Moreau",
+            "subject": "Algorithmes",
+            "emphasis": [
+              "Fait toujours calculer la complexité temporelle à la main",
+              "Pose souvent des questions comparant algorithmes gloutons et programmation dynamique"
+            ],
+            "questions": [
+              "Analysez la complexité temporelle d'un algorithme donné avec la notation Big-O",
+              "Donnez un exemple où un algorithme glouton ne garantit pas une solution optimale"
+            ],
+            "summary": "L'analyse de complexité et la comparaison glouton/PD sont au cœur du cours, avec une préférence pour la résolution à la main."
+          }
+        ]
+      }
     }
+  },
+  "themeToggle": {
+    "ariaLabel": "Thème d'affichage",
+    "system": "Système",
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "loading": {
+    "messages": [
+      "Fouille dans les documents du professeur",
+      "Recherche de tendances dans les questions",
+      "Recherche d'indices entre les lignes",
+      "Soulignage des passages importants",
+      "Relecture des anciens examens",
+      "Organisation des fiches",
+      "Extraction de l'essentiel",
+      "Lecture entre les lignes",
+      "Lecture attentive du document",
+      "Recherche et mise en relation de tendances",
+      "Classement par importance",
+      "Comptage des mots répétés",
+      "Évitement des coquilles",
+      "Passage au crible de chaque recoin du document",
+      "Extraction des mots-clés",
+      "Reconstitution du contexte",
+      "Résumé de l'essentiel",
+      "Recherche de points communs entre les documents",
+      "Vérification lettre par lettre",
+      "Décryptage de l'intention cachée",
+      "Marquage des phrases importantes",
+      "Suivi du fil conducteur",
+      "Examen du document sous toutes les coutures",
+      "Extraction des phrases clés",
+      "Collecte des indices un par un",
+      "Approche d'une conclusion",
+      "Analyse autour d'un café",
+      "Préparation des surligneurs",
+      "Mise en ordre des idées",
+      "Presque terminé"
+    ]
   }
 }

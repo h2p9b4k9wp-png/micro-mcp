@@ -6,14 +6,15 @@ import { Check } from 'lucide-react';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import type { CircuitGraphState } from '@/types/blocks';
 
-// 💡 [신규] /welcome의 "교수님별 정리" 기능 섹션 전용 — 실제 API를 부르지 않는 더미 데이터
+// 💡 [수정] /welcome의 "교수님별 정리" 기능 섹션 전용 — 실제 API를 부르지 않는 더미 데이터
 // 데모입니다(로그인 후 실제 "교수님" 탭이 하는 일을 미리 체험시켜주는 용도). 교수님 이름·
-// 강의·예상 문제·요약·강조 포인트는 전부 한국어 더미 콘텐츠라 next-intl로 번역하지
-// 않습니다(실제 앱의 AI 응답이 늘 한국어 원문 자료를 다루는 것과 같은 맥락) — 반면 섹션
-// 제목/설명, 카드 위 라벨(예상 문제/핵심 요약/강조 포인트)은 NODE_REGISTRY를 통해 정상적으로
-// 10개 로케일 번역을 씁니다.
-interface DemoProfessor {
-  id: string;
+// 강의·예상 문제·요약·강조 포인트는 원래 한국어로 하드코딩돼 있었는데, 일본어 등 다른
+// 로케일로 전환해도 이 더미 데이터만 한국어 그대로 남아있어 "번역기 돌린 한국 앱"처럼
+// 보인다는 문제가 있었습니다 — 이제 messages/*.json의 landing.professorSection.demo에서
+// t.raw()로 통째로 읽어옵니다. 단순 직역이 아니라 로케일별로 실제 그 언어권에서 자연스러운
+// 교수님 이름(예: 일본어는 田中先生, 영어는 Prof. Smith)과 과목명을 씁니다. id는 번역
+// 대상이 아니라 그냥 React key/선택 상태용이라 여기 그대로 둡니다.
+interface DemoProfessorContent {
   name: string;
   subject: string;
   emphasis: string[];
@@ -21,56 +22,24 @@ interface DemoProfessor {
   summary: string;
 }
 
-const DEMO_PROFESSORS: DemoProfessor[] = [
-  {
-    id: 'p1',
-    name: '김민준 교수님',
-    subject: '소프트웨어공학',
-    emphasis: [
-      '설계 원칙(SOLID)과 실무 적용 사례를 항상 강조',
-      '이론보다 실제 코드 리뷰 예시를 중요하게 다룸',
-    ],
-    questions: [
-      'SOLID 원칙 중 하나를 골라 실제 코드로 설명하시오',
-      '애자일과 폭포수 모델의 차이를 실무 관점에서 서술하시오',
-    ],
-    summary: '이번 학기는 설계 원칙과 코드 품질에 집중 — 이론보다 사례 중심 출제 경향이에요.',
-  },
-  {
-    id: 'p2',
-    name: '이서연 교수님',
-    subject: '데이터베이스',
-    emphasis: [
-      '정규화 과정을 단계별로 짚어주는 걸 좋아함',
-      '실습 위주 문제 출제, 쿼리 작성 비중 높음',
-    ],
-    questions: [
-      '3정규형까지의 정규화 과정을 예시 테이블로 설명하시오',
-      'JOIN 종류별 차이를 SQL 예시와 함께 서술하시오',
-    ],
-    summary: '정규화·SQL 실습 비중이 높고, 개념보다 직접 풀어보는 문제 위주예요.',
-  },
-  {
-    id: 'p3',
-    name: '박도윤 교수님',
-    subject: '알고리즘',
-    emphasis: [
-      '시간복잡도 분석을 항상 손으로 계산하게 함',
-      '그리디·DP 비교 문제를 자주 냄',
-    ],
-    questions: [
-      '주어진 알고리즘의 시간복잡도를 빅오 표기법으로 분석하시오',
-      '그리디 알고리즘이 최적해를 보장하지 못하는 예를 드시오',
-    ],
-    summary: '복잡도 분석과 그리디/DP 비교가 핵심, 손풀이 방식을 선호해요.',
-  },
-];
+interface DemoProfessor extends DemoProfessorContent {
+  id: string;
+}
+
+const DEMO_PROFESSOR_IDS = ['p1', 'p2', 'p3'] as const;
 
 type DemoPhase = 'prompted' | 'running' | 'done';
 
 export function ProfessorDemo() {
   const t = useTranslations();
-  const [selectedId, setSelectedId] = useState(DEMO_PROFESSORS[0].id);
+  // t.raw()는 ICU 처리 없이 messages 파일의 원본 JSON 값을 그대로 반환합니다 — 문자열
+  // 배열/객체 배열인 emphasis·questions·professors 목록을 그대로 쓰기 위해 필요합니다.
+  const demoProfessors = t.raw('landing.professorSection.demo.professors') as DemoProfessorContent[];
+  const DEMO_PROFESSORS: DemoProfessor[] = demoProfessors.map((content, i) => ({
+    ...content,
+    id: DEMO_PROFESSOR_IDS[i],
+  }));
+  const [selectedId, setSelectedId] = useState<string>(DEMO_PROFESSOR_IDS[0]);
   const [phase, setPhase] = useState<DemoPhase>('done');
   const isFirstRender = useRef(true);
 
@@ -144,9 +113,11 @@ export function ProfessorDemo() {
         key={`prompt-${selectedId}`}
         className="professor-circuit-reveal mb-5 flex items-center gap-2 bg-[#15131A] border border-[#2A2632] rounded-xl px-4 py-3 text-left"
       >
-        <span className="text-xs font-semibold text-[#6EE7B7] shrink-0">✓ 자동 프롬프트 적용</span>
+        <span className="text-xs font-semibold text-[#6EE7B7] shrink-0">
+          ✓ {t('landing.professorSection.demo.autoPromptLabel')}
+        </span>
         <p className="break-keep text-sm text-[#E4DEEA] truncate">
-          &ldquo;{selected.name} 자료 기반으로 예상 문제와 핵심 요약 뽑아줘&rdquo;
+          {t('landing.professorSection.demo.promptTemplate', { name: selected.name })}
         </p>
       </div>
 

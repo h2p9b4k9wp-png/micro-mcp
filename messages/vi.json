@@ -1,6 +1,8 @@
 {
   "app": {
-    "loadingSession": "Đang tải..."
+    "loadingSession": "Đang tải...",
+    "title": "Carrotly — Trợ lý công việc AI của riêng bạn",
+    "description": "Nền tảng quy trình làm việc AI tự động hóa công việc và cuộc sống hằng ngày của bạn, như lắp từng khối."
   },
   "nav": {
     "workspace": "Hỏi AI",
@@ -347,7 +349,9 @@
       "action": "Kết quả"
     },
     "gatedTooltip": "{label} cần ít nhất {count} tài liệu trong Thư viện của tôi để sử dụng",
-    "estimatedSeconds": "~{seconds} giây"
+    "estimatedSeconds": "~{seconds} giây",
+    "resetZoomAriaLabel": "Đặt lại thu phóng/di chuyển",
+    "resetZoomButtonLabel": "Đặt lại"
   },
   "login": {
     "brand": {
@@ -481,7 +485,92 @@
     },
     "professorSection": {
       "title": "Mỗi giáo sư ra đề một kiểu",
-      "description": "Gom tài liệu theo từng giáo sư, chỉ một cú click là có ngay câu hỏi dự kiến và tóm tắt theo đúng điều giáo sư đó nhấn mạnh và cách ra đề."
+      "description": "Gom tài liệu theo từng giáo sư, chỉ một cú click là có ngay câu hỏi dự kiến và tóm tắt theo đúng điều giáo sư đó nhấn mạnh và cách ra đề.",
+      "demo": {
+        "autoPromptLabel": "Đã áp dụng prompt tự động",
+        "promptTemplate": "“Lấy câu hỏi dự kiến và tóm tắt trọng tâm từ tài liệu của {name}”",
+        "professors": [
+          {
+            "name": "Thầy Minh",
+            "subject": "Kỹ thuật Phần mềm",
+            "emphasis": [
+              "Luôn nhấn mạnh các nguyên tắc thiết kế (SOLID) và cách áp dụng thực tế",
+              "Coi trọng ví dụ code review thực tế hơn là lý thuyết"
+            ],
+            "questions": [
+              "Chọn một nguyên tắc SOLID và giải thích bằng code thực tế",
+              "Trình bày sự khác biệt giữa Agile và Waterfall theo góc nhìn thực tế"
+            ],
+            "summary": "Học kỳ này tập trung vào nguyên tắc thiết kế và chất lượng code — đề thi thiên về ví dụ thực tế hơn là lý thuyết."
+          },
+          {
+            "name": "Cô Hương",
+            "subject": "Cơ sở Dữ liệu",
+            "emphasis": [
+              "Thích giảng giải quá trình chuẩn hóa từng bước một",
+              "Ưu tiên bài tập thực hành, chú trọng viết truy vấn"
+            ],
+            "questions": [
+              "Trình bày quá trình chuẩn hóa đến dạng chuẩn 3 bằng một bảng ví dụ",
+              "Trình bày sự khác nhau giữa các loại JOIN kèm ví dụ SQL"
+            ],
+            "summary": "Chú trọng chuẩn hóa và thực hành SQL, đề thi thiên về giải bài thực tế hơn là học thuộc khái niệm."
+          },
+          {
+            "name": "Thầy Long",
+            "subject": "Thuật toán",
+            "emphasis": [
+              "Luôn yêu cầu tính độ phức tạp thời gian bằng tay",
+              "Thường ra bài so sánh giải thuật tham lam với quy hoạch động"
+            ],
+            "questions": [
+              "Phân tích độ phức tạp thời gian của một thuật toán cho trước bằng ký hiệu Big-O",
+              "Đưa ra một ví dụ mà giải thuật tham lam không đảm bảo lời giải tối ưu"
+            ],
+            "summary": "Trọng tâm là phân tích độ phức tạp và so sánh tham lam/quy hoạch động, thầy thích cách giải tay."
+          }
+        ]
+      }
     }
+  },
+  "themeToggle": {
+    "ariaLabel": "Giao diện màn hình",
+    "system": "Hệ thống",
+    "light": "Sáng",
+    "dark": "Tối"
+  },
+  "loading": {
+    "messages": [
+      "Đang lục tìm tài liệu của giáo sư",
+      "Đang tìm quy luật ra đề",
+      "Đang tìm manh mối giấu giữa các dòng",
+      "Đang gạch chân phần quan trọng",
+      "Đang xem lại đề thi cũ",
+      "Đang sắp xếp tài liệu ôn tập",
+      "Đang chọn lọc phần cốt lõi",
+      "Đang đọc ẩn ý giữa các dòng",
+      "Đang đọc kỹ tài liệu",
+      "Đang tìm và liên kết các quy luật",
+      "Đang xếp theo mức độ quan trọng",
+      "Đang đếm các từ lặp lại",
+      "Đang né những lỗi chính tả",
+      "Đang rà soát từng ngóc ngách của tài liệu",
+      "Đang rút ra từ khóa chính",
+      "Đang ghép nối ngữ cảnh",
+      "Đang tóm tắt ngắn gọn ý chính",
+      "Đang tìm điểm chung giữa các tài liệu",
+      "Đang kiểm tra từng chữ một",
+      "Đang nắm bắt ý đồ ẩn giấu",
+      "Đang đánh dấu câu quan trọng",
+      "Đang theo dõi mạch nội dung",
+      "Đang lật đi lật lại tài liệu",
+      "Đang trích ra câu quan trọng",
+      "Đang thu thập từng manh mối",
+      "Đang tiến dần đến kết luận",
+      "Đang phân tích bên tách cà phê",
+      "Đang chuẩn bị bút gạch và bút dạ quang",
+      "Đang sắp xếp lại suy nghĩ",
+      "Sắp xong rồi"
+    ]
   }
 }
