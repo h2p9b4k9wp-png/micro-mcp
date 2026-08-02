@@ -576,5 +576,54 @@
       "Organizing your thoughts",
       "Almost there"
     ]
+  },
+  "privacy": {
+    "metaTitle": "Privacy Policy — Carrotly",
+    "metaDescription": "How Carrotly collects, uses, and stores your data.",
+    "backLink": "← Back to Carrotly",
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: August 2026",
+    "intro": "Carrotly (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the service&rdquo;) is a personal AI work assistant. This page explains what information we collect when you use it, why we collect it, who we share it with, how long we keep it, and what rights you have over it.",
+    "collect": {
+      "heading": "Information we collect",
+      "email": "<b>Your email address</b>, used to create and identify your account.",
+      "files": "<b>The content of files you upload</b> — documents, lecture materials, and images you attach or add to the service — including the text extracted from them.",
+      "history": "<b>Your conversation history</b> — the prompts you send and the responses you receive."
+    },
+    "why": {
+      "heading": "Why we collect it",
+      "intro": "We use this information to:",
+      "operate": "Provide and operate the service — authenticate you, save your files and deadlines, and keep your conversation history available across devices.",
+      "analyze": "Generate AI-powered analysis you request — summarizing documents, extracting deadlines, drafting answers to expected questions, and similar features."
+    },
+    "sharing": {
+      "heading": "Who we share it with",
+      "intro": "We do not sell your data. We share it only with the service providers that make Carrotly work:",
+      "openai": "<b>OpenAI</b> — receives the text of your prompts, attached documents, and images so it can generate the AI analysis and responses you ask for. This processing happens in the United States, which is also a transfer of your data outside the EU/EEA — see &ldquo;International data transfers&rdquo; below.",
+      "supabase": "<b>Supabase</b> — our database and authentication provider, used to store your account, files, and conversation history. Your data is hosted in Supabase&rsquo;s <b>{region}</b> region.",
+      "polar": "<b>Polar</b> — our payment processor, used to handle Pro subscription checkout and billing. Polar receives the information needed to process your payment (such as your email address); we do not send them your files or conversation history."
+    },
+    "retention": {
+      "heading": "How long we keep it",
+      "account": "Your account data (email, files, deadlines) is kept until you delete your account.",
+      "logs": "On the free plan, conversation history is kept for 30 days and then automatically deleted. Pro accounts have no automatic deletion — conversation history is kept until account deletion, same as everything else."
+    },
+    "transfers": {
+      "heading": "International data transfers",
+      "body1": "Your data is stored and processed in South Korea (Seoul), where Supabase hosts our database — this is outside the EU/European Economic Area (EEA). If you&rsquo;re located in the EU/EEA, this means your personal data is transferred to a third country.",
+      "body2": "We rely on the Standard Contractual Clauses (SCCs) included in our Data Processing Agreement (DPA) with Supabase as the legal basis for this transfer. The same applies to the transfer to OpenAI (see above), which processes data in the United States.",
+      "body3": "If you have questions about these transfers, contact us at the address below."
+    },
+    "rights": {
+      "heading": "Your rights",
+      "copy": "You can request a copy of the data we hold about you at any time by emailing us at the address below — we&rsquo;ll respond as soon as we can.",
+      "delete": "To delete your account, use the &ldquo;Delete Account&rdquo; button at the bottom of the sidebar once you&rsquo;re logged in — it immediately and permanently deletes your uploaded files, professor materials, conversation history, and your login credentials (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather have us do it for you, email us and we&rsquo;ll delete it manually.",
+      "proSubscription": "If you have an active Pro subscription, deleting your account does not cancel it — Polar (our Merchant of Record, see <termslink>Terms of Service</termslink>) handles billing independently of your Carrotly login, so we have no way to cancel it on your behalf. You&rsquo;ll need to cancel your subscription first (via the link in the receipt/confirmation email Polar sent you, or by emailing us) before we can delete your account."
+    },
+    "contact": {
+      "heading": "Contact",
+      "body": "Questions about this policy, or requests to access or delete your data, can be sent to <mailto>kcw022@naver.com</mailto>."
+    },
+    "region": "Northeast Asia (Seoul), South Korea"
   }
 }

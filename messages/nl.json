@@ -576,5 +576,54 @@
       "Ordent de gedachten",
       "Bijna klaar"
     ]
+  },
+  "privacy": {
+    "metaTitle": "Privacybeleid — Carrotly",
+    "metaDescription": "Hoe Carrotly je gegevens verzamelt, gebruikt en bewaart.",
+    "backLink": "← Terug naar Carrotly",
+    "title": "Privacybeleid",
+    "lastUpdated": "Laatst bijgewerkt: augustus 2026",
+    "intro": "Carrotly (&ldquo;wij&rdquo;, &ldquo;onze&rdquo;, &ldquo;de dienst&rdquo;) is een persoonlijke AI-werkassistent. Deze pagina legt uit welke informatie we verzamelen wanneer je de dienst gebruikt, waarom we die verzamelen, met wie we die delen, hoe lang we die bewaren en welke rechten je erover hebt.",
+    "collect": {
+      "heading": "Informatie die we verzamelen",
+      "email": "<b>Je e-mailadres</b>, gebruikt om je account aan te maken en te identificeren.",
+      "files": "<b>De inhoud van bestanden die je uploadt</b> — documenten, collegemateriaal en afbeeldingen die je toevoegt aan de dienst, inclusief de daaruit geëxtraheerde tekst.",
+      "history": "<b>Je gespreksgeschiedenis</b> — de prompts die je verstuurt en de antwoorden die je ontvangt."
+    },
+    "why": {
+      "heading": "Waarom we die verzamelen",
+      "intro": "We gebruiken deze informatie om:",
+      "operate": "De dienst te leveren en te beheren — je te authenticeren, je bestanden en deadlines op te slaan, en je gespreksgeschiedenis op meerdere apparaten beschikbaar te houden.",
+      "analyze": "De door jou aangevraagde AI-analyse te genereren — documenten samenvatten, deadlines extraheren, conceptantwoorden op verwachte vragen opstellen en vergelijkbare functies."
+    },
+    "sharing": {
+      "heading": "Met wie we die delen",
+      "intro": "We verkopen je gegevens niet. We delen ze alleen met de serviceproviders die Carrotly laten werken:",
+      "openai": "<b>OpenAI</b> — ontvangt de tekst van je prompts, bijgevoegde documenten en afbeeldingen om de door jou gevraagde AI-analyse en -antwoorden te genereren. Deze verwerking vindt plaats in de Verenigde Staten, wat ook een doorgifte van je gegevens buiten de EU/EER inhoudt — zie &ldquo;Internationale gegevensdoorgifte&rdquo; hieronder.",
+      "supabase": "<b>Supabase</b> — onze database- en authenticatieprovider, gebruikt om je account, bestanden en gespreksgeschiedenis op te slaan. Je gegevens worden gehost in de regio <b>{region}</b> van Supabase.",
+      "polar": "<b>Polar</b> — onze betalingsverwerker, gebruikt voor de checkout en facturering van het Pro-abonnement. Polar ontvangt de informatie die nodig is om je betaling te verwerken (zoals je e-mailadres); we sturen ze geen bestanden of gespreksgeschiedenis."
+    },
+    "retention": {
+      "heading": "Hoe lang we ze bewaren",
+      "account": "Je accountgegevens (e-mail, bestanden, deadlines) worden bewaard totdat je je account verwijdert.",
+      "logs": "Bij het gratis abonnement wordt gespreksgeschiedenis 30 dagen bewaard en daarna automatisch verwijderd. Pro-accounts hebben geen automatische verwijdering — de geschiedenis wordt, net als de rest, bewaard tot het account wordt verwijderd."
+    },
+    "transfers": {
+      "heading": "Internationale gegevensdoorgifte",
+      "body1": "Je gegevens worden opgeslagen en verwerkt in Zuid-Korea (Seoul), waar Supabase onze database host — dit ligt buiten de EU/Europese Economische Ruimte (EER). Als je je in de EU/EER bevindt, betekent dit dat je persoonsgegevens naar een derde land worden doorgegeven.",
+      "body2": "We baseren ons op de Standaardcontractbepalingen (Standard Contractual Clauses, SCC's) uit onze verwerkersovereenkomst (DPA) met Supabase als rechtsgrond voor deze doorgifte. Hetzelfde geldt voor de doorgifte aan OpenAI (zie hierboven), dat gegevens in de Verenigde Staten verwerkt.",
+      "body3": "Heb je vragen over deze doorgiftes, neem dan contact met ons op via onderstaand adres."
+    },
+    "rights": {
+      "heading": "Jouw rechten",
+      "copy": "Je kunt op elk moment een kopie opvragen van de gegevens die we over je bewaren door ons een e-mail te sturen naar onderstaand adres — we reageren zo snel mogelijk.",
+      "delete": "Om je account te verwijderen, gebruik je de knop &ldquo;Account verwijderen&rdquo; onderaan de zijbalk zodra je bent ingelogd — dit verwijdert onmiddellijk en permanent je geüploade bestanden, docentmateriaal, gespreksgeschiedenis en je inloggegevens zelf (e-mail, inloginformatie), zonder dat je ons eerst hoeft te mailen. Wil je liever dat wij het voor je doen, mail ons dan en we verwijderen het handmatig.",
+      "proSubscription": "Als je een actief Pro-abonnement hebt, wordt dit niet automatisch opgezegd wanneer je je account verwijdert — Polar (onze Merchant of Record, zie de <termslink>Servicevoorwaarden</termslink>) verwerkt de facturering los van je Carrotly-account, dus wij kunnen het niet namens jou opzeggen. Je moet je abonnement eerst opzeggen (via de link in de ontvangst-/bevestigingsmail van Polar, of door ons te mailen) voordat we je account kunnen verwijderen."
+    },
+    "contact": {
+      "heading": "Contact",
+      "body": "Vragen over dit beleid, of verzoeken om toegang tot of verwijdering van je gegevens, kun je sturen naar <mailto>kcw022@naver.com</mailto>."
+    },
+    "region": "Noordoost-Azië (Seoul), Zuid-Korea"
   }
 }

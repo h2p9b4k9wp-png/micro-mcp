@@ -576,5 +576,54 @@
       "Đang sắp xếp lại suy nghĩ",
       "Sắp xong rồi"
     ]
+  },
+  "privacy": {
+    "metaTitle": "Chính sách Bảo mật — Carrotly",
+    "metaDescription": "Cách Carrotly thu thập, sử dụng và lưu trữ dữ liệu của bạn.",
+    "backLink": "← Quay lại Carrotly",
+    "title": "Chính sách Bảo mật",
+    "lastUpdated": "Cập nhật lần cuối: tháng 8 năm 2026",
+    "intro": "Carrotly (&ldquo;chúng tôi&rdquo;, &ldquo;dịch vụ&rdquo;) là trợ lý công việc AI cá nhân. Trang này giải thích những thông tin chúng tôi thu thập khi bạn sử dụng dịch vụ, lý do thu thập, đối tượng chia sẻ, thời gian lưu trữ và các quyền bạn có đối với dữ liệu đó.",
+    "collect": {
+      "heading": "Thông tin chúng tôi thu thập",
+      "email": "<b>Địa chỉ email của bạn</b>, dùng để tạo và xác định tài khoản.",
+      "files": "<b>Nội dung tệp bạn tải lên</b> — tài liệu, học liệu và hình ảnh bạn đính kèm hoặc thêm vào dịch vụ, bao gồm cả văn bản trích xuất từ đó.",
+      "history": "<b>Lịch sử trò chuyện của bạn</b> — các câu hỏi bạn gửi và câu trả lời bạn nhận được."
+    },
+    "why": {
+      "heading": "Lý do chúng tôi thu thập",
+      "intro": "Chúng tôi sử dụng thông tin này để:",
+      "operate": "Cung cấp và vận hành dịch vụ — xác thực bạn, lưu tệp và hạn chót, giữ lịch sử trò chuyện khả dụng trên nhiều thiết bị.",
+      "analyze": "Tạo ra phân tích AI mà bạn yêu cầu — tóm tắt tài liệu, trích xuất hạn chót, soạn thảo câu trả lời cho các câu hỏi dự kiến và các tính năng tương tự."
+    },
+    "sharing": {
+      "heading": "Đối tượng chúng tôi chia sẻ dữ liệu",
+      "intro": "Chúng tôi không bán dữ liệu của bạn. Chúng tôi chỉ chia sẻ với các nhà cung cấp dịch vụ giúp Carrotly hoạt động:",
+      "openai": "<b>OpenAI</b> — nhận văn bản từ câu hỏi, tài liệu đính kèm và hình ảnh của bạn để tạo ra phân tích và câu trả lời AI mà bạn yêu cầu. Việc xử lý này diễn ra tại Hoa Kỳ, đồng thời cũng là việc chuyển dữ liệu của bạn ra ngoài EU/EEA — xem mục &ldquo;Chuyển dữ liệu quốc tế&rdquo; bên dưới.",
+      "supabase": "<b>Supabase</b> — nhà cung cấp cơ sở dữ liệu và xác thực của chúng tôi, dùng để lưu trữ tài khoản, tệp và lịch sử trò chuyện của bạn. Dữ liệu của bạn được lưu trữ tại khu vực <b>{region}</b> của Supabase.",
+      "polar": "<b>Polar</b> — đơn vị xử lý thanh toán của chúng tôi, phụ trách thanh toán và lập hóa đơn cho gói Pro. Polar chỉ nhận thông tin cần thiết để xử lý thanh toán (như địa chỉ email của bạn); chúng tôi không gửi tệp hay lịch sử trò chuyện của bạn cho họ."
+    },
+    "retention": {
+      "heading": "Thời gian lưu trữ",
+      "account": "Dữ liệu tài khoản của bạn (email, tệp, hạn chót) được lưu giữ cho đến khi bạn xóa tài khoản.",
+      "logs": "Với gói miễn phí, lịch sử trò chuyện được lưu giữ 30 ngày rồi tự động xóa. Tài khoản Pro không bị tự động xóa — lịch sử được lưu giữ đến khi xóa tài khoản, giống như mọi dữ liệu khác."
+    },
+    "transfers": {
+      "heading": "Chuyển dữ liệu quốc tế",
+      "body1": "Dữ liệu của bạn được lưu trữ và xử lý tại Hàn Quốc (Seoul), nơi Supabase lưu trữ cơ sở dữ liệu của chúng tôi — nằm ngoài EU/Khu vực Kinh tế Châu Âu (EEA). Nếu bạn ở EU/EEA, điều này có nghĩa là dữ liệu cá nhân của bạn được chuyển sang một nước thứ ba.",
+      "body2": "Chúng tôi dựa vào Điều khoản Hợp đồng Chuẩn (Standard Contractual Clauses, SCC) có trong Thỏa thuận Xử lý Dữ liệu (DPA) với Supabase làm cơ sở pháp lý cho việc chuyển dữ liệu này. Điều tương tự cũng áp dụng cho việc chuyển dữ liệu đến OpenAI (xem ở trên), nơi xử lý dữ liệu tại Hoa Kỳ.",
+      "body3": "Nếu có thắc mắc về việc chuyển dữ liệu này, hãy liên hệ với chúng tôi theo địa chỉ bên dưới."
+    },
+    "rights": {
+      "heading": "Quyền của bạn",
+      "copy": "Bạn có thể yêu cầu bản sao dữ liệu chúng tôi lưu giữ về bạn bất cứ lúc nào bằng cách gửi email đến địa chỉ bên dưới — chúng tôi sẽ phản hồi sớm nhất có thể.",
+      "delete": "Để xóa tài khoản, hãy dùng nút &ldquo;Xóa tài khoản&rdquo; ở cuối thanh bên sau khi đăng nhập — nút này sẽ xóa ngay lập tức và vĩnh viễn các tệp đã tải lên, tài liệu giáo sư, lịch sử trò chuyện, cũng như chính thông tin đăng nhập của bạn (email, thông tin đăng nhập), mà không cần gửi email trước. Nếu bạn muốn chúng tôi làm giúp, hãy gửi email và chúng tôi sẽ xóa thủ công.",
+      "proSubscription": "Nếu bạn đang có gói Pro đang hoạt động, việc xóa tài khoản sẽ không hủy gói đó — Polar (đơn vị Merchant of Record của chúng tôi, xem <termslink>Điều khoản Dịch vụ</termslink>) xử lý việc thanh toán độc lập với tài khoản Carrotly của bạn, nên chúng tôi không có cách nào hủy thay bạn. Bạn cần hủy gói đăng ký trước (qua liên kết trong email biên nhận/xác nhận mà Polar đã gửi, hoặc bằng cách liên hệ với chúng tôi) trước khi chúng tôi có thể xóa tài khoản của bạn."
+    },
+    "contact": {
+      "heading": "Liên hệ",
+      "body": "Các câu hỏi về chính sách này, hoặc yêu cầu truy cập hay xóa dữ liệu của bạn, có thể gửi đến <mailto>kcw022@naver.com</mailto>."
+    },
+    "region": "Đông Bắc Á (Seoul), Hàn Quốc"
   }
 }

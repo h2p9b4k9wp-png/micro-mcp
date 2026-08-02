@@ -576,5 +576,54 @@
       "Organizando as ideias",
       "Quase lá"
     ]
+  },
+  "privacy": {
+    "metaTitle": "Política de Privacidade — Carrotly",
+    "metaDescription": "Como a Carrotly coleta, usa e armazena seus dados.",
+    "backLink": "← Voltar para a Carrotly",
+    "title": "Política de Privacidade",
+    "lastUpdated": "Última atualização: agosto de 2026",
+    "intro": "A Carrotly (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo;, &ldquo;o serviço&rdquo;) é um assistente pessoal de trabalho com IA. Esta página explica quais informações coletamos quando você usa o serviço, por que as coletamos, com quem as compartilhamos, por quanto tempo as mantemos e quais direitos você tem sobre elas.",
+    "collect": {
+      "heading": "Informações que coletamos",
+      "email": "<b>Seu endereço de e-mail</b>, usado para criar e identificar sua conta.",
+      "files": "<b>O conteúdo dos arquivos que você envia</b> — documentos, materiais de aula e imagens que você anexa ou adiciona ao serviço, incluindo o texto extraído deles.",
+      "history": "<b>Seu histórico de conversas</b> — as mensagens que você envia e as respostas que recebe."
+    },
+    "why": {
+      "heading": "Por que as coletamos",
+      "intro": "Usamos essas informações para:",
+      "operate": "Fornecer e operar o serviço — autenticar você, salvar seus arquivos e prazos, e manter seu histórico de conversas disponível em vários dispositivos.",
+      "analyze": "Gerar a análise baseada em IA que você solicita — resumir documentos, extrair prazos, redigir rascunhos de respostas a questões esperadas e funcionalidades semelhantes."
+    },
+    "sharing": {
+      "heading": "Com quem compartilhamos",
+      "intro": "Não vendemos seus dados. Nós os compartilhamos apenas com os provedores de serviço que fazem a Carrotly funcionar:",
+      "openai": "<b>OpenAI</b> — recebe o texto das suas mensagens, documentos anexados e imagens para gerar a análise e as respostas de IA que você solicita. Esse processamento ocorre nos Estados Unidos, o que também constitui uma transferência dos seus dados para fora da UE/EEE — veja &ldquo;Transferências internacionais de dados&rdquo; abaixo.",
+      "supabase": "<b>Supabase</b> — nosso provedor de banco de dados e autenticação, usado para armazenar sua conta, arquivos e histórico de conversas. Seus dados são hospedados na região <b>{region}</b> da Supabase.",
+      "polar": "<b>Polar</b> — nosso processador de pagamentos, usado para gerenciar o checkout e a cobrança da assinatura Pro. A Polar recebe as informações necessárias para processar seu pagamento (como seu e-mail); não enviamos a ela seus arquivos nem seu histórico de conversas."
+    },
+    "retention": {
+      "heading": "Por quanto tempo as mantemos",
+      "account": "Os dados da sua conta (e-mail, arquivos, prazos) são mantidos até você excluir sua conta.",
+      "logs": "No plano gratuito, o histórico de conversas é mantido por 30 dias e depois excluído automaticamente. Contas Pro não têm exclusão automática — o histórico é mantido até a exclusão da conta, assim como os demais dados."
+    },
+    "transfers": {
+      "heading": "Transferências internacionais de dados",
+      "body1": "Seus dados são armazenados e processados na Coreia do Sul (Seul), onde a Supabase hospeda nosso banco de dados — isso está fora da UE/Espaço Econômico Europeu (EEE). Se você estiver na UE/EEE, isso significa que seus dados pessoais são transferidos para um terceiro país.",
+      "body2": "Utilizamos as Cláusulas Contratuais Padrão (Standard Contractual Clauses, SCC) incluídas em nosso Acordo de Processamento de Dados (DPA) com a Supabase como base legal para essa transferência. O mesmo vale para a transferência para a OpenAI (veja acima), que processa dados nos Estados Unidos.",
+      "body3": "Se tiver dúvidas sobre essas transferências, entre em contato conosco pelo endereço abaixo."
+    },
+    "rights": {
+      "heading": "Seus direitos",
+      "copy": "Você pode solicitar uma cópia dos dados que mantemos sobre você a qualquer momento, enviando um e-mail para o endereço abaixo — responderemos o mais rápido possível.",
+      "delete": "Para excluir sua conta, use o botão &ldquo;Excluir conta&rdquo; na parte inferior da barra lateral depois de fazer login — isso exclui imediata e permanentemente seus arquivos enviados, materiais de professores, histórico de conversas e suas próprias credenciais de login (e-mail, dados de acesso), sem necessidade de nos contatar antes. Se preferir que façamos isso por você, envie um e-mail e faremos a exclusão manualmente.",
+      "proSubscription": "Se você tiver uma assinatura Pro ativa, excluir sua conta não a cancela — a Polar (nosso Merchant of Record, veja os <termslink>Termos de Serviço</termslink>) gerencia a cobrança de forma independente da sua conta Carrotly, então não temos como cancelá-la em seu nome. Você precisará cancelar sua assinatura primeiro (pelo link no e-mail de recibo/confirmação enviado pela Polar, ou entrando em contato conosco) antes que possamos excluir sua conta."
+    },
+    "contact": {
+      "heading": "Contato",
+      "body": "Dúvidas sobre esta política, ou solicitações de acesso ou exclusão dos seus dados, podem ser enviadas para <mailto>kcw022@naver.com</mailto>."
+    },
+    "region": "Ásia Nordeste (Seul), Coreia do Sul"
   }
 }

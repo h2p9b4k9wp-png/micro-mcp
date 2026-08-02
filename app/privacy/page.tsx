@@ -1,14 +1,43 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata = {
-  title: 'Privacy Policy — Carrotly',
-  description: 'How Carrotly collects, uses, and stores your data.',
-};
+// 💡 [수정] 원래 로그인 없이도 봐야 하는 공개 법적 페이지라는 이유로 next-intl을 거치지 않고
+// 영어 고정 텍스트였습니다. 하지만 서울 리전 국제 데이터 이전 고지를 추가하면서 사용자가
+// "10개 언어 전부 반영"을 명시적으로 요청해, 이 페이지도 다른 페이지와 같은 "locale" 쿠키
+// 기반 next-intl 번역을 쓰도록 바꿨습니다 — 이제 UI 언어를 바꾸면 이 페이지도 같이
+// 바뀝니다(이전의 "법적 페이지는 UI 로케일과 무관하게 고정"이라는 설계를 뒤집는 변경입니다).
+// getTranslations()는 서버 컴포넌트용이라 이 페이지를 계속 서버 컴포넌트로 유지할 수
+// 있습니다(클라이언트 상태가 필요 없는 정적 텍스트라 'use client'로 바꿀 이유가 없음).
+// 굵은 글씨(<b>)·이용약관 링크(<termslink>)·메일 링크(<mailto>)는 t.rich()의 태그
+// 치환으로 렌더링합니다 — messages/*.json의 privacy 네임스페이스 문자열 안에 그 태그가
+// 그대로 들어있습니다.
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('privacy');
+  return {
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+  };
+}
 
-// 💡 [신규] 로그인 없이도 봐야 하는 공개 법적 페이지라 next-intl(ko/en 전환)을 거치지 않고
-// 영어로 고정된 정적 텍스트를 씁니다(요청대로). middleware.ts의 isPublicRoute에 '/privacy'가
-// 추가돼 있어야 로그인 안 한 방문자도 접근할 수 있습니다.
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const t = await getTranslations('privacy');
+
+  const bold = (chunks: React.ReactNode) => <span className="font-semibold text-[#F5F2F7]">{chunks}</span>;
+  const termsLink = (chunks: React.ReactNode) => (
+    <Link href="/terms" className="text-[#F4679B] hover:underline">
+      {chunks}
+    </Link>
+  );
+  const mailto = (chunks: React.ReactNode) => (
+    <a
+      href="mailto:kcw022@naver.com"
+      className="text-[#F4679B] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+    >
+      {chunks}
+    </a>
+  );
+
   return (
     <div className="min-h-screen bg-[#15131A] text-[#E4DEEA]">
       <div className="max-w-2xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
@@ -16,130 +45,72 @@ export default function PrivacyPage() {
           href="/"
           className="text-sm text-[#AFA6BD] hover:text-[#F5F2F7] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
         >
-          ← Back to Carrotly
+          {t('backLink')}
         </Link>
 
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] mt-6 mb-2 tracking-tight">
-          Privacy Policy
+          {t('title')}
         </h1>
-        <p className="text-sm text-[#857C93] mb-10">Last updated: August 2026</p>
+        <p className="text-sm text-[#857C93] mb-10">{t('lastUpdated')}</p>
 
         <div className="flex flex-col gap-8 text-[15px] leading-relaxed">
           <section>
-            <p>
-              Carrotly (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the service&rdquo;) is a personal AI work
-              assistant. This page explains what information we collect when you use it, why we
-              collect it, who we share it with, how long we keep it, and what rights you have
-              over it.
-            </p>
+            <p>{t.rich('intro', { b: bold })}</p>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Information we collect</h2>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">{t('collect.heading')}</h2>
             <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B]">
-              <li>
-                <span className="font-semibold text-[#F5F2F7]">Your email address</span>, used to
-                create and identify your account.
-              </li>
-              <li>
-                <span className="font-semibold text-[#F5F2F7]">The content of files you upload</span>{' '}
-                — documents, lecture materials, and images you attach or add to the service —
-                including the text extracted from them.
-              </li>
-              <li>
-                <span className="font-semibold text-[#F5F2F7]">Your conversation history</span> —
-                the prompts you send and the responses you receive.
-              </li>
+              <li>{t.rich('collect.email', { b: bold })}</li>
+              <li>{t.rich('collect.files', { b: bold })}</li>
+              <li>{t.rich('collect.history', { b: bold })}</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Why we collect it</h2>
-            <p>We use this information to:</p>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">{t('why.heading')}</h2>
+            <p>{t('why.intro')}</p>
             <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B] mt-2">
-              <li>Provide and operate the service — authenticate you, save your files and
-                deadlines, and keep your conversation history available across devices.</li>
-              <li>Generate AI-powered analysis you request — summarizing documents, extracting
-                deadlines, drafting answers to expected questions, and similar features.</li>
+              <li>{t('why.operate')}</li>
+              <li>{t('why.analyze')}</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Who we share it with</h2>
-            <p>We do not sell your data. We share it only with the service providers that make Carrotly work:</p>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">{t('sharing.heading')}</h2>
+            <p>{t('sharing.intro')}</p>
             <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B] mt-2">
-              <li>
-                <span className="font-semibold text-[#F5F2F7]">OpenAI</span> — receives the text of
-                your prompts, attached documents, and images so it can generate the AI analysis
-                and responses you ask for.
-              </li>
-              <li>
-                <span className="font-semibold text-[#F5F2F7]">Supabase</span> — our database and
-                authentication provider, used to store your account, files, and conversation
-                history. Your data is hosted in Supabase&rsquo;s{' '}
-                <span className="font-semibold text-[#F5F2F7]">
-                  {/* TODO: 실제 Supabase 프로젝트 리전으로 바꿔주세요 (Supabase 대시보드 →
-                      Project Settings → General → Region에서 확인) — 코드베이스만으로는
-                      알 수 없는 값이라 추측해서 채우지 않았습니다. */}
-                  [insert Supabase project region, e.g. &ldquo;US East (N. Virginia)&rdquo;]
-                </span>{' '}
-                region.
-              </li>
-              <li>
-                <span className="font-semibold text-[#F5F2F7]">Polar</span> — our payment processor,
-                used to handle Pro subscription checkout and billing. Polar receives the
-                information needed to process your payment (such as your email address); we do
-                not send them your files or conversation history.
-              </li>
+              <li>{t.rich('sharing.openai', { b: bold })}</li>
+              <li>{t.rich('sharing.supabase', { b: bold, region: t('region') })}</li>
+              <li>{t.rich('sharing.polar', { b: bold })}</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">How long we keep it</h2>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">{t('retention.heading')}</h2>
             <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B]">
-              <li>Your account data (email, files, deadlines) is kept until you delete your account.</li>
-              <li>On the free plan, conversation history is kept for 30 days and then automatically deleted. Pro accounts have no automatic deletion — conversation history is kept until account deletion, same as everything else.</li>
+              <li>{t('retention.account')}</li>
+              <li>{t('retention.logs')}</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Your rights</h2>
-            <p>
-              You can request a copy of the data we hold about you at any time by emailing us at
-              the address below — we&rsquo;ll respond as soon as we can.
-            </p>
-            <p className="mt-3">
-              To delete your account, use the &ldquo;Delete Account&rdquo; button at the bottom of
-              the sidebar once you&rsquo;re logged in — it immediately and permanently deletes your
-              uploaded files, professor materials, conversation history, and your login credentials
-              (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather
-              have us do it for you, email us and we&rsquo;ll delete it manually.
-            </p>
-            <p className="mt-3">
-              If you have an active Pro subscription, deleting your account does not cancel it —
-              Polar (our Merchant of Record, see{' '}
-              <Link href="/terms" className="text-[#F4679B] hover:underline">
-                Terms of Service
-              </Link>
-              ) handles billing independently of your Carrotly login, so we have no way to cancel
-              it on your behalf. You&rsquo;ll need to cancel your subscription first (via the
-              link in the receipt/confirmation email Polar sent you, or by emailing us) before we
-              can delete your account.
-            </p>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">{t('transfers.heading')}</h2>
+            <p>{t('transfers.body1')}</p>
+            <p className="mt-3">{t('transfers.body2')}</p>
+            <p className="mt-3">{t('transfers.body3')}</p>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Contact</h2>
-            <p>
-              Questions about this policy, or requests to access or delete your data, can be sent to{' '}
-              <a
-                href="mailto:kcw022@naver.com"
-                className="text-[#F4679B] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
-              >
-                kcw022@naver.com
-              </a>
-              .
-            </p>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">{t('rights.heading')}</h2>
+            <p>{t('rights.copy')}</p>
+            <p className="mt-3">{t('rights.delete')}</p>
+            <p className="mt-3">{t.rich('rights.proSubscription', { termslink: termsLink })}</p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">{t('contact.heading')}</h2>
+            <p>{t.rich('contact.body', { mailto })}</p>
           </section>
         </div>
       </div>
