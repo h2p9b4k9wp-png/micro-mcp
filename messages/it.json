@@ -452,7 +452,10 @@
     "deleteErrorAlert": "Si è verificato un problema durante l'eliminazione dell'account: {error}\nRiprova.",
     "deleting": "Eliminazione in corso...",
     "delete": "Elimina account",
-    "deleteBlockedProSubscription": "Hai un abbonamento Pro attivo.\n\nEliminare l'account non annulla automaticamente il tuo abbonamento Polar — potresti continuare a essere addebitato. Annullalo prima usando il link nell'email di ricevuta/conferma inviata da Polar, oppure contatta kcw022@naver.com per assistenza.\n\nRiprova dopo aver annullato l'abbonamento."
+    "proWarningTitle": "Hai un abbonamento Pro attivo",
+    "proWarningBody": "Eliminare l'account non annulla automaticamente il tuo abbonamento Polar. Una volta eliminato l'account, non abbiamo modo di annullarlo per te, quindi potresti continuare a essere addebitato. Ti consigliamo di annullarlo prima con il pulsante qui sotto.",
+    "goToPortalButton": "Annulla il mio abbonamento",
+    "acknowledgeCheckboxLabel": "Capisco che devo annullare l'abbonamento separatamente. Elimina comunque il mio account."
   },
   "upgrade": {
     "requestSendFailed": "Impossibile inviare la richiesta: {error}",

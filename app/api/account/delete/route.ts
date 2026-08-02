@@ -23,14 +23,14 @@ import { getSessionUserId } from '@/lib/auth/session';
 // 세션에서만 읽어야 하는 값이라 별도 인증 체크 없이 getSessionUserId()의 null 반환으로
 // 방어합니다.
 //
-// 💡 [수정] Pro 구독 중인 계정은 삭제를 막습니다 — Polar가 Merchant of Record라 우리는
-// 구독 ID/고객 ID를 저장하지도 않고 Polar API 접근 토큰(POLAR_ACCESS_TOKEN)도 없어서,
-// 계정 삭제 시점에 Polar 결제 구독을 우리 쪽에서 대신 취소할 방법이 없습니다. 이 상태로
-// auth.users를 지워버리면 결제 구독은 그대로 남아 계속 청구되는데 로그인 계정은 이미
-// 사라진, 취소도 환불 문의도 훨씬 번거로워지는 상황이 됩니다. app/page.tsx의
-// handleDeleteAccount도 같은 이유로 요청 전에 먼저 이 체크를 하지만, 여기서도 다시
-// 확인합니다 — 이 라우트는 서비스 롤 키로 RLS를 우회하므로 클라이언트 체크만 믿지 않고
-// 서버에서도 최종 방어선을 둡니다.
+// 💡 [수정] Pro 구독 중이어도 삭제를 막지 않습니다 — GDPR 삭제권(제17조)은 사업자가 무기한
+// 보류할 수 있는 권리가 아니라서, 여기서 409로 완전히 막는 이전 구현은 위험할 수 있다는
+// 판단으로 되돌렸습니다. 대신 app/page.tsx가 삭제 직전에 "Pro 구독이 있으니 먼저 취소해
+// 달라"는 경고(구독 취소 링크 + 명시적 체크박스로 인지 확인)를 보여주고, 사용자가 체크박스로
+// 명시적으로 동의한 뒤에만 이 라우트를 호출합니다 — 그 UI 단계가 실질적인 경고이고, 여기
+// 서버 라우트가 할 일은 삭제를 실행하는 것뿐입니다. Pro 상태였다는 사실은 계속 조회해서
+// 로그로만 남깁니다 — 삭제 후에도 Polar 쪽 결제가 남아있을 수 있다는 걸 운영자가(Polar
+// 대시보드를 보지 않는 한) 알 방법이 없어서, 최소한 서버 로그에는 흔적을 남겨둡니다.
 export async function POST() {
   const userId = await getSessionUserId();
   if (!userId) {
@@ -47,17 +47,9 @@ export async function POST() {
   try {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .select('is_pro')
-      .eq('id', userId)
-      .single();
-    if (profileError && profileError.code !== 'PGRST116') throw profileError;
+    const { data: profile } = await supabaseAdmin.from('profiles').select('is_pro').eq('id', userId).single();
     if (profile?.is_pro) {
-      return NextResponse.json(
-        { error: 'Pro 구독이 활성 상태예요. 먼저 구독을 취소해주세요.', proSubscriptionActive: true },
-        { status: 409 }
-      );
+      console.warn(`[account/delete] user ${userId}는 Pro 구독 상태에서 계정을 삭제했습니다 — Polar 쪽 구독이 남아있을 수 있습니다.`);
     }
 
     const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);

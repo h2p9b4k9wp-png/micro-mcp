@@ -452,7 +452,10 @@
     "deleteErrorAlert": "Un problème est survenu lors de la suppression de votre compte : {error}\nVeuillez réessayer.",
     "deleting": "Suppression en cours...",
     "delete": "Supprimer le compte",
-    "deleteBlockedProSubscription": "Vous avez un abonnement Pro actif.\n\nSupprimer votre compte n'annule pas automatiquement votre abonnement Polar — les prélèvements peuvent continuer. Annulez-le d'abord via le lien dans l'e-mail de reçu/confirmation envoyé par Polar, ou contactez kcw022@naver.com pour obtenir de l'aide.\n\nRéessayez après avoir annulé votre abonnement."
+    "proWarningTitle": "Vous avez un abonnement Pro actif",
+    "proWarningBody": "Supprimer votre compte n'annule pas automatiquement votre abonnement Polar. Une fois le compte supprimé, nous n'avons aucun moyen de l'annuler à votre place, donc les prélèvements pourraient continuer. Nous vous recommandons de l'annuler d'abord via le bouton ci-dessous.",
+    "goToPortalButton": "Annuler mon abonnement",
+    "acknowledgeCheckboxLabel": "Je comprends que je dois annuler mon abonnement séparément. Supprimer mon compte quand même."
   },
   "upgrade": {
     "requestSendFailed": "Impossible d'envoyer la demande : {error}",

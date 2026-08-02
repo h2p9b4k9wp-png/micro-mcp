@@ -452,7 +452,10 @@
     "deleteErrorAlert": "Đã xảy ra sự cố khi xóa tài khoản: {error}\nVui lòng thử lại.",
     "deleting": "Đang xóa...",
     "delete": "Xóa tài khoản",
-    "deleteBlockedProSubscription": "Bạn đang có gói Pro đang hoạt động.\n\nXóa tài khoản không tự động hủy gói đăng ký Polar — bạn vẫn có thể bị trừ tiền tiếp. Hãy hủy trước bằng liên kết trong email biên nhận/xác nhận mà Polar đã gửi, hoặc liên hệ kcw022@naver.com để được hỗ trợ.\n\nThử lại sau khi đã hủy gói đăng ký."
+    "proWarningTitle": "Bạn đang có gói Pro đang hoạt động",
+    "proWarningBody": "Xóa tài khoản không tự động hủy gói đăng ký Polar. Sau khi tài khoản bị xóa, chúng tôi cũng không còn cách nào để hủy giúp bạn, nên bạn có thể vẫn bị trừ tiền tiếp. Chúng tôi khuyên bạn nên hủy gói trước bằng nút bên dưới.",
+    "goToPortalButton": "Hủy gói đăng ký của tôi",
+    "acknowledgeCheckboxLabel": "Tôi hiểu mình cần hủy gói đăng ký riêng. Vẫn xóa tài khoản của tôi."
   },
   "upgrade": {
     "requestSendFailed": "Không thể gửi yêu cầu: {error}",

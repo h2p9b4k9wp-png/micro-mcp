@@ -452,7 +452,10 @@
     "deleteErrorAlert": "A problem occurred while deleting your account: {error}\nPlease try again.",
     "deleting": "Deleting...",
     "delete": "Delete Account",
-    "deleteBlockedProSubscription": "You have an active Pro subscription.\n\nDeleting your account does not automatically cancel your Polar subscription — you may keep being charged. Please cancel it first using the link in the receipt/confirmation email Polar sent you, or contact kcw022@naver.com for help.\n\nTry again after cancelling your subscription."
+    "proWarningTitle": "You have an active Pro subscription",
+    "proWarningBody": "Deleting your account does not automatically cancel your Polar subscription. Once your account is gone, we have no way to cancel it on your behalf, so you may keep being charged. We recommend cancelling your subscription first using the button below.",
+    "goToPortalButton": "Cancel my subscription",
+    "acknowledgeCheckboxLabel": "I understand I need to cancel my subscription separately. Delete my account anyway."
   },
   "upgrade": {
     "requestSendFailed": "Could not send the request: {error}",

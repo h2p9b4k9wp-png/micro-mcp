@@ -57,6 +57,24 @@ export function getPolarCheckoutUrl(userId: string, email?: string | null): stri
   return url.toString();
 }
 
+// 💡 [신규] Polar 호스티드 고객 포털 — polar.sh/<조직 slug>/portal 고정 URL이고, 이메일만
+// 입력하면 매직링크로 로그인해서 구독 취소·결제수단 변경·인보이스 다운로드를 셀프서비스로
+// 처리할 수 있는 페이지입니다(Polar 공식 문서: 로그인 세션이 필요한 링크가 아니라 조직
+// slug만 있으면 누구나 열 수 있는 상시 접근 가능한 경로 — Checkout Link와 같은 이유로
+// 비밀이 아닙니다). "영수증 이메일을 뒤져서 그 안의 링크를 찾아야 한다"는 기존 안내보다
+// 훨씬 바로 접근하기 쉬워서, 계정 삭제 전 구독 취소 유도(app/page.tsx의 Pro 구독 경고
+// 모달)에 씁니다.
+//
+// 조직 slug는 코드베이스 어디에도 없는 값입니다 — 기존 POLAR_CHECKOUT_URL은 slug가 아니라
+// polar_cl_...형태의 불투명 체크아웃 링크 ID라 여기서 slug를 역산할 수 없습니다. 추측해서
+// 채우지 않았으니, Polar 대시보드 → Settings → General에서 조직 slug를 확인해 아래 값을
+// 실제 값으로 바꿔주세요.
+export const POLAR_ORG_SLUG = 'REPLACE_WITH_YOUR_POLAR_ORG_SLUG';
+
+export function getPolarCustomerPortalUrl(): string {
+  return `https://polar.sh/${POLAR_ORG_SLUG}/portal`;
+}
+
 // 💡 [신규] 무료 등급 대화 기록 보관 기간(app/privacy 페이지에 적힌 문구와 실제 삭제
 // 동작이 어긋나지 않도록, app/api/cron/cleanup-logs/route.ts가 이 값을 그대로 씁니다).
 // Pro는 보관 기간 제한이 없고(계정 삭제 시까지), 이 상수는 무료 등급에만 적용됩니다.

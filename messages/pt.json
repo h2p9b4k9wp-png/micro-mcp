@@ -452,7 +452,10 @@
     "deleteErrorAlert": "Ocorreu um problema ao excluir sua conta: {error}\nTente novamente.",
     "deleting": "Excluindo...",
     "delete": "Excluir conta",
-    "deleteBlockedProSubscription": "Você tem uma assinatura Pro ativa.\n\nExcluir sua conta não cancela automaticamente sua assinatura na Polar — as cobranças podem continuar. Cancele primeiro pelo link no e-mail de recibo/confirmação enviado pela Polar, ou entre em contato com kcw022@naver.com para obter ajuda.\n\nTente novamente depois de cancelar sua assinatura."
+    "proWarningTitle": "Você tem uma assinatura Pro ativa",
+    "proWarningBody": "Excluir sua conta não cancela automaticamente sua assinatura na Polar. Depois que a conta for excluída, não temos como cancelá-la em seu nome, então as cobranças podem continuar. Recomendamos cancelar primeiro usando o botão abaixo.",
+    "goToPortalButton": "Cancelar minha assinatura",
+    "acknowledgeCheckboxLabel": "Entendo que preciso cancelar a assinatura separadamente. Excluir minha conta mesmo assim."
   },
   "upgrade": {
     "requestSendFailed": "Não foi possível enviar a solicitação: {error}",

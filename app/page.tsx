@@ -31,7 +31,7 @@ import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
-import { getPlanLimits, getPolarCheckoutUrl, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import { Logomark } from '@/components/logomark';
@@ -328,6 +328,11 @@ export default function HomePage() {
 
   // 💡 [신규] 계정 삭제 — handleDeleteAccount 진행 중 사이드바 버튼을 비활성화하는 데만 씁니다.
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  // 💡 [신규] Pro 구독 중 삭제 경고 모달 — 체크박스를 명시적으로 체크해야만 모달 안의
+  // "계정 삭제" 버튼이 활성화됩니다. 모달을 닫거나 다시 열면 체크 상태를 초기화합니다
+  // (매번 다시 인지하고 체크하게 하기 위해서 — 이전에 체크했던 상태가 남아있으면 안 됨).
+  const [isProDeleteWarningOpen, setIsProDeleteWarningOpen] = useState(false);
+  const [deleteAcknowledged, setDeleteAcknowledged] = useState(false);
 
   // 💡 [신규] AI 답변 언어 — /api/chat, /api/analyze, /api/analyze-professor에 보내는
   // responseLanguage 값. 화면 고정 글자(메뉴·버튼)의 ko/en 로케일(useLocale())과는 별개의
@@ -986,27 +991,38 @@ export default function HomePage() {
   // 다 지워지지만, 위 명시적 테이블 삭제는 그대로 남겨둡니다 — "라이브 DB의 cascade 설정이
   // 이 저장소의 마이그레이션과 실제로 일치하는지 가정하지 않는다"는 기존 원칙 그대로입니다.
   //
-  // 💡 [수정] Pro 구독 중이면 삭제를 막습니다 — Polar가 Merchant of Record라 우리는 구독
-  // ID를 저장하지도, Polar API로 대신 취소하지도 못합니다(POLAR_ACCESS_TOKEN 자체가 없음).
-  // 이 상태로 로그인 계정을 지우면 Polar 결제 구독은 그대로 남아 계속 청구되는데, 계정이
-  // 사라졌으니 우리 쪽에서 취소를 유도할 방법도 없어져 환불/취소 문의가 훨씬 꼬입니다 —
-  // 그래서 "자동 취소" 대신 "먼저 취소하도록 안내 후 차단"을 선택했습니다. isPro 상태값은
-  // 세션 로드 시점에 한 번 가져온 값이라 그 사이 다른 경로(영수증 이메일 링크 등)로 이미
-  // 구독을 취소했을 수 있으므로, 여기서 profiles.is_pro를 다시 조회해 최신 값으로
-  // 판단합니다. /api/account/delete도 서비스 롤 키로 RLS를 우회하는 라우트라 같은 체크를
-  // 서버에서 한 번 더 하므로(방어선 이중화), 혹시 이 클라이언트 체크를 통과한 뒤 아주
-  // 짧은 순간에 구독이 활성화되는 경쟁 상태가 있어도 최종적으로는 막힙니다.
+  // 💡 [수정] Pro 구독 중이면 경고 모달을 띄웁니다 — Polar가 Merchant of Record라 우리는
+  // 구독 ID를 저장하지도, Polar API로 대신 취소하지도 못합니다(POLAR_ACCESS_TOKEN 자체가
+  // 없음). 이 상태로 로그인 계정을 지우면 Polar 결제 구독은 그대로 남아 계속 청구될 수
+  // 있습니다 — 하지만 GDPR 삭제권(제17조)은 사업자가 무기한 보류할 수 있는 권리가 아니라서,
+  // 예전처럼 서버가 409로 완전히 막는 건 위험할 수 있다는 판단으로 되돌렸습니다. 대신
+  // (1) 구독 취소 포털로 바로 갈 수 있는 버튼, (2) "그래도 삭제하겠습니다" 체크박스를
+  // 명시적으로 체크해야만 모달 안의 삭제 버튼이 활성화되는 방식으로 바꿨습니다 — 경고는
+  // 강하게 보여주되 삭제 자체를 막지는 않습니다. isPro 상태값은 세션 로드 시점에 한 번
+  // 가져온 값이라 그 사이 다른 경로(영수증 이메일 링크 등)로 이미 구독을 취소했을 수
+  // 있으므로, 여기서 profiles.is_pro를 다시 조회해 최신 값으로 판단합니다.
   const handleDeleteAccount = async () => {
     if (!user) return;
 
     const { data: freshProfile } = await supabase.from('profiles').select('is_pro').eq('id', user.id).single();
     if (freshProfile?.is_pro) {
-      alert(t('account.deleteBlockedProSubscription'));
+      setDeleteAcknowledged(false);
+      setIsProDeleteWarningOpen(true);
       return;
     }
 
     const confirmed = window.confirm(t('account.deleteConfirm'));
     if (!confirmed) return;
+
+    await performAccountDeletion();
+  };
+
+  // 💡 [신규] 실제 삭제 실행 — 일반 경로(Pro 아님, window.confirm만 통과)와 Pro 구독 경고
+  // 모달에서 체크박스를 체크하고 "계정 삭제"를 누른 경로가 여기로 합류합니다. 두 경로 모두
+  // 이 지점에 도달했다는 것 자체가 이미 필요한 확인(네이티브 confirm 또는 모달의 체크박스)을
+  // 마쳤다는 뜻이라 여기서 추가 확인 창은 띄우지 않습니다.
+  const performAccountDeletion = async () => {
+    if (!user) return;
 
     setIsDeletingAccount(true);
     try {
@@ -1027,11 +1043,7 @@ export default function HomePage() {
       const res = await fetch('/api/account/delete', { method: 'POST' });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        if (data.proSubscriptionActive) {
-          alert(t('account.deleteBlockedProSubscription'));
-        } else {
-          alert(t('account.deleteErrorAlert', { error: data.error || res.statusText }));
-        }
+        alert(t('account.deleteErrorAlert', { error: data.error || res.statusText }));
         return;
       }
 
@@ -1042,6 +1054,17 @@ export default function HomePage() {
     } finally {
       setIsDeletingAccount(false);
     }
+  };
+
+  const closeProDeleteWarning = () => {
+    setIsProDeleteWarningOpen(false);
+    setDeleteAcknowledged(false);
+  };
+
+  const handleConfirmDeleteWithActiveSubscription = async () => {
+    if (!deleteAcknowledged) return;
+    setIsProDeleteWarningOpen(false);
+    await performAccountDeletion();
   };
 
   // 💡 [신규] 교수님 새로 등록. 학교/학과는 필수이고, 성공하면 다음 등록 폼의 기본값으로 기억해둡니다
@@ -3357,6 +3380,70 @@ export default function HomePage() {
               </form>
             </>
           )}
+        </div>
+      </div>
+    )}
+
+    {/* 💡 [신규] Pro 구독 중 계정 삭제 경고 모달 — handleDeleteAccount가 profiles.is_pro가
+        true일 때 window.confirm() 대신 이 모달을 엽니다. 체크박스(deleteAcknowledged)를
+        명시적으로 체크해야만 아래 "계정 삭제" 버튼이 활성화됩니다. */}
+    {isProDeleteWarningOpen && (
+      <div
+        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+        onClick={closeProDeleteWarning}
+      >
+        <div
+          className="bg-[var(--bg-page)] border border-[var(--accent-danger)]/50 rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-1.5">
+            {t('account.proWarningTitle')}
+          </h3>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
+            {t('account.proWarningBody')}
+          </p>
+          <a
+            href={getPolarCustomerPortalUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center bg-[#F4679B] hover:bg-[#D1477F] text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+          >
+            {t('account.goToPortalButton')}
+          </a>
+
+          <div className="flex items-center gap-2 my-4">
+            <div className="flex-1 h-px bg-[var(--border-default)]" />
+          </div>
+
+          <label className="flex items-start gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={deleteAcknowledged}
+              onChange={(e) => setDeleteAcknowledged(e.target.checked)}
+              className="mt-0.5 w-4 h-4 shrink-0 accent-[var(--accent-danger)] cursor-pointer"
+            />
+            <span className="text-xs text-[var(--text-secondary)] leading-relaxed">
+              {t('account.acknowledgeCheckboxLabel')}
+            </span>
+          </label>
+
+          <div className="flex items-center gap-2 mt-5">
+            <button
+              type="button"
+              onClick={closeProDeleteWarning}
+              className="flex-1 bg-[var(--bg-surface)] hover:bg-[var(--bg-deep)] text-[var(--text-secondary)] border border-[var(--border-default)] text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-muted)]"
+            >
+              {t('common.close')}
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmDeleteWithActiveSubscription}
+              disabled={!deleteAcknowledged || isDeletingAccount}
+              className="flex-1 bg-[var(--accent-danger)] hover:opacity-90 disabled:bg-[var(--surface-chip)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
+            >
+              {isDeletingAccount ? t('account.deleting') : t('account.delete')}
+            </button>
+          </div>
         </div>
       </div>
     )}

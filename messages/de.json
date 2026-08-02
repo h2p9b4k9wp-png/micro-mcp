@@ -452,7 +452,10 @@
     "deleteErrorAlert": "Beim Löschen Ihres Kontos ist ein Problem aufgetreten: {error}\nBitte versuchen Sie es erneut.",
     "deleting": "Wird gelöscht...",
     "delete": "Konto löschen",
-    "deleteBlockedProSubscription": "Sie haben ein aktives Pro-Abonnement.\n\nDas Löschen Ihres Kontos kündigt Ihr Polar-Abonnement nicht automatisch — es könnte weiterhin abgebucht werden. Kündigen Sie es zuerst über den Link in der Quittungs-/Bestätigungs-E-Mail von Polar, oder kontaktieren Sie kcw022@naver.com für Hilfe.\n\nVersuchen Sie es erneut, nachdem Sie Ihr Abonnement gekündigt haben."
+    "proWarningTitle": "Sie haben ein aktives Pro-Abonnement",
+    "proWarningBody": "Das Löschen Ihres Kontos kündigt Ihr Polar-Abonnement nicht automatisch. Sobald Ihr Konto gelöscht ist, können wir es nicht mehr für Sie kündigen — es könnte also weiterhin abgebucht werden. Wir empfehlen, es zuerst über die Schaltfläche unten zu kündigen.",
+    "goToPortalButton": "Abonnement kündigen",
+    "acknowledgeCheckboxLabel": "Mir ist klar, dass ich das Abonnement separat kündigen muss. Konto trotzdem löschen."
   },
   "upgrade": {
     "requestSendFailed": "Die Anfrage konnte nicht gesendet werden: {error}",

@@ -452,7 +452,10 @@
     "deleteErrorAlert": "Er is een probleem opgetreden bij het verwijderen van je account: {error}\nProbeer het opnieuw.",
     "deleting": "Bezig met verwijderen...",
     "delete": "Account verwijderen",
-    "deleteBlockedProSubscription": "Je hebt een actief Pro-abonnement.\n\nJe account verwijderen annuleert je Polar-abonnement niet automatisch — er kan nog steeds worden afgeschreven. Zeg het eerst op via de link in de ontvangst-/bevestigingsmail van Polar, of neem contact op met kcw022@naver.com voor hulp.\n\nProbeer het opnieuw nadat je je abonnement hebt opgezegd."
+    "proWarningTitle": "Je hebt een actief Pro-abonnement",
+    "proWarningBody": "Je account verwijderen zegt je Polar-abonnement niet automatisch op. Zodra je account weg is, kunnen wij het niet meer namens jou opzeggen, dus er kan nog steeds worden afgeschreven. We raden aan het eerst op te zeggen via de knop hieronder.",
+    "goToPortalButton": "Abonnement opzeggen",
+    "acknowledgeCheckboxLabel": "Ik begrijp dat ik het abonnement apart moet opzeggen. Toch mijn account verwijderen."
   },
   "upgrade": {
     "requestSendFailed": "Kon het verzoek niet verzenden: {error}",

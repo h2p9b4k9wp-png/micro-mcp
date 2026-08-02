@@ -452,7 +452,10 @@
     "deleteErrorAlert": "アカウント削除中に問題が発生しました：{error}\nもう一度お試しください。",
     "deleting": "削除中...",
     "delete": "アカウント削除",
-    "deleteBlockedProSubscription": "Proプランを購読中です。\n\nアカウントを削除してもPolarの決済サブスクリプションは自動的にキャンセルされず、請求が続く可能性があります。まずPolarから届いた領収書・確認メール内のリンクから解約するか、kcw022@naver.comまでご連絡ください。\n\n解約後にもう一度お試しください。"
+    "proWarningTitle": "Proプランを購読中です",
+    "proWarningBody": "アカウントを削除してもPolarの決済サブスクリプションは自動的にキャンセルされません。アカウント削除後は当方でも代わりに解約する方法がなく、請求が続く可能性があります。まず下のボタンから解約することをおすすめします。",
+    "goToPortalButton": "サブスクリプションを解約する",
+    "acknowledgeCheckboxLabel": "サブスクリプションは別途解約が必要なことを理解しました。それでもアカウントを削除します。"
   },
   "upgrade": {
     "requestSendFailed": "リクエストを送信できませんでした：{error}",

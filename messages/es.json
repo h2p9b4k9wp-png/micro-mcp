@@ -452,7 +452,10 @@
     "deleteErrorAlert": "Ocurrió un problema al eliminar tu cuenta: {error}\nInténtalo de nuevo.",
     "deleting": "Eliminando...",
     "delete": "Eliminar cuenta",
-    "deleteBlockedProSubscription": "Tienes una suscripción Pro activa.\n\nEliminar tu cuenta no cancela automáticamente tu suscripción de Polar — podrías seguir recibiendo cargos. Cancélala primero con el enlace del correo de recibo/confirmación que te envió Polar, o escribe a kcw022@naver.com para que te ayudemos.\n\nInténtalo de nuevo después de cancelar tu suscripción."
+    "proWarningTitle": "Tienes una suscripción Pro activa",
+    "proWarningBody": "Eliminar tu cuenta no cancela automáticamente tu suscripción de Polar. Una vez eliminada la cuenta, no tenemos forma de cancelarla en tu nombre, así que podrías seguir recibiendo cargos. Te recomendamos cancelarla primero con el botón de abajo.",
+    "goToPortalButton": "Cancelar mi suscripción",
+    "acknowledgeCheckboxLabel": "Entiendo que debo cancelar la suscripción por separado. Eliminar mi cuenta de todos modos."
   },
   "upgrade": {
     "requestSendFailed": "No se pudo enviar la solicitud: {error}",
