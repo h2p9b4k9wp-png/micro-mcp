@@ -444,7 +444,7 @@
     }
   },
   "account": {
-    "deleteConfirm": "Weet je zeker dat je je accountgegevens wilt verwijderen?\n\nAlle geüploade bestanden, docentmateriaal, gespreksgeschiedenis en gespreksmappen worden permanent verwijderd en kunnen niet worden hersteld.\n(Je inlogaccount zelf blijft behouden — je kunt opnieuw inloggen en helemaal opnieuw beginnen als je dat wilt.)",
+    "deleteConfirm": "Weet je zeker dat je je account wilt verwijderen?\n\nAlle geüploade bestanden, docentmateriaal, gespreksgeschiedenis en gespreksmappen, samen met je inlogaccount zelf (e-mail, inloggegevens), worden permanent verwijderd en kunnen niet worden hersteld.",
     "deleteErrorAlert": "Er is een probleem opgetreden bij het verwijderen van je account: {error}\nProbeer het opnieuw.",
     "deleting": "Bezig met verwijderen...",
     "delete": "Account verwijderen"

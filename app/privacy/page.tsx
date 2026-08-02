@@ -22,7 +22,7 @@ export default function PrivacyPage() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] mt-6 mb-2 tracking-tight">
           Privacy Policy
         </h1>
-        <p className="text-sm text-[#857C93] mb-10">Last updated: July 2026</p>
+        <p className="text-sm text-[#857C93] mb-10">Last updated: August 2026</p>
 
         <div className="flex flex-col gap-8 text-[15px] leading-relaxed">
           <section>
@@ -76,7 +76,14 @@ export default function PrivacyPage() {
               <li>
                 <span className="font-semibold text-[#F5F2F7]">Supabase</span> — our database and
                 authentication provider, used to store your account, files, and conversation
-                history.
+                history. Your data is hosted in Supabase&rsquo;s{' '}
+                <span className="font-semibold text-[#F5F2F7]">
+                  {/* TODO: 실제 Supabase 프로젝트 리전으로 바꿔주세요 (Supabase 대시보드 →
+                      Project Settings → General → Region에서 확인) — 코드베이스만으로는
+                      알 수 없는 값이라 추측해서 채우지 않았습니다. */}
+                  [insert Supabase project region, e.g. &ldquo;US East (N. Virginia)&rdquo;]
+                </span>{' '}
+                region.
               </li>
               <li>
                 <span className="font-semibold text-[#F5F2F7]">Polar</span> — our payment processor,
@@ -98,8 +105,15 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-bold text-[#F5F2F7] mb-3">Your rights</h2>
             <p>
-              You can request a copy of the data we hold about you, or request that we delete it,
-              at any time by emailing us at the address below. We&rsquo;ll respond as soon as we can.
+              You can request a copy of the data we hold about you at any time by emailing us at
+              the address below — we&rsquo;ll respond as soon as we can.
+            </p>
+            <p className="mt-3">
+              To delete your account, use the &ldquo;Delete Account&rdquo; button at the bottom of
+              the sidebar once you&rsquo;re logged in — it immediately and permanently deletes your
+              uploaded files, professor materials, conversation history, and your login credentials
+              (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather
+              have us do it for you, email us and we&rsquo;ll delete it manually.
             </p>
           </section>
 

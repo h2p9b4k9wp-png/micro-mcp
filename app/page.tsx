@@ -975,9 +975,16 @@ export default function HomePage() {
   // documents→doc_chunks는 모두 on delete cascade FK라 professors 하나만 지워도 나머지가
   // 자동으로 따라 지워지지만, 여기서는 각 테이블을 명시적으로 병렬 삭제합니다 — 라이브
   // DB에 마이그레이션이 정확히 반영돼 있다는 가정에 기대지 않고, 어떤 테이블이 비어 있는
-  // 상태로 남는지 실패 시 바로 알 수 있게 하기 위해서입니다. profiles(is_pro 등 계정
-  // 자체 정보)는 이 목록에 없으므로 건드리지 않습니다 — 로그인 계정 자체는 유지되고,
-  // 업로드한 자료·교수님·대화 기록·폴더만 전부 지워집니다.
+  // 상태로 남는지 실패 시 바로 알 수 있게 하기 위해서입니다.
+  // 💡 [수정] GDPR 점검 중 발견 — 예전 버전은 여기서 데이터 행만 지우고 로그인 계정
+  // (auth.users, profiles 포함)은 그대로 남겨서, "계정 삭제"를 눌러도 같은 이메일/OAuth로
+  // 다시 로그인하면 그대로 들어와졌습니다 (버튼 라벨은 "계정 삭제"인데 실제로는 "데이터만
+  // 삭제"였던 불일치 — GDPR 삭제 요청 관점에서도 로그인 자격 증명이 남아있으면 불완전합니다).
+  // 이제 데이터 행 삭제가 전부 성공한 뒤 /api/account/delete를 호출해 실제 로그인 계정까지
+  // 지웁니다. 그 라우트가 서비스 롤 키로 auth.admin.deleteUser()를 부르면 profiles를 포함한
+  // 모든 사용자 데이터 테이블이 auth.users를 향한 on delete cascade로 걸려있어 자동으로도
+  // 다 지워지지만, 위 명시적 테이블 삭제는 그대로 남겨둡니다 — "라이브 DB의 cascade 설정이
+  // 이 저장소의 마이그레이션과 실제로 일치하는지 가정하지 않는다"는 기존 원칙 그대로입니다.
   const handleDeleteAccount = async () => {
     if (!user) return;
     const confirmed = window.confirm(t('account.deleteConfirm'));
@@ -996,6 +1003,13 @@ export default function HomePage() {
       const firstError = results.find((r) => r.error)?.error;
       if (firstError) {
         alert(t('account.deleteErrorAlert', { error: firstError.message }));
+        return;
+      }
+
+      const res = await fetch('/api/account/delete', { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(t('account.deleteErrorAlert', { error: data.error || res.statusText }));
         return;
       }
 

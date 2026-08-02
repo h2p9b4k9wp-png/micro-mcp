@@ -444,7 +444,7 @@
     }
   },
   "account": {
-    "deleteConfirm": "Möchten Sie Ihre Kontodaten wirklich löschen?\n\nAlle hochgeladenen Dateien, Materialien von Professoren, der Gesprächsverlauf und die Gesprächsordner werden dauerhaft gelöscht und können nicht wiederhergestellt werden.\n(Ihr Login-Konto selbst bleibt bestehen — Sie können sich jederzeit wieder anmelden und neu beginnen.)",
+    "deleteConfirm": "Möchten Sie Ihr Konto wirklich löschen?\n\nAlle hochgeladenen Dateien, Professorenmaterialien, der Gesprächsverlauf und die Gesprächsordner sowie Ihr Login-Konto selbst (E-Mail, Anmeldedaten) werden dauerhaft gelöscht und können nicht wiederhergestellt werden.",
     "deleteErrorAlert": "Beim Löschen Ihres Kontos ist ein Problem aufgetreten: {error}\nBitte versuchen Sie es erneut.",
     "deleting": "Wird gelöscht...",
     "delete": "Konto löschen"

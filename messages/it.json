@@ -444,7 +444,7 @@
     }
   },
   "account": {
-    "deleteConfirm": "Sei sicuro di voler eliminare i dati del tuo account?\n\nTutti i file caricati, i materiali dei professori, la cronologia delle conversazioni e le cartelle delle conversazioni verranno eliminati definitivamente e non potranno essere ripristinati.\n(Il tuo account di accesso rimane comunque attivo — puoi accedere di nuovo e ricominciare da capo se lo desideri.)",
+    "deleteConfirm": "Vuoi davvero eliminare il tuo account?\n\nTutti i file caricati, i materiali dei professori, la cronologia delle conversazioni e le cartelle delle conversazioni, insieme al tuo account di accesso (email, dati di accesso), verranno eliminati definitivamente e non potranno essere ripristinati.",
     "deleteErrorAlert": "Si è verificato un problema durante l'eliminazione dell'account: {error}\nRiprova.",
     "deleting": "Eliminazione in corso...",
     "delete": "Elimina account"

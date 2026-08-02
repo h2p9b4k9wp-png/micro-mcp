@@ -121,6 +121,10 @@ export default function WelcomePage() {
         ·{' '}
         <Link href="/privacy" className="underline underline-offset-2 hover:text-[#F4679B] transition-colors">
           Privacy Policy
+        </Link>{' '}
+        ·{' '}
+        <Link href="/terms" className="underline underline-offset-2 hover:text-[#F4679B] transition-colors">
+          Terms of Service
         </Link>
       </footer>
     </div>

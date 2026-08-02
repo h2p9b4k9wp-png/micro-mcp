@@ -444,7 +444,7 @@
     }
   },
   "account": {
-    "deleteConfirm": "Bạn có chắc muốn xóa dữ liệu tài khoản không?\n\nTất cả tệp đã tải lên, tài liệu giáo sư, lịch sử trò chuyện và thư mục trò chuyện sẽ bị xóa vĩnh viễn và không thể khôi phục.\n(Tài khoản đăng nhập vẫn được giữ lại — bạn có thể đăng nhập lại và bắt đầu mới nếu muốn.)",
+    "deleteConfirm": "Bạn có chắc muốn xóa tài khoản không?\n\nTất cả tệp đã tải lên, tài liệu giáo sư, lịch sử trò chuyện và thư mục trò chuyện, cùng với chính tài khoản đăng nhập của bạn (email, thông tin đăng nhập), sẽ bị xóa vĩnh viễn và không thể khôi phục.",
     "deleteErrorAlert": "Đã xảy ra sự cố khi xóa tài khoản: {error}\nVui lòng thử lại.",
     "deleting": "Đang xóa...",
     "delete": "Xóa tài khoản"

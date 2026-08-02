@@ -26,6 +26,13 @@ export function SiteFooter() {
         className="text-[var(--text-muted)] hover:text-[#F4679B] underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
       >
         Privacy Policy
+      </Link>{' '}
+      ·{' '}
+      <Link
+        href="/terms"
+        className="text-[var(--text-muted)] hover:text-[#F4679B] underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+      >
+        Terms of Service
       </Link>
     </footer>
   );

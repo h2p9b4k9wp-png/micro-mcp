@@ -444,7 +444,7 @@
     }
   },
   "account": {
-    "deleteConfirm": "Tem certeza de que deseja excluir os dados da sua conta?\n\nTodos os arquivos enviados, materiais de professores, histórico de conversas e pastas de conversas serão excluídos permanentemente e não poderão ser recuperados.\n(Sua conta de login em si é mantida — você pode fazer login novamente e começar do zero se quiser.)",
+    "deleteConfirm": "Tem certeza de que deseja excluir sua conta?\n\nTodos os arquivos enviados, materiais de professores, histórico de conversas e pastas de conversas, junto com sua conta de login (e-mail, dados de acesso), serão excluídos permanentemente e não poderão ser recuperados.",
     "deleteErrorAlert": "Ocorreu um problema ao excluir sua conta: {error}\nTente novamente.",
     "deleting": "Excluindo...",
     "delete": "Excluir conta"

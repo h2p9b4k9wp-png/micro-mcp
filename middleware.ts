@@ -85,8 +85,8 @@ export async function middleware(request: NextRequest) {
     return res;
   };
 
-  // 💡 [수정] /privacy·/pricing은 로그인 없이도 봐야 하는 공개 페이지입니다(앱 심사·가입 전
-  // 방문자 등). /welcome은 로그인 없이 링크로 들어온 방문자가 보는 첫 화면(라이트 테마
+  // 💡 [수정] /privacy·/terms·/pricing은 로그인 없이도 봐야 하는 공개 페이지입니다(앱 심사·가입 전
+  // 방문자, 결제 전 약관 확인 등). /welcome은 로그인 없이 링크로 들어온 방문자가 보는 첫 화면(라이트 테마
   // 랜딩 페이지, app/welcome/page.tsx)입니다. /api/cron/*는 세션 쿠키가 아니라 자체
   // CRON_SECRET으로 인증하는 Vercel Cron 전용 라우트라, 여기서 세션을 요구하면 Cron
   // 호출 자체가 401로 막힙니다. /api/public-analyze(파일 분석)·/api/public-chat(AI 채팅)·
@@ -103,6 +103,7 @@ export async function middleware(request: NextRequest) {
     path === '/welcome' ||
     path.startsWith('/auth/') ||
     path === '/privacy' ||
+    path === '/terms' ||
     path === '/pricing' ||
     path.startsWith('/api/cron/') ||
     path === '/api/public-analyze' ||

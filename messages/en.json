@@ -444,7 +444,7 @@
     }
   },
   "account": {
-    "deleteConfirm": "Are you sure you want to delete your account data?\n\nAll uploaded files, professor materials, conversation history, and conversation folders will be permanently deleted and cannot be undone.\n(Your login account itself is kept — you can log back in and start fresh if you want.)",
+    "deleteConfirm": "Are you sure you want to delete your account?\n\nAll uploaded files, professor materials, conversation history, and conversation folders — along with your login account itself (email, sign-in info) — will be permanently deleted and cannot be undone.",
     "deleteErrorAlert": "A problem occurred while deleting your account: {error}\nPlease try again.",
     "deleting": "Deleting...",
     "delete": "Delete Account"

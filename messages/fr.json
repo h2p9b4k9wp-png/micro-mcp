@@ -444,7 +444,7 @@
     }
   },
   "account": {
-    "deleteConfirm": "Voulez-vous vraiment supprimer les données de votre compte ?\n\nTous les fichiers téléversés, documents de professeurs, historique des conversations et dossiers de conversation seront définitivement supprimés et cette action est irréversible.\n(Votre compte de connexion lui-même est conservé — vous pouvez vous reconnecter et repartir à zéro si vous le souhaitez.)",
+    "deleteConfirm": "Voulez-vous vraiment supprimer votre compte ?\n\nTous les fichiers téléversés, les documents de professeurs, l'historique des conversations et les dossiers de conversation, ainsi que votre compte de connexion lui-même (e-mail, informations de connexion), seront définitivement supprimés et ne pourront pas être récupérés.",
     "deleteErrorAlert": "Un problème est survenu lors de la suppression de votre compte : {error}\nVeuillez réessayer.",
     "deleting": "Suppression en cours...",
     "delete": "Supprimer le compte"
