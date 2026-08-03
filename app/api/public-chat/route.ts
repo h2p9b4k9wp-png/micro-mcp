@@ -4,13 +4,14 @@ import { createClient } from '@supabase/supabase-js';
 import { truncateForPrompt } from '@/lib/truncate-text';
 import { extractFileText, FileExtractError } from '@/lib/file-text-extract';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES } from '@/lib/image-constraints';
-import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
+import { MAX_ANONYMOUS_UPLOAD_BYTES, MAX_ANONYMOUS_FILENAME_CHARS } from '@/lib/upload-limits';
 import {
   getClientIp,
   getGuestSessionId,
   checkGuestChatAllowed,
   checkGuestUploadAllowed,
   recordAnonymousUsage,
+  recordAnonymousUploadIfAllowed,
 } from '@/lib/anonymous-usage';
 
 // 💡 [신규] 로그인 없이 AI에게 자유 질문 하나를 던져보는 체험(app/login/page.tsx의 "AI에게
@@ -34,6 +35,14 @@ const MAX_ANONYMOUS_PROMPT_CHARS = 2000;
 // 첨부 문서 텍스트 길이 상한 — 로그인 사용자용 기본값(6만 자)보다 훨씬 낮게 잡아 게스트
 // 체험 한 번의 토큰 비용을 통제합니다. 어차피 원본 파일 자체가 3MB로 제한돼 있습니다.
 const MAX_ANONYMOUS_ATTACHMENT_CHARS = 8000;
+
+// 💡 [신규] responseLanguage는 client(app/login/page.tsx)가 detectBrowserLanguageName()으로
+// 자동 감지한 짧은 언어 이름("Korean", "Japanese" 등)이 정상 값이지만, 이 라우트는
+// 요청 body에서 그대로 받아 검증 없이 프롬프트에 이어붙입니다. prompt 필드는
+// MAX_ANONYMOUS_PROMPT_CHARS로 잘리는데 responseLanguage는 그 상한을 거치지 않아서, 여기에
+// 임의로 아주 긴 문자열을 넣으면 prompt 상한을 우회해 토큰 비용을 부풀릴 수 있었습니다.
+// 정상적인 언어 이름은 이 상한을 넘을 이유가 없습니다.
+const MAX_RESPONSE_LANGUAGE_CHARS = 100;
 
 interface GuestChatAttachment {
   fileName?: string;
@@ -72,7 +81,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { prompt, responseLanguage, attachment } = body as {
+    const { prompt, responseLanguage: rawResponseLanguage, attachment } = body as {
       prompt?: string;
       responseLanguage?: string;
       attachment?: GuestChatAttachment;
@@ -80,6 +89,7 @@ export async function POST(req: Request) {
     if (!prompt || !prompt.trim()) {
       return NextResponse.json({ error: 'Please enter a question.' }, { status: 400 });
     }
+    const responseLanguage = rawResponseLanguage?.trim().slice(0, MAX_RESPONSE_LANGUAGE_CHARS) || undefined;
 
     // 💡 [신규] 첨부 처리 — 있으면 "세션당 업로드 1건" 예산을 먼저 확인하고 소모합니다.
     // 순서(예산 확인 → 기본 검증 → 사용 기록 → 실제 추출/비전)는 app/api/public-analyze·
@@ -116,14 +126,35 @@ export async function POST(req: Request) {
         );
       }
 
-      await recordAnonymousUsage(supabaseAdmin, ip, 'chat_attachment', sessionId);
+      // 💡 첨부 파일명 길이 상한 — 아래에서 이 값을 [Attached file: ...]로 시스템 프롬프트에
+      // 그대로 꽂아 넣습니다. 원본 파일 내용(content)은 3MB로 제한돼 있지만 fileName은 별도
+      // 필드라 그 체크를 거치지 않아서, content는 작게 두고 fileName만 아주 길게 보내면
+      // extractFileText의 텍스트 상한(MAX_ANONYMOUS_ATTACHMENT_CHARS)과 무관하게 프롬프트를
+      // 부풀릴 수 있었습니다.
+      const safeFileName = attachment.fileName.slice(0, MAX_ANONYMOUS_FILENAME_CHARS);
+
+      // 💡 checkGuestUploadAllowed의 SELECT 사전 확인과 실제 기록 사이의 경쟁 조건(동시
+      // 요청으로 "세션당 업로드 1건" 우회)을 DB 부분 유니크 인덱스로 막습니다 —
+      // public-analyze/public-guided-trial과 동일한 이유.
+      const recordResult = await recordAnonymousUploadIfAllowed(supabaseAdmin, ip, 'chat_attachment', sessionId);
+      if (!recordResult.ok) {
+        return NextResponse.json(
+          {
+            error: '이번 체험에서 업로드를 이미 사용했어요. 로그인하면 계속 첨부할 수 있어요.',
+            limitReached: true,
+            limitType: 'session',
+            limitScope: 'upload',
+          },
+          { status: 429 }
+        );
+      }
 
       if (isImage) {
         attachmentContent = { kind: 'image', dataUrl: `data:${attachment.mimeType};base64,${attachment.content}` };
       } else {
         try {
-          const text = await extractFileText(attachment.fileName, attachment.mimeType, attachment.content);
-          attachmentContent = { kind: 'text', fileName: attachment.fileName, text };
+          const text = await extractFileText(safeFileName, attachment.mimeType, attachment.content);
+          attachmentContent = { kind: 'text', fileName: safeFileName, text };
         } catch (err) {
           if (err instanceof FileExtractError) {
             return NextResponse.json({ error: err.message }, { status: 400 });

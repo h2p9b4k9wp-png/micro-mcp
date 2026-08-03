@@ -3,7 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 import { runLensAnalysisOnImage, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES } from '@/lib/image-constraints';
-import { getClientIp, getGuestSessionId, checkGuestUploadAllowed, recordAnonymousUsage } from '@/lib/anonymous-usage';
+import {
+  getClientIp,
+  getGuestSessionId,
+  checkGuestUploadAllowed,
+  recordAnonymousUploadIfAllowed,
+} from '@/lib/anonymous-usage';
 
 // 💡 [신규] 로그인 없이 사진/캡처본 한 장을 올려 회로도 애니메이션 + 예상 문제 + 요약정리를
 // 보여주는 "가이드 체험" 전용 라우트입니다. middleware.ts의 isPublicRoute에 이 경로가
@@ -76,7 +81,16 @@ export async function POST(req: Request) {
     // 💡 이 지점부터는 실제 비전 호출로 이어지는 비용 발생 구간이라, 이후 실패와 무관하게
     // 여기서 1회를 소진한 것으로 기록합니다 — 그래야 일부러 깨진 이미지를 계속 보내며
     // 재시도하는 방식으로 "평생 1회" 제한을 우회할 수 없습니다.
-    await recordAnonymousUsage(supabaseAdmin, ip, 'guided', sessionId);
+    //
+    // 💡 checkGuestUploadAllowed의 사전 확인과 이 기록 사이의 경쟁 조건(동시 요청 우회)을
+    // DB 부분 유니크 인덱스로 막습니다 — public-analyze와 동일한 이유.
+    const recordResult = await recordAnonymousUploadIfAllowed(supabaseAdmin, ip, 'guided', sessionId);
+    if (!recordResult.ok) {
+      return NextResponse.json(
+        { error: 'Guided trial already used. Log in to keep using it.', limitReached: true, limitType: 'session' },
+        { status: 429 }
+      );
+    }
 
     const dataUrl = `data:${mimeType};base64,${content}`;
     const [questions, summary] = await Promise.all([

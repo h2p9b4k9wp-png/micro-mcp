@@ -183,6 +183,14 @@ export async function checkGuestChatAllowed(
 // 💡 실제 OpenAI 호출 전에 먼저 기록합니다 — 그래야 실패(파싱 오류, AI 오류 등)를 반복
 // 재시도하는 방식으로 한도를 우회할 수 없습니다. 기록 자체가 실패해도 이미 진행 중인
 // 요청을 막을 이유는 아니라 throw하지 않고 로그만 남깁니다.
+//
+// 💡 이 함수 단독으로는 "세션당 업로드 1건" 예산을 진짜로 강제하지 못합니다 — 'analyze'/
+// 'guided'/'chat_attachment' 업로드 경로는 checkGuestUploadAllowed()로 먼저 확인한 뒤에
+// 이 함수를 호출하는데, 확인과 기록이 서로 다른 두 번의 왕복 요청이라 같은 세션으로 동시에
+// 여러 요청을 보내면 전부 "아직 안 씀" 상태로 확인을 통과해버리는 경쟁 조건(TOCTOU)이
+// 있었습니다. 업로드 계열 3종은 반드시 아래 recordAnonymousUploadIfAllowed()를 쓰세요 —
+// 'chat'(채팅 턴, 세션당 최대 3회까지 허용)처럼 "여러 번 허용"되는 kind만 이 함수를
+// 그대로 씁니다.
 export async function recordAnonymousUsage(
   supabaseAdmin: SupabaseClient,
   ip: string,
@@ -193,4 +201,33 @@ export async function recordAnonymousUsage(
     .from('anonymous_trial_usage')
     .insert({ ip_address: ip, kind, session_id: sessionId });
   if (error) console.error('[anonymous-usage] 사용 이력 기록 실패:', error);
+}
+
+export type GuestUploadKind = 'analyze' | 'guided' | 'chat_attachment';
+
+// 💡 [신규] "세션당 업로드 1건" 예산을 DB 레벨에서 원자적으로 강제합니다. 위
+// recordAnonymousUsage()와 달리 이 함수는 INSERT 자체를 예산 판정으로 씁니다 —
+// supabase/migrations의 부분 유니크 인덱스(anonymous_trial_usage_session_upload_once_idx,
+// session_id 하나당 analyze/guided/chat_attachment 중 딱 1행만 허용)가 같은 session_id의
+// 두 번째 업로드 INSERT를 DB가 직접 거부하게 만들어서, 동시에 여러 요청이 들어와도
+// 정확히 하나만 성공하고 나머지는 23505(unique_violation)로 실패합니다 — checkGuestUploadAllowed()의
+// SELECT 기반 사전 확인(사용자에게 빠른 429를 보여주기 위한 용도로 여전히 유지)과 달리,
+// 이 함수의 실패는 "진짜로 이미 다른 요청이 먼저 슬롯을 가져갔다"는 뜻이라 호출부는 반드시
+// 이 반환값을 확인하고 AI 호출 전에 중단해야 합니다.
+export async function recordAnonymousUploadIfAllowed(
+  supabaseAdmin: SupabaseClient,
+  ip: string,
+  kind: GuestUploadKind,
+  sessionId: string
+): Promise<{ ok: boolean }> {
+  const { error } = await supabaseAdmin
+    .from('anonymous_trial_usage')
+    .insert({ ip_address: ip, kind, session_id: sessionId });
+  if (!error) return { ok: true };
+  if (error.code === '23505') return { ok: false };
+  // 유니크 제약과 무관한 오류(네트워크 등)는 위 recordAnonymousUsage와 같은 원칙으로 요청을
+  // 막지 않고 로그만 남깁니다 — 인프라 문제로 체험 기능 전체가 막히는 걸 피하기 위함이며,
+  // 이 fail-open은 경쟁 조건 방지 목적과는 무관한 경로입니다.
+  console.error('[anonymous-usage] 업로드 기록 실패(경쟁 조건 방지와 무관):', error);
+  return { ok: true };
 }
