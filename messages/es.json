@@ -430,8 +430,8 @@
         "uploadSessionDesc": "Cada prueba incluye 1 subida. Aún puedes usar el chat de IA de arriba, ¡y con una cuenta gratuita puedes seguir subiendo también!",
         "chatSessionTitle": "Regístrate para seguir preguntando",
         "chatSessionDesc": "Ya usaste las preguntas de esta prueba. ¡Crea una cuenta gratuita para seguir preguntando!",
-        "ipTitle": "Ya usaste las pruebas de hoy",
-        "ipDesc": "Las pruebas de invitado están limitadas a 3 por día. ¡Crea una cuenta gratuita para seguir usándolo!",
+        "ipTitle": "Cupo de prueba completo",
+        "ipDesc": "Hay mucha actividad de prueba de invitado desde esta red en este momento, así que está limitada temporalmente. ¡Crea una cuenta gratuita para seguir ahora mismo!",
         "globalTitle": "Las pruebas de invitado están en pausa",
         "globalDesc": "Hoy hay muchas solicitudes de prueba de invitado, así que las pausamos por un momento. ¡Crea una cuenta gratuita para seguir ahora mismo!"
       },

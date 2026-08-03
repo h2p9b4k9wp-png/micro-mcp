@@ -430,8 +430,8 @@
         "uploadSessionDesc": "Mỗi trải nghiệm chỉ được tải lên 1 lần. Bạn vẫn có thể dùng khung chat AI ở trên, và tạo tài khoản miễn phí để tiếp tục tải lên!",
         "chatSessionTitle": "Tạo tài khoản để hỏi thêm",
         "chatSessionDesc": "Bạn đã dùng hết lượt hỏi trong trải nghiệm này. Tạo tài khoản miễn phí để tiếp tục hỏi!",
-        "ipTitle": "Bạn đã dùng hết lượt trải nghiệm hôm nay",
-        "ipDesc": "Trải nghiệm khách chỉ giới hạn 3 lần mỗi ngày. Tạo tài khoản miễn phí để tiếp tục sử dụng!",
+        "ipTitle": "Đã đầy chỗ trải nghiệm",
+        "ipDesc": "Hiện có quá nhiều yêu cầu trải nghiệm khách từ mạng này nên tạm thời bị giới hạn. Tạo tài khoản miễn phí để tiếp tục ngay!",
         "globalTitle": "Trải nghiệm khách đang tạm dừng",
         "globalDesc": "Hôm nay có quá nhiều yêu cầu trải nghiệm khách nên đã tạm dừng một chút. Tạo tài khoản miễn phí để tiếp tục ngay!"
       },

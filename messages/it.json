@@ -430,8 +430,8 @@
         "uploadSessionDesc": "Ogni prova include 1 caricamento. Puoi ancora usare la chat IA qui sopra, e con un account gratuito puoi continuare a caricare anche tu!",
         "chatSessionTitle": "Registrati per continuare a chiedere",
         "chatSessionDesc": "Hai esaurito le domande di questa prova. Crea un account gratuito per continuare a chiedere!",
-        "ipTitle": "Hai esaurito le prove di oggi",
-        "ipDesc": "La prova ospite è limitata a 3 al giorno. Crea un account gratuito per continuare a usarla!",
+        "ipTitle": "Posti prova esauriti",
+        "ipDesc": "C'è molta attività di prova ospite da questa rete in questo momento, quindi è temporaneamente limitata. Crea un account gratuito per continuare subito!",
         "globalTitle": "Le prove ospite sono in pausa",
         "globalDesc": "Oggi ci sono molte richieste di prova ospite, quindi le abbiamo messe in pausa per un po'. Crea un account gratuito per continuare subito!"
       },

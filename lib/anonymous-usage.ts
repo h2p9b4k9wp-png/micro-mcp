@@ -11,16 +11,34 @@ import { cookies } from 'next/headers';
 //
 // 세션은 httpOnly 쿠키로 서버가 직접 발급·판별합니다(GUEST_SESSION_COOKIE) — 클라이언트
 // JS가 값을 읽거나 조작할 수 없고, localStorage처럼 지운다고 새 세션이 되지도 않습니다
-// (같은 쿠키가 남아있는 한 서버는 계속 같은 세션으로 취급). 여기에 두 겹의 상한을 더 둡니다:
+// (같은 쿠키가 남아있는 한 서버는 계속 같은 세션으로 취급).
+//
+// 💡 [수정] 실질적인 방어선은 세션 단위 예산(위 1세션 정의)입니다 — 사용자 한 명이 실제로
+// 쓸 수 있는 양은 세션당 업로드 1건 + 채팅 3턴으로 이미 고정돼 있고, session_id는 쿠키
+// 조작이 불가능한 서버 발급값이라 이 예산 자체를 우회하기 어렵습니다. IP_DAILY_SESSION_LIMIT
+// (IP당 하루 새 세션 수)와 GLOBAL_DAILY_GUEST_LIMIT(전체 게스트 일일 호출 수)은 그 위에
+// 얹는 "이상 징후" 백스톱일 뿐, 정상 사용자를 걸러내는 1차 방어선이 아닙니다 — 원래
+// IP_DAILY_SESSION_LIMIT=3이었는데, 같은 공인 IP를 수백~수천 명이 공유하는 대학
+// 와이파이·회사망·모바일 CGNAT 환경에서는 그 네트워크의 몇 번째 방문자부터는 전부 막혀버리는
+// 오탐이 발생했습니다(이 서비스의 주 타겟이 정확히 그런 환경). 세션 예산이 이미 실제
+// 남용을 막고 있으므로, IP/전역 상한은 "정상적인 트래픽 급증까지 막지는 않되 진짜 봇 폭주는
+// 잡는" 훨씬 느슨한 값으로 올렸습니다(30 / 1000 — 필요하면 실사용 데이터를 보고 다시
+// 조정하세요).
 //   - IP당 하루 최대 IP_DAILY_SESSION_LIMIT개의 "새 세션" 시작 허용 (세션 자체를 계속
-//     새로 시작하며 우회하는 것을 막음 — 쿠키를 지워도 같은 IP면 하루 3번까지만 새 세션이
-//     허용됩니다)
+//     새로 시작하며 우회하는 것을 막음 — 쿠키를 지워도 같은 IP면 하루 이 숫자만큼만 새
+//     세션이 허용됩니다)
 //   - 전체 게스트(모든 IP 합산) 일일 API 호출 GLOBAL_DAILY_GUEST_LIMIT — 이걸 넘으면 그날은
 //     특정 IP나 세션 상태와 무관하게 모든 게스트 요청을 막고 로그인을 유도합니다(비용 폭주
 //     방지용 최종 안전판).
-export const IP_DAILY_SESSION_LIMIT = 3;
+//
+// 상한에 걸렸을 때 클라이언트가 보여주는 문구도 이 변경에 맞춰 손봤습니다 —
+// messages/*.json의 login.trial.limit.ip*는 더 이상 정확한 숫자("하루 3번까지")를
+// 못박지 않고 "지금 이 네트워크에서 요청이 많다"는 톤으로만 안내합니다(components/
+// guest-limit-banner.tsx가 렌더링, session/ip/global 세 경우 모두 API의 raw error
+// 문자열이 아니라 이 번역 문구를 보여줍니다 — 애초에 원시 에러가 아니라 안내 배너였습니다).
+export const IP_DAILY_SESSION_LIMIT = 30;
 export const SESSION_CHAT_TURN_LIMIT = 3;
-export const GLOBAL_DAILY_GUEST_LIMIT = 100;
+export const GLOBAL_DAILY_GUEST_LIMIT = 1000;
 
 const GUEST_SESSION_COOKIE = 'guest_session_id';
 const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24; // 24시간 — IP 일일 한도 집계 창과 맞춤
@@ -56,6 +74,14 @@ export interface GuestUsageCheck {
 // 로컬 개발이나 이 세션처럼 Vercel 엣지를 거치지 않는 환경에서는 이 헤더 자체가 존재하지
 // 않으므로, 기존 x-forwarded-for/x-real-ip를 폴백으로 유지합니다 — 실제 프로덕션(Vercel)
 // 트래픽에서는 이미 같은 값이라 폴백이어도 보안이 약해지지 않습니다.
+//
+// 💡 [신규] x-vercel-forwarded-for가 잡히는 "정상 경로"는 로그를 남기지 않고, 그보다 뒤의
+// 폴백(x-forwarded-for/x-real-ip/unknown)으로 떨어지는 경우만 남깁니다 — 이 세 경우가
+// 실제로 얼마나 발생하는지, x-forwarded-for에서는 몇 번째 값을 골랐는지(현재 구현은 항상
+// 첫 값을 씁니다 — split(',')[0]) Vercel 로그에서 `[anonymous-usage][ip-fallback]`으로
+// grep해서 확인할 수 있게 합니다. Vercel 프로덕션에서는 사실상 x-vercel-forwarded-for가
+// 항상 잡혀야 정상이라, 이 로그가 자주 찍히면 Vercel 엣지를 거치지 않는 경로(예: 다른
+// 플랫폼으로 이전, 혹은 예상 못한 프록시 구성)가 있다는 신호입니다.
 export function getClientIp(req: Request): string {
   const vercelForwardedFor = req.headers.get('x-vercel-forwarded-for');
   if (vercelForwardedFor) {
@@ -64,11 +90,25 @@ export function getClientIp(req: Request): string {
   }
   const forwardedFor = req.headers.get('x-forwarded-for');
   if (forwardedFor) {
-    const first = forwardedFor.split(',')[0]?.trim();
-    if (first) return first;
+    const parts = forwardedFor.split(',').map((s) => s.trim()).filter(Boolean);
+    const first = parts[0];
+    const last = parts[parts.length - 1];
+    if (first) {
+      console.log(
+        `[anonymous-usage][ip-fallback] x-forwarded-for 사용(첫 값 채택)— first=${first}${
+          last && last !== first ? ` last=${last}` : ''
+        }`
+      );
+      return first;
+    }
   }
   const realIp = req.headers.get('x-real-ip');
-  if (realIp) return realIp.trim();
+  if (realIp) {
+    const trimmed = realIp.trim();
+    console.log(`[anonymous-usage][ip-fallback] x-real-ip 사용 — value=${trimmed}`);
+    return trimmed;
+  }
+  console.log('[anonymous-usage][ip-fallback] IP를 알 수 없어 unknown으로 폴백');
   return 'unknown';
 }
 
@@ -142,7 +182,8 @@ async function isNewSession(supabaseAdmin: SupabaseClient, sessionId: string): P
 
 // 이 IP가 오늘 이미 시작한 "서로 다른" 세션이 몇 개인지 셉니다. Supabase JS 클라이언트는
 // count-distinct를 직접 지원하지 않아서, 오늘치 행의 session_id를 가져와 JS에서
-// 중복 제거합니다 — 한도 자체가 낮아서(하루 IP당 몇 세션) 이 정도 데이터량은 문제 없습니다.
+// 중복 제거합니다 — IP_DAILY_SESSION_LIMIT이 30이어도 "하루치, IP 하나"로 범위가 좁아
+// 행 수 자체가 작으므로 이 정도는 문제 없습니다.
 async function countDistinctSessionsToday(supabaseAdmin: SupabaseClient, ip: string): Promise<number> {
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { data, error } = await supabaseAdmin

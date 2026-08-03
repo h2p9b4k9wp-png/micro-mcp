@@ -430,8 +430,8 @@
         "uploadSessionDesc": "Chaque essai inclut 1 téléversement. Vous pouvez encore utiliser le chat IA ci-dessus, et un compte gratuit vous permet de continuer à téléverser aussi !",
         "chatSessionTitle": "Inscrivez-vous pour continuer à poser des questions",
         "chatSessionDesc": "Vous avez utilisé toutes les questions de cet essai. Créez un compte gratuit pour continuer à poser des questions !",
-        "ipTitle": "Vous avez épuisé les essais d'aujourd'hui",
-        "ipDesc": "L'essai invité est limité à 3 par jour. Créez un compte gratuit pour continuer à l'utiliser !",
+        "ipTitle": "Places d'essai complètes",
+        "ipDesc": "Il y a beaucoup d'activité d'essai invité depuis ce réseau en ce moment, donc c'est temporairement limité. Créez un compte gratuit pour continuer tout de suite !",
         "globalTitle": "Les essais invités sont en pause",
         "globalDesc": "Les demandes d'essai invité sont inhabituellement nombreuses aujourd'hui, nous les avons donc mises en pause un moment. Créez un compte gratuit pour continuer tout de suite !"
       },

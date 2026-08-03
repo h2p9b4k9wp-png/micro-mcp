@@ -430,8 +430,8 @@
         "uploadSessionDesc": "Cada teste inclui 1 envio. Você ainda pode usar o chat de IA acima, e uma conta gratuita permite continuar enviando também!",
         "chatSessionTitle": "Cadastre-se para continuar perguntando",
         "chatSessionDesc": "Você usou todas as perguntas deste teste. Crie uma conta gratuita para continuar perguntando!",
-        "ipTitle": "Você esgotou os testes de hoje",
-        "ipDesc": "O teste de convidado é limitado a 3 por dia. Crie uma conta gratuita para continuar!",
+        "ipTitle": "Vagas de teste esgotadas",
+        "ipDesc": "Há muita atividade de teste de convidado nesta rede agora, então está temporariamente limitado. Crie uma conta gratuita para continuar agora mesmo!",
         "globalTitle": "Os testes de convidado estão pausados",
         "globalDesc": "Hoje há muitas solicitações de teste de convidado, então pausamos por um momento. Crie uma conta gratuita para continuar agora mesmo!"
       },
