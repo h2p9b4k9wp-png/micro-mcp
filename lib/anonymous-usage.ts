@@ -37,7 +37,31 @@ export interface GuestUsageCheck {
 // 요청 헤더에서 클라이언트 IP를 뽑습니다. IP를 전혀 알 수 없는 상황(로컬 개발 등)에서는
 // 모든 요청이 하나의 버킷을 공유하게 됩니다 — 완벽하진 않지만, 제한이 아예 작동하지
 // 않는 것보다는 안전합니다.
+//
+// 💡 [수정] x-vercel-forwarded-for를 최우선으로 확인하도록 바꿨습니다. 이 앱은 Vercel에
+// 배포되는데(vercel.json), Vercel의 엣지 네트워크가 모든 요청의 TLS를 직접 종료하는
+// 유일한 진입점이라 클라이언트가 origin에 직접 연결할 방법이 없습니다 — Vercel은 이
+// 지점에서 x-forwarded-for/x-real-ip를 클라이언트가 보낸 값에 무언가를 "덧붙이는" 게
+// 아니라 자신이 실제로 관측한 연결 IP로 통째로 덮어씁니다(공식 문서: "Vercel currently
+// overwrites the X-Forwarded-For header and does not forward external IPs... to prevent
+// IP spoofing" — 프록시 뒤에 있는 경우조차 예외가 아니라고 명시돼 있고, 특정 프록시를
+// 명시적으로 신뢰하려면 Enterprise 전용 유료 기능인 Verified Proxy를 별도로 활성화해야
+// 합니다). 즉 일반적인 리버스 프록시 구성과 달리 Vercel에서는 x-forwarded-for 값 자체를
+// 클라이언트가 위조할 수 없습니다.
+//
+// x-vercel-forwarded-for는 값 자체는 x-forwarded-for와 동일하지만, Vercel 자체
+// 네임스페이스(x-vercel-*)로 제공되는 별도 헤더입니다 — 이 이름은 Vercel 엣지만 설정할 수
+// 있어서(다른 어떤 미들웨어·프록시·클라이언트도 우연히 같은 이름을 미리 심어둘 수 없음),
+// "이 값은 반드시 Vercel 엣지가 설정했다"는 걸 헤더 이름 자체로 더 명확히 보장합니다.
+// 로컬 개발이나 이 세션처럼 Vercel 엣지를 거치지 않는 환경에서는 이 헤더 자체가 존재하지
+// 않으므로, 기존 x-forwarded-for/x-real-ip를 폴백으로 유지합니다 — 실제 프로덕션(Vercel)
+// 트래픽에서는 이미 같은 값이라 폴백이어도 보안이 약해지지 않습니다.
 export function getClientIp(req: Request): string {
+  const vercelForwardedFor = req.headers.get('x-vercel-forwarded-for');
+  if (vercelForwardedFor) {
+    const first = vercelForwardedFor.split(',')[0]?.trim();
+    if (first) return first;
+  }
   const forwardedFor = req.headers.get('x-forwarded-for');
   if (forwardedFor) {
     const first = forwardedFor.split(',')[0]?.trim();
