@@ -92,6 +92,29 @@ export async function getGuestSessionId(): Promise<string> {
   return sessionId;
 }
 
+// 💡 [신규] 위 getGuestSessionId()는 항상 문자열을 반환하도록 타입이 잡혀있고 실제로도
+// 쿠키가 있으면 그 값을, 없으면 방금 발급한 UUID를 반환합니다 — 정상 동작에서는 빈 값이
+// 나올 수 없습니다. 하지만 cookies().set()이 예외를 던지는 극히 예외적인 상황(예: 응답
+// 헤더가 이미 전송된 뒤 호출되는 등)까지 포함해 이 함수를 호출하는 라우트가 "세션 발급
+// 실패"를 명시적으로 구분하게 만듭니다 — 실패 시 null을 반환하고, 호출부는 AI 호출이나
+// anonymous_trial_usage 기록으로 넘어가지 않고 즉시 400으로 거절해야 합니다.
+//
+// session_id 없이 기록을 진행하면 anonymous_trial_usage에 session_id가 NULL인 행이
+// 생기는데, SQL 표준상 NULL은 유니크 인덱스에서 서로 "같다"고 판정되지 않으므로
+// (anonymous_trial_usage_session_upload_once_idx가 있어도) session_id가 NULL인 행끼리는
+// 절대 충돌하지 않습니다 — 즉 recordAnonymousUploadIfAllowed()의 경쟁 조건 방어가
+// session_id가 없는 요청에 대해서는 통째로 무력화됩니다. 세션 발급 실패를 "그냥 진행"이
+// 아니라 요청 자체를 막는 이유가 이것입니다.
+export async function getGuestSessionIdOrNull(): Promise<string | null> {
+  try {
+    const sessionId = await getGuestSessionId();
+    return sessionId || null;
+  } catch (err) {
+    console.error('[anonymous-usage] 게스트 세션 발급 실패:', err);
+    return null;
+  }
+}
+
 // 전체 게스트(모든 IP 합산) 일일 호출 수 — 이게 GLOBAL_DAILY_GUEST_LIMIT을 넘으면 그날은
 // 누구든 막습니다. 세 라우트 모두 다른 어떤 검사보다 먼저 이걸 확인합니다.
 export async function checkGlobalDailyGuestLimit(supabaseAdmin: SupabaseClient): Promise<boolean> {

@@ -5,7 +5,7 @@ import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis
 import { MAX_ANONYMOUS_UPLOAD_BYTES, MAX_ANONYMOUS_FILENAME_CHARS } from '@/lib/upload-limits';
 import {
   getClientIp,
-  getGuestSessionId,
+  getGuestSessionIdOrNull,
   checkGuestUploadAllowed,
   recordAnonymousUploadIfAllowed,
 } from '@/lib/anonymous-usage';
@@ -32,7 +32,14 @@ export async function POST(req: Request) {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     const ip = getClientIp(req);
-    const sessionId = await getGuestSessionId();
+    // 💡 세션 쿠키가 없으면 getGuestSessionIdOrNull()이 새로 발급해서 응답에 심고 그 값을
+    // 돌려줍니다(정상 흐름) — 발급 자체가 실패하면 null을 반환하는데, 그 경우 session_id
+    // 없이 요청을 계속 진행하면 안 됩니다(경쟁 조건 방어가 session_id NULL 행에는 적용되지
+    // 않으므로 — lib/anonymous-usage.ts 주석 참고). 즉시 400으로 거절합니다.
+    const sessionId = await getGuestSessionIdOrNull();
+    if (!sessionId) {
+      return NextResponse.json({ error: '세션을 생성할 수 없습니다. 잠시 후 다시 시도해주세요.' }, { status: 400 });
+    }
     const usageCheck = await checkGuestUploadAllowed(supabaseAdmin, ip, sessionId);
     if (!usageCheck.ok) {
       return NextResponse.json(

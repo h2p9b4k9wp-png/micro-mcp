@@ -7,7 +7,7 @@ import { SUPPORTED_CHAT_IMAGE_MIME_TYPES } from '@/lib/image-constraints';
 import { MAX_ANONYMOUS_UPLOAD_BYTES, MAX_ANONYMOUS_FILENAME_CHARS } from '@/lib/upload-limits';
 import {
   getClientIp,
-  getGuestSessionId,
+  getGuestSessionIdOrNull,
   checkGuestChatAllowed,
   checkGuestUploadAllowed,
   recordAnonymousUsage,
@@ -66,7 +66,12 @@ export async function POST(req: Request) {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     const ip = getClientIp(req);
-    const sessionId = await getGuestSessionId();
+    // 💡 세션 발급이 실패하면(극히 예외적) session_id 없이 진행하지 않고 400으로 거절합니다
+    // — lib/anonymous-usage.ts의 getGuestSessionIdOrNull() 주석 참고.
+    const sessionId = await getGuestSessionIdOrNull();
+    if (!sessionId) {
+      return NextResponse.json({ error: '세션을 생성할 수 없습니다. 잠시 후 다시 시도해주세요.' }, { status: 400 });
+    }
     const usageCheck = await checkGuestChatAllowed(supabaseAdmin, ip, sessionId);
     if (!usageCheck.ok) {
       return NextResponse.json(
