@@ -7,6 +7,7 @@ import { Logomark } from '@/components/logomark';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { WelcomeHeroTrial } from '@/components/welcome-hero-trial';
 import { ProfessorDemo } from '@/components/professor-demo';
+import { trackFunnelEvent } from '@/lib/funnel-tracking';
 
 // 💡 [신규] 이 페이지는 앱 테마 설정과 무관하게 항상 고정 라이트라(위 주석 참고) CSS
 // 변수(var(--border-default) 등)를 쓰면 사용자의 앱 테마가 다크로 저장돼 있을 때 이
@@ -33,6 +34,13 @@ export default function WelcomePage() {
         console.error('서비스워커 등록 실패:', err);
       });
     }
+  }, []);
+
+  // 💡 [신규] 전환 퍼널의 첫 단계 — 이 페이지가 미로그인 방문자의 "첫 화면"이라는 사실은
+  // 위 주석에서 이미 설명한 그대로입니다(middleware.ts가 "/"의 미로그인 요청을 여기로
+  // 보냄). lib/funnel-tracking.ts 참고.
+  useEffect(() => {
+    trackFunnelEvent('landing_visit');
   }, []);
 
   const capabilities = [

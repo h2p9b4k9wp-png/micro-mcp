@@ -40,3 +40,12 @@ export async function getSessionSupabase(): Promise<{ supabase: SupabaseClient; 
   const { data: { user } } = await supabase.auth.getUser();
   return { supabase, userId: user?.id ?? null };
 }
+
+// 💡 [신규] app/admin/funnel/page.tsx(서버 컴포넌트)가 ADMIN_EMAIL 환경변수와 비교하기
+// 위해 씁니다 — 위 두 헬퍼는 Route Handler용으로 문서화돼 있었지만 buildSessionClient()
+// 자체는 next/headers의 cookies()만 읽는 순수 조회라 서버 컴포넌트에서도 그대로 동작합니다.
+export async function getSessionUserEmail(): Promise<string | null> {
+  const supabase = await buildSessionClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.email ?? null;
+}

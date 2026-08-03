@@ -15,6 +15,7 @@ import { LocaleSwitcher } from '@/components/locale-switcher';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestGuidedTrial } from '@/components/guest-guided-trial';
 import { GuestLimitBanner } from '@/components/guest-limit-banner';
+import { trackFunnelEvent } from '@/lib/funnel-tracking';
 
 function GoogleIcon() {
   return (
@@ -107,6 +108,11 @@ function LoginPageContent() {
           password,
         });
         if (error) throw error;
+
+        // 💡 [신규] 전환 퍼널의 "회원가입" 단계 — 이메일 인증이 필요한지와 무관하게 계정
+        // 생성 자체는 이 시점(error가 없다)에 이미 성공했으므로, 아래 data.session 분기와
+        // 무관하게 여기서 기록합니다. lib/funnel-tracking.ts 참고.
+        trackFunnelEvent('signup');
 
         // 💡 [신규] "이메일 인증은 나중에, 가입 즉시 쓸 수 있게" — Supabase 프로젝트의
         // Authentication 설정에서 "Confirm email"이 꺼져 있으면 signUp()이 바로 세션을

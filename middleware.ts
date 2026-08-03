@@ -129,7 +129,11 @@ export async function middleware(request: NextRequest) {
     path === '/api/public-analyze' ||
     path === '/api/public-chat' ||
     path === '/api/public-guided-trial' ||
-    path === '/api/webhooks/polar';
+    path === '/api/webhooks/polar' ||
+    // 전환 퍼널의 랜딩 방문·파일 업로드·결과 확인 이벤트(lib/funnel-tracking.ts)는 로그인
+    // 전에 일어나므로 세션 없이도 호출 가능해야 합니다 — app/admin/funnel(집계 결과를 보는
+    // 페이지)은 여기 포함하지 않아 로그인이 필요합니다.
+    path === '/api/track-funnel-event';
 
   if (!user && !isPublicRoute) {
     if (isApiRoute) {

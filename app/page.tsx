@@ -34,6 +34,7 @@ import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image
 import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
+import { trackFunnelEvent } from '@/lib/funnel-tracking';
 import { Logomark } from '@/components/logomark';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
@@ -3330,10 +3331,16 @@ export default function HomePage() {
                   실어 보낸 user.id가 웹훅(app/api/webhooks/polar)을 통해 profiles.is_pro를
                   자동으로 켭니다. 새 탭으로 열어서 결제 중에도 앱 상태(입력 중이던 내용 등)가
                   날아가지 않게 합니다. */}
+              {/* 💡 [신규] 전환 퍼널의 "결제" 단계 — 결제 완료가 아니라 이 체크아웃 링크
+                  클릭 시점을 기록합니다(결제 완료 확인은 웹훅에서 일어나는데, 익명 anon_id를
+                  거기까지 전달하려면 Polar 체크아웃 메타데이터 왕복이 추가로 필요해서 이번
+                  버전은 클릭=결제 시도로 단순화했습니다). target="_blank"라 네비게이션을
+                  막을 필요가 없어 그냥 fire-and-forget으로 호출합니다. */}
               <a
                 href={user ? getPolarCheckoutUrl(user.id, user.email) : '#'}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackFunnelEvent('payment')}
                 className="block text-center bg-[#F4679B] hover:bg-[#D1477F] text-white text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
               >
                 {t('upgrade.checkoutButton')}
