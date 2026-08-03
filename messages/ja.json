@@ -23,7 +23,8 @@
     "logout": "ログアウト",
     "unknownError": "不明なエラー",
     "responseLanguageLabel": "AI回答言語",
-    "themeLabel": "画面テーマ"
+    "themeLabel": "画面テーマ",
+    "aiGeneratedNotice": "AIが生成した内容のため、実際と異なる場合があります。"
   },
   "workspace": {
     "subtitle": "添付されたドキュメントの内容と会話の文脈をもとに、AIが実際の回答を導き出します。",
@@ -480,6 +481,7 @@
     "ctaHint": "登録不要、今すぐ確認できます",
     "professorAppeal": "先輩・サークルのコネなしでも",
     "startOver": "← 最初からやり直す",
+    "noSharingNote": "アップロードした資料は他のユーザーと共有されません",
     "capabilities": {
       "upload": "ファイル・写真・スクリーンショットを分析",
       "deadlines": "締め切りを自動で抽出",

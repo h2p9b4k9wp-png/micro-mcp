@@ -23,7 +23,8 @@
     "logout": "Sair",
     "unknownError": "Erro desconhecido",
     "responseLanguageLabel": "Idioma de resposta da IA",
-    "themeLabel": "Tema"
+    "themeLabel": "Tema",
+    "aiGeneratedNotice": "Conteúdo gerado por IA; pode ser impreciso ou diferente da realidade."
   },
   "workspace": {
     "subtitle": "A IA gera respostas com base no contexto da conversa e no conteúdo de qualquer documento anexado.",
@@ -480,6 +481,7 @@
     "ctaHint": "Sem cadastro, confira agora mesmo",
     "professorAppeal": "Organizado de forma diferente para cada professor",
     "startOver": "← Começar de novo",
+    "noSharingNote": "Os materiais que você envia nunca são compartilhados com outros usuários",
     "capabilities": {
       "upload": "Envie arquivos, fotos ou capturas para analisar",
       "deadlines": "Extração automática de prazos",

@@ -23,7 +23,8 @@
     "logout": "Se déconnecter",
     "unknownError": "Erreur inconnue",
     "responseLanguageLabel": "Langue de réponse de l'IA",
-    "themeLabel": "Thème"
+    "themeLabel": "Thème",
+    "aiGeneratedNotice": "Contenu généré par IA ; peut être inexact ou différer de la réalité."
   },
   "workspace": {
     "subtitle": "L'IA génère des réponses en fonction du contexte de la conversation et du contenu de tout document joint.",
@@ -480,6 +481,7 @@
     "ctaHint": "Sans inscription, essayez tout de suite",
     "professorAppeal": "Organisé différemment pour chaque professeur",
     "startOver": "← Recommencer",
+    "noSharingNote": "Les documents que vous téléversez ne sont jamais partagés avec d'autres utilisateurs",
     "capabilities": {
       "upload": "Téléversez fichiers, photos ou captures à analyser",
       "deadlines": "Extraction automatique des échéances",

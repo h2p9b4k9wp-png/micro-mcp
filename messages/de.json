@@ -23,7 +23,8 @@
     "logout": "Abmelden",
     "unknownError": "Unbekannter Fehler",
     "responseLanguageLabel": "KI-Antwortsprache",
-    "themeLabel": "Design"
+    "themeLabel": "Design",
+    "aiGeneratedNotice": "KI-generierter Inhalt — kann unvollständig oder ungenau sein."
   },
   "workspace": {
     "subtitle": "Die KI erstellt Antworten basierend auf dem Gesprächskontext und dem Inhalt angehängter Dokumente.",
@@ -480,6 +481,7 @@
     "ctaHint": "Ohne Anmeldung, gleich jetzt testen",
     "professorAppeal": "Für jeden Professor anders aufbereitet",
     "startOver": "← Von vorn beginnen",
+    "noSharingNote": "Ihre hochgeladenen Materialien werden niemals mit anderen Nutzern geteilt",
     "capabilities": {
       "upload": "Dateien, Fotos oder Screenshots hochladen und analysieren",
       "deadlines": "Fristen automatisch extrahieren",

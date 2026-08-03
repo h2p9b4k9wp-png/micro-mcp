@@ -23,7 +23,8 @@
     "logout": "Đăng xuất",
     "unknownError": "Lỗi không xác định",
     "responseLanguageLabel": "Ngôn ngữ phản hồi AI",
-    "themeLabel": "Giao diện"
+    "themeLabel": "Giao diện",
+    "aiGeneratedNotice": "Nội dung do AI tạo ra, có thể không chính xác hoặc khác với thực tế."
   },
   "workspace": {
     "subtitle": "AI tạo câu trả lời dựa trên ngữ cảnh cuộc trò chuyện và nội dung tài liệu đã đính kèm.",
@@ -480,6 +481,7 @@
     "ctaHint": "Không cần đăng ký, thử ngay bây giờ",
     "professorAppeal": "Mỗi giáo sư một kiểu tổng hợp riêng",
     "startOver": "← Bắt đầu lại",
+    "noSharingNote": "Tài liệu bạn tải lên không được chia sẻ với người dùng khác",
     "capabilities": {
       "upload": "Tải tệp, ảnh, ảnh chụp màn hình để phân tích",
       "deadlines": "Tự động trích xuất hạn chót",

@@ -23,7 +23,8 @@
     "logout": "Log Out",
     "unknownError": "Unknown error",
     "responseLanguageLabel": "AI Response Language",
-    "themeLabel": "Theme"
+    "themeLabel": "Theme",
+    "aiGeneratedNotice": "AI-generated — may be incomplete or inaccurate."
   },
   "workspace": {
     "subtitle": "The AI generates answers based on the conversation context and any attached document content.",
@@ -480,6 +481,7 @@
     "ctaHint": "No sign-up — check it out right now",
     "professorAppeal": "Tailored differently for every professor",
     "startOver": "← Start over",
+    "noSharingNote": "Your uploaded materials are never shared with other users",
     "capabilities": {
       "upload": "Upload files, photos, or screenshots to analyze",
       "deadlines": "Auto-extract deadlines",

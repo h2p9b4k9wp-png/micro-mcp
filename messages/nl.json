@@ -23,7 +23,8 @@
     "logout": "Uitloggen",
     "unknownError": "Onbekende fout",
     "responseLanguageLabel": "AI-antwoordtaal",
-    "themeLabel": "Thema"
+    "themeLabel": "Thema",
+    "aiGeneratedNotice": "Door AI gegenereerde inhoud — kan onvolledig of onnauwkeurig zijn."
   },
   "workspace": {
     "subtitle": "De AI genereert antwoorden op basis van de gesprekscontext en de inhoud van bijgevoegde documenten.",
@@ -480,6 +481,7 @@
     "ctaHint": "Zonder account, probeer het meteen",
     "professorAppeal": "Voor elke docent anders samengesteld",
     "startOver": "← Opnieuw beginnen",
+    "noSharingNote": "Je geüploade materiaal wordt nooit gedeeld met andere gebruikers",
     "capabilities": {
       "upload": "Upload bestanden, foto's of screenshots om te analyseren",
       "deadlines": "Deadlines automatisch extraheren",

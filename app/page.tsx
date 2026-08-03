@@ -2345,6 +2345,7 @@ export default function HomePage() {
                   {lensStage === 'done' && (
                     <>
                       {renderLensResult()}
+                      <p className="mt-3 text-xs text-[var(--text-muted)]">{t('common.aiGeneratedNotice')}</p>
                       {chatLensActionsRow && <div className="mt-4">{chatLensActionsRow}</div>}
                     </>
                   )}
@@ -2955,29 +2956,32 @@ export default function HomePage() {
                   <p className="text-xs text-[var(--text-muted)] text-center mb-3">{t('professors.circuitHint')}</p>
                   <CircuitBoard graph={professorCircuitGraph} onNodeClick={handleProfessorCircuitNodeClick} />
                   {result && (
-                    <div key={analysisRow?.updated_at} className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-                      {professorCircuitDefs.map((def, i) => {
-                        const card = getProfessorCircuitCardData(result, def.keys);
-                        return (
-                          <div
-                            key={def.nodeId}
-                            className="professor-circuit-reveal bg-[var(--bg-page)] border border-[var(--border-default)] rounded-xl p-3.5"
-                            style={{ animationDelay: `${i * 300}ms` }}
-                          >
-                            <h5 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">{def.label}</h5>
-                            {card.confident ? (
-                              <ul className="flex flex-col gap-1">
-                                {card.items.slice(0, 4).map((item, j) => (
-                                  <li key={j} className="text-xs text-[var(--text-oncard)] leading-relaxed">· {item}</li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="text-xs text-[var(--text-faint)]">{t('professors.notConfidentYet')}</p>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <>
+                      <div key={analysisRow?.updated_at} className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                        {professorCircuitDefs.map((def, i) => {
+                          const card = getProfessorCircuitCardData(result, def.keys);
+                          return (
+                            <div
+                              key={def.nodeId}
+                              className="professor-circuit-reveal bg-[var(--bg-page)] border border-[var(--border-default)] rounded-xl p-3.5"
+                              style={{ animationDelay: `${i * 300}ms` }}
+                            >
+                              <h5 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">{def.label}</h5>
+                              {card.confident ? (
+                                <ul className="flex flex-col gap-1">
+                                  {card.items.slice(0, 4).map((item, j) => (
+                                    <li key={j} className="text-xs text-[var(--text-oncard)] leading-relaxed">· {item}</li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className="text-xs text-[var(--text-faint)]">{t('professors.notConfidentYet')}</p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <p className="mt-3 text-xs text-[var(--text-muted)] text-center">{t('common.aiGeneratedNotice')}</p>
+                    </>
                   )}
                 </div>
 

@@ -23,7 +23,8 @@
     "logout": "Cerrar sesión",
     "unknownError": "Error desconocido",
     "responseLanguageLabel": "Idioma de respuesta de la IA",
-    "themeLabel": "Tema"
+    "themeLabel": "Tema",
+    "aiGeneratedNotice": "Contenido generado por IA; puede ser inexacto o diferir de la realidad."
   },
   "workspace": {
     "subtitle": "La IA genera respuestas basándose en el contexto de la conversación y el contenido de cualquier documento adjunto.",
@@ -480,6 +481,7 @@
     "ctaHint": "Sin registro, compruébalo ahora mismo",
     "professorAppeal": "Organizado de forma distinta para cada profesor",
     "startOver": "← Empezar de nuevo",
+    "noSharingNote": "Los materiales que subes nunca se comparten con otros usuarios",
     "capabilities": {
       "upload": "Sube archivos, fotos o capturas para analizar",
       "deadlines": "Extrae plazos automáticamente",
