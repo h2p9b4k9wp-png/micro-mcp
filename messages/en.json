@@ -588,7 +588,8 @@
       "heading": "Information we collect",
       "email": "<b>Your email address</b>, used to create and identify your account.",
       "files": "<b>The content of files you upload</b> — documents, lecture materials, and images you attach or add to the service — including the text extracted from them.",
-      "history": "<b>Your conversation history</b> — the prompts you send and the responses you receive."
+      "history": "<b>Your conversation history</b> — the prompts you send and the responses you receive.",
+      "ip": "<b>Your IP address</b>, collected when you use the login-free trial (file analysis, AI chat, etc.), for abuse prevention."
     },
     "why": {
       "heading": "Why we collect it",
@@ -606,7 +607,8 @@
     "retention": {
       "heading": "How long we keep it",
       "account": "Your account data (email, files, deadlines) is kept until you delete your account.",
-      "logs": "On the free plan, conversation history is kept for 30 days and then automatically deleted. Pro accounts have no automatic deletion — conversation history is kept until account deletion, same as everything else."
+      "logs": "On the free plan, conversation history is kept for 30 days and then automatically deleted. Pro accounts have no automatic deletion — conversation history is kept until account deletion, same as everything else.",
+      "ip": "IP addresses collected for login-free trial abuse prevention are automatically deleted after {days} days."
     },
     "transfers": {
       "heading": "International data transfers",

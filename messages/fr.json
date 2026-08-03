@@ -588,7 +588,8 @@
       "heading": "Informations que nous collectons",
       "email": "<b>Votre adresse e-mail</b>, utilisée pour créer et identifier votre compte.",
       "files": "<b>Le contenu des fichiers que vous téléversez</b> — documents, supports de cours et images que vous joignez ou ajoutez au service, y compris le texte qui en est extrait.",
-      "history": "<b>Votre historique de conversations</b> — les messages que vous envoyez et les réponses que vous recevez."
+      "history": "<b>Votre historique de conversations</b> — les messages que vous envoyez et les réponses que vous recevez.",
+      "ip": "<b>Votre adresse IP</b>, collectée lorsque vous utilisez l'essai sans connexion (analyse de fichiers, chat IA, etc.), à des fins de prévention des abus."
     },
     "why": {
       "heading": "Pourquoi nous les collectons",
@@ -606,7 +607,8 @@
     "retention": {
       "heading": "Durée de conservation",
       "account": "Les données de votre compte (e-mail, fichiers, échéances) sont conservées jusqu&rsquo;à la suppression de votre compte.",
-      "logs": "Dans l&rsquo;offre gratuite, l&rsquo;historique des conversations est conservé 30 jours puis supprimé automatiquement. Les comptes Pro n&rsquo;ont pas de suppression automatique — l&rsquo;historique est conservé jusqu&rsquo;à la suppression du compte, comme le reste des données."
+      "logs": "Dans l&rsquo;offre gratuite, l&rsquo;historique des conversations est conservé 30 jours puis supprimé automatiquement. Les comptes Pro n&rsquo;ont pas de suppression automatique — l&rsquo;historique est conservé jusqu&rsquo;à la suppression du compte, comme le reste des données.",
+      "ip": "Les adresses IP collectées pour la prévention des abus lors de l'essai sans connexion sont automatiquement supprimées après {days} jours."
     },
     "transfers": {
       "heading": "Transferts internationaux de données",

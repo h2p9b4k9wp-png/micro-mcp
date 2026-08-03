@@ -588,7 +588,8 @@
       "heading": "Thông tin chúng tôi thu thập",
       "email": "<b>Địa chỉ email của bạn</b>, dùng để tạo và xác định tài khoản.",
       "files": "<b>Nội dung tệp bạn tải lên</b> — tài liệu, học liệu và hình ảnh bạn đính kèm hoặc thêm vào dịch vụ, bao gồm cả văn bản trích xuất từ đó.",
-      "history": "<b>Lịch sử trò chuyện của bạn</b> — các câu hỏi bạn gửi và câu trả lời bạn nhận được."
+      "history": "<b>Lịch sử trò chuyện của bạn</b> — các câu hỏi bạn gửi và câu trả lời bạn nhận được.",
+      "ip": "<b>Địa chỉ IP của bạn</b>, được thu thập khi bạn dùng thử không cần đăng nhập (phân tích tệp, trò chuyện AI, v.v.), nhằm mục đích ngăn chặn lạm dụng."
     },
     "why": {
       "heading": "Lý do chúng tôi thu thập",
@@ -606,7 +607,8 @@
     "retention": {
       "heading": "Thời gian lưu trữ",
       "account": "Dữ liệu tài khoản của bạn (email, tệp, hạn chót) được lưu giữ cho đến khi bạn xóa tài khoản.",
-      "logs": "Với gói miễn phí, lịch sử trò chuyện được lưu giữ 30 ngày rồi tự động xóa. Tài khoản Pro không bị tự động xóa — lịch sử được lưu giữ đến khi xóa tài khoản, giống như mọi dữ liệu khác."
+      "logs": "Với gói miễn phí, lịch sử trò chuyện được lưu giữ 30 ngày rồi tự động xóa. Tài khoản Pro không bị tự động xóa — lịch sử được lưu giữ đến khi xóa tài khoản, giống như mọi dữ liệu khác.",
+      "ip": "Địa chỉ IP thu thập để ngăn chặn lạm dụng trải nghiệm không cần đăng nhập sẽ tự động bị xóa sau {days} ngày."
     },
     "transfers": {
       "heading": "Chuyển dữ liệu quốc tế",

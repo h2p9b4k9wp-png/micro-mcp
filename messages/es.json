@@ -588,7 +588,8 @@
       "heading": "Información que recopilamos",
       "email": "<b>Tu dirección de correo electrónico</b>, usada para crear e identificar tu cuenta.",
       "files": "<b>El contenido de los archivos que subes</b> — documentos, materiales de clase e imágenes que adjuntas o añades al servicio, incluido el texto extraído de ellos.",
-      "history": "<b>Tu historial de conversaciones</b> — las instrucciones que envías y las respuestas que recibes."
+      "history": "<b>Tu historial de conversaciones</b> — las instrucciones que envías y las respuestas que recibes.",
+      "ip": "<b>Tu dirección IP</b>, recopilada cuando usas la prueba sin necesidad de iniciar sesión (análisis de archivos, chat con IA, etc.), con fines de prevención de abusos."
     },
     "why": {
       "heading": "Por qué la recopilamos",
@@ -606,7 +607,8 @@
     "retention": {
       "heading": "Cuánto tiempo la conservamos",
       "account": "Los datos de tu cuenta (correo, archivos, plazos) se conservan hasta que elimines tu cuenta.",
-      "logs": "En el plan gratuito, el historial de conversaciones se conserva 30 días y luego se elimina automáticamente. Las cuentas Pro no tienen eliminación automática — el historial se conserva hasta la eliminación de la cuenta, igual que el resto de los datos."
+      "logs": "En el plan gratuito, el historial de conversaciones se conserva 30 días y luego se elimina automáticamente. Las cuentas Pro no tienen eliminación automática — el historial se conserva hasta la eliminación de la cuenta, igual que el resto de los datos.",
+      "ip": "Las direcciones IP recopiladas para la prevención de abusos en la prueba sin inicio de sesión se eliminan automáticamente después de {days} días."
     },
     "transfers": {
       "heading": "Transferencias internacionales de datos",

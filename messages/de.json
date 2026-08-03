@@ -588,7 +588,8 @@
       "heading": "Informationen, die wir erheben",
       "email": "<b>Ihre E-Mail-Adresse</b>, verwendet zur Erstellung und Identifizierung Ihres Kontos.",
       "files": "<b>Der Inhalt der von Ihnen hochgeladenen Dateien</b> — Dokumente, Vorlesungsmaterialien und Bilder, die Sie dem Dienst hinzufügen oder anhängen, einschließlich des daraus extrahierten Textes.",
-      "history": "<b>Ihr Gesprächsverlauf</b> — die von Ihnen gesendeten Eingaben und die erhaltenen Antworten."
+      "history": "<b>Ihr Gesprächsverlauf</b> — die von Ihnen gesendeten Eingaben und die erhaltenen Antworten.",
+      "ip": "<b>Ihre IP-Adresse</b>, erfasst bei Nutzung des anmeldefreien Testzugangs (Dateianalyse, KI-Chat usw.), zur Missbrauchsprävention."
     },
     "why": {
       "heading": "Warum wir sie erheben",
@@ -606,7 +607,8 @@
     "retention": {
       "heading": "Wie lange wir sie speichern",
       "account": "Ihre Kontodaten (E-Mail, Dateien, Fristen) werden gespeichert, bis Sie Ihr Konto löschen.",
-      "logs": "Im kostenlosen Tarif wird der Gesprächsverlauf 30 Tage lang gespeichert und danach automatisch gelöscht. Pro-Konten haben keine automatische Löschung — der Gesprächsverlauf wird wie alle anderen Daten bis zur Kontolöschung gespeichert."
+      "logs": "Im kostenlosen Tarif wird der Gesprächsverlauf 30 Tage lang gespeichert und danach automatisch gelöscht. Pro-Konten haben keine automatische Löschung — der Gesprächsverlauf wird wie alle anderen Daten bis zur Kontolöschung gespeichert.",
+      "ip": "IP-Adressen, die zur Missbrauchsprävention beim anmeldefreien Testzugang erfasst werden, werden nach {days} Tagen automatisch gelöscht."
     },
     "transfers": {
       "heading": "Internationale Datenübermittlungen",

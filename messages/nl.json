@@ -588,7 +588,8 @@
       "heading": "Informatie die we verzamelen",
       "email": "<b>Je e-mailadres</b>, gebruikt om je account aan te maken en te identificeren.",
       "files": "<b>De inhoud van bestanden die je uploadt</b> — documenten, collegemateriaal en afbeeldingen die je toevoegt aan de dienst, inclusief de daaruit geëxtraheerde tekst.",
-      "history": "<b>Je gespreksgeschiedenis</b> — de prompts die je verstuurt en de antwoorden die je ontvangt."
+      "history": "<b>Je gespreksgeschiedenis</b> — de prompts die je verstuurt en de antwoorden die je ontvangt.",
+      "ip": "<b>Je IP-adres</b>, verzameld wanneer je de proefversie zonder inloggen gebruikt (bestandsanalyse, AI-chat, enz.), ter voorkoming van misbruik."
     },
     "why": {
       "heading": "Waarom we die verzamelen",
@@ -606,7 +607,8 @@
     "retention": {
       "heading": "Hoe lang we ze bewaren",
       "account": "Je accountgegevens (e-mail, bestanden, deadlines) worden bewaard totdat je je account verwijdert.",
-      "logs": "Bij het gratis abonnement wordt gespreksgeschiedenis 30 dagen bewaard en daarna automatisch verwijderd. Pro-accounts hebben geen automatische verwijdering — de geschiedenis wordt, net als de rest, bewaard tot het account wordt verwijderd."
+      "logs": "Bij het gratis abonnement wordt gespreksgeschiedenis 30 dagen bewaard en daarna automatisch verwijderd. Pro-accounts hebben geen automatische verwijdering — de geschiedenis wordt, net als de rest, bewaard tot het account wordt verwijderd.",
+      "ip": "IP-adressen die worden verzameld ter voorkoming van misbruik bij de proefversie zonder inloggen, worden na {days} dagen automatisch verwijderd."
     },
     "transfers": {
       "heading": "Internationale gegevensdoorgifte",

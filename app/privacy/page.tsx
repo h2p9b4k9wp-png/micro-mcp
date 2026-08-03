@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { SITE_URL } from '@/lib/site-config';
+import { ANONYMOUS_USAGE_RETENTION_DAYS } from '@/lib/anonymous-usage';
 
 // 💡 [수정] 원래 로그인 없이도 봐야 하는 공개 법적 페이지라는 이유로 next-intl을 거치지 않고
 // 영어 고정 텍스트였습니다. 하지만 서울 리전 국제 데이터 이전 고지를 추가하면서 사용자가
@@ -68,6 +69,7 @@ export default async function PrivacyPage() {
               <li>{t.rich('collect.email', { b: bold })}</li>
               <li>{t.rich('collect.files', { b: bold })}</li>
               <li>{t.rich('collect.history', { b: bold })}</li>
+              <li>{t.rich('collect.ip', { b: bold })}</li>
             </ul>
           </section>
 
@@ -95,6 +97,7 @@ export default async function PrivacyPage() {
             <ul className="flex flex-col gap-2 list-disc list-inside marker:text-[#F4679B]">
               <li>{t('retention.account')}</li>
               <li>{t('retention.logs')}</li>
+              <li>{t('retention.ip', { days: ANONYMOUS_USAGE_RETENTION_DAYS })}</li>
             </ul>
           </section>
 

@@ -588,7 +588,8 @@
       "heading": "Informações que coletamos",
       "email": "<b>Seu endereço de e-mail</b>, usado para criar e identificar sua conta.",
       "files": "<b>O conteúdo dos arquivos que você envia</b> — documentos, materiais de aula e imagens que você anexa ou adiciona ao serviço, incluindo o texto extraído deles.",
-      "history": "<b>Seu histórico de conversas</b> — as mensagens que você envia e as respostas que recebe."
+      "history": "<b>Seu histórico de conversas</b> — as mensagens que você envia e as respostas que recebe.",
+      "ip": "<b>Seu endereço IP</b>, coletado quando você usa o teste sem login (análise de arquivos, chat com IA, etc.), para prevenção de abusos."
     },
     "why": {
       "heading": "Por que as coletamos",
@@ -606,7 +607,8 @@
     "retention": {
       "heading": "Por quanto tempo as mantemos",
       "account": "Os dados da sua conta (e-mail, arquivos, prazos) são mantidos até você excluir sua conta.",
-      "logs": "No plano gratuito, o histórico de conversas é mantido por 30 dias e depois excluído automaticamente. Contas Pro não têm exclusão automática — o histórico é mantido até a exclusão da conta, assim como os demais dados."
+      "logs": "No plano gratuito, o histórico de conversas é mantido por 30 dias e depois excluído automaticamente. Contas Pro não têm exclusão automática — o histórico é mantido até a exclusão da conta, assim como os demais dados.",
+      "ip": "Os endereços IP coletados para prevenção de abusos no teste sem login são excluídos automaticamente após {days} dias."
     },
     "transfers": {
       "heading": "Transferências internacionais de dados",

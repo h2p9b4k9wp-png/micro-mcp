@@ -40,6 +40,14 @@ export const IP_DAILY_SESSION_LIMIT = 30;
 export const SESSION_CHAT_TURN_LIMIT = 3;
 export const GLOBAL_DAILY_GUEST_LIMIT = 1000;
 
+// 💡 [신규] anonymous_trial_usage.ip_address 보관 기간 — IP 주소는 개인정보이므로 무기한
+// 보관하지 않고 이 기간이 지나면 삭제합니다. app/api/cron/cleanup-logs/route.ts가 이 값을
+// 그대로 써서 실제로 지우고, app/privacy/page.tsx가 이 값을 privacy.retention.ip
+// 번역 문구의 {days} 자리에 그대로 주입합니다(messages/*.json에 숫자를 별도로 하드코딩하지
+// 않음) — lib/plan-limits.ts의 FREE_LOG_RETENTION_DAYS(logs 테이블용)와 같은 목적의 상수이되,
+// 이 테이블은 로그인 여부와 무관한 별도 남용 방지 로그라 값도 별도로 관리합니다.
+export const ANONYMOUS_USAGE_RETENTION_DAYS = 30;
+
 const GUEST_SESSION_COOKIE = 'guest_session_id';
 const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24; // 24시간 — IP 일일 한도 집계 창과 맞춤
 

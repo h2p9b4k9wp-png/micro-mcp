@@ -588,7 +588,8 @@
       "heading": "Informazioni che raccogliamo",
       "email": "<b>Il tuo indirizzo email</b>, usato per creare e identificare il tuo account.",
       "files": "<b>Il contenuto dei file che carichi</b> — documenti, materiali didattici e immagini che alleghi o aggiungi al servizio, incluso il testo estratto da essi.",
-      "history": "<b>La tua cronologia delle conversazioni</b> — i messaggi che invii e le risposte che ricevi."
+      "history": "<b>La tua cronologia delle conversazioni</b> — i messaggi che invii e le risposte che ricevi.",
+      "ip": "<b>Il tuo indirizzo IP</b>, raccolto quando usi la prova senza accesso (analisi file, chat AI, ecc.), a scopo di prevenzione degli abusi."
     },
     "why": {
       "heading": "Perché le raccogliamo",
@@ -606,7 +607,8 @@
     "retention": {
       "heading": "Per quanto tempo le conserviamo",
       "account": "I dati del tuo account (email, file, scadenze) vengono conservati fino all&rsquo;eliminazione dell&rsquo;account.",
-      "logs": "Nel piano gratuito, la cronologia delle conversazioni viene conservata per 30 giorni e poi eliminata automaticamente. Gli account Pro non hanno eliminazione automatica — la cronologia viene conservata fino all&rsquo;eliminazione dell&rsquo;account, come tutti gli altri dati."
+      "logs": "Nel piano gratuito, la cronologia delle conversazioni viene conservata per 30 giorni e poi eliminata automaticamente. Gli account Pro non hanno eliminazione automatica — la cronologia viene conservata fino all&rsquo;eliminazione dell&rsquo;account, come tutti gli altri dati.",
+      "ip": "Gli indirizzi IP raccolti per la prevenzione degli abusi nella prova senza accesso vengono eliminati automaticamente dopo {days} giorni."
     },
     "transfers": {
       "heading": "Trasferimenti internazionali di dati",
