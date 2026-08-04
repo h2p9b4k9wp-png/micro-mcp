@@ -2028,18 +2028,6 @@ export default function HomePage() {
         @media (prefers-reduced-motion: reduce) {
           * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
-
-        /* 로딩 중 점 애니메이션 — "." → ".." → "..." → "."을 0.5초마다 반복합니다. */
-        @keyframes loadingDots {
-          0% { content: '.'; }
-          33% { content: '..'; }
-          66% { content: '...'; }
-          100% { content: '.'; }
-        }
-        .loading-dots::after {
-          content: '.';
-          animation: loadingDots 1.5s steps(1) infinite;
-        }
       `}</style>
 
       {/* 모바일 상단 바 */}

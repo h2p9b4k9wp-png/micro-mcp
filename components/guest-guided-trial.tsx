@@ -7,6 +7,7 @@ import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestLimitBanner } from '@/components/guest-limit-banner';
 import { CarrotGauge } from '@/components/carrot-gauge';
+import { LoadingText } from '@/components/loading-text';
 import type { CircuitGraphState } from '@/types/blocks';
 
 // 💡 [신규] 로그인 없이 사진/캡처본 한 장을 올려 회로도 애니메이션 + 예상 문제 + 요약정리를
@@ -64,7 +65,7 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
             >
               <span className="text-2xl">📸</span>
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                {isAnalyzing ? t('login.trial.guided.analyzing') : t('login.trial.guided.chooseImage')}
+                {isAnalyzing ? <LoadingText /> : t('login.trial.guided.chooseImage')}
               </span>
               <span className="text-xs text-[var(--text-faint)]">{t('login.trial.guided.imageHint')}</span>
               <input

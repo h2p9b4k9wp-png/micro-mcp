@@ -17,6 +17,7 @@ import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestGuidedTrial } from '@/components/guest-guided-trial';
 import { GuestLimitBanner } from '@/components/guest-limit-banner';
 import { CarrotGauge } from '@/components/carrot-gauge';
+import { LoadingText } from '@/components/loading-text';
 import { trackFunnelEvent } from '@/lib/funnel-tracking';
 
 function GoogleIcon() {
@@ -619,7 +620,7 @@ function LoginPageContent() {
                   >
                     <span className="text-2xl">📄</span>
                     <span className="text-sm font-medium text-[var(--text-secondary)]">
-                      {isTrialAnalyzing ? t('login.trial.analyzing') : t('login.trial.chooseFile')}
+                      {isTrialAnalyzing ? <LoadingText /> : t('login.trial.chooseFile')}
                     </span>
                     <span className="text-xs text-[var(--text-faint)]">{t('login.trial.fileHint')}</span>
                     <input
@@ -747,6 +748,17 @@ function LoginPageContent() {
                     {isGuestChatLoading ? t('login.trial.chatLoading') : t('login.trial.chatButton')}
                   </button>
                 </form>
+              )}
+
+              {/* 💡 [신규] 첫 스트리밍 토큰이 오기 전(특히 첨부가 있으면 서버가 텍스트
+                  추출/비전 처리부터 끝내야 해서 몇 초씩 걸림)까지 guestChatAnswer가 빈
+                  문자열이라 여기 아무 것도 안 그려졌습니다 — 버튼 문구(chatLoading)만
+                  바뀌는 걸로는 "지금 처리 중"이라는 게 잘 안 보였습니다. 답변 자리 자체에
+                  로딩 표시를 넣어 확실히 보이게 합니다. */}
+              {isGuestChatLoading && !guestChatAnswer && (
+                <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl p-4 mt-3 text-sm text-[var(--text-muted)]">
+                  <LoadingText />
+                </div>
               )}
 
               {guestChatAnswer && (
