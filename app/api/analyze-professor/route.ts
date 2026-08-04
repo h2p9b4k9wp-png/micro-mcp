@@ -4,6 +4,7 @@ import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { getIsPro, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { truncateForPrompt } from '@/lib/truncate-text';
+import { recordAiUsage } from '@/lib/ai-usage-logging';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 
@@ -219,6 +220,18 @@ export async function POST(req: Request) {
         { error: 'The AI had trouble organizing the analysis result. Please try again.' },
         { status: 500 }
       );
+    }
+
+    // 💡 [신규] 추정이 아니라 OpenAI가 실제로 돌려준 토큰 수를 그대로 기록합니다 —
+    // app/api/analyze와 같은 이유로 응답 전에 await합니다(lib/ai-usage-logging.ts,
+    // lib/run-lens-analysis.ts의 extractUsage와 동일한 필드 매핑).
+    const usage = completion.usage;
+    if (userId && usage) {
+      await recordAiUsage(supabase, userId, 'analyze-professor', 'gpt-4.1-mini', {
+        promptTokens: usage.prompt_tokens,
+        completionTokens: usage.completion_tokens,
+        totalTokens: usage.total_tokens,
+      });
     }
 
     return NextResponse.json({ result });

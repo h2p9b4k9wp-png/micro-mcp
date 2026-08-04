@@ -1,14 +1,14 @@
 {
   "app": {
     "loadingSession": "Loading...",
-    "title": "Carrotly — Your Personal AI Work Assistant",
-    "description": "An AI workflow platform that automates your work and daily life, block by block."
+    "title": "Turn your lecture notes into likely exam questions | Carrotly",
+    "description": "Upload your own class materials and get likely exam questions plus a condensed summary, tuned to how your class is taught. Never shared. No signup."
   },
   "nav": {
     "workspace": "Ask AI",
     "records": "My Records",
     "deadlines": "Deadlines",
-    "professors": "Professors",
+    "professors": "Lecturers & Professors",
     "monitoring": "My Files",
     "logs": "Past Conversations"
   },
@@ -23,7 +23,8 @@
     "logout": "Log Out",
     "unknownError": "Unknown error",
     "responseLanguageLabel": "AI Response Language",
-    "themeLabel": "Theme"
+    "themeLabel": "Theme",
+    "aiGeneratedNotice": "AI-generated — may be incomplete or inaccurate."
   },
   "workspace": {
     "subtitle": "The AI generates answers based on the conversation context and any attached document content.",
@@ -154,37 +155,37 @@
     }
   },
   "professors": {
-    "title": "Professors",
-    "subtitle": "Collect materials by professor to see at a glance the topics they emphasize and how they tend to write questions.",
+    "title": "Lecturers & Professors",
+    "subtitle": "Collect materials by lecturer or professor to see at a glance the topics they emphasize and how they tend to write questions.",
     "uploadPanel": {
       "title": "Upload Materials",
-      "selectProfessor": "Select Professor",
-      "registerNew": "+ Register New Professor",
+      "selectProfessor": "Select Lecturer or Professor",
+      "registerNew": "+ Register New Lecturer or Professor",
       "namePlaceholder": "Name (required)",
       "schoolPlaceholder": "School (required)",
       "departmentPlaceholder": "Department (required)",
       "schoolDeptHint": "School/department info helps interpret major-specific terminology and grading conventions more accurately.",
       "chooseFile": "Choose File",
-      "paperHint": "Uploading the professor's papers helps us pinpoint their research interests and emphasis much more accurately."
+      "paperHint": "Uploading their papers helps us pinpoint research interests and emphasis much more accurately."
     },
     "loading": "Loading...",
-    "noneRegistered": "No professors registered yet. Upload materials above to register one.",
+    "noneRegistered": "No lecturers or professors registered yet. Upload materials above to register one.",
     "documentCount": "{count} files",
     "docType": {
       "lecture": "Lecture Notes",
-      "exam": "Exam",
+      "exam": "Past Exam",
       "assignment": "Assignment",
       "paper": "Paper"
     },
-    "backToList": "Back to Professors",
-    "deleteProfessor": "Delete Professor",
+    "backToList": "Back to Lecturers & Professors",
+    "deleteProfessor": "Delete Lecturer or Professor",
     "noSchoolDept": "No school/department info",
     "documentListTitle": "Materials ({count})",
     "noDocumentsYet": "No materials uploaded yet.",
     "deleteDocumentAria": "Delete {fileName}",
-    "circuitHint": "Click the AI core to analyze this professor's materials",
+    "circuitHint": "Click the AI core to analyze their materials",
     "notConfidentYet": "Not confident enough to judge yet",
-    "analyzeButton": "Analyze This Professor",
+    "analyzeButton": "Analyze Their Materials",
     "notEnoughData": "Not enough material yet to judge with confidence.",
     "teaserTitle": "Upload more to unlock these",
     "uploadDirectly": "Upload Files Now",
@@ -199,7 +200,7 @@
     "circuit": {
       "expected_questions": "Expected Questions",
       "assignment_direction": "Assignment Direction",
-      "study_method": "Study Method"
+      "study_method": "Exam Prep Method"
     },
     "framing": {
       "first": "First impression from 1 document",
@@ -208,21 +209,21 @@
     },
     "errors": {
       "schoolDeptRequired": "Please enter both school and department.",
-      "registerFailed": "Could not register the professor: {error}",
+      "registerFailed": "Could not register the lecturer or professor: {error}",
       "updateFailed": "Failed to refresh the analysis.",
       "saveAnalysisFailed": "Could not save the analysis result.",
-      "thisProfessorFallback": "This professor",
-      "updateFailedAlert": "Failed to refresh the analysis for \"{name}\": {error}\nThe document count and analysis result may be briefly out of sync — try the \"Analyze This Professor\" button on the professor detail screen again.",
-      "docLimitReached": "This professor can have at most {max} documents (currently {count}). Please delete some unneeded documents first.",
+      "thisProfessorFallback": "This lecturer or professor",
+      "updateFailedAlert": "Failed to refresh the analysis for \"{name}\": {error}\nThe document count and analysis result may be briefly out of sync — try the \"Analyze Their Materials\" button on the detail screen again.",
+      "docLimitReached": "This lecturer or professor can have at most {max} documents (currently {count}). Please delete some unneeded documents first.",
       "docSaveFailed": "Could not save \"{fileName}\": {error}",
-      "nameRequired": "Please enter the professor's name.",
-      "selectProfessorFirst": "Please select a professor or register a new one first.",
+      "nameRequired": "Please enter a name.",
+      "selectProfessorFirst": "Please select a lecturer or professor, or register a new one first.",
       "docDeleteFailed": "Could not delete the document: {error}",
-      "professorDeleteFailed": "Could not delete the professor: {error}"
+      "professorDeleteFailed": "Could not delete the lecturer or professor: {error}"
     },
     "deleteConfirm": "Delete \"{name}\" and all their registered materials? This cannot be undone.",
-    "upgradeMaxProfessors": "The free tier allows up to {max} professors. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "The free tier allows up to {max} documents per professor. Upgrade to Pro — {price}"
+    "upgradeMaxProfessors": "The free tier allows up to {max} lecturers or professors. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "The free tier allows up to {max} documents per lecturer or professor. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "Monitoring & Files (RAG Context)",
@@ -306,7 +307,7 @@
       "hint": "Saves the result as a Hangul (HWP) file"
     },
     "professor_docs": {
-      "label": "This Professor's Materials",
+      "label": "Uploaded Materials",
       "hint": "References everything uploaded so far"
     },
     "professor_ai_core": {
@@ -322,7 +323,7 @@
       "hint": "Tells you the style of assignments they require"
     },
     "study_method": {
-      "label": "Study Method",
+      "label": "Exam Prep Method",
       "hint": "Centers on the topics they emphasize most often"
     },
     "guest_upload": {
@@ -335,11 +336,11 @@
     },
     "professor_summary": {
       "label": "Key Summary",
-      "hint": "Boils this professor's materials down to the essentials"
+      "hint": "Boils their materials down to the essentials"
     },
     "professor_emphasis": {
       "label": "Emphasis Points",
-      "hint": "What this professor tends to emphasize"
+      "hint": "What they tend to emphasize"
     }
   },
   "circuit": {
@@ -360,8 +361,8 @@
       "subheadline": "Upload your files and get a summary and expected questions instantly.",
       "features": {
         "automation": {
-          "title": "Tailored per professor",
-          "desc": "Organized differently for each professor's focus"
+          "title": "Tailored to each class",
+          "desc": "Organized differently for what each class focuses on"
         },
         "outputs": {
           "title": "Expected Questions · Summary",
@@ -430,8 +431,8 @@
         "uploadSessionDesc": "Each trial includes 1 upload. You can still use AI chat above, and a free account lets you keep uploading too!",
         "chatSessionTitle": "Sign up to keep asking",
         "chatSessionDesc": "You've used up this trial's questions. Create a free account to keep asking!",
-        "ipTitle": "You've used up today's trials",
-        "ipDesc": "Guest trials are limited to 3 per day. Create a free account to keep using it!",
+        "ipTitle": "Trial capacity is full",
+        "ipDesc": "There's a lot of guest trial activity from this network right now, so it's temporarily limited. Create a free account to keep going right away!",
         "globalTitle": "Guest trials are paused for now",
         "globalDesc": "Guest trial requests are unusually high today, so we've paused them for a bit. Create a free account to keep going right away!"
       },
@@ -444,11 +445,15 @@
         "tooLarge": "Photos up to 3MB can be analyzed without an account.",
         "questionsTitle": "Expected Questions",
         "summaryTitle": "Summary"
+      },
+      "usage": {
+        "uploadRemaining": "{remaining}/{total} file trial left",
+        "chatRemaining": "{remaining}/{total} chat turns left"
       }
     }
   },
   "account": {
-    "deleteConfirm": "Are you sure you want to delete your account?\n\nAll uploaded files, professor materials, conversation history, and conversation folders — along with your login account itself (email, sign-in info) — will be permanently deleted and cannot be undone.",
+    "deleteConfirm": "Are you sure you want to delete your account?\n\nAll uploaded files, lecturer or professor materials, conversation history, and conversation folders — along with your login account itself (email, sign-in info) — will be permanently deleted and cannot be undone.",
     "deleteErrorAlert": "A problem occurred while deleting your account: {error}\nPlease try again.",
     "deleting": "Deleting...",
     "delete": "Delete Account",
@@ -478,8 +483,9 @@
     "subheadline": "Upload your files and get a summary and expected questions instantly.",
     "ctaButton": "Try It Now",
     "ctaHint": "No sign-up — check it out right now",
-    "professorAppeal": "Tailored differently for every professor",
+    "professorAppeal": "Tailored differently for every lecturer or professor",
     "startOver": "← Start over",
+    "noSharingNote": "Your uploaded materials are never shared with other users",
     "capabilities": {
       "upload": "Upload files, photos, or screenshots to analyze",
       "deadlines": "Auto-extract deadlines",
@@ -488,14 +494,14 @@
       "ask": "Ask questions straight from your materials"
     },
     "professorSection": {
-      "title": "Every professor tests differently",
-      "description": "Organize materials by professor and one click gives you expected questions and a summary tuned to what that professor emphasizes and how they test.",
+      "title": "Every lecturer or professor tests differently",
+      "description": "Organize materials by lecturer or professor and one click gives you expected questions and a summary tuned to what they emphasize and how they test.",
       "demo": {
         "autoPromptLabel": "Auto-prompt applied",
         "promptTemplate": "“Pull expected questions and a key summary from {name}’s materials”",
         "professors": [
           {
-            "name": "Prof. Smith",
+            "name": "Dr Smith",
             "subject": "Software Engineering",
             "emphasis": [
               "Always emphasizes design principles (SOLID) and how they apply in practice",
@@ -508,7 +514,7 @@
             "summary": "This term leans heavily on design principles and code quality — exam questions tend to be example-driven rather than theoretical."
           },
           {
-            "name": "Prof. Johnson",
+            "name": "Dr Johnson",
             "subject": "Database Systems",
             "emphasis": [
               "Likes walking through normalization step by step",
@@ -521,7 +527,7 @@
             "summary": "Heavy focus on normalization and hands-on SQL — expect problems you actually solve, not just concepts to recall."
           },
           {
-            "name": "Prof. Carter",
+            "name": "Dr Carter",
             "subject": "Algorithms",
             "emphasis": [
               "Always has you work out time complexity by hand",
@@ -545,12 +551,12 @@
   },
   "loading": {
     "messages": [
-      "Digging through professor materials",
+      "Digging through your materials",
       "Looking for question patterns",
       "Finding hints hidden between the lines",
       "Underlining the important parts",
       "Reviewing past exams again",
-      "Organizing the study notes",
+      "Organizing the exam prep notes",
       "Picking out the essentials",
       "Reading between the lines",
       "Reading the material closely",
@@ -588,7 +594,8 @@
       "heading": "Information we collect",
       "email": "<b>Your email address</b>, used to create and identify your account.",
       "files": "<b>The content of files you upload</b> — documents, lecture materials, and images you attach or add to the service — including the text extracted from them.",
-      "history": "<b>Your conversation history</b> — the prompts you send and the responses you receive."
+      "history": "<b>Your conversation history</b> — the prompts you send and the responses you receive.",
+      "ip": "<b>Your IP address</b>, collected when you use the login-free trial (file analysis, AI chat, etc.), for abuse prevention."
     },
     "why": {
       "heading": "Why we collect it",
@@ -601,12 +608,14 @@
       "intro": "We do not sell your data. We share it only with the service providers that make Carrotly work:",
       "openai": "<b>OpenAI</b> — receives the text of your prompts, attached documents, and images so it can generate the AI analysis and responses you ask for. This processing happens in the United States, which is also a transfer of your data outside the EU/EEA — see &ldquo;International data transfers&rdquo; below.",
       "supabase": "<b>Supabase</b> — our database and authentication provider, used to store your account, files, and conversation history. Your data is hosted in Supabase&rsquo;s <b>{region}</b> region.",
-      "polar": "<b>Polar</b> — our payment processor, used to handle Pro subscription checkout and billing. Polar receives the information needed to process your payment (such as your email address); we do not send them your files or conversation history."
+      "polar": "<b>Polar</b> — our payment processor, used to handle Pro subscription checkout and billing. Polar receives the information needed to process your payment (such as your email address); we do not send them your files or conversation history.",
+      "analytics": "<b>Vercel Analytics</b> — collects anonymous page-view statistics to help us understand which pages are visited. It doesn&rsquo;t use cookies and doesn&rsquo;t identify individuals."
     },
     "retention": {
       "heading": "How long we keep it",
       "account": "Your account data (email, files, deadlines) is kept until you delete your account.",
-      "logs": "On the free plan, conversation history is kept for 30 days and then automatically deleted. Pro accounts have no automatic deletion — conversation history is kept until account deletion, same as everything else."
+      "logs": "On the free plan, conversation history is kept for 30 days and then automatically deleted. Pro accounts have no automatic deletion — conversation history is kept until account deletion, same as everything else.",
+      "ip": "IP addresses collected for login-free trial abuse prevention are automatically deleted after {days} days."
     },
     "transfers": {
       "heading": "International data transfers",
@@ -617,7 +626,7 @@
     "rights": {
       "heading": "Your rights",
       "copy": "You can request a copy of the data we hold about you at any time by emailing us at the address below — we&rsquo;ll respond as soon as we can.",
-      "delete": "To delete your account, use the &ldquo;Delete Account&rdquo; button at the bottom of the sidebar once you&rsquo;re logged in — it immediately and permanently deletes your uploaded files, professor materials, conversation history, and your login credentials (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather have us do it for you, email us and we&rsquo;ll delete it manually.",
+      "delete": "To delete your account, use the &ldquo;Delete Account&rdquo; button at the bottom of the sidebar once you&rsquo;re logged in — it immediately and permanently deletes your uploaded files, lecturer or professor materials, conversation history, and your login credentials (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather have us do it for you, email us and we&rsquo;ll delete it manually.",
       "proSubscription": "If you have an active Pro subscription, deleting your account does not cancel it — Polar (our Merchant of Record, see <termslink>Terms of Service</termslink>) handles billing independently of your Carrotly login, so we have no way to cancel it on your behalf. You&rsquo;ll need to cancel your subscription first (via the link in the receipt/confirmation email Polar sent you, or by emailing us) before we can delete your account."
     },
     "contact": {
@@ -680,5 +689,12 @@
       "heading": "Contact",
       "body": "Questions about these terms can be sent to <mailto>kcw022@naver.com</mailto>."
     }
+  },
+  "usage": {
+    "title": "Usage this month",
+    "chatRemaining": "{remaining}/{total} chats left",
+    "fileRemaining": "{remaining}/{total} files left",
+    "chatLabel": "Chat",
+    "fileLabel": "Files"
   }
 }

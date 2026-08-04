@@ -1,10 +1,35 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { timingSafeEqual } from 'crypto';
 import { FREE_LOG_RETENTION_DAYS } from '@/lib/plan-limits';
+import { ANONYMOUS_USAGE_RETENTION_DAYS } from '@/lib/anonymous-usage';
+
+// 💡 [신규] CRON_SECRET 비교를 타이밍 세이프하게 — 기존 `authHeader !== \`Bearer ${cronSecret}\``는
+// 문자열을 앞에서부터 순서대로 비교하다 첫 불일치 지점에서 바로 반환하는 일반적인 JS 문자열
+// 비교라, 이론적으로는 응답 시간 차이를 정밀하게 측정해 시크릿을 한 글자씩 알아내는 타이밍
+// 공격에 노출됩니다(인터넷을 통한 원격 공격은 네트워크 지연/지터 때문에 실제로는 어렵지만,
+// 비용 없이 막을 수 있는 방어라 적용합니다). timingSafeEqual은 두 버퍼의 길이가 같아야
+// 하므로, 길이가 다르면 그 자체로 불일치로 처리합니다(길이 비교는 타이밍에 실질적 정보를
+// 노출하지 않습니다 — 시크릿 값 자체의 내용과 무관하게 고정된 접두사 "Bearer "의 존재만으로도
+// 대부분의 길이가 이미 드러나 있습니다).
+function timingSafeEqualStrings(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
 
 // 💡 [신규] /privacy 페이지에 적힌 "무료 등급 대화 기록은 30일간 보관" 문구가 실제 동작과
 // 어긋나지 않도록, 무료 등급 사용자의 오래된 logs 행을 주기적으로 지우는 유지보수 작업입니다
 // (vercel.json의 cron 설정이 매일 이 라우트를 호출). Pro는 이 삭제 대상에서 제외됩니다.
+//
+// 💡 [수정] anonymous_trial_usage(게스트 체험 남용 방지용 IP 로그) 정리도 같은 라우트에
+// 얹었습니다 — 새 cron을 따로 만들 만큼 다른 일이 아니라(둘 다 "오래된 행을 매일 지운다"는
+// 동일한 유지보수 작업), 이미 매일 도는 이 라우트에 붙이는 쪽이 더 간단합니다. IP 주소는
+// 개인정보라 /privacy 페이지도 "{days}일 후 자동 삭제"를 약속하는데(privacy.retention.ip),
+// 이 삭제 로직이 그 약속을 실제로 지킵니다. logs와 달리 Pro/무료 구분이 없습니다 —
+// anonymous_trial_usage는 로그인 여부와 무관한 익명 요청 로그라 사용자 등급 개념 자체가
+// 없습니다.
 //
 // 이 라우트는 세션 쿠키가 아니라 Vercel Cron이 보내는 CRON_SECRET으로만 인증합니다
 // (middleware.ts가 /api/cron/*를 세션 검증에서 제외하는 이유) — 특정 사용자 대신이 아니라
@@ -17,7 +42,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: '서버 설정이 올바르지 않습니다.' }, { status: 500 });
   }
   const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${cronSecret}`) {
+  if (!authHeader || !timingSafeEqualStrings(authHeader, `Bearer ${cronSecret}`)) {
     return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 });
   }
 
@@ -49,9 +74,29 @@ export async function GET(req: Request) {
     if (deleteError) throw deleteError;
 
     console.log(`[cleanup-logs] 무료 등급 ${FREE_LOG_RETENTION_DAYS}일 초과 대화 ${count ?? 0}건 삭제`);
-    return NextResponse.json({ ok: true, deleted: count ?? 0 });
+
+    // 💡 게스트 IP 로그 정리 — 등급 구분 없이 ANONYMOUS_USAGE_RETENTION_DAYS보다 오래된
+    // 행을 전부 지웁니다.
+    const anonymousUsageCutoff = new Date(
+      Date.now() - ANONYMOUS_USAGE_RETENTION_DAYS * 24 * 60 * 60 * 1000
+    ).toISOString();
+    const { error: anonymousUsageDeleteError, count: anonymousUsageDeletedCount } = await supabaseAdmin
+      .from('anonymous_trial_usage')
+      .delete({ count: 'exact' })
+      .lt('created_at', anonymousUsageCutoff);
+    if (anonymousUsageDeleteError) throw anonymousUsageDeleteError;
+
+    console.log(
+      `[cleanup-logs] ${ANONYMOUS_USAGE_RETENTION_DAYS}일 초과 게스트 IP 로그 ${anonymousUsageDeletedCount ?? 0}건 삭제`
+    );
+
+    return NextResponse.json({
+      ok: true,
+      deletedLogs: count ?? 0,
+      deletedAnonymousUsage: anonymousUsageDeletedCount ?? 0,
+    });
   } catch (error) {
-    console.error('[cleanup-logs] 대화 기록 정리 중 오류 발생:', error);
-    return NextResponse.json({ error: '대화 기록 정리에 실패했어요.' }, { status: 500 });
+    console.error('[cleanup-logs] 정리 작업 중 오류 발생:', error);
+    return NextResponse.json({ error: '정리 작업에 실패했어요.' }, { status: 500 });
   }
 }

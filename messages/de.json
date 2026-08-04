@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Wird geladen...",
-    "title": "Carrotly — Ihr persönlicher KI-Arbeitsassistent",
-    "description": "Eine KI-Workflow-Plattform, die Ihre Arbeit und Ihren Alltag Baustein für Baustein automatisiert."
+    "title": "Verwandeln Sie Ihre Vorlesungsunterlagen in wahrscheinliche Prüfungsfragen | Carrotly",
+    "description": "Laden Sie Ihre eigenen Kursunterlagen hoch und erhalten Sie wahrscheinliche Prüfungsfragen sowie eine kompakte Zusammenfassung, abgestimmt darauf, wie Ihr Dozent Prüfungen stellt. Wird niemals geteilt. Keine Anmeldung nötig."
   },
   "nav": {
     "workspace": "KI fragen",
@@ -23,7 +23,8 @@
     "logout": "Abmelden",
     "unknownError": "Unbekannter Fehler",
     "responseLanguageLabel": "KI-Antwortsprache",
-    "themeLabel": "Design"
+    "themeLabel": "Design",
+    "aiGeneratedNotice": "KI-generierter Inhalt — kann unvollständig oder ungenau sein."
   },
   "workspace": {
     "subtitle": "Die KI erstellt Antworten basierend auf dem Gesprächskontext und dem Inhalt angehängter Dokumente.",
@@ -430,8 +431,8 @@
         "uploadSessionDesc": "Jeder Test enthält 1 Upload. Sie können den KI-Chat oben weiterhin nutzen, und mit einem kostenlosen Konto können Sie auch weiter hochladen!",
         "chatSessionTitle": "Registrieren Sie sich, um weiter zu fragen",
         "chatSessionDesc": "Sie haben die Fragen dieses Tests aufgebraucht. Erstellen Sie ein kostenloses Konto, um weiter zu fragen!",
-        "ipTitle": "Sie haben die heutigen Tests aufgebraucht",
-        "ipDesc": "Der Gast-Test ist auf 3 pro Tag begrenzt. Erstellen Sie ein kostenloses Konto, um weiterzumachen!",
+        "ipTitle": "Testkapazität ist ausgeschöpft",
+        "ipDesc": "Von diesem Netzwerk aus gibt es gerade viele Gast-Testanfragen, daher ist es vorübergehend begrenzt. Erstellen Sie ein kostenloses Konto, um sofort weiterzumachen!",
         "globalTitle": "Gast-Tests sind vorübergehend pausiert",
         "globalDesc": "Die Nachfrage nach Gast-Tests ist heute ungewöhnlich hoch, daher haben wir sie kurz pausiert. Erstellen Sie ein kostenloses Konto, um sofort weiterzumachen!"
       },
@@ -444,6 +445,10 @@
         "tooLarge": "Ohne Konto können Fotos bis 3 MB analysiert werden.",
         "questionsTitle": "Erwartete Fragen",
         "summaryTitle": "Zusammenfassung"
+      },
+      "usage": {
+        "uploadRemaining": "Noch {remaining}/{total} Datei-Test übrig",
+        "chatRemaining": "Noch {remaining}/{total} Chat-Runden übrig"
       }
     }
   },
@@ -480,6 +485,7 @@
     "ctaHint": "Ohne Anmeldung, gleich jetzt testen",
     "professorAppeal": "Für jeden Professor anders aufbereitet",
     "startOver": "← Von vorn beginnen",
+    "noSharingNote": "Ihre hochgeladenen Materialien werden niemals mit anderen Nutzern geteilt",
     "capabilities": {
       "upload": "Dateien, Fotos oder Screenshots hochladen und analysieren",
       "deadlines": "Fristen automatisch extrahieren",
@@ -588,7 +594,8 @@
       "heading": "Informationen, die wir erheben",
       "email": "<b>Ihre E-Mail-Adresse</b>, verwendet zur Erstellung und Identifizierung Ihres Kontos.",
       "files": "<b>Der Inhalt der von Ihnen hochgeladenen Dateien</b> — Dokumente, Vorlesungsmaterialien und Bilder, die Sie dem Dienst hinzufügen oder anhängen, einschließlich des daraus extrahierten Textes.",
-      "history": "<b>Ihr Gesprächsverlauf</b> — die von Ihnen gesendeten Eingaben und die erhaltenen Antworten."
+      "history": "<b>Ihr Gesprächsverlauf</b> — die von Ihnen gesendeten Eingaben und die erhaltenen Antworten.",
+      "ip": "<b>Ihre IP-Adresse</b>, erfasst bei Nutzung des anmeldefreien Testzugangs (Dateianalyse, KI-Chat usw.), zur Missbrauchsprävention."
     },
     "why": {
       "heading": "Warum wir sie erheben",
@@ -601,12 +608,14 @@
       "intro": "Wir verkaufen Ihre Daten nicht. Wir teilen sie nur mit den Dienstleistern, die Carrotly zum Laufen bringen:",
       "openai": "<b>OpenAI</b> — erhält den Text Ihrer Eingaben, angehängten Dokumente und Bilder, um die von Ihnen angeforderte KI-Analyse und -Antworten zu erstellen. Diese Verarbeitung erfolgt in den USA, was auch eine Übermittlung Ihrer Daten außerhalb der EU/des EWR darstellt — siehe &bdquo;Internationale Datenübermittlungen&ldquo; unten.",
       "supabase": "<b>Supabase</b> — unser Datenbank- und Authentifizierungsanbieter, der zur Speicherung Ihres Kontos, Ihrer Dateien und Ihres Gesprächsverlaufs verwendet wird. Ihre Daten werden in der Region <b>{region}</b> von Supabase gehostet.",
-      "polar": "<b>Polar</b> — unser Zahlungsdienstleister, der Checkout und Abrechnung des Pro-Abonnements übernimmt. Polar erhält die für die Zahlungsabwicklung erforderlichen Informationen (z. B. Ihre E-Mail-Adresse); wir übermitteln weder Ihre Dateien noch Ihren Gesprächsverlauf."
+      "polar": "<b>Polar</b> — unser Zahlungsdienstleister, der Checkout und Abrechnung des Pro-Abonnements übernimmt. Polar erhält die für die Zahlungsabwicklung erforderlichen Informationen (z. B. Ihre E-Mail-Adresse); wir übermitteln weder Ihre Dateien noch Ihren Gesprächsverlauf.",
+      "analytics": "<b>Vercel Analytics</b> — erfasst anonyme Seitenaufruf-Statistiken, um zu verstehen, welche Seiten besucht werden. Verwendet keine Cookies und identifiziert keine Personen."
     },
     "retention": {
       "heading": "Wie lange wir sie speichern",
       "account": "Ihre Kontodaten (E-Mail, Dateien, Fristen) werden gespeichert, bis Sie Ihr Konto löschen.",
-      "logs": "Im kostenlosen Tarif wird der Gesprächsverlauf 30 Tage lang gespeichert und danach automatisch gelöscht. Pro-Konten haben keine automatische Löschung — der Gesprächsverlauf wird wie alle anderen Daten bis zur Kontolöschung gespeichert."
+      "logs": "Im kostenlosen Tarif wird der Gesprächsverlauf 30 Tage lang gespeichert und danach automatisch gelöscht. Pro-Konten haben keine automatische Löschung — der Gesprächsverlauf wird wie alle anderen Daten bis zur Kontolöschung gespeichert.",
+      "ip": "IP-Adressen, die zur Missbrauchsprävention beim anmeldefreien Testzugang erfasst werden, werden nach {days} Tagen automatisch gelöscht."
     },
     "transfers": {
       "heading": "Internationale Datenübermittlungen",
@@ -680,5 +689,12 @@
       "heading": "Kontakt",
       "body": "Fragen zu diesen Bedingungen können an <mailto>kcw022@naver.com</mailto> gesendet werden."
     }
+  },
+  "usage": {
+    "title": "Nutzung diesen Monat",
+    "chatRemaining": "Noch {remaining}/{total} Chats übrig",
+    "fileRemaining": "Noch {remaining}/{total} Dateien übrig",
+    "chatLabel": "Chat",
+    "fileLabel": "Dateien"
   }
 }

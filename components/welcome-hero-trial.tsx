@@ -4,8 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useGuidedTrial } from '@/lib/use-guided-trial';
+import { SESSION_UPLOAD_LIMIT } from '@/lib/guest-trial-limits';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { renderTrialResult } from '@/components/trial-result-view';
+import { CarrotGauge } from '@/components/carrot-gauge';
+import { trackFunnelEvent } from '@/lib/funnel-tracking';
 import type { CircuitGraphState } from '@/types/blocks';
 
 type DemoPhase = 'idle' | 'running' | 'done';
@@ -85,7 +88,7 @@ function WelcomeCircuitDemo() {
 // 다크 패널(제품 스크린샷처럼) 안에 넣어서 라이트 히어로 위에 자연스럽게 얹었습니다.
 export function WelcomeHeroTrial() {
   const t = useTranslations();
-  const { limitType, isAnalyzing, uploaded, error, result, analyzeFile, reset } = useGuidedTrial();
+  const { limitType, isAnalyzing, uploaded, error, result, uploadRemaining, analyzeFile, reset } = useGuidedTrial();
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -97,7 +100,10 @@ export function WelcomeHeroTrial() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
-    if (file) void analyzeFile(file);
+    if (file) {
+      trackFunnelEvent('file_upload');
+      void analyzeFile(file);
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -105,8 +111,19 @@ export function WelcomeHeroTrial() {
     setIsDragging(false);
     if (isInteracting) return;
     const file = e.dataTransfer.files?.[0];
-    if (file) void analyzeFile(file);
+    if (file) {
+      trackFunnelEvent('file_upload');
+      void analyzeFile(file);
+    }
   };
+
+  // 💡 [신규] 전환 퍼널의 "결과 확인" 단계 — result가 null→값으로 바뀌는 순간(체험 결과가
+  // 실제로 화면에 뜨는 시점)에만 기록합니다. 로그인 페이지의 게스트 체험 패널
+  // (components/guest-guided-trial.tsx)은 같은 useGuidedTrial 훅을 공유하지만 이
+  // useEffect는 여기(컴포넌트 레벨)에만 있어서, 그쪽 트래픽은 이 퍼널에 섞이지 않습니다.
+  useEffect(() => {
+    if (result) trackFunnelEvent('result_view');
+  }, [result]);
 
   const graph: CircuitGraphState = {
     nodes: [
@@ -158,6 +175,12 @@ export function WelcomeHeroTrial() {
 
           {limitType ? (
             <div className="bg-[#FFF0F5] border border-[#F4679B]/30 rounded-2xl px-6 py-5 max-w-sm">
+              <div className="flex justify-center mb-2">
+                <CarrotGauge
+                  ratio={uploadRemaining / SESSION_UPLOAD_LIMIT}
+                  countText={t('login.trial.usage.uploadRemaining', { remaining: uploadRemaining, total: SESSION_UPLOAD_LIMIT })}
+                />
+              </div>
               <p className="break-keep text-sm font-semibold text-[#1C1922] mb-1">
                 {t(`login.trial.limit.${limitType === 'session' ? 'uploadSession' : limitType}Title`)}
               </p>

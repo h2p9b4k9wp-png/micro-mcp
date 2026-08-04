@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Chargement...",
-    "title": "Carrotly — Votre assistant de travail IA",
-    "description": "Une plateforme de flux de travail IA qui automatise votre travail et votre quotidien, bloc par bloc."
+    "title": "Transformez vos notes de cours en questions d'examen probables | Carrotly",
+    "description": "Téléversez vos propres supports de cours et obtenez des questions d'examen probables ainsi qu'un résumé condensé, adapté à la façon dont votre enseignant conçoit ses épreuves. Jamais partagé. Sans inscription."
   },
   "nav": {
     "workspace": "Demander à l'IA",
@@ -23,7 +23,8 @@
     "logout": "Se déconnecter",
     "unknownError": "Erreur inconnue",
     "responseLanguageLabel": "Langue de réponse de l'IA",
-    "themeLabel": "Thème"
+    "themeLabel": "Thème",
+    "aiGeneratedNotice": "Contenu généré par IA ; peut être inexact ou différer de la réalité."
   },
   "workspace": {
     "subtitle": "L'IA génère des réponses en fonction du contexte de la conversation et du contenu de tout document joint.",
@@ -430,8 +431,8 @@
         "uploadSessionDesc": "Chaque essai inclut 1 téléversement. Vous pouvez encore utiliser le chat IA ci-dessus, et un compte gratuit vous permet de continuer à téléverser aussi !",
         "chatSessionTitle": "Inscrivez-vous pour continuer à poser des questions",
         "chatSessionDesc": "Vous avez utilisé toutes les questions de cet essai. Créez un compte gratuit pour continuer à poser des questions !",
-        "ipTitle": "Vous avez épuisé les essais d'aujourd'hui",
-        "ipDesc": "L'essai invité est limité à 3 par jour. Créez un compte gratuit pour continuer à l'utiliser !",
+        "ipTitle": "Places d'essai complètes",
+        "ipDesc": "Il y a beaucoup d'activité d'essai invité depuis ce réseau en ce moment, donc c'est temporairement limité. Créez un compte gratuit pour continuer tout de suite !",
         "globalTitle": "Les essais invités sont en pause",
         "globalDesc": "Les demandes d'essai invité sont inhabituellement nombreuses aujourd'hui, nous les avons donc mises en pause un moment. Créez un compte gratuit pour continuer tout de suite !"
       },
@@ -444,6 +445,10 @@
         "tooLarge": "Sans compte, vous pouvez analyser des photos jusqu'à 3 Mo.",
         "questionsTitle": "Questions attendues",
         "summaryTitle": "Résumé"
+      },
+      "usage": {
+        "uploadRemaining": "Il reste {remaining}/{total} essai de fichier",
+        "chatRemaining": "Il reste {remaining}/{total} tours de chat"
       }
     }
   },
@@ -480,6 +485,7 @@
     "ctaHint": "Sans inscription, essayez tout de suite",
     "professorAppeal": "Organisé différemment pour chaque professeur",
     "startOver": "← Recommencer",
+    "noSharingNote": "Les documents que vous téléversez ne sont jamais partagés avec d'autres utilisateurs",
     "capabilities": {
       "upload": "Téléversez fichiers, photos ou captures à analyser",
       "deadlines": "Extraction automatique des échéances",
@@ -588,7 +594,8 @@
       "heading": "Informations que nous collectons",
       "email": "<b>Votre adresse e-mail</b>, utilisée pour créer et identifier votre compte.",
       "files": "<b>Le contenu des fichiers que vous téléversez</b> — documents, supports de cours et images que vous joignez ou ajoutez au service, y compris le texte qui en est extrait.",
-      "history": "<b>Votre historique de conversations</b> — les messages que vous envoyez et les réponses que vous recevez."
+      "history": "<b>Votre historique de conversations</b> — les messages que vous envoyez et les réponses que vous recevez.",
+      "ip": "<b>Votre adresse IP</b>, collectée lorsque vous utilisez l'essai sans connexion (analyse de fichiers, chat IA, etc.), à des fins de prévention des abus."
     },
     "why": {
       "heading": "Pourquoi nous les collectons",
@@ -601,12 +608,14 @@
       "intro": "Nous ne vendons pas vos données. Nous les partageons uniquement avec les prestataires de services qui font fonctionner Carrotly :",
       "openai": "<b>OpenAI</b> — reçoit le texte de vos messages, documents joints et images afin de générer les analyses et réponses par IA que vous demandez. Ce traitement a lieu aux États-Unis, ce qui constitue également un transfert de vos données hors UE/EEE — voir &laquo;&nbsp;Transferts internationaux de données&nbsp;&raquo; ci-dessous.",
       "supabase": "<b>Supabase</b> — notre fournisseur de base de données et d&rsquo;authentification, utilisé pour stocker votre compte, vos fichiers et votre historique de conversations. Vos données sont hébergées dans la région <b>{region}</b> de Supabase.",
-      "polar": "<b>Polar</b> — notre prestataire de paiement, utilisé pour gérer le paiement et la facturation de l&rsquo;abonnement Pro. Polar reçoit les informations nécessaires au traitement de votre paiement (comme votre adresse e-mail) ; nous ne lui transmettons ni vos fichiers ni votre historique de conversations."
+      "polar": "<b>Polar</b> — notre prestataire de paiement, utilisé pour gérer le paiement et la facturation de l&rsquo;abonnement Pro. Polar reçoit les informations nécessaires au traitement de votre paiement (comme votre adresse e-mail) ; nous ne lui transmettons ni vos fichiers ni votre historique de conversations.",
+      "analytics": "<b>Vercel Analytics</b> — collecte des statistiques anonymes de pages vues pour nous aider à comprendre quelles pages sont consultées. N&rsquo;utilise pas de cookies et n&rsquo;identifie pas les personnes."
     },
     "retention": {
       "heading": "Durée de conservation",
       "account": "Les données de votre compte (e-mail, fichiers, échéances) sont conservées jusqu&rsquo;à la suppression de votre compte.",
-      "logs": "Dans l&rsquo;offre gratuite, l&rsquo;historique des conversations est conservé 30 jours puis supprimé automatiquement. Les comptes Pro n&rsquo;ont pas de suppression automatique — l&rsquo;historique est conservé jusqu&rsquo;à la suppression du compte, comme le reste des données."
+      "logs": "Dans l&rsquo;offre gratuite, l&rsquo;historique des conversations est conservé 30 jours puis supprimé automatiquement. Les comptes Pro n&rsquo;ont pas de suppression automatique — l&rsquo;historique est conservé jusqu&rsquo;à la suppression du compte, comme le reste des données.",
+      "ip": "Les adresses IP collectées pour la prévention des abus lors de l'essai sans connexion sont automatiquement supprimées après {days} jours."
     },
     "transfers": {
       "heading": "Transferts internationaux de données",
@@ -680,5 +689,12 @@
       "heading": "Contact",
       "body": "Les questions concernant ces conditions peuvent être envoyées à <mailto>kcw022@naver.com</mailto>."
     }
+  },
+  "usage": {
+    "title": "Utilisation ce mois-ci",
+    "chatRemaining": "Il reste {remaining}/{total} discussions",
+    "fileRemaining": "Il reste {remaining}/{total} fichiers",
+    "chatLabel": "Discussion",
+    "fileLabel": "Fichiers"
   }
 }

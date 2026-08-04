@@ -4,6 +4,18 @@ import { truncateForPrompt } from '@/lib/truncate-text';
 
 export class LensAnalysisParseError extends Error {}
 
+// 💡 OpenAI SDK의 completion.usage를 우리 인터페이스로 변환하는 공용 헬퍼 — 두 함수가
+// 완전히 동일한 매핑을 하므로 하나로 뺐습니다. usage가 없으면(극히 예외적) null.
+function extractUsage(completion: { usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } }): LensAnalysisUsage | null {
+  const usage = completion.usage;
+  if (!usage || typeof usage.prompt_tokens !== 'number' || typeof usage.completion_tokens !== 'number') return null;
+  return {
+    promptTokens: usage.prompt_tokens,
+    completionTokens: usage.completion_tokens,
+    totalTokens: usage.total_tokens ?? usage.prompt_tokens + usage.completion_tokens,
+  };
+}
+
 export interface RunLensAnalysisParams {
   apiKey: string;
   text: string;
@@ -12,9 +24,19 @@ export interface RunLensAnalysisParams {
   responseLanguage?: string;
 }
 
+export interface LensAnalysisUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
 export interface RunLensAnalysisResult {
   lensId: LensId;
   result: unknown;
+  // 💡 [신규] OpenAI 응답에 실려오는 실제 토큰 사용량 — app/api/analyze가 ai_usage_logs에
+  // 그대로 기록합니다(lib/ai-usage-logging.ts). 응답에 usage 필드가 없는 극히 예외적인
+  // 경우를 위해 null을 허용합니다(호출부는 null이면 기록을 건너뜁니다).
+  usage: LensAnalysisUsage | null;
 }
 
 // 💡 [신규] /api/analyze(로그인 사용자)와 /api/public-analyze(로그인 없는 체험용)가
@@ -70,7 +92,7 @@ export async function runLensAnalysis({
     throw new LensAnalysisParseError('The AI had trouble organizing the analysis result. Please try again.');
   }
 
-  return { lensId, result };
+  return { lensId, result, usage: extractUsage(completion) };
 }
 
 export interface RunLensAnalysisOnImageParams {
@@ -131,5 +153,5 @@ export async function runLensAnalysisOnImage({
     throw new LensAnalysisParseError('The AI had trouble organizing the analysis result. Please try again.');
   }
 
-  return { lensId: lens, result };
+  return { lensId: lens, result, usage: extractUsage(completion) };
 }

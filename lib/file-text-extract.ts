@@ -289,17 +289,25 @@ export async function extractFileText(
       return await extractTextFromZipXml(buffer, (path) => /^contents\/.*\.xml$/i.test(path));
     }
 
-    if (ext === 'txt' || ext === 'ics' || ext === 'ical' || (mimeType && mimeType.startsWith('text/'))) {
-      return buffer.toString('utf-8');
+    // 💡 [신규] 이전 버전 오피스 바이너리 포맷(.doc/.ppt)은 진짜 바이너리라 텍스트로 읽으면
+    // 완전히 깨진 문자열만 남습니다 — 조용히 넘기지 않고 재저장을 명확히 안내합니다
+    // (app/api/chat의 같은 형식 처리와 동일한 판단, CLAUDE.md 참고).
+    if (ext === 'doc' || ext === 'ppt') {
+      throw new FileExtractError('이전 버전 파일이에요. 워드/파워포인트에서 열어 .docx/.pptx로 저장해 다시 올려주세요.');
     }
+
+    // 💡 [신규] 위에서 처리한 이진 포맷(hwp/xlsx/xls/csv/pdf/docx/pptx/hwpx)이 아니면, 확장자
+    // 화이트리스트를 계속 늘리는 대신 일단 UTF-8 텍스트로 읽어봅니다 — 학생이 첨부할 자료는
+    // 마크다운 노트(.md), 코드 과제, 일정(.ics), 이름 모를 확장자의 순수 텍스트처럼 형태가
+    // 다양한데, 모르는 확장자라고 전부 거부하면 실제로 읽을 수 있는 파일까지 막습니다.
+    // 진짜 이진 파일(.zip 등)을 이 경로로 열면 깨진 문자가 섞여 나올 수 있지만, 첨부 내용은
+    // 이미 프롬프트에서 "읽을 수 없으면 그렇다고 말하라"는 지침과 함께 신뢰할 수 없는
+    // 데이터로 다뤄지므로 이 정도 성능 저하는 감수합니다 — 무조건 거부보다는 낫습니다.
+    return buffer.toString('utf-8');
   } catch (err) {
     if (err instanceof FileExtractError) throw err;
     console.error(`파일 텍스트 추출 실패 (${fileName}):`, err);
     const label = FORMAT_LABELS[ext] || `.${ext || '확장자 없음'}`;
     throw new FileExtractError(`${label} 파일을 읽는 중 오류가 발생했어요. 파일이 손상되지 않았는지 확인해주세요.`);
   }
-
-  throw new FileExtractError(
-    '지원하지 않는 파일 형식이에요. PDF, 워드(.docx), 엑셀(.xlsx/.csv), 파워포인트(.pptx), 한글(.hwpx), 텍스트 파일만 지원해요.'
-  );
 }

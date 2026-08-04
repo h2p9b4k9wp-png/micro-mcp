@@ -9,12 +9,16 @@ import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import type { GuidedTrialLimitType } from '@/lib/use-guided-trial';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
+import { SESSION_UPLOAD_LIMIT, SESSION_CHAT_TURN_LIMIT } from '@/lib/guest-trial-limits';
 import { Logomark } from '@/components/logomark';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestGuidedTrial } from '@/components/guest-guided-trial';
 import { GuestLimitBanner } from '@/components/guest-limit-banner';
+import { CarrotGauge } from '@/components/carrot-gauge';
+import { LoadingText } from '@/components/loading-text';
+import { trackFunnelEvent } from '@/lib/funnel-tracking';
 
 function GoogleIcon() {
   return (
@@ -79,6 +83,14 @@ function LoginPageContent() {
   const [uploadSessionUsed, setUploadSessionUsed] = useState(false);
   const [chatSessionUsed, setChatSessionUsed] = useState(false);
 
+  // 💡 [신규] 당근 게이지(components/carrot-gauge.tsx)용 잔여치 — 서버가 응답에 실어보내는
+  // remainingUploads/remainingChatTurns(또는 채팅은 스트리밍이라 응답 헤더)를 그대로 반영합니다.
+  // 새 세션이라고 가정하고 총량으로 초기화해두되(SESSION_UPLOAD_LIMIT/SESSION_CHAT_TURN_LIMIT),
+  // 이미 다른 탭 등에서 예산을 썼던 세션이면 첫 시도의 서버 응답이 바로 정정합니다 — 다른 게스트
+  // 상태(uploadSessionUsed 등)와 같은 "서버 응답이 최종 진실" 원칙을 따릅니다.
+  const [remainingUploads, setRemainingUploads] = useState(SESSION_UPLOAD_LIMIT);
+  const [remainingChatTurns, setRemainingChatTurns] = useState(SESSION_CHAT_TURN_LIMIT);
+
   // 💡 [신규] PWA 서비스워커 등록 (홈 화면에 앱으로 설치 가능하게 해줍니다)
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -107,6 +119,11 @@ function LoginPageContent() {
           password,
         });
         if (error) throw error;
+
+        // 💡 [신규] 전환 퍼널의 "회원가입" 단계 — 이메일 인증이 필요한지와 무관하게 계정
+        // 생성 자체는 이 시점(error가 없다)에 이미 성공했으므로, 아래 data.session 분기와
+        // 무관하게 여기서 기록합니다. lib/funnel-tracking.ts 참고.
+        trackFunnelEvent('signup');
 
         // 💡 [신규] "이메일 인증은 나중에, 가입 즉시 쓸 수 있게" — Supabase 프로젝트의
         // Authentication 설정에서 "Confirm email"이 꺼져 있으면 signUp()이 바로 세션을
@@ -195,6 +212,7 @@ function LoginPageContent() {
           const limitType = data.limitType as GuidedTrialLimitType | undefined;
           if (limitType === 'session') {
             setUploadSessionUsed(true);
+            setRemainingUploads(0);
           } else {
             setGuestSuspended({ type: (limitType as 'ip' | 'global') || 'ip' });
           }
@@ -204,6 +222,7 @@ function LoginPageContent() {
         return;
       }
       setTrialResult({ fileName: data.fileName, text: data.text, lens: data.lens, result: data.result });
+      setRemainingUploads(0);
     } catch (err) {
       setTrialError(err instanceof Error ? err.message : t('login.trial.genericError'));
     } finally {
@@ -289,6 +308,7 @@ function LoginPageContent() {
           if (data.limitScope === 'upload') {
             if (limitType === 'session') {
               setUploadSessionUsed(true);
+              setRemainingUploads(0);
             } else {
               setGuestSuspended({ type: (limitType as 'ip' | 'global') || 'ip' });
             }
@@ -296,6 +316,7 @@ function LoginPageContent() {
           }
           if (limitType === 'session') {
             setChatSessionUsed(true);
+            setRemainingChatTurns(0);
           } else {
             setGuestSuspended({ type: (limitType as 'ip' | 'global') || 'ip' });
           }
@@ -305,6 +326,16 @@ function LoginPageContent() {
         return;
       }
       if (!res.body) return;
+
+      // 💡 스트리밍 응답이라 남은 예산은 헤더로 내려옵니다(app/api/public-chat 참고).
+      const turnsRemainingHeader = res.headers.get('X-Guest-Chat-Turns-Remaining');
+      if (turnsRemainingHeader !== null) {
+        setRemainingChatTurns(Number(turnsRemainingHeader));
+      }
+      const uploadRemainingHeader = res.headers.get('X-Guest-Upload-Remaining');
+      if (uploadRemainingHeader !== null) {
+        setRemainingUploads(Number(uploadRemainingHeader));
+      }
 
       // 첨부가 있었다면 이 요청으로 업로드 예산을 이미 소모했으므로, 파일 분석/사진 체험
       // 섹션도 즉시 회색 처리합니다 — 다음 요청의 429를 기다리지 않고 바로 반영합니다.
@@ -553,9 +584,17 @@ function LoginPageContent() {
                 </div>
               )}
 
-              <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
-                {t('login.trial.fileSectionTitle')}
-              </p>
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">
+                  {t('login.trial.fileSectionTitle')}
+                </p>
+                {!guestSuspended && (
+                  <CarrotGauge
+                    ratio={remainingUploads / SESSION_UPLOAD_LIMIT}
+                    countText={t('login.trial.usage.uploadRemaining', { remaining: remainingUploads, total: SESSION_UPLOAD_LIMIT })}
+                  />
+                )}
+              </div>
 
               {/* 💡 세션당 업로드 1건 — 이미 썼으면(uploadSessionUsed) 채팅 섹션은 그대로 두고
                   이 섹션만 안내 배너로 바꿉니다(파일 분석과 이미지 체험이 같은 업로드 예산을
@@ -581,7 +620,7 @@ function LoginPageContent() {
                   >
                     <span className="text-2xl">📄</span>
                     <span className="text-sm font-medium text-[var(--text-secondary)]">
-                      {isTrialAnalyzing ? t('login.trial.analyzing') : t('login.trial.chooseFile')}
+                      {isTrialAnalyzing ? <LoadingText /> : t('login.trial.chooseFile')}
                     </span>
                     <span className="text-xs text-[var(--text-faint)]">{t('login.trial.fileHint')}</span>
                     <input
@@ -630,9 +669,17 @@ function LoginPageContent() {
               {/* 💡 [신규] "AI에게 바로 질문하기" — 파일 없이 자유 질문 하나를 던져보는 체험.
                   세션당 최대 3턴 — 업로드를 안 해도 이것부터 시작할 수 있고, 그 경우 이 세션은
                   채팅 예산만 쓰고 업로드 예산은 그대로 남습니다. */}
-              <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
-                {t('login.trial.chatSectionTitle')}
-              </p>
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">
+                  {t('login.trial.chatSectionTitle')}
+                </p>
+                {!guestSuspended && (
+                  <CarrotGauge
+                    ratio={remainingChatTurns / SESSION_CHAT_TURN_LIMIT}
+                    countText={t('login.trial.usage.chatRemaining', { remaining: remainingChatTurns, total: SESSION_CHAT_TURN_LIMIT })}
+                  />
+                )}
+              </div>
               {chatSessionUsed && !guestSuspended ? (
                 <GuestLimitBanner
                   limitType="session"
@@ -701,6 +748,17 @@ function LoginPageContent() {
                     {isGuestChatLoading ? t('login.trial.chatLoading') : t('login.trial.chatButton')}
                   </button>
                 </form>
+              )}
+
+              {/* 💡 [신규] 첫 스트리밍 토큰이 오기 전(특히 첨부가 있으면 서버가 텍스트
+                  추출/비전 처리부터 끝내야 해서 몇 초씩 걸림)까지 guestChatAnswer가 빈
+                  문자열이라 여기 아무 것도 안 그려졌습니다 — 버튼 문구(chatLoading)만
+                  바뀌는 걸로는 "지금 처리 중"이라는 게 잘 안 보였습니다. 답변 자리 자체에
+                  로딩 표시를 넣어 확실히 보이게 합니다. */}
+              {isGuestChatLoading && !guestChatAnswer && (
+                <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl p-4 mt-3 text-sm text-[var(--text-muted)]">
+                  <LoadingText />
+                </div>
               )}
 
               {guestChatAnswer && (

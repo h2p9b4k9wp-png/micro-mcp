@@ -1,7 +1,8 @@
 import { Webhooks } from '@polar-sh/nextjs';
 import { createClient } from '@supabase/supabase-js';
 
-// 💡 [신규] Polar 결제 웹훅 — Checkout Link(lib/plan-limits.ts의 POLAR_CHECKOUT_URL)로
+// 💡 [신규] Polar 결제 웹훅 — Checkout Link(NEXT_PUBLIC_POLAR_CHECKOUT_URL 환경변수,
+// lib/plan-limits.ts의 getPolarCheckoutUrl()이 씀)로
 // reference_id=user.id를 실어 보낸 결제가 완료/취소/만료될 때 Polar가 호출합니다.
 // 세션 쿠키가 없는 서버-대-서버 호출이라(middleware.ts의 isPublicRoute에 등록) 인증은
 // 오직 Webhooks() 헬퍼의 Standard Webhooks 서명 검증(POLAR_WEBHOOK_SECRET)에 의존합니다

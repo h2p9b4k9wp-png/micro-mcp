@@ -35,21 +35,37 @@ export function getPlanLimits(isPro: boolean) {
 export const PRO_PRICE_USD = 6.99;
 export const PRO_PRICE_LABEL = `$${PRO_PRICE_USD}/month`;
 
-// 💡 [신규] Polar 결제 연동 — 대시보드에서 미리 만들어둔 정적 Checkout Link. 동적으로
-// checkout session을 만드는 대신 이 URL 하나로 고정하고, 우리 쪽 user_id는 Polar가
-// 공식 지원하는 reference_id 쿼리 파라미터로 붙입니다(Polar 문서: 이 값이 그대로 생성되는
-// Checkout Session의 metadata에 실려서 결제 완료 웹훅(app/api/webhooks/polar)까지 전달됨).
-// 이 값 자체는 비밀이 아니라(누구나 브라우저에서 접근 가능한 결제 페이지 URL) 환경변수로
-// 뺄 필요가 없습니다 — 상품/가격을 바꿔서 링크가 바뀌면 여기만 고치면 됩니다.
-export const POLAR_CHECKOUT_URL = 'https://buy.polar.sh/polar_cl_z6HksogJhVZGBpr8uZ9v4kwkqigJxT0RpycVz2EARUc';
-
-// 💡 [신규] 로그인한 사용자를 위 Checkout Link로 보낼 때 쓰는 URL 빌더. reference_id에
-// user.id를 실어 보내면 결제 완료 시 웹훅 payload의 metadata.reference_id로 그대로
-// 돌아옵니다 — 이게 app/api/webhooks/polar가 어느 계정의 profiles.is_pro를 켤지 찾는
-// 유일한 단서입니다. customer_email은 필수는 아니지만 Polar 결제 폼의 이메일 입력을
-// 미리 채워 사용자 손이 덜 가게 하는 용도로 함께 붙입니다.
+// 💡 [수정] Polar 결제 연동 — 대시보드에서 미리 만들어둔 정적 Checkout Link를 환경변수
+// (NEXT_PUBLIC_POLAR_CHECKOUT_URL)로 뺐습니다. 예전엔 소스에 하드코딩돼 있었는데, 샌드박스로
+// 테스트하려고 이 값을 임시로 바꿨다가 실수로 그 상태로 main에 커밋/배포하면 프로덕션
+// 결제가 통째로 샌드박스로 새는 사고가 날 수 있습니다 — 환경변수면 Vercel의 Preview/
+// Production 스코프를 분리해서 소스를 건드리지 않고 안전하게 전환할 수 있습니다.
+//
+// NEXT_PUBLIC_ 접두사가 필요한 이유: 아래 getPolarCheckoutUrl()이 app/page.tsx(클라이언트
+// 컴포넌트)의 렌더링 중에 직접 호출됩니다 — Next.js는 NEXT_PUBLIC_ 접두사가 붙은
+// 환경변수만 클라이언트 번들에 실어보내므로, 접두사 없이 이 값을 참조하면 브라우저에서는
+// 항상 undefined가 됩니다. 이 값 자체는 비밀이 아니라(누구나 브라우저에서 접근 가능한
+// 결제 페이지 URL) 클라이언트에 노출돼도 문제없습니다 — NEXT_PUBLIC_SUPABASE_URL과 같은
+// 성격입니다.
+//
+// 💡 [신규] 값이 없으면 조용히 깨진 링크('#')로 넘어가지 않고 명확한 에러를 던집니다.
+// getPolarCheckoutUrl()이 실제로 호출되는 시점에만 검사합니다 — 이 값이 없다고 해서
+// lib/plan-limits.ts를 같이 쓰는 무관한 기능들(getPlanLimits, PRO_PRICE_LABEL을 쓰는
+// /api/chat·/api/extract·/pricing 등)까지 모듈 로드 시점에 죽어버리면 안 되기 때문입니다.
+//
+// 로그인한 사용자를 위 Checkout Link로 보낼 때 쓰는 URL 빌더. reference_id에 user.id를
+// 실어 보내면 결제 완료 시 웹훅 payload의 metadata.reference_id로 그대로 돌아옵니다 —
+// 이게 app/api/webhooks/polar가 어느 계정의 profiles.is_pro를 켤지 찾는 유일한 단서입니다.
+// customer_email은 필수는 아니지만 Polar 결제 폼의 이메일 입력을 미리 채워 사용자 손이
+// 덜 가게 하는 용도로 함께 붙입니다.
 export function getPolarCheckoutUrl(userId: string, email?: string | null): string {
-  const url = new URL(POLAR_CHECKOUT_URL);
+  const checkoutUrlBase = process.env.NEXT_PUBLIC_POLAR_CHECKOUT_URL;
+  if (!checkoutUrlBase) {
+    throw new Error(
+      'NEXT_PUBLIC_POLAR_CHECKOUT_URL이 설정되지 않았습니다 — .env.local(또는 Vercel 환경변수)에 Polar Checkout Link를 설정하세요.'
+    );
+  }
+  const url = new URL(checkoutUrlBase);
   url.searchParams.set('reference_id', userId);
   if (email) {
     url.searchParams.set('customer_email', email);
@@ -65,10 +81,10 @@ export function getPolarCheckoutUrl(userId: string, email?: string | null): stri
 // 훨씬 바로 접근하기 쉬워서, 계정 삭제 전 구독 취소 유도(app/page.tsx의 Pro 구독 경고
 // 모달)에 씁니다.
 //
-// 조직 slug는 코드베이스 어디에도 없는 값입니다 — 기존 POLAR_CHECKOUT_URL은 slug가 아니라
-// polar_cl_...형태의 불투명 체크아웃 링크 ID라 여기서 slug를 역산할 수 없습니다. 추측해서
-// 채우지 않았으니, Polar 대시보드 → Settings → General에서 조직 slug를 확인해 아래 값을
-// 실제 값으로 바꿔주세요.
+// 조직 slug는 코드베이스 어디에도 없는 값입니다 — NEXT_PUBLIC_POLAR_CHECKOUT_URL은
+// slug가 아니라 polar_cl_...형태의 불투명 체크아웃 링크 ID라 여기서 slug를 역산할 수
+// 없습니다. 추측해서 채우지 않았으니, Polar 대시보드 → Settings → General에서 조직
+// slug를 확인해 아래 값을 실제 값으로 바꿔주세요.
 export const POLAR_ORG_SLUG = 'REPLACE_WITH_YOUR_POLAR_ORG_SLUG';
 
 export function getPolarCustomerPortalUrl(): string {

@@ -9,3 +9,12 @@ export const MAX_CHAT_ATTACHMENTS = 5;
 // 로그인 없이 체험할 수 있는 /api/public-analyze 전용 상한 — 로그인 사용자(10MB)보다
 // 훨씬 낮게 잡아, 남용 시 비용 노출을 최소화합니다.
 export const MAX_ANONYMOUS_UPLOAD_BYTES = 3 * 1024 * 1024;
+
+// 💡 [신규] 게스트 라우트(public-analyze/public-chat/public-guided-trial)가 요청 body에서
+// 받는 fileName 문자열의 길이 상한. content(파일 본문)는 바이트 크기를 체크하지만 fileName
+// 자체는 별도 필드라 그 체크를 안 거칩니다 — 특히 /api/public-chat은 첨부 파일명을
+// `[Attached file: ...]`로 프롬프트에 그대로 꽂아 넣는데, fileName에 상한이 없으면 실제
+// 파일 크기와 무관하게 fileName 자체를 아주 긴 문자열로 보내 프롬프트(=토큰 비용)를
+// 부풀릴 수 있었습니다. 정상적인 파일명은 이 상한을 넘을 이유가 없으므로, 넘으면 그냥
+// 잘라서 사용합니다(공격 벡터를 막는 게 목적이라 사용자에게 별도 에러를 보여줄 필요는 없음).
+export const MAX_ANONYMOUS_FILENAME_CHARS = 200;

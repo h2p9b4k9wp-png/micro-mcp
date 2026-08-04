@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import { SiteFooter } from "@/components/site-footer";
+import { SITE_URL } from "@/lib/site-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,11 +23,37 @@ const geistMono = Geist_Mono({
 // app.title/app.description(next-intl의 getTranslations, 요청별 로케일 인식)으로 옮겨
 // generateMetadata()로 바꿨습니다. app/manifest.ts(PWA 설치 시 이름)도 같은 이유로 별도로
 // 고쳤습니다 — 거긴 next-intl 요청 컨텍스트 밖이라 locale 쿠키를 직접 읽습니다.
+// 💡 [신규] metadataBase — 하위 라우트의 상대 경로 metadata(OpenGraph 이미지 등)를 절대
+// URL로 만들 때 next가 참조하는 기준값입니다. alternates.canonical(아래)도 여기 있으면
+// 각 라우트의 generateMetadata()가 매번 절대 URL을 직접 조립하지 않고 상대 경로만 넘겨도
+// 되지만, canonical은 라우트별로 명시적으로 지정하는 게 더 안전해 각 페이지에서 SITE_URL로
+// 직접 절대 URL을 만듭니다. 루트("/")의 canonical은 여기서 지정 — app/page.tsx(로그인된
+// 대시보드)는 이 루트 레이아웃 말고는 별도 layout.tsx가 없어서 라우트별 override를 걸 곳이
+// 없습니다. 더 구체적인 라우트(로그인/웰컴/프라이버시 등)는 자기 자신의 layout.tsx나
+// generateMetadata()에서 이 값을 덮어씁니다.
+// 💡 [신규] openGraph — Next.js는 title/description을 지정해도 openGraph 블록을 자동으로
+// 채워주지 않습니다(명시적으로 따로 지정해야 함). Reddit·Discord 같은 곳에 링크를 공유하면
+// 이 og:title/og:description으로 미리보기가 뜨는데, 지금까지 이 블록 자체가 없어서 그런
+// 서비스들이 미리보기를 제대로 못 만들었습니다 — title/description과 같은 번역 값을
+// 그대로 재사용해 한 곳에서만 관리되게 합니다(둘이 따로 놀며 어긋날 일이 없음).
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('app');
+  const title = t('title');
+  const description = t('description');
   return {
-    title: t('title'),
-    description: t('description'),
+    title,
+    description,
+    metadataBase: new URL(SITE_URL),
+    alternates: {
+      canonical: `${SITE_URL}/`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/`,
+      siteName: 'Carrotly',
+      type: 'website',
+    },
   };
 }
 
@@ -61,12 +89,16 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={["light", "dark"]}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem themes={["light", "dark"]}>
           <NextIntlClientProvider locale={locale} messages={messages}>
             {children}
           </NextIntlClientProvider>
           <SiteFooter />
         </ThemeProvider>
+        {/* 💡 [신규] Vercel Web Analytics — 쿠키 없이 익명 페이지 조회 통계만 수집합니다
+            (Vercel 공식 문서: 개인을 식별하는 쿠키/로컬스토리지를 쓰지 않음). /privacy
+            페이지의 sharing.analytics 항목이 이 사실을 고지합니다. */}
+        <Analytics />
       </body>
     </html>
   );

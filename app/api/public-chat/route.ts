@@ -4,13 +4,16 @@ import { createClient } from '@supabase/supabase-js';
 import { truncateForPrompt } from '@/lib/truncate-text';
 import { extractFileText, FileExtractError } from '@/lib/file-text-extract';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES } from '@/lib/image-constraints';
-import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
+import { MAX_ANONYMOUS_UPLOAD_BYTES, MAX_ANONYMOUS_FILENAME_CHARS } from '@/lib/upload-limits';
 import {
   getClientIp,
-  getGuestSessionId,
+  getGuestSessionIdOrNull,
   checkGuestChatAllowed,
   checkGuestUploadAllowed,
   recordAnonymousUsage,
+  recordAnonymousUploadIfAllowed,
+  sessionChatTurnsUsed,
+  SESSION_CHAT_TURN_LIMIT,
 } from '@/lib/anonymous-usage';
 
 // 💡 [신규] 로그인 없이 AI에게 자유 질문 하나를 던져보는 체험(app/login/page.tsx의 "AI에게
@@ -35,6 +38,14 @@ const MAX_ANONYMOUS_PROMPT_CHARS = 2000;
 // 체험 한 번의 토큰 비용을 통제합니다. 어차피 원본 파일 자체가 3MB로 제한돼 있습니다.
 const MAX_ANONYMOUS_ATTACHMENT_CHARS = 8000;
 
+// 💡 [신규] responseLanguage는 client(app/login/page.tsx)가 detectBrowserLanguageName()으로
+// 자동 감지한 짧은 언어 이름("Korean", "Japanese" 등)이 정상 값이지만, 이 라우트는
+// 요청 body에서 그대로 받아 검증 없이 프롬프트에 이어붙입니다. prompt 필드는
+// MAX_ANONYMOUS_PROMPT_CHARS로 잘리는데 responseLanguage는 그 상한을 거치지 않아서, 여기에
+// 임의로 아주 긴 문자열을 넣으면 prompt 상한을 우회해 토큰 비용을 부풀릴 수 있었습니다.
+// 정상적인 언어 이름은 이 상한을 넘을 이유가 없습니다.
+const MAX_RESPONSE_LANGUAGE_CHARS = 100;
+
 interface GuestChatAttachment {
   fileName?: string;
   mimeType?: string;
@@ -57,7 +68,12 @@ export async function POST(req: Request) {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     const ip = getClientIp(req);
-    const sessionId = await getGuestSessionId();
+    // 💡 세션 발급이 실패하면(극히 예외적) session_id 없이 진행하지 않고 400으로 거절합니다
+    // — lib/anonymous-usage.ts의 getGuestSessionIdOrNull() 주석 참고.
+    const sessionId = await getGuestSessionIdOrNull();
+    if (!sessionId) {
+      return NextResponse.json({ error: '세션을 생성할 수 없습니다. 잠시 후 다시 시도해주세요.' }, { status: 400 });
+    }
     const usageCheck = await checkGuestChatAllowed(supabaseAdmin, ip, sessionId);
     if (!usageCheck.ok) {
       return NextResponse.json(
@@ -66,13 +82,14 @@ export async function POST(req: Request) {
           limitReached: true,
           limitType: usageCheck.limitType,
           limitScope: 'chat',
+          ...(usageCheck.limitType === 'session' ? { remainingChatTurns: 0 } : {}),
         },
         { status: 429 }
       );
     }
 
     const body = await req.json();
-    const { prompt, responseLanguage, attachment } = body as {
+    const { prompt, responseLanguage: rawResponseLanguage, attachment } = body as {
       prompt?: string;
       responseLanguage?: string;
       attachment?: GuestChatAttachment;
@@ -80,6 +97,7 @@ export async function POST(req: Request) {
     if (!prompt || !prompt.trim()) {
       return NextResponse.json({ error: 'Please enter a question.' }, { status: 400 });
     }
+    const responseLanguage = rawResponseLanguage?.trim().slice(0, MAX_RESPONSE_LANGUAGE_CHARS) || undefined;
 
     // 💡 [신규] 첨부 처리 — 있으면 "세션당 업로드 1건" 예산을 먼저 확인하고 소모합니다.
     // 순서(예산 확인 → 기본 검증 → 사용 기록 → 실제 추출/비전)는 app/api/public-analyze·
@@ -95,6 +113,7 @@ export async function POST(req: Request) {
             limitReached: true,
             limitType: uploadCheck.limitType,
             limitScope: 'upload',
+            ...(uploadCheck.limitType === 'session' ? { remainingUploads: 0 } : {}),
           },
           { status: 429 }
         );
@@ -116,14 +135,36 @@ export async function POST(req: Request) {
         );
       }
 
-      await recordAnonymousUsage(supabaseAdmin, ip, 'chat_attachment', sessionId);
+      // 💡 첨부 파일명 길이 상한 — 아래에서 이 값을 [Attached file: ...]로 시스템 프롬프트에
+      // 그대로 꽂아 넣습니다. 원본 파일 내용(content)은 3MB로 제한돼 있지만 fileName은 별도
+      // 필드라 그 체크를 거치지 않아서, content는 작게 두고 fileName만 아주 길게 보내면
+      // extractFileText의 텍스트 상한(MAX_ANONYMOUS_ATTACHMENT_CHARS)과 무관하게 프롬프트를
+      // 부풀릴 수 있었습니다.
+      const safeFileName = attachment.fileName.slice(0, MAX_ANONYMOUS_FILENAME_CHARS);
+
+      // 💡 checkGuestUploadAllowed의 SELECT 사전 확인과 실제 기록 사이의 경쟁 조건(동시
+      // 요청으로 "세션당 업로드 1건" 우회)을 DB 부분 유니크 인덱스로 막습니다 —
+      // public-analyze/public-guided-trial과 동일한 이유.
+      const recordResult = await recordAnonymousUploadIfAllowed(supabaseAdmin, ip, 'chat_attachment', sessionId);
+      if (!recordResult.ok) {
+        return NextResponse.json(
+          {
+            error: '이번 체험에서 업로드를 이미 사용했어요. 로그인하면 계속 첨부할 수 있어요.',
+            limitReached: true,
+            limitType: 'session',
+            limitScope: 'upload',
+            remainingUploads: 0,
+          },
+          { status: 429 }
+        );
+      }
 
       if (isImage) {
         attachmentContent = { kind: 'image', dataUrl: `data:${attachment.mimeType};base64,${attachment.content}` };
       } else {
         try {
-          const text = await extractFileText(attachment.fileName, attachment.mimeType, attachment.content);
-          attachmentContent = { kind: 'text', fileName: attachment.fileName, text };
+          const text = await extractFileText(safeFileName, attachment.mimeType, attachment.content);
+          attachmentContent = { kind: 'text', fileName: safeFileName, text };
         } catch (err) {
           if (err instanceof FileExtractError) {
             return NextResponse.json({ error: err.message }, { status: 400 });
@@ -138,6 +179,17 @@ export async function POST(req: Request) {
     // 소진한 것으로 기록합니다. (첨부 검증 실패로 위에서 이미 리턴된 요청은 여기 도달하지
     // 않으므로 채팅 턴을 소모하지 않습니다 — 소모되는 예산은 그 경우 업로드 슬롯뿐입니다.)
     await recordAnonymousUsage(supabaseAdmin, ip, 'chat', sessionId);
+    // 💡 방금 기록을 마친 직후라 이 조회는 이번 요청까지 포함한 정확한 사용량입니다 — 응답
+    // 본문이 스트리밍 텍스트라 JSON 필드로 못 실어보내니 헤더로 내려보내고, 클라이언트(당근
+    // 게이지)가 이 값을 읽습니다. 조회 자체가 실패해도(네트워크 등) 채팅 응답을 막을
+    // 이유는 아니라 실패하면 헤더 없이 진행합니다.
+    let remainingChatTurns: number | null = null;
+    try {
+      const turnsUsed = await sessionChatTurnsUsed(supabaseAdmin, sessionId);
+      remainingChatTurns = Math.max(0, SESSION_CHAT_TURN_LIMIT - turnsUsed);
+    } catch (err) {
+      console.error('[public-chat] 남은 채팅 턴 조회 실패(응답에는 영향 없음):', err);
+    }
 
     const truncatedPrompt = truncateForPrompt(prompt.trim(), MAX_ANONYMOUS_PROMPT_CHARS);
 
@@ -204,8 +256,20 @@ This is a login-free trial of the assistant, so you have no access to any saved 
       },
     });
 
+    // 💡 스트리밍 응답이라 잔여 예산은 JSON 필드가 아니라 헤더로 내려보냅니다 —
+    // app/login/page.tsx가 res.headers.get()으로 읽어 당근 게이지에 반영합니다. 첨부가
+    // 있었던 요청만 업로드 슬롯 헤더를 붙입니다(없었던 요청은 업로드 예산에 아무 변화가
+    // 없으므로 기존 클라이언트 상태를 그대로 둬야 합니다).
+    const responseHeaders = new Headers({ 'Content-Type': 'text/plain; charset=utf-8' });
+    if (remainingChatTurns !== null) {
+      responseHeaders.set('X-Guest-Chat-Turns-Remaining', String(remainingChatTurns));
+    }
+    if (hasAttachment) {
+      responseHeaders.set('X-Guest-Upload-Remaining', '0');
+    }
+
     return new Response(readableStream, {
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      headers: responseHeaders,
     });
   } catch (error) {
     console.error('[public-chat] error:', error);

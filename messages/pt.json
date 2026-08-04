@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Carregando...",
-    "title": "Carrotly — Seu assistente de trabalho com IA",
-    "description": "Uma plataforma de fluxo de trabalho com IA que automatiza seu trabalho e seu dia a dia, bloco a bloco."
+    "title": "Transforme suas anotações de aula em prováveis questões de prova | Carrotly",
+    "description": "Envie seus próprios materiais de curso e receba prováveis questões de prova além de um resumo conciso, ajustado ao estilo do seu professor de elaborar provas. Nunca compartilhado. Sem cadastro."
   },
   "nav": {
     "workspace": "Perguntar à IA",
@@ -23,7 +23,8 @@
     "logout": "Sair",
     "unknownError": "Erro desconhecido",
     "responseLanguageLabel": "Idioma de resposta da IA",
-    "themeLabel": "Tema"
+    "themeLabel": "Tema",
+    "aiGeneratedNotice": "Conteúdo gerado por IA; pode ser impreciso ou diferente da realidade."
   },
   "workspace": {
     "subtitle": "A IA gera respostas com base no contexto da conversa e no conteúdo de qualquer documento anexado.",
@@ -430,8 +431,8 @@
         "uploadSessionDesc": "Cada teste inclui 1 envio. Você ainda pode usar o chat de IA acima, e uma conta gratuita permite continuar enviando também!",
         "chatSessionTitle": "Cadastre-se para continuar perguntando",
         "chatSessionDesc": "Você usou todas as perguntas deste teste. Crie uma conta gratuita para continuar perguntando!",
-        "ipTitle": "Você esgotou os testes de hoje",
-        "ipDesc": "O teste de convidado é limitado a 3 por dia. Crie uma conta gratuita para continuar!",
+        "ipTitle": "Vagas de teste esgotadas",
+        "ipDesc": "Há muita atividade de teste de convidado nesta rede agora, então está temporariamente limitado. Crie uma conta gratuita para continuar agora mesmo!",
         "globalTitle": "Os testes de convidado estão pausados",
         "globalDesc": "Hoje há muitas solicitações de teste de convidado, então pausamos por um momento. Crie uma conta gratuita para continuar agora mesmo!"
       },
@@ -444,6 +445,10 @@
         "tooLarge": "Sem conta é possível analisar fotos de até 3MB.",
         "questionsTitle": "Perguntas esperadas",
         "summaryTitle": "Resumo"
+      },
+      "usage": {
+        "uploadRemaining": "Resta {remaining}/{total} teste de arquivo",
+        "chatRemaining": "Restam {remaining}/{total} turnos de chat"
       }
     }
   },
@@ -480,6 +485,7 @@
     "ctaHint": "Sem cadastro, confira agora mesmo",
     "professorAppeal": "Organizado de forma diferente para cada professor",
     "startOver": "← Começar de novo",
+    "noSharingNote": "Os materiais que você envia nunca são compartilhados com outros usuários",
     "capabilities": {
       "upload": "Envie arquivos, fotos ou capturas para analisar",
       "deadlines": "Extração automática de prazos",
@@ -588,7 +594,8 @@
       "heading": "Informações que coletamos",
       "email": "<b>Seu endereço de e-mail</b>, usado para criar e identificar sua conta.",
       "files": "<b>O conteúdo dos arquivos que você envia</b> — documentos, materiais de aula e imagens que você anexa ou adiciona ao serviço, incluindo o texto extraído deles.",
-      "history": "<b>Seu histórico de conversas</b> — as mensagens que você envia e as respostas que recebe."
+      "history": "<b>Seu histórico de conversas</b> — as mensagens que você envia e as respostas que recebe.",
+      "ip": "<b>Seu endereço IP</b>, coletado quando você usa o teste sem login (análise de arquivos, chat com IA, etc.), para prevenção de abusos."
     },
     "why": {
       "heading": "Por que as coletamos",
@@ -601,12 +608,14 @@
       "intro": "Não vendemos seus dados. Nós os compartilhamos apenas com os provedores de serviço que fazem a Carrotly funcionar:",
       "openai": "<b>OpenAI</b> — recebe o texto das suas mensagens, documentos anexados e imagens para gerar a análise e as respostas de IA que você solicita. Esse processamento ocorre nos Estados Unidos, o que também constitui uma transferência dos seus dados para fora da UE/EEE — veja &ldquo;Transferências internacionais de dados&rdquo; abaixo.",
       "supabase": "<b>Supabase</b> — nosso provedor de banco de dados e autenticação, usado para armazenar sua conta, arquivos e histórico de conversas. Seus dados são hospedados na região <b>{region}</b> da Supabase.",
-      "polar": "<b>Polar</b> — nosso processador de pagamentos, usado para gerenciar o checkout e a cobrança da assinatura Pro. A Polar recebe as informações necessárias para processar seu pagamento (como seu e-mail); não enviamos a ela seus arquivos nem seu histórico de conversas."
+      "polar": "<b>Polar</b> — nosso processador de pagamentos, usado para gerenciar o checkout e a cobrança da assinatura Pro. A Polar recebe as informações necessárias para processar seu pagamento (como seu e-mail); não enviamos a ela seus arquivos nem seu histórico de conversas.",
+      "analytics": "<b>Vercel Analytics</b> — coleta estatísticas anônimas de visualizações de página para nos ajudar a entender quais páginas são visitadas. Não usa cookies e não identifica indivíduos."
     },
     "retention": {
       "heading": "Por quanto tempo as mantemos",
       "account": "Os dados da sua conta (e-mail, arquivos, prazos) são mantidos até você excluir sua conta.",
-      "logs": "No plano gratuito, o histórico de conversas é mantido por 30 dias e depois excluído automaticamente. Contas Pro não têm exclusão automática — o histórico é mantido até a exclusão da conta, assim como os demais dados."
+      "logs": "No plano gratuito, o histórico de conversas é mantido por 30 dias e depois excluído automaticamente. Contas Pro não têm exclusão automática — o histórico é mantido até a exclusão da conta, assim como os demais dados.",
+      "ip": "Os endereços IP coletados para prevenção de abusos no teste sem login são excluídos automaticamente após {days} dias."
     },
     "transfers": {
       "heading": "Transferências internacionais de dados",
@@ -680,5 +689,12 @@
       "heading": "Contato",
       "body": "Dúvidas sobre estes termos podem ser enviadas para <mailto>kcw022@naver.com</mailto>."
     }
+  },
+  "usage": {
+    "title": "Uso este mês",
+    "chatRemaining": "Restam {remaining}/{total} conversas",
+    "fileRemaining": "Restam {remaining}/{total} arquivos",
+    "chatLabel": "Chat",
+    "fileLabel": "Arquivos"
   }
 }

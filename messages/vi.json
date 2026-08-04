@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Đang tải...",
-    "title": "Carrotly — Trợ lý công việc AI của riêng bạn",
-    "description": "Nền tảng quy trình làm việc AI tự động hóa công việc và cuộc sống hằng ngày của bạn, như lắp từng khối."
+    "title": "Biến tài liệu bài giảng thành câu hỏi thi dự đoán | Carrotly",
+    "description": "Tải lên tài liệu học tập của bạn và nhận câu hỏi thi dự đoán cùng bản tóm tắt cô đọng, phù hợp với cách giảng viên ra đề. Không bao giờ chia sẻ. Không cần đăng ký."
   },
   "nav": {
     "workspace": "Hỏi AI",
@@ -23,7 +23,8 @@
     "logout": "Đăng xuất",
     "unknownError": "Lỗi không xác định",
     "responseLanguageLabel": "Ngôn ngữ phản hồi AI",
-    "themeLabel": "Giao diện"
+    "themeLabel": "Giao diện",
+    "aiGeneratedNotice": "Nội dung do AI tạo ra, có thể không chính xác hoặc khác với thực tế."
   },
   "workspace": {
     "subtitle": "AI tạo câu trả lời dựa trên ngữ cảnh cuộc trò chuyện và nội dung tài liệu đã đính kèm.",
@@ -430,8 +431,8 @@
         "uploadSessionDesc": "Mỗi trải nghiệm chỉ được tải lên 1 lần. Bạn vẫn có thể dùng khung chat AI ở trên, và tạo tài khoản miễn phí để tiếp tục tải lên!",
         "chatSessionTitle": "Tạo tài khoản để hỏi thêm",
         "chatSessionDesc": "Bạn đã dùng hết lượt hỏi trong trải nghiệm này. Tạo tài khoản miễn phí để tiếp tục hỏi!",
-        "ipTitle": "Bạn đã dùng hết lượt trải nghiệm hôm nay",
-        "ipDesc": "Trải nghiệm khách chỉ giới hạn 3 lần mỗi ngày. Tạo tài khoản miễn phí để tiếp tục sử dụng!",
+        "ipTitle": "Đã đầy chỗ trải nghiệm",
+        "ipDesc": "Hiện có quá nhiều yêu cầu trải nghiệm khách từ mạng này nên tạm thời bị giới hạn. Tạo tài khoản miễn phí để tiếp tục ngay!",
         "globalTitle": "Trải nghiệm khách đang tạm dừng",
         "globalDesc": "Hôm nay có quá nhiều yêu cầu trải nghiệm khách nên đã tạm dừng một chút. Tạo tài khoản miễn phí để tiếp tục ngay!"
       },
@@ -444,6 +445,10 @@
         "tooLarge": "Không cần tài khoản có thể phân tích ảnh tối đa 3MB.",
         "questionsTitle": "Câu hỏi dự kiến",
         "summaryTitle": "Tóm tắt"
+      },
+      "usage": {
+        "uploadRemaining": "Còn {remaining}/{total} lượt dùng thử tệp",
+        "chatRemaining": "Còn {remaining}/{total} lượt chat dùng thử"
       }
     }
   },
@@ -480,6 +485,7 @@
     "ctaHint": "Không cần đăng ký, thử ngay bây giờ",
     "professorAppeal": "Mỗi giáo sư một kiểu tổng hợp riêng",
     "startOver": "← Bắt đầu lại",
+    "noSharingNote": "Tài liệu bạn tải lên không được chia sẻ với người dùng khác",
     "capabilities": {
       "upload": "Tải tệp, ảnh, ảnh chụp màn hình để phân tích",
       "deadlines": "Tự động trích xuất hạn chót",
@@ -588,7 +594,8 @@
       "heading": "Thông tin chúng tôi thu thập",
       "email": "<b>Địa chỉ email của bạn</b>, dùng để tạo và xác định tài khoản.",
       "files": "<b>Nội dung tệp bạn tải lên</b> — tài liệu, học liệu và hình ảnh bạn đính kèm hoặc thêm vào dịch vụ, bao gồm cả văn bản trích xuất từ đó.",
-      "history": "<b>Lịch sử trò chuyện của bạn</b> — các câu hỏi bạn gửi và câu trả lời bạn nhận được."
+      "history": "<b>Lịch sử trò chuyện của bạn</b> — các câu hỏi bạn gửi và câu trả lời bạn nhận được.",
+      "ip": "<b>Địa chỉ IP của bạn</b>, được thu thập khi bạn dùng thử không cần đăng nhập (phân tích tệp, trò chuyện AI, v.v.), nhằm mục đích ngăn chặn lạm dụng."
     },
     "why": {
       "heading": "Lý do chúng tôi thu thập",
@@ -601,12 +608,14 @@
       "intro": "Chúng tôi không bán dữ liệu của bạn. Chúng tôi chỉ chia sẻ với các nhà cung cấp dịch vụ giúp Carrotly hoạt động:",
       "openai": "<b>OpenAI</b> — nhận văn bản từ câu hỏi, tài liệu đính kèm và hình ảnh của bạn để tạo ra phân tích và câu trả lời AI mà bạn yêu cầu. Việc xử lý này diễn ra tại Hoa Kỳ, đồng thời cũng là việc chuyển dữ liệu của bạn ra ngoài EU/EEA — xem mục &ldquo;Chuyển dữ liệu quốc tế&rdquo; bên dưới.",
       "supabase": "<b>Supabase</b> — nhà cung cấp cơ sở dữ liệu và xác thực của chúng tôi, dùng để lưu trữ tài khoản, tệp và lịch sử trò chuyện của bạn. Dữ liệu của bạn được lưu trữ tại khu vực <b>{region}</b> của Supabase.",
-      "polar": "<b>Polar</b> — đơn vị xử lý thanh toán của chúng tôi, phụ trách thanh toán và lập hóa đơn cho gói Pro. Polar chỉ nhận thông tin cần thiết để xử lý thanh toán (như địa chỉ email của bạn); chúng tôi không gửi tệp hay lịch sử trò chuyện của bạn cho họ."
+      "polar": "<b>Polar</b> — đơn vị xử lý thanh toán của chúng tôi, phụ trách thanh toán và lập hóa đơn cho gói Pro. Polar chỉ nhận thông tin cần thiết để xử lý thanh toán (như địa chỉ email của bạn); chúng tôi không gửi tệp hay lịch sử trò chuyện của bạn cho họ.",
+      "analytics": "<b>Vercel Analytics</b> — thu thập số liệu thống kê lượt xem trang ẩn danh để giúp chúng tôi hiểu trang nào được truy cập. Không sử dụng cookie và không nhận diện cá nhân."
     },
     "retention": {
       "heading": "Thời gian lưu trữ",
       "account": "Dữ liệu tài khoản của bạn (email, tệp, hạn chót) được lưu giữ cho đến khi bạn xóa tài khoản.",
-      "logs": "Với gói miễn phí, lịch sử trò chuyện được lưu giữ 30 ngày rồi tự động xóa. Tài khoản Pro không bị tự động xóa — lịch sử được lưu giữ đến khi xóa tài khoản, giống như mọi dữ liệu khác."
+      "logs": "Với gói miễn phí, lịch sử trò chuyện được lưu giữ 30 ngày rồi tự động xóa. Tài khoản Pro không bị tự động xóa — lịch sử được lưu giữ đến khi xóa tài khoản, giống như mọi dữ liệu khác.",
+      "ip": "Địa chỉ IP thu thập để ngăn chặn lạm dụng trải nghiệm không cần đăng nhập sẽ tự động bị xóa sau {days} ngày."
     },
     "transfers": {
       "heading": "Chuyển dữ liệu quốc tế",
@@ -680,5 +689,12 @@
       "heading": "Liên hệ",
       "body": "Câu hỏi về các điều khoản này có thể gửi đến <mailto>kcw022@naver.com</mailto>."
     }
+  },
+  "usage": {
+    "title": "Lượt dùng còn lại tháng này",
+    "chatRemaining": "Còn {remaining}/{total} lượt chat",
+    "fileRemaining": "Còn {remaining}/{total} lượt xử lý tệp",
+    "chatLabel": "Trò chuyện",
+    "fileLabel": "Tệp"
   }
 }

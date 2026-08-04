@@ -7,6 +7,7 @@ import { Logomark } from '@/components/logomark';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { WelcomeHeroTrial } from '@/components/welcome-hero-trial';
 import { ProfessorDemo } from '@/components/professor-demo';
+import { trackFunnelEvent } from '@/lib/funnel-tracking';
 
 // 💡 [신규] 이 페이지는 앱 테마 설정과 무관하게 항상 고정 라이트라(위 주석 참고) CSS
 // 변수(var(--border-default) 등)를 쓰면 사용자의 앱 테마가 다크로 저장돼 있을 때 이
@@ -35,6 +36,13 @@ export default function WelcomePage() {
     }
   }, []);
 
+  // 💡 [신규] 전환 퍼널의 첫 단계 — 이 페이지가 미로그인 방문자의 "첫 화면"이라는 사실은
+  // 위 주석에서 이미 설명한 그대로입니다(middleware.ts가 "/"의 미로그인 요청을 여기로
+  // 보냄). lib/funnel-tracking.ts 참고.
+  useEffect(() => {
+    trackFunnelEvent('landing_visit');
+  }, []);
+
   const capabilities = [
     { icon: '📎', label: t('landing.capabilities.upload') },
     { icon: '🗓', label: t('landing.capabilities.deadlines') },
@@ -52,6 +60,18 @@ export default function WelcomePage() {
           * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
       `}</style>
+
+      {/* 💡 [신규] 스크롤 없이 보이는 첫 화면에 데이터 비공유 안내를 넣기 위한 슬림 배너 —
+          "교수님별 정리" 섹션이 히어로보다 먼저 오도록 순서를 바꾼 뒤로는(위 주석 참고)
+          기능 칩 목록(페이지 하단부)이 데스크톱·모바일 모두에서 스크롤 없이는 안 보입니다
+          (Playwright로 1280×800/390×844 두 뷰포트 스크린샷으로 확인) — 이 페이지에서
+          "스크롤 없이 항상 보이는" 유일한 자리는 헤더뿐이라, 헤더 바로 위에 이 줄을 둡니다.
+          로그인 전 방문자가 "내 자료가 다른 사람에게 보이는 건 아닐까" 걱정 없이 바로
+          업로드해볼 수 있도록, /privacy 전체를 읽어야만 알 수 있던 내용을 여기서 미리
+          짧게 보여줍니다. */}
+      <div className="w-full bg-[#FAF8FB] border-b border-[#EDEAF0] px-6 py-2 text-center text-xs text-[#5B5566]">
+        🔒 {t('landing.noSharingNote')}
+      </div>
 
       <header className="w-full max-w-5xl mx-auto flex items-center justify-between px-6 sm:px-10 py-6">
         <div className="flex items-center gap-2 text-[#F4679B]">

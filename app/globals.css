@@ -115,3 +115,25 @@ body {
 .professor-circuit-reveal {
   animation: professorCircuitReveal 0.4s ease-out both;
 }
+
+/* 로딩 중 점 애니메이션 — "." → ".." → "..." → "."을 0.5초마다 반복합니다. 원래
+   app/page.tsx의 페이지 전용 <style jsx global> 블록에만 있었는데, components/loading-text.tsx가
+   app/login/page.tsx 등 다른 페이지에서도 쓰이면서(게스트 체험 로딩 표시) 그 페이지들에는
+   app/page.tsx가 렌더링되지 않아 이 CSS 자체가 주입되지 않는 문제가 있었습니다 — 위
+   .professor-circuit-reveal과 같은 이유로 전역 스타일시트로 옮겼습니다. */
+@keyframes loadingDots {
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
+  100% { content: '.'; }
+}
+.loading-dots::after {
+  content: '.';
+  animation: loadingDots 1.5s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-dots::after {
+    animation: none;
+    content: '...';
+  }
+}

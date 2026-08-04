@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Caricamento...",
-    "title": "Carrotly — Il tuo assistente di lavoro IA",
-    "description": "Una piattaforma di workflow IA che automatizza il tuo lavoro e la tua vita quotidiana, un blocco alla volta."
+    "title": "Trasforma i tuoi appunti di lezione in probabili domande d'esame | Carrotly",
+    "description": "Carica i tuoi materiali del corso e ottieni probabili domande d'esame più un riassunto conciso, calibrato sul modo in cui il tuo docente imposta le prove. Mai condiviso. Nessuna registrazione."
   },
   "nav": {
     "workspace": "Chiedi all'IA",
@@ -23,7 +23,8 @@
     "logout": "Esci",
     "unknownError": "Errore sconosciuto",
     "responseLanguageLabel": "Lingua di risposta dell'IA",
-    "themeLabel": "Tema"
+    "themeLabel": "Tema",
+    "aiGeneratedNotice": "Contenuto generato dall'IA; può essere impreciso o diverso dalla realtà."
   },
   "workspace": {
     "subtitle": "L'IA genera risposte in base al contesto della conversazione e al contenuto dei documenti allegati.",
@@ -430,8 +431,8 @@
         "uploadSessionDesc": "Ogni prova include 1 caricamento. Puoi ancora usare la chat IA qui sopra, e con un account gratuito puoi continuare a caricare anche tu!",
         "chatSessionTitle": "Registrati per continuare a chiedere",
         "chatSessionDesc": "Hai esaurito le domande di questa prova. Crea un account gratuito per continuare a chiedere!",
-        "ipTitle": "Hai esaurito le prove di oggi",
-        "ipDesc": "La prova ospite è limitata a 3 al giorno. Crea un account gratuito per continuare a usarla!",
+        "ipTitle": "Posti prova esauriti",
+        "ipDesc": "C'è molta attività di prova ospite da questa rete in questo momento, quindi è temporaneamente limitata. Crea un account gratuito per continuare subito!",
         "globalTitle": "Le prove ospite sono in pausa",
         "globalDesc": "Oggi ci sono molte richieste di prova ospite, quindi le abbiamo messe in pausa per un po'. Crea un account gratuito per continuare subito!"
       },
@@ -444,6 +445,10 @@
         "tooLarge": "Senza account puoi analizzare foto fino a 3MB.",
         "questionsTitle": "Domande previste",
         "summaryTitle": "Riepilogo"
+      },
+      "usage": {
+        "uploadRemaining": "Rimane {remaining}/{total} prova file",
+        "chatRemaining": "Rimangono {remaining}/{total} turni di chat"
       }
     }
   },
@@ -480,6 +485,7 @@
     "ctaHint": "Senza registrazione, provalo subito",
     "professorAppeal": "Organizzato in modo diverso per ogni professore",
     "startOver": "← Ricomincia",
+    "noSharingNote": "I materiali che carichi non vengono mai condivisi con altri utenti",
     "capabilities": {
       "upload": "Carica file, foto o screenshot da analizzare",
       "deadlines": "Estrazione automatica delle scadenze",
@@ -588,7 +594,8 @@
       "heading": "Informazioni che raccogliamo",
       "email": "<b>Il tuo indirizzo email</b>, usato per creare e identificare il tuo account.",
       "files": "<b>Il contenuto dei file che carichi</b> — documenti, materiali didattici e immagini che alleghi o aggiungi al servizio, incluso il testo estratto da essi.",
-      "history": "<b>La tua cronologia delle conversazioni</b> — i messaggi che invii e le risposte che ricevi."
+      "history": "<b>La tua cronologia delle conversazioni</b> — i messaggi che invii e le risposte che ricevi.",
+      "ip": "<b>Il tuo indirizzo IP</b>, raccolto quando usi la prova senza accesso (analisi file, chat AI, ecc.), a scopo di prevenzione degli abusi."
     },
     "why": {
       "heading": "Perché le raccogliamo",
@@ -601,12 +608,14 @@
       "intro": "Non vendiamo i tuoi dati. Li condividiamo solo con i fornitori di servizi che fanno funzionare Carrotly:",
       "openai": "<b>OpenAI</b> — riceve il testo dei tuoi messaggi, dei documenti allegati e delle immagini per generare l&rsquo;analisi e le risposte IA che richiedi. Questo trattamento avviene negli Stati Uniti, il che costituisce anche un trasferimento dei tuoi dati al di fuori dell&rsquo;UE/SEE — vedi &laquo;Trasferimenti internazionali di dati&raquo; qui sotto.",
       "supabase": "<b>Supabase</b> — il nostro fornitore di database e autenticazione, usato per archiviare il tuo account, i file e la cronologia delle conversazioni. I tuoi dati sono ospitati nella regione <b>{region}</b> di Supabase.",
-      "polar": "<b>Polar</b> — il nostro processore di pagamenti, usato per gestire il checkout e la fatturazione dell&rsquo;abbonamento Pro. Polar riceve le informazioni necessarie per elaborare il pagamento (come il tuo indirizzo email); non gli inviamo i tuoi file né la cronologia delle conversazioni."
+      "polar": "<b>Polar</b> — il nostro processore di pagamenti, usato per gestire il checkout e la fatturazione dell&rsquo;abbonamento Pro. Polar riceve le informazioni necessarie per elaborare il pagamento (come il tuo indirizzo email); non gli inviamo i tuoi file né la cronologia delle conversazioni.",
+      "analytics": "<b>Vercel Analytics</b> — raccoglie statistiche anonime sulle visualizzazioni di pagina per aiutarci a capire quali pagine vengono visitate. Non usa cookie e non identifica le persone."
     },
     "retention": {
       "heading": "Per quanto tempo le conserviamo",
       "account": "I dati del tuo account (email, file, scadenze) vengono conservati fino all&rsquo;eliminazione dell&rsquo;account.",
-      "logs": "Nel piano gratuito, la cronologia delle conversazioni viene conservata per 30 giorni e poi eliminata automaticamente. Gli account Pro non hanno eliminazione automatica — la cronologia viene conservata fino all&rsquo;eliminazione dell&rsquo;account, come tutti gli altri dati."
+      "logs": "Nel piano gratuito, la cronologia delle conversazioni viene conservata per 30 giorni e poi eliminata automaticamente. Gli account Pro non hanno eliminazione automatica — la cronologia viene conservata fino all&rsquo;eliminazione dell&rsquo;account, come tutti gli altri dati.",
+      "ip": "Gli indirizzi IP raccolti per la prevenzione degli abusi nella prova senza accesso vengono eliminati automaticamente dopo {days} giorni."
     },
     "transfers": {
       "heading": "Trasferimenti internazionali di dati",
@@ -680,5 +689,12 @@
       "heading": "Contatti",
       "body": "Le domande su questi termini possono essere inviate a <mailto>kcw022@naver.com</mailto>."
     }
+  },
+  "usage": {
+    "title": "Utilizzo di questo mese",
+    "chatRemaining": "Rimangono {remaining}/{total} chat",
+    "fileRemaining": "Rimangono {remaining}/{total} file",
+    "chatLabel": "Chat",
+    "fileLabel": "File"
   }
 }
