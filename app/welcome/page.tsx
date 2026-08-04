@@ -2,12 +2,20 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Logomark } from '@/components/logomark';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { WelcomeHeroTrial } from '@/components/welcome-hero-trial';
 import { ProfessorDemo } from '@/components/professor-demo';
 import { trackFunnelEvent } from '@/lib/funnel-tracking';
+
+// 💡 [신규] 8월 재시험(resit) 시즌 한정 배너 — en 로케일에만 노출하고, 9월에 내릴 예정이라
+// 이 boolean 하나만 false로 바꾸면(또는 아래 블록 전체를 지우면) 즉시 사라집니다. 날짜
+// 기반 자동 만료 대신 수동 토글로 둔 이유는 정확한 종료 시점(9월 1일이 될지, 그 전에
+// 조금 더 당길지)을 직접 판단해서 끄고 싶다는 요청이었기 때문입니다. 영어 전용 임시
+// 문구라 next-intl 메시지 파일로 옮기지 않고 그대로 하드코딩했습니다 — 10개 넘는
+// 로케일 파일에 흩어놨다가 9월에 전부 다시 지우러 다니는 게 오히려 더 번거롭습니다.
+const SEASONAL_BANNER_ENABLED = true;
 
 // 💡 [신규] 이 페이지는 앱 테마 설정과 무관하게 항상 고정 라이트라(위 주석 참고) CSS
 // 변수(var(--border-default) 등)를 쓰면 사용자의 앱 테마가 다크로 저장돼 있을 때 이
@@ -25,6 +33,7 @@ const WELCOME_LOCALE_OPTION_CLASSNAME = 'bg-white text-[#1C1922]';
 // 자체 푸터를 아래에 둡니다.
 export default function WelcomePage() {
   const t = useTranslations();
+  const locale = useLocale();
 
   // 💡 [신규] PWA 서비스워커 등록 — app/page.tsx·app/login/page.tsx와 동일 패턴. 링크로
   // 처음 들어온 방문자가 실제로는 이 페이지를 가장 먼저 만나므로 여기서도 등록해둡니다.
@@ -50,6 +59,13 @@ export default function WelcomePage() {
     { icon: '📝', label: t('landing.capabilities.summary') },
     { icon: '💬', label: t('landing.capabilities.ask') },
   ];
+
+  // 💡 [신규] 시즌 배너 클릭 시 히어로(업로드 체험 영역)로 부드럽게 스크롤 — 배너가 히어로
+  // "아래"에 있으므로 실제로는 위로 스크롤됩니다. 별도 id를 새로 만들지 않고 이미 있는
+  // <main id="trial"> 전체(헤드라인+CTA 버튼+회로도 데모)를 대상으로 삼습니다.
+  const scrollToTrial = () => {
+    document.getElementById('trial')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div className="min-h-screen bg-white text-[#1C1922] flex flex-col">
@@ -111,9 +127,25 @@ export default function WelcomePage() {
           아래로 내렸습니다. "지금 체험하기"를 눌러도 페이지 이동 없이 이 자리에서 바로 파일
           선택창이 열리고, 히어로 전체가 드래그앤드롭 영역이며, 업로드하면 URL 변경 없이 이
           자리에서 회로도 애니메이션 → 결과로 전환됩니다. */}
-      <main className="flex-1 flex flex-col items-center text-center px-6 pt-14 sm:pt-16 pb-10">
+      <main id="trial" className="flex-1 flex flex-col items-center text-center px-6 pt-14 sm:pt-16 pb-10">
         <WelcomeHeroTrial />
       </main>
+
+      {/* 💡 [신규] 8월 재시험 시즌 한정 배너 — 작고 눈에 띄되 과하지 않게: 한 줄짜리 얇은
+          바 형태(다른 섹션들처럼 큰 카드/헤드라인이 아님)로, 배경만 브랜드 핑크를 옅게 써서
+          바로 위의 중립톤 기능 칩들과 구분되게 했습니다. 클릭하면 히어로(체험 영역)로
+          스크롤됩니다. */}
+      {SEASONAL_BANNER_ENABLED && locale === 'en' && (
+        <div className="px-6 pb-8 -mt-4">
+          <button
+            type="button"
+            onClick={scrollToTrial}
+            className="block w-full max-w-xl mx-auto text-center bg-[#FFF0F5] hover:bg-[#FFE4EE] border border-[#F4679B]/25 rounded-xl px-4 py-2.5 text-xs sm:text-[13px] leading-relaxed text-[#8A3A56] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+          >
+            ⏰ Resitting in August? Upload the module you failed — Carrotly works from your own lecture material, not past papers.
+          </button>
+        </div>
+      )}
 
       {/* 💡 히어로 바로 아래 "할 수 있는 것" 짧은 나열 — 기존 3개짜리 feature 그리드를
           대체합니다(사진 업로드 등 새 기능까지 포함해서 더 포괄적). 항목이 전부 한 줄짜리
