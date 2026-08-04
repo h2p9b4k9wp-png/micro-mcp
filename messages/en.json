@@ -2,13 +2,13 @@
   "app": {
     "loadingSession": "Loading...",
     "title": "Turn your lecture notes into likely exam questions | Carrotly",
-    "description": "Upload your own course materials and get likely exam questions plus a condensed summary, tuned to how your lecturer sets papers. Never shared. No signup."
+    "description": "Upload your own module materials and get likely exam questions plus a condensed summary, tuned to how your lecturer sets papers. Never shared. No signup."
   },
   "nav": {
     "workspace": "Ask AI",
     "records": "My Records",
     "deadlines": "Deadlines",
-    "professors": "Professors",
+    "professors": "Lecturers",
     "monitoring": "My Files",
     "logs": "Past Conversations"
   },
@@ -155,37 +155,37 @@
     }
   },
   "professors": {
-    "title": "Professors",
-    "subtitle": "Collect materials by professor to see at a glance the topics they emphasize and how they tend to write questions.",
+    "title": "Lecturers",
+    "subtitle": "Collect materials by lecturer to see at a glance the topics they emphasize and how they tend to write questions.",
     "uploadPanel": {
       "title": "Upload Materials",
-      "selectProfessor": "Select Professor",
-      "registerNew": "+ Register New Professor",
+      "selectProfessor": "Select Lecturer",
+      "registerNew": "+ Register New Lecturer",
       "namePlaceholder": "Name (required)",
       "schoolPlaceholder": "School (required)",
       "departmentPlaceholder": "Department (required)",
       "schoolDeptHint": "School/department info helps interpret major-specific terminology and grading conventions more accurately.",
       "chooseFile": "Choose File",
-      "paperHint": "Uploading the professor's papers helps us pinpoint their research interests and emphasis much more accurately."
+      "paperHint": "Uploading the lecturer's papers helps us pinpoint their research interests and emphasis much more accurately."
     },
     "loading": "Loading...",
-    "noneRegistered": "No professors registered yet. Upload materials above to register one.",
+    "noneRegistered": "No lecturers registered yet. Upload materials above to register one.",
     "documentCount": "{count} files",
     "docType": {
       "lecture": "Lecture Notes",
-      "exam": "Exam",
+      "exam": "Past Paper",
       "assignment": "Assignment",
       "paper": "Paper"
     },
-    "backToList": "Back to Professors",
-    "deleteProfessor": "Delete Professor",
+    "backToList": "Back to Lecturers",
+    "deleteProfessor": "Delete Lecturer",
     "noSchoolDept": "No school/department info",
     "documentListTitle": "Materials ({count})",
     "noDocumentsYet": "No materials uploaded yet.",
     "deleteDocumentAria": "Delete {fileName}",
-    "circuitHint": "Click the AI core to analyze this professor's materials",
+    "circuitHint": "Click the AI core to analyze this lecturer's materials",
     "notConfidentYet": "Not confident enough to judge yet",
-    "analyzeButton": "Analyze This Professor",
+    "analyzeButton": "Analyze This Lecturer",
     "notEnoughData": "Not enough material yet to judge with confidence.",
     "teaserTitle": "Upload more to unlock these",
     "uploadDirectly": "Upload Files Now",
@@ -200,7 +200,7 @@
     "circuit": {
       "expected_questions": "Expected Questions",
       "assignment_direction": "Assignment Direction",
-      "study_method": "Study Method"
+      "study_method": "Revision Method"
     },
     "framing": {
       "first": "First impression from 1 document",
@@ -209,21 +209,21 @@
     },
     "errors": {
       "schoolDeptRequired": "Please enter both school and department.",
-      "registerFailed": "Could not register the professor: {error}",
+      "registerFailed": "Could not register the lecturer: {error}",
       "updateFailed": "Failed to refresh the analysis.",
       "saveAnalysisFailed": "Could not save the analysis result.",
-      "thisProfessorFallback": "This professor",
-      "updateFailedAlert": "Failed to refresh the analysis for \"{name}\": {error}\nThe document count and analysis result may be briefly out of sync — try the \"Analyze This Professor\" button on the professor detail screen again.",
-      "docLimitReached": "This professor can have at most {max} documents (currently {count}). Please delete some unneeded documents first.",
+      "thisProfessorFallback": "This lecturer",
+      "updateFailedAlert": "Failed to refresh the analysis for \"{name}\": {error}\nThe document count and analysis result may be briefly out of sync — try the \"Analyze This Lecturer\" button on the lecturer detail screen again.",
+      "docLimitReached": "This lecturer can have at most {max} documents (currently {count}). Please delete some unneeded documents first.",
       "docSaveFailed": "Could not save \"{fileName}\": {error}",
-      "nameRequired": "Please enter the professor's name.",
-      "selectProfessorFirst": "Please select a professor or register a new one first.",
+      "nameRequired": "Please enter the lecturer's name.",
+      "selectProfessorFirst": "Please select a lecturer or register a new one first.",
       "docDeleteFailed": "Could not delete the document: {error}",
-      "professorDeleteFailed": "Could not delete the professor: {error}"
+      "professorDeleteFailed": "Could not delete the lecturer: {error}"
     },
     "deleteConfirm": "Delete \"{name}\" and all their registered materials? This cannot be undone.",
-    "upgradeMaxProfessors": "The free tier allows up to {max} professors. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "The free tier allows up to {max} documents per professor. Upgrade to Pro — {price}"
+    "upgradeMaxProfessors": "The free tier allows up to {max} lecturers. Upgrade to Pro — {price}",
+    "upgradeMaxDocuments": "The free tier allows up to {max} documents per lecturer. Upgrade to Pro — {price}"
   },
   "monitoring": {
     "title": "Monitoring & Files (RAG Context)",
@@ -307,7 +307,7 @@
       "hint": "Saves the result as a Hangul (HWP) file"
     },
     "professor_docs": {
-      "label": "This Professor's Materials",
+      "label": "This Lecturer's Materials",
       "hint": "References everything uploaded so far"
     },
     "professor_ai_core": {
@@ -323,7 +323,7 @@
       "hint": "Tells you the style of assignments they require"
     },
     "study_method": {
-      "label": "Study Method",
+      "label": "Revision Method",
       "hint": "Centers on the topics they emphasize most often"
     },
     "guest_upload": {
@@ -336,11 +336,11 @@
     },
     "professor_summary": {
       "label": "Key Summary",
-      "hint": "Boils this professor's materials down to the essentials"
+      "hint": "Boils this lecturer's materials down to the essentials"
     },
     "professor_emphasis": {
       "label": "Emphasis Points",
-      "hint": "What this professor tends to emphasize"
+      "hint": "What this lecturer tends to emphasize"
     }
   },
   "circuit": {
@@ -361,8 +361,8 @@
       "subheadline": "Upload your files and get a summary and expected questions instantly.",
       "features": {
         "automation": {
-          "title": "Tailored per professor",
-          "desc": "Organized differently for each professor's focus"
+          "title": "Tailored per lecturer",
+          "desc": "Organized differently for each lecturer's focus"
         },
         "outputs": {
           "title": "Expected Questions · Summary",
@@ -453,7 +453,7 @@
     }
   },
   "account": {
-    "deleteConfirm": "Are you sure you want to delete your account?\n\nAll uploaded files, professor materials, conversation history, and conversation folders — along with your login account itself (email, sign-in info) — will be permanently deleted and cannot be undone.",
+    "deleteConfirm": "Are you sure you want to delete your account?\n\nAll uploaded files, lecturer materials, conversation history, and conversation folders — along with your login account itself (email, sign-in info) — will be permanently deleted and cannot be undone.",
     "deleteErrorAlert": "A problem occurred while deleting your account: {error}\nPlease try again.",
     "deleting": "Deleting...",
     "delete": "Delete Account",
@@ -483,7 +483,7 @@
     "subheadline": "Upload your files and get a summary and expected questions instantly.",
     "ctaButton": "Try It Now",
     "ctaHint": "No sign-up — check it out right now",
-    "professorAppeal": "Tailored differently for every professor",
+    "professorAppeal": "Tailored differently for every lecturer",
     "startOver": "← Start over",
     "noSharingNote": "Your uploaded materials are never shared with other users",
     "capabilities": {
@@ -494,14 +494,14 @@
       "ask": "Ask questions straight from your materials"
     },
     "professorSection": {
-      "title": "Every professor tests differently",
-      "description": "Organize materials by professor and one click gives you expected questions and a summary tuned to what that professor emphasizes and how they test.",
+      "title": "Every lecturer tests differently",
+      "description": "Organize materials by lecturer and one click gives you expected questions and a summary tuned to what that lecturer emphasizes and how they test.",
       "demo": {
         "autoPromptLabel": "Auto-prompt applied",
         "promptTemplate": "“Pull expected questions and a key summary from {name}’s materials”",
         "professors": [
           {
-            "name": "Prof. Smith",
+            "name": "Dr Smith",
             "subject": "Software Engineering",
             "emphasis": [
               "Always emphasizes design principles (SOLID) and how they apply in practice",
@@ -514,7 +514,7 @@
             "summary": "This term leans heavily on design principles and code quality — exam questions tend to be example-driven rather than theoretical."
           },
           {
-            "name": "Prof. Johnson",
+            "name": "Dr Johnson",
             "subject": "Database Systems",
             "emphasis": [
               "Likes walking through normalization step by step",
@@ -527,7 +527,7 @@
             "summary": "Heavy focus on normalization and hands-on SQL — expect problems you actually solve, not just concepts to recall."
           },
           {
-            "name": "Prof. Carter",
+            "name": "Dr Carter",
             "subject": "Algorithms",
             "emphasis": [
               "Always has you work out time complexity by hand",
@@ -551,12 +551,12 @@
   },
   "loading": {
     "messages": [
-      "Digging through professor materials",
+      "Digging through lecturer materials",
       "Looking for question patterns",
       "Finding hints hidden between the lines",
       "Underlining the important parts",
-      "Reviewing past exams again",
-      "Organizing the study notes",
+      "Reviewing past papers again",
+      "Organizing the revision notes",
       "Picking out the essentials",
       "Reading between the lines",
       "Reading the material closely",
@@ -626,7 +626,7 @@
     "rights": {
       "heading": "Your rights",
       "copy": "You can request a copy of the data we hold about you at any time by emailing us at the address below — we&rsquo;ll respond as soon as we can.",
-      "delete": "To delete your account, use the &ldquo;Delete Account&rdquo; button at the bottom of the sidebar once you&rsquo;re logged in — it immediately and permanently deletes your uploaded files, professor materials, conversation history, and your login credentials (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather have us do it for you, email us and we&rsquo;ll delete it manually.",
+      "delete": "To delete your account, use the &ldquo;Delete Account&rdquo; button at the bottom of the sidebar once you&rsquo;re logged in — it immediately and permanently deletes your uploaded files, lecturer materials, conversation history, and your login credentials (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather have us do it for you, email us and we&rsquo;ll delete it manually.",
       "proSubscription": "If you have an active Pro subscription, deleting your account does not cancel it — Polar (our Merchant of Record, see <termslink>Terms of Service</termslink>) handles billing independently of your Carrotly login, so we have no way to cancel it on your behalf. You&rsquo;ll need to cancel your subscription first (via the link in the receipt/confirmation email Polar sent you, or by emailing us) before we can delete your account."
     },
     "contact": {
