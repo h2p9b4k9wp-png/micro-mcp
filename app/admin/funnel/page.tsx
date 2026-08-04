@@ -69,9 +69,14 @@ export default async function AdminFunnelPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] tracking-tight">
             전환 퍼널
           </h1>
-          <Link href="/admin/ai-usage" className="text-xs text-[#857C93] hover:text-[#F4679B] transition-colors">
-            AI 토큰 사용량 →
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/admin/ai-usage" className="text-xs text-[#857C93] hover:text-[#F4679B] transition-colors">
+              AI 토큰 사용량 →
+            </Link>
+            <Link href="/admin/society-codes" className="text-xs text-[#857C93] hover:text-[#F4679B] transition-colors">
+              소사이어티 코드 →
+            </Link>
+          </div>
         </div>
         <p className="text-sm text-[#AFA6BD] mb-10">
           단계별 순방문자 수(anon_id 기준 중복 제거) · 랜딩 방문 대비 비율 · 직전 단계 대비 이탈률

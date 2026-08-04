@@ -475,7 +475,16 @@
     "memoLabel": "Notiz (optional)",
     "memoPlaceholder": "Teilen Sie uns Fragen oder benötigte Funktionen mit",
     "sending": "Wird gesendet...",
-    "sendRequest": "Anfrage senden"
+    "sendRequest": "Anfrage senden",
+    "societyCode": {
+      "divider": "Haben Sie einen Community-Code?",
+      "label": "Community-Code",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "Anwenden",
+      "applying": "Wird angewendet...",
+      "success": "Code angewendet! Ihre Pro-Vorteile beginnen sofort.",
+      "genericError": "Der Code konnte nicht angewendet werden. Bitte versuchen Sie es erneut."
+    }
   },
   "landing": {
     "loginButton": "Anmelden",

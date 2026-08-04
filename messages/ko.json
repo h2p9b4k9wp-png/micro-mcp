@@ -475,7 +475,16 @@
     "memoLabel": "메모 (선택)",
     "memoPlaceholder": "궁금한 점이나 필요한 기능을 적어주세요",
     "sending": "보내는 중...",
-    "sendRequest": "요청 보내기"
+    "sendRequest": "요청 보내기",
+    "societyCode": {
+      "divider": "소사이어티 코드가 있으신가요?",
+      "label": "소사이어티 코드",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "적용",
+      "applying": "적용 중...",
+      "success": "코드가 적용됐어요! Pro 혜택이 바로 시작됩니다.",
+      "genericError": "코드를 적용하지 못했어요. 다시 시도해주세요."
+    }
   },
   "landing": {
     "loginButton": "로그인",

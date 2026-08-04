@@ -475,7 +475,16 @@
     "memoLabel": "Nota (facoltativo)",
     "memoPlaceholder": "Raccontaci le tue domande o le funzionalità di cui hai bisogno",
     "sending": "Invio in corso...",
-    "sendRequest": "Invia richiesta"
+    "sendRequest": "Invia richiesta",
+    "societyCode": {
+      "divider": "Hai un codice community?",
+      "label": "Codice community",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "Applica",
+      "applying": "Applicazione in corso...",
+      "success": "Codice applicato! I vantaggi Pro iniziano subito.",
+      "genericError": "Impossibile applicare il codice. Riprova."
+    }
   },
   "landing": {
     "loginButton": "Accedi",

@@ -475,7 +475,16 @@
     "memoLabel": "Notitie (optioneel)",
     "memoPlaceholder": "Vertel ons je vragen of gewenste functies",
     "sending": "Bezig met verzenden...",
-    "sendRequest": "Verzoek verzenden"
+    "sendRequest": "Verzoek verzenden",
+    "societyCode": {
+      "divider": "Heb je een communitycode?",
+      "label": "Communitycode",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "Toepassen",
+      "applying": "Bezig met toepassen...",
+      "success": "Code toegepast! Je Pro-voordelen gaan meteen in.",
+      "genericError": "De code kon niet worden toegepast. Probeer het opnieuw."
+    }
   },
   "landing": {
     "loginButton": "Inloggen",

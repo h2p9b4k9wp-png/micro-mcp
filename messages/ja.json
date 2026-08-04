@@ -475,7 +475,16 @@
     "memoLabel": "メモ（任意）",
     "memoPlaceholder": "ご質問や必要な機能をご記入ください",
     "sending": "送信中...",
-    "sendRequest": "リクエストを送信"
+    "sendRequest": "リクエストを送信",
+    "societyCode": {
+      "divider": "ソサエティコードをお持ちですか？",
+      "label": "ソサエティコード",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "適用",
+      "applying": "適用中...",
+      "success": "コードが適用されました！Pro特典がすぐに使えます。",
+      "genericError": "コードを適用できませんでした。もう一度お試しください。"
+    }
   },
   "landing": {
     "loginButton": "ログイン",

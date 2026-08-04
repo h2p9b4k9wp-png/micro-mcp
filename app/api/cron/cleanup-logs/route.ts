@@ -31,6 +31,10 @@ function timingSafeEqualStrings(a: string, b: string): boolean {
 // anonymous_trial_usage는 로그인 여부와 무관한 익명 요청 로그라 사용자 등급 개념 자체가
 // 없습니다.
 //
+// 💡 [수정] 소사이어티 코드(lib/society-codes.ts)로 얻은 Pro의 만료 처리도 같은 라우트에
+// 얹었습니다 — Polar 구독과 달리 코드 만료는 외부 이벤트(웹훅)가 없어서, 이 cron이 매일
+// profiles.pro_expires_at을 확인해 직접 강등시켜야 합니다.
+//
 // 이 라우트는 세션 쿠키가 아니라 Vercel Cron이 보내는 CRON_SECRET으로만 인증합니다
 // (middleware.ts가 /api/cron/*를 세션 검증에서 제외하는 이유) — 특정 사용자 대신이 아니라
 // 앱 전체를 대상으로 지우는 유지보수 작업이라 서비스 롤 키로 RLS를 우회해야 하고, 그만큼
@@ -90,10 +94,37 @@ export async function GET(req: Request) {
       `[cleanup-logs] ${ANONYMOUS_USAGE_RETENTION_DAYS}일 초과 게스트 IP 로그 ${anonymousUsageDeletedCount ?? 0}건 삭제`
     );
 
+    // 💡 [신규] 소사이어티 코드로 얻은 Pro 만료 처리 — 결제 기반 Pro는 Polar 웹훅이 즉시
+    // 반영하지만, 코드 기반 Pro는 별도 웹훅이 없어서(코드 만료는 그냥 시간이 지나는 것뿐,
+    // Polar처럼 알려주는 외부 이벤트가 없음) 매일 도는 이 cron이 직접 pro_expires_at을
+    // 지난 코드 기반 Pro 계정을 찾아 무료 등급으로 되돌립니다 — 새 cron을 따로 만들 만큼
+    // 다른 일이 아니라(둘 다 "만료 조건을 매일 확인해 상태를 되돌린다"는 동일한 유지보수
+    // 작업), 이미 매일 도는 이 라우트에 붙였습니다.
+    const { data: expiredCodeProfiles, error: expiredError } = await supabaseAdmin
+      .from('profiles')
+      .select('id')
+      .eq('pro_source', 'code')
+      .lt('pro_expires_at', new Date().toISOString());
+    if (expiredError) throw expiredError;
+
+    let expiredCodeProCount = 0;
+    if (expiredCodeProfiles && expiredCodeProfiles.length > 0) {
+      const expiredIds = expiredCodeProfiles.map((p) => p.id);
+      const { error: demoteError } = await supabaseAdmin
+        .from('profiles')
+        .update({ is_pro: false, pro_source: null, pro_expires_at: null })
+        .in('id', expiredIds);
+      if (demoteError) throw demoteError;
+      expiredCodeProCount = expiredIds.length;
+    }
+
+    console.log(`[cleanup-logs] 소사이어티 코드 만료로 무료 등급 강등 ${expiredCodeProCount}건`);
+
     return NextResponse.json({
       ok: true,
       deletedLogs: count ?? 0,
       deletedAnonymousUsage: anonymousUsageDeletedCount ?? 0,
+      expiredCodePro: expiredCodeProCount,
     });
   } catch (error) {
     console.error('[cleanup-logs] 정리 작업 중 오류 발생:', error);

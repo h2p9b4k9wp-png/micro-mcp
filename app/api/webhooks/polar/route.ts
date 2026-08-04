@@ -25,9 +25,17 @@ function extractUserId(metadata: Record<string, string | number | boolean> | und
   return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
+// 💡 [수정] profiles.pro_source/pro_expires_at도 함께 갱신합니다(소사이어티 코드 기능
+// 추가 — lib/society-codes.ts). 결제로 Pro가 되면(isPro=true) pro_source를 'payment'로
+// 덮어씁니다 — 코드로 먼저 Pro였던 사용자가 나중에 결제하면, 코드 만료와 무관하게 계속
+// Pro를 유지해야 하니 결제가 코드보다 우선합니다. isPro=false(구독 해지)면 소스가 무엇이든
+// pro_source/pro_expires_at을 함께 null로 되돌려 무료 등급으로 완전히 리셋합니다.
 async function setIsPro(userId: string, isPro: boolean, eventType: string) {
   const supabaseAdmin = getSupabaseAdmin();
-  const { error } = await supabaseAdmin.from('profiles').update({ is_pro: isPro }).eq('id', userId);
+  const { error } = await supabaseAdmin
+    .from('profiles')
+    .update({ is_pro: isPro, pro_source: isPro ? 'payment' : null, pro_expires_at: null })
+    .eq('id', userId);
   if (error) {
     console.error(`[polar webhook] ${eventType}: profiles.is_pro 업데이트 실패 (user ${userId}):`, error);
     throw error;

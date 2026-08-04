@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import type { LensId } from '@/lib/lenses';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { getIsPro, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { getIsPro, getProSource, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
+import { checkSocietyCodeAnalysisQuota } from '@/lib/society-codes';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 
@@ -54,6 +55,16 @@ export async function POST(req: Request) {
         },
         { status: 413 }
       );
+    }
+
+    // 💡 [신규] 소사이어티 코드로 얻은 Pro는 결제 기반 Pro와 같은 filesPerMonth 한도가
+    // 아니라 별도의 넉넉한 월 분석 횟수 상한이 적용됩니다 — lib/society-codes.ts 참고.
+    if (userId) {
+      const proSource = await getProSource(supabase, userId);
+      const quota = await checkSocietyCodeAnalysisQuota(userId, proSource);
+      if (!quota.ok) {
+        return NextResponse.json({ error: quota.error, limitReached: true, limitType: 'societyCode' }, { status: 429 });
+      }
     }
 
     const { lensId, result, usage } = await runLensAnalysis({ apiKey, text, fileName, lens, responseLanguage });

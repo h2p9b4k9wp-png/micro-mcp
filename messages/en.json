@@ -475,7 +475,16 @@
     "memoLabel": "Note (optional)",
     "memoPlaceholder": "Tell us any questions or features you need",
     "sending": "Sending...",
-    "sendRequest": "Send Request"
+    "sendRequest": "Send Request",
+    "societyCode": {
+      "divider": "Have a society code?",
+      "label": "Society code",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "Apply",
+      "applying": "Applying...",
+      "success": "Code applied! Your Pro benefits start right away.",
+      "genericError": "Couldn't apply that code. Please try again."
+    }
   },
   "landing": {
     "loginButton": "Log In",

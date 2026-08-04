@@ -146,3 +146,14 @@ export async function getIsPro(supabase: SupabaseClient, userId: string): Promis
   const { data } = await supabase.from('profiles').select('is_pro').eq('id', userId).single();
   return Boolean(data?.is_pro);
 }
+
+// 💡 [신규] 소사이어티 코드(lib/society-codes.ts)로 얻은 Pro인지 구분하기 위한 조회 —
+// getIsPro와 별도 함수로 둔 이유는 대부분의 호출부(파일/채팅 월간 한도 검사 등)는
+// pro_source가 필요 없고, /api/analyze·/api/analyze-professor처럼 코드 기반 Pro 전용
+// 월 분석 횟수 상한(lib/society-codes.ts의 checkSocietyCodeAnalysisQuota)을 적용해야
+// 하는 곳만 이 값을 씁니다. profiles SELECT RLS 정책이 본인 행만 허용하므로 세션 클라이언트로도
+// 안전하게 조회할 수 있습니다.
+export async function getProSource(supabase: SupabaseClient, userId: string): Promise<'payment' | 'code' | null> {
+  const { data } = await supabase.from('profiles').select('pro_source').eq('id', userId).single();
+  return (data?.pro_source as 'payment' | 'code' | null) ?? null;
+}

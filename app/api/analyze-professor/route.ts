@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { getIsPro, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { getIsPro, getProSource, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { truncateForPrompt } from '@/lib/truncate-text';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
+import { checkSocietyCodeAnalysisQuota } from '@/lib/society-codes';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 
@@ -170,6 +171,16 @@ export async function POST(req: Request) {
         },
         { status: 413 }
       );
+    }
+
+    // 💡 [신규] 소사이어티 코드로 얻은 Pro 전용 월 분석 횟수 상한 — /api/analyze와 같은
+    // 이유(lib/society-codes.ts 참고).
+    if (userId) {
+      const proSource = await getProSource(supabase, userId);
+      const quota = await checkSocietyCodeAnalysisQuota(userId, proSource);
+      if (!quota.ok) {
+        return NextResponse.json({ error: quota.error, limitReached: true, limitType: 'societyCode' }, { status: 429 });
+      }
     }
 
     // 💡 [신규] 답변 언어는 BASE_SYSTEM_PROMPT/INCREMENTAL_SYSTEM_PROMPT(고정 프리픽스)가

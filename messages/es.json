@@ -475,7 +475,16 @@
     "memoLabel": "Nota (opcional)",
     "memoPlaceholder": "Cuéntanos tus preguntas o las funciones que necesitas",
     "sending": "Enviando...",
-    "sendRequest": "Enviar solicitud"
+    "sendRequest": "Enviar solicitud",
+    "societyCode": {
+      "divider": "¿Tienes un código de comunidad?",
+      "label": "Código de comunidad",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "Aplicar",
+      "applying": "Aplicando...",
+      "success": "¡Código aplicado! Tus beneficios Pro empiezan ahora mismo.",
+      "genericError": "No se pudo aplicar el código. Inténtalo de nuevo."
+    }
   },
   "landing": {
     "loginButton": "Iniciar sesión",

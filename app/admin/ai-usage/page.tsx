@@ -109,9 +109,14 @@ export default async function AdminAiUsagePage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] tracking-tight">
             AI 토큰 사용량
           </h1>
-          <Link href="/admin/funnel" className="text-xs text-[#857C93] hover:text-[#F4679B] transition-colors">
-            전환 퍼널 →
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/admin/funnel" className="text-xs text-[#857C93] hover:text-[#F4679B] transition-colors">
+              전환 퍼널 →
+            </Link>
+            <Link href="/admin/society-codes" className="text-xs text-[#857C93] hover:text-[#F4679B] transition-colors">
+              소사이어티 코드 →
+            </Link>
+          </div>
         </div>
         <p className="text-sm text-[#AFA6BD] mb-10">
           이번 달(UTC 월 기준) /api/analyze·/api/analyze-professor 실제 호출의 토큰 사용량과 예상 비용 — OpenAI가 매 호출마다 응답한 실측값입니다(추정 아님).

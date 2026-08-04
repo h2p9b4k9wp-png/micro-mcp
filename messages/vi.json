@@ -475,7 +475,16 @@
     "memoLabel": "Ghi chú (tùy chọn)",
     "memoPlaceholder": "Hãy cho chúng tôi biết câu hỏi hoặc tính năng bạn cần",
     "sending": "Đang gửi...",
-    "sendRequest": "Gửi yêu cầu"
+    "sendRequest": "Gửi yêu cầu",
+    "societyCode": {
+      "divider": "Bạn có mã cộng đồng không?",
+      "label": "Mã cộng đồng",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "Áp dụng",
+      "applying": "Đang áp dụng...",
+      "success": "Đã áp dụng mã! Quyền lợi Pro của bạn bắt đầu ngay.",
+      "genericError": "Không thể áp dụng mã này. Vui lòng thử lại."
+    }
   },
   "landing": {
     "loginButton": "Đăng nhập",

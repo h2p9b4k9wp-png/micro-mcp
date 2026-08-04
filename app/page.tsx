@@ -336,6 +336,14 @@ export default function HomePage() {
   const [isSubmittingUpgradeRequest, setIsSubmittingUpgradeRequest] = useState(false);
   const [upgradeRequestSubmitted, setUpgradeRequestSubmitted] = useState(false);
 
+  // 💡 [신규] 소사이어티 코드 입력 — 업그레이드 모달 안의 별도 섹션(app/api/society-code/redeem
+  // 참고). 이 앱이 오버레이를 거의 안 쓰고 업그레이드 모달 하나만 재사용하는 기존 원칙을
+  // 그대로 따라, 새 모달을 만들지 않고 이 모달에 이어붙입니다.
+  const [societyCode, setSocietyCode] = useState('');
+  const [isRedeemingSocietyCode, setIsRedeemingSocietyCode] = useState(false);
+  const [societyCodeError, setSocietyCodeError] = useState<string | null>(null);
+  const [societyCodeRedeemed, setSocietyCodeRedeemed] = useState(false);
+
   // 💡 [신규] 계정 삭제 — handleDeleteAccount 진행 중 사이드바 버튼을 비활성화하는 데만 씁니다.
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   // 💡 [신규] Pro 구독 중 삭제 경고 모달 — 체크박스를 명시적으로 체크해야만 모달 안의
@@ -980,6 +988,38 @@ export default function HomePage() {
 
   const closeUpgradeModal = () => {
     setIsUpgradeModalOpen(false);
+    setSocietyCode('');
+    setSocietyCodeError(null);
+    setSocietyCodeRedeemed(false);
+  };
+
+  // 💡 [신규] 소사이어티 코드 입력 제출 — 실제 검증·profiles.is_pro 갱신은 서비스 롤로
+  // /api/society-code/redeem이 처리합니다(app/api/society-code/redeem/route.ts,
+  // lib/society-codes.ts). 성공하면 이 클라이언트의 isPro 상태도 즉시 true로 반영해
+  // 새로고침 없이 사이드바 Pro 배지 등이 바로 갱신되게 합니다.
+  const handleRedeemSocietyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!societyCode.trim() || isRedeemingSocietyCode) return;
+    setIsRedeemingSocietyCode(true);
+    setSocietyCodeError(null);
+    try {
+      const res = await fetch('/api/society-code/redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: societyCode.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSocietyCodeError(data.error || t('upgrade.societyCode.genericError'));
+        return;
+      }
+      setSocietyCodeRedeemed(true);
+      setIsPro(true);
+    } catch {
+      setSocietyCodeError(t('upgrade.societyCode.genericError'));
+    } finally {
+      setIsRedeemingSocietyCode(false);
+    }
   };
 
   const handleSubmitUpgradeRequest = async (e: React.FormEvent) => {
@@ -3393,6 +3433,41 @@ export default function HomePage() {
               >
                 {t('upgrade.checkoutButton')}
               </a>
+
+              {/* 💡 [신규] 소사이어티 코드 입력 — 결제 없이 코드로 Pro가 되는 경로.
+                  이미 코드로 성공했으면(societyCodeRedeemed) 폼 대신 완료 메시지만 보여줍니다. */}
+              <div className="flex items-center gap-2 my-4">
+                <div className="flex-1 h-px bg-[var(--border-default)]" />
+                <span className="text-[10px] text-[var(--text-faint)]">{t('upgrade.societyCode.divider')}</span>
+                <div className="flex-1 h-px bg-[var(--border-default)]" />
+              </div>
+              {societyCodeRedeemed ? (
+                <p className="text-xs text-[#6EE7B7] text-center">{t('upgrade.societyCode.success')}</p>
+              ) : (
+                <form onSubmit={handleRedeemSocietyCode} className="flex flex-col gap-2">
+                  <label className="block text-xs font-semibold text-[var(--text-tertiary)]">
+                    {t('upgrade.societyCode.label')}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={societyCode}
+                      onChange={(e) => setSocietyCode(e.target.value)}
+                      placeholder={t('upgrade.societyCode.placeholder')}
+                      className="flex-1 min-w-0 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text-primary)] outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 transition-colors placeholder:text-[var(--text-faint)] font-mono"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isRedeemingSocietyCode || !societyCode.trim()}
+                      className="shrink-0 bg-[var(--bg-surface)] hover:bg-[var(--bg-deep)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--text-secondary)] border border-[var(--border-default)] text-sm font-semibold px-4 py-2.5 rounded-lg cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                    >
+                      {isRedeemingSocietyCode ? t('upgrade.societyCode.applying') : t('upgrade.societyCode.applyButton')}
+                    </button>
+                  </div>
+                  {societyCodeError && <p className="text-xs text-[var(--accent-danger)]">{societyCodeError}</p>}
+                </form>
+              )}
+
               <div className="flex items-center gap-2 my-4">
                 <div className="flex-1 h-px bg-[var(--border-default)]" />
                 <span className="text-[10px] text-[var(--text-faint)]">{t('upgrade.orContactDivider')}</span>
