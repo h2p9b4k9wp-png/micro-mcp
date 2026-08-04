@@ -131,19 +131,17 @@ function getMonthlyTokenLimit(): number | null {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 }
 
-// 💡 [신규] 코드 사용(redeem) 전체를 서비스 롤로 처리하는 핵심 함수 — app/api/society-code/redeem이
-// 이것 하나만 호출합니다. 검증 순서: 코드 존재 → 취소/만료 → 정원 → 이미 Pro인지 → 이미 이
-// 코드를 쓴 적 있는지 → 전체 킬스위치. 마지막에 society_code_redemptions insert +
-// profiles 갱신을 순서대로 실행합니다.
-//
-// 💡 동시성에 대한 알려진 한계: 정원 확인(count)과 insert 사이에 이론적인 경쟁 상태가
-// 있습니다(두 요청이 동시에 마지막 한 자리를 확인하면 둘 다 통과할 수 있음). society_code_
-// redemptions의 unique(code_id, user_id) 제약은 "같은 사용자가 같은 코드를 두 번 쓰는 것"만
-// 막고, "서로 다른 두 사용자가 마지막 한 자리를 동시에 채우는 것"은 막지 못합니다. 이 앱의
-// 다른 카운트 기반 한도들(anonymous_trial_usage 등)도 같은 성격의 이론적 경쟁 상태를 안고
-// 있고, 소사이어티 코드도 플래시세일처럼 초 단위로 몰리는 트래픽이 아니라 학생들이 시차를
-// 두고 가입하는 흐름이라 실무적으로 감수 가능한 위험으로 판단했습니다. 완벽한 원자성이
-// 필요해지면 Postgres 함수(SELECT ... FOR UPDATE)로 옮기세요.
+// 💡 [수정] 코드 사용(redeem) — 킬스위치(전체 토큰 합계)만 여기서 미리 확인하고, 나머지
+// 검증(코드 존재 → 취소/만료 → 이미 Pro인지 → 이미 이 코드를 쓴 적 있는지 → 정원)과
+// 실제 기록·profiles 갱신은 DB 함수 redeem_society_code_atomic()
+// (supabase/migrations/20260814_atomic_society_code_redemption_and_profile_lockdown.sql)
+// 안에서 FOR UPDATE 잠금으로 원자적으로 처리됩니다 — 이 파일 초기 버전은 "정원 확인(count)과
+// insert 사이에 이론적 경쟁 상태가 있다"고 스스로 문서화하고 있었는데(같은 코드의 마지막
+// 한 자리를 두 사용자가 동시에 확인하면 둘 다 통과할 수 있음), 그 주석이 제안한 대로
+// Postgres 함수로 옮겨 해결했습니다. 킬스위치 확인만 밖에 남겨둔 이유는 그게 하드 제약이
+// 아니라("이미 코드를 쓰고 있는 사용자는 안 끊는다") 부드러운 안내성 체크라 잠금 안에
+// 넣을 필요가 없기 때문입니다 — 아주 드물게 이 확인과 원자적 redeem 사이에 다른 요청이
+// 끼어들어 임계값을 살짝 넘겨도 안전 문제가 아니라 안내 타이밍만 살짝 늦는 정도입니다.
 export async function redeemSocietyCode(userId: string, rawCode: string): Promise<RedeemResult> {
   const code = rawCode.trim().toUpperCase();
   if (!code) {
@@ -151,53 +149,6 @@ export async function redeemSocietyCode(userId: string, rawCode: string): Promis
   }
 
   const supabaseAdmin = getSupabaseAdmin();
-
-  const { data: codeRow, error: codeError } = await supabaseAdmin
-    .from('society_codes')
-    .select('id, max_uses, expires_at, revoked_at')
-    .eq('code', code)
-    .maybeSingle();
-  if (codeError) {
-    console.error('[society-codes] 코드 조회 실패:', codeError);
-    return { ok: false, errorCode: 'server_error', error: 'Something went wrong. Please try again.' };
-  }
-  if (!codeRow) {
-    return { ok: false, errorCode: 'invalid_code', error: 'That code is not valid.' };
-  }
-  if (codeRow.revoked_at) {
-    return { ok: false, errorCode: 'revoked', error: 'This code has been deactivated.' };
-  }
-  if (new Date(codeRow.expires_at).getTime() <= Date.now()) {
-    return { ok: false, errorCode: 'expired', error: 'This code has expired.' };
-  }
-
-  const [{ count: usedCount, error: countError }, { data: profile, error: profileError }, { data: existing, error: existingError }] =
-    await Promise.all([
-      supabaseAdmin
-        .from('society_code_redemptions')
-        .select('id', { count: 'exact', head: true })
-        .eq('code_id', codeRow.id),
-      supabaseAdmin.from('profiles').select('is_pro').eq('id', userId).single(),
-      supabaseAdmin
-        .from('society_code_redemptions')
-        .select('id')
-        .eq('code_id', codeRow.id)
-        .eq('user_id', userId)
-        .maybeSingle(),
-    ]);
-  if (countError || profileError || existingError) {
-    console.error('[society-codes] 검증 조회 실패:', countError || profileError || existingError);
-    return { ok: false, errorCode: 'server_error', error: 'Something went wrong. Please try again.' };
-  }
-  if ((usedCount ?? 0) >= codeRow.max_uses) {
-    return { ok: false, errorCode: 'full', error: 'This code has reached its usage limit.' };
-  }
-  if (profile?.is_pro) {
-    return { ok: false, errorCode: 'already_pro', error: 'Your account is already Pro.' };
-  }
-  if (existing) {
-    return { ok: false, errorCode: 'already_redeemed', error: "You've already used this code." };
-  }
 
   const tokenLimit = getMonthlyTokenLimit();
   if (tokenLimit !== null) {
@@ -211,26 +162,45 @@ export async function redeemSocietyCode(userId: string, rawCode: string): Promis
     }
   }
 
-  const { error: insertError } = await supabaseAdmin
-    .from('society_code_redemptions')
-    .insert({ code_id: codeRow.id, user_id: userId });
-  if (insertError) {
-    // unique(code_id, user_id) 위반이면 동시 요청이 먼저 성공한 것 — 사용자에게는
-    // "이미 사용함"으로 보여주는 게 정확합니다.
-    if (insertError.code === '23505') {
-      return { ok: false, errorCode: 'already_redeemed', error: "You've already used this code." };
-    }
-    console.error('[society-codes] 사용 기록 실패:', insertError);
+  const { data: status, error: rpcError } = await supabaseAdmin.rpc('redeem_society_code_atomic', {
+    p_user_id: userId,
+    p_code: code,
+  });
+  if (rpcError) {
+    console.error('[society-codes] redeem_society_code_atomic 호출 실패:', rpcError);
     return { ok: false, errorCode: 'server_error', error: 'Something went wrong. Please try again.' };
   }
 
-  const { error: updateError } = await supabaseAdmin
-    .from('profiles')
-    .update({ is_pro: true, pro_source: 'code', pro_expires_at: codeRow.expires_at })
-    .eq('id', userId);
-  if (updateError) {
-    console.error('[society-codes] Pro 승격 실패:', updateError);
-    return { ok: false, errorCode: 'server_error', error: 'Something went wrong. Please try again.' };
+  switch (status as string) {
+    case 'ok':
+      break;
+    case 'invalid_code':
+      return { ok: false, errorCode: 'invalid_code', error: 'That code is not valid.' };
+    case 'revoked':
+      return { ok: false, errorCode: 'revoked', error: 'This code has been deactivated.' };
+    case 'expired':
+      return { ok: false, errorCode: 'expired', error: 'This code has expired.' };
+    case 'already_pro':
+      return { ok: false, errorCode: 'already_pro', error: 'Your account is already Pro.' };
+    case 'already_redeemed':
+      return { ok: false, errorCode: 'already_redeemed', error: "You've already used this code." };
+    case 'full':
+      return { ok: false, errorCode: 'full', error: 'This code has reached its usage limit.' };
+    default:
+      console.error('[society-codes] redeem_society_code_atomic이 알 수 없는 상태를 반환:', status);
+      return { ok: false, errorCode: 'server_error', error: 'Something went wrong. Please try again.' };
+  }
+
+  // 함수가 'ok'를 반환했으니 성공 — 응답에 실어보낼 expiresAt만 별도로 조회합니다(함수는
+  // 상태 문자열만 반환하므로).
+  const { data: codeRow, error: codeError } = await supabaseAdmin
+    .from('society_codes')
+    .select('expires_at')
+    .eq('code', code)
+    .maybeSingle();
+  if (codeError || !codeRow) {
+    console.error('[society-codes] 성공 후 expires_at 조회 실패:', codeError);
+    return { ok: true };
   }
 
   return { ok: true, expiresAt: codeRow.expires_at };
