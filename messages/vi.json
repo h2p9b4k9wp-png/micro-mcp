@@ -403,7 +403,7 @@
       "subtitle": "Trải nghiệm các tính năng cốt lõi mà không cần tài khoản — cả phân tích tệp lẫn hỏi đáp AI.",
       "analyzing": "Đang phân tích tệp của bạn…",
       "chooseFile": "Nhấp để chọn tệp",
-      "fileHint": "PDF, Word, PPT, Excel, HWP — tối đa 3MB",
+      "fileHint": "PDF, Word, PPT, Excel, HWP hoặc ảnh — tối đa 3MB",
       "fileTooLarge": "Không cần tài khoản có thể phân tích tệp tối đa 3MB.",
       "readError": "Không thể đọc tệp.",
       "analyzeError": "Không thể phân tích tệp này.",

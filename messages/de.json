@@ -403,7 +403,7 @@
       "subtitle": "Testen Sie die Kernfunktionen ohne Konto — sowohl Dateianalyse als auch KI-Fragen.",
       "analyzing": "Ihre Datei wird analysiert…",
       "chooseFile": "Klicken, um eine Datei auszuwählen",
-      "fileHint": "PDF, Word, PPT, Excel, HWP — bis zu 3 MB",
+      "fileHint": "PDF, Word, PPT, Excel, HWP oder ein Foto — bis zu 3 MB",
       "fileTooLarge": "Ohne Konto können Sie Dateien bis zu 3 MB analysieren.",
       "readError": "Die Datei konnte nicht gelesen werden.",
       "analyzeError": "Diese Datei konnte nicht analysiert werden.",

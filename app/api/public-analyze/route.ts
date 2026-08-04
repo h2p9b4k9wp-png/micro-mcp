@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { extractFileText, FileExtractError } from '@/lib/file-text-extract';
-import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
+import { runLensAnalysis, runLensAnalysisOnImage, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 import { MAX_ANONYMOUS_UPLOAD_BYTES, MAX_ANONYMOUS_FILENAME_CHARS } from '@/lib/upload-limits';
+import { SUPPORTED_CHAT_IMAGE_MIME_TYPES } from '@/lib/image-constraints';
 import {
   getClientIp,
   getGuestSessionIdOrNull,
@@ -15,6 +16,17 @@ import {
 // 세션 없이도 호출할 수 있습니다. 이 요청은 게스트 세션의 "업로드" 예산(세션당 1건,
 // 이미지 체험과 공유)을 씁니다 — lib/anonymous-usage.ts의 checkGuestUploadAllowed 참고.
 // 파일 크기도 로그인 사용자(10MB)보다 훨씬 낮은 3MB로 제한합니다.
+//
+// 💡 [수정] 사진/스크린샷 첨부 — 예전엔 이 라우트가 mimeType과 무관하게 무조건
+// extractFileText()(텍스트 추출)로 넘겼는데, extractFileText는 알 수 없는 형식을 UTF-8
+// 텍스트로 읽어보는 방식으로 동작해서(lib/file-text-extract.ts) 이미지 바이너리를 그대로
+// 텍스트로 디코딩한 깨진 문자열을 분석에 넘기는 셈이었습니다 — 요청 자체는 200으로
+// 성공하지만 결과가 사실상 의미 없는, "파일 첨부가 안 되는 것처럼 보이는" 경험이었습니다.
+// 이 앱의 다른 두 게스트 경로(app/api/public-chat의 첨부, app/api/public-guided-trial의
+// 사진 체험)는 이미 이미지를 비전으로 제대로 처리하고 있어서, 이 라우트만 예외였습니다.
+// 이제 mimeType이 이미지면 runLensAnalysisOnImage로 비전 분석합니다 — 이미지는 텍스트가
+// 없어 detectLens로 관점을 자동 판별할 수 없으므로, lib/lenses.ts의 detectLens가 매칭되는
+// 게 없을 때 쓰는 것과 같은 기본값인 'digest'(요약정리)를 씁니다.
 
 export async function POST(req: Request) {
   try {
@@ -78,6 +90,17 @@ export async function POST(req: Request) {
       );
     }
 
+    // 💡 다른 두 게스트 경로(public-chat 첨부, public-guided-trial)와 동일한 형식
+    // 화이트리스트로 이미지 여부/지원 형식을 판별합니다 — HEIC 등 비전 모델이 못 읽는
+    // 형식은 여기서 바로 안내합니다.
+    const isImage = (mimeType || '').startsWith('image/');
+    if (isImage && !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(mimeType || '')) {
+      return NextResponse.json(
+        { error: 'PNG, JPEG, GIF, WEBP 형식만 지원해요. HEIC 사진이라면 JPEG로 변환해서 다시 시도해주세요.' },
+        { status: 400 }
+      );
+    }
+
     // 💡 이 지점부터는 실제 파싱·OpenAI 호출로 이어지는 비용 발생 구간이라, 이후 실패
     // (파싱 오류, AI 오류 등)와 무관하게 여기서 한 번을 소진한 것으로 기록합니다 — 그래야
     // 일부러 깨진 파일을 계속 보내며 재시도하는 방식으로 한도를 우회할 수 없습니다.
@@ -95,8 +118,26 @@ export async function POST(req: Request) {
       );
     }
 
-    const text = await extractFileText(fileName, mimeType, content);
-    const { lensId, result } = await runLensAnalysis({ apiKey, text, fileName });
+    let text: string;
+    let lensId;
+    let result: unknown;
+    if (isImage) {
+      // 💡 이미지는 텍스트가 없어 detectLens로 관점을 자동 판별할 수 없으므로 'digest'
+      // (lib/lenses.ts의 detectLens가 아무 것도 매칭되지 않을 때 쓰는 것과 같은 기본값)로
+      // 고정합니다. text는 저장(handleSaveTrialResult)/로그인 후 복원 흐름에서 재추출 없이
+      // 재사용하려는 용도인데 이미지에는 추출된 텍스트가 없으니, 그 흐름이 빈 파일로
+      // 보이지 않도록 사람이 읽을 수 있는 안내 문구를 대신 넣어둡니다.
+      const dataUrl = `data:${mimeType};base64,${content}`;
+      const analysis = await runLensAnalysisOnImage({ apiKey, dataUrl, lens: 'digest' });
+      lensId = analysis.lensId;
+      result = analysis.result;
+      text = `[이미지 파일: ${fileName}] 이 결과는 사진을 비전 분석한 결과라 재사용 가능한 텍스트가 없습니다.`;
+    } else {
+      text = await extractFileText(fileName, mimeType, content);
+      const analysis = await runLensAnalysis({ apiKey, text, fileName });
+      lensId = analysis.lensId;
+      result = analysis.result;
+    }
 
     // 💡 text를 그대로 함께 돌려줍니다 — 로그인 후 이 결과를 저장할 때 파일을 다시 올리지
     // 않고 이 응답에 담긴 text를 그대로 쓰기 위함입니다(app/login/page.tsx 참고).

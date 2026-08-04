@@ -174,6 +174,10 @@ function LoginPageContent() {
   // 💡 [신규] 로그인 없이 파일 1개를 분석해보는 체험. 서버(app/api/public-analyze)가
   // IP당 시간당/일일 호출 횟수·3MB 상한을 강제하므로, 여기서는 사용자에게 보여줄 에러
   // 메시지 처리와 결과 상태 관리만 담당합니다.
+  //
+  // 💡 [수정] 사진도 이 섹션에 첨부할 수 있습니다(서버가 이제 mimeType이 이미지면 비전으로
+  // 분석합니다 — app/api/public-analyze 참고). handleGuestChatAttachmentChange와 같은
+  // 이유로 지원 형식(HEIC 등 제외)을 먼저 확인하고, 큰 사진은 업로드 전에 다운스케일합니다.
   const handleTrialFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -181,6 +185,12 @@ function LoginPageContent() {
 
     if (file.size > 3 * 1024 * 1024) {
       setTrialError(t('login.trial.fileTooLarge'));
+      return;
+    }
+
+    const isImage = file.type.startsWith('image/');
+    if (isImage && !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
+      setTrialError(t('login.trial.guided.unsupportedFormat'));
       return;
     }
 
@@ -194,15 +204,18 @@ function LoginPageContent() {
         reader.onerror = () => reject(new Error(t('login.trial.readError')));
         reader.readAsDataURL(file);
       });
-      const commaIndex = dataUrl.indexOf(',');
-      const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
+      const finalDataUrl = isImage ? await resizeImageDataUrl(dataUrl) : dataUrl;
+      const commaIndex = finalDataUrl.indexOf(',');
+      const base64Content = commaIndex !== -1 ? finalDataUrl.substring(commaIndex + 1) : finalDataUrl;
+      const mimeMatch = finalDataUrl.match(/^data:([^;]+);/);
+      const mimeType = isImage ? mimeMatch ? mimeMatch[1] : file.type : file.type || 'application/octet-stream';
 
       const res = await fetch('/api/public-analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fileName: file.name,
-          mimeType: file.type || 'application/octet-stream',
+          mimeType,
           content: base64Content,
         }),
       });

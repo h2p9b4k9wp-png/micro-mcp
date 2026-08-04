@@ -403,7 +403,7 @@
       "subtitle": "Prova kärnfunktionerna utan konto — både filanalys och AI-frågor och svar.",
       "analyzing": "Analyserar din fil…",
       "chooseFile": "Klicka för att välja en fil",
-      "fileHint": "PDF, Word, PPT, Excel, HWP — upp till 3 MB",
+      "fileHint": "PDF, Word, PPT, Excel, HWP eller ett foto — upp till 3 MB",
       "fileTooLarge": "Filer upp till 3 MB kan analyseras utan konto.",
       "readError": "Kunde inte läsa filen.",
       "analyzeError": "Kunde inte analysera denna fil.",

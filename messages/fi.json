@@ -403,7 +403,7 @@
       "subtitle": "Kokeile ydintoimintoja ilman tiliä — sekä tiedostoanalyysiä että AI-kysymyksiä.",
       "analyzing": "Analysoidaan tiedostoasi…",
       "chooseFile": "Napsauta valitaksesi tiedoston",
-      "fileHint": "PDF, Word, PPT, Excel, HWP — enintään 3 Mt",
+      "fileHint": "PDF, Word, PPT, Excel, HWP tai valokuva — enintään 3 Mt",
       "fileTooLarge": "Enintään 3 Mt:n tiedostoja voidaan analysoida ilman tiliä.",
       "readError": "Tiedostoa ei voitu lukea.",
       "analyzeError": "Tätä tiedostoa ei voitu analysoida.",

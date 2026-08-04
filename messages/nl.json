@@ -403,7 +403,7 @@
       "subtitle": "Probeer de kernfuncties zonder account — zowel bestandsanalyse als AI-vragen.",
       "analyzing": "Je bestand wordt geanalyseerd…",
       "chooseFile": "Klik om een bestand te kiezen",
-      "fileHint": "PDF, Word, PPT, Excel, HWP — tot 3MB",
+      "fileHint": "PDF, Word, PPT, Excel, HWP of een foto — tot 3MB",
       "fileTooLarge": "Zonder account kun je bestanden tot 3MB analyseren.",
       "readError": "Kon het bestand niet lezen.",
       "analyzeError": "Kon dit bestand niet analyseren.",

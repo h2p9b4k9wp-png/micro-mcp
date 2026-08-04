@@ -403,7 +403,7 @@
       "subtitle": "Prova le funzionalità principali senza account — sia l'analisi dei file che le domande all'IA.",
       "analyzing": "Analisi del file in corso…",
       "chooseFile": "Clicca per scegliere un file",
-      "fileHint": "PDF, Word, PPT, Excel, HWP — fino a 3MB",
+      "fileHint": "PDF, Word, PPT, Excel, HWP o una foto — fino a 3MB",
       "fileTooLarge": "Senza account puoi analizzare file fino a 3MB.",
       "readError": "Impossibile leggere il file.",
       "analyzeError": "Impossibile analizzare questo file.",

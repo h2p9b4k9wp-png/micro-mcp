@@ -403,7 +403,7 @@
       "subtitle": "로그인 없이도 핵심 기능을 체험해보세요 — 파일 분석과 AI 질문 모두 가능해요.",
       "analyzing": "파일을 분석하는 중…",
       "chooseFile": "클릭해서 파일 선택",
-      "fileHint": "PDF·워드·PPT·엑셀·한글(HWP) — 최대 3MB",
+      "fileHint": "PDF·워드·PPT·엑셀·한글(HWP)·사진 — 최대 3MB",
       "fileTooLarge": "계정 없이는 3MB까지 분석할 수 있어요.",
       "readError": "파일을 읽지 못했어요.",
       "analyzeError": "이 파일을 분석하지 못했어요.",

@@ -403,7 +403,7 @@
       "subtitle": "Try the core features without an account — both file analysis and AI Q&A.",
       "analyzing": "Analyzing your file…",
       "chooseFile": "Click to choose a file",
-      "fileHint": "PDF, Word, PPT, Excel, HWP — up to 3MB",
+      "fileHint": "PDF, Word, PPT, Excel, HWP, or a photo — up to 3MB",
       "fileTooLarge": "Files up to 3MB can be analyzed without an account.",
       "readError": "Could not read the file.",
       "analyzeError": "Could not analyze this file.",

@@ -403,7 +403,7 @@
       "subtitle": "アカウントなしでも核心機能を体験できます — ファイル分析もAIへの質問も可能です。",
       "analyzing": "ファイルを分析中…",
       "chooseFile": "クリックしてファイルを選択",
-      "fileHint": "PDF・Word・PPT・Excel・HWP — 最大3MB",
+      "fileHint": "PDF・Word・PPT・Excel・HWP・写真 — 最大3MB",
       "fileTooLarge": "アカウントなしでは3MBまで分析できます。",
       "readError": "ファイルを読み込めませんでした。",
       "analyzeError": "このファイルを分析できませんでした。",
