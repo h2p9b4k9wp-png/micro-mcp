@@ -445,6 +445,10 @@
         "tooLarge": "Zonder account kun je foto's tot 3MB analyseren.",
         "questionsTitle": "Verwachte vragen",
         "summaryTitle": "Samenvatting"
+      },
+      "usage": {
+        "uploadRemaining": "Nog {remaining}/{total} bestandsproef over",
+        "chatRemaining": "Nog {remaining}/{total} chatbeurten over"
       }
     }
   },
@@ -685,5 +689,12 @@
       "heading": "Contact",
       "body": "Vragen over deze voorwaarden kun je sturen naar <mailto>kcw022@naver.com</mailto>."
     }
+  },
+  "usage": {
+    "title": "Gebruik deze maand",
+    "chatRemaining": "Nog {remaining}/{total} chats over",
+    "fileRemaining": "Nog {remaining}/{total} bestanden over",
+    "chatLabel": "Chat",
+    "fileLabel": "Bestanden"
   }
 }

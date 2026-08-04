@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import type { QuestionsResult, DigestResult } from '@/lib/lenses';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
 import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
+import { SESSION_UPLOAD_LIMIT } from '@/lib/guest-trial-limits';
 
 export interface GuidedTrialResult {
   questions: QuestionsResult;
@@ -32,6 +33,10 @@ export function useGuidedTrial() {
   const [uploaded, setUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GuidedTrialResult | null>(null);
+  // 💡 [신규] 당근 게이지(components/carrot-gauge.tsx)용 — 세션당 업로드 예산(1건, 파일
+  // 분석·채팅 첨부와 공유)이 몇 개 남았는지. 새 세션이라고 가정하고 총량으로 시작해뒀다가,
+  // 서버가 실제로 알려주는 값(analyzeFile 성공/429 응답의 remainingUploads)으로만 갱신합니다.
+  const [uploadRemaining, setUploadRemaining] = useState(SESSION_UPLOAD_LIMIT);
 
   const analyzeFile = async (file: File) => {
     if (!SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
@@ -70,12 +75,14 @@ export function useGuidedTrial() {
         if (data.limitReached) {
           setLimitType((data.limitType as GuidedTrialLimitType) || 'session');
           setUploaded(false);
+          if (typeof data.remainingUploads === 'number') setUploadRemaining(data.remainingUploads);
           return;
         }
         setError(data.error || t('login.trial.genericError'));
         return;
       }
       setResult({ questions: data.questions, summary: data.summary });
+      setUploadRemaining(typeof data.remainingUploads === 'number' ? data.remainingUploads : 0);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('login.trial.genericError'));
     } finally {
@@ -93,5 +100,5 @@ export function useGuidedTrial() {
     setResult(null);
   };
 
-  return { limitType, isAnalyzing, uploaded, error, result, analyzeFile, reset };
+  return { limitType, isAnalyzing, uploaded, error, result, uploadRemaining, analyzeFile, reset };
 }

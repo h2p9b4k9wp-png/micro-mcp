@@ -1,6 +1,9 @@
 import { randomUUID } from 'crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { SESSION_UPLOAD_LIMIT, SESSION_CHAT_TURN_LIMIT } from './guest-trial-limits';
+
+export { SESSION_UPLOAD_LIMIT, SESSION_CHAT_TURN_LIMIT };
 
 // 💡 [신규] 로그인 없이 체험할 수 있는 세 기능(app/api/public-analyze, app/api/public-chat,
 // app/api/public-guided-trial)이 공유하는 남용 방지 로직입니다. 예전엔 "IP당 시간당/일일
@@ -37,7 +40,6 @@ import { cookies } from 'next/headers';
 // guest-limit-banner.tsx가 렌더링, session/ip/global 세 경우 모두 API의 raw error
 // 문자열이 아니라 이 번역 문구를 보여줍니다 — 애초에 원시 에러가 아니라 안내 배너였습니다).
 export const IP_DAILY_SESSION_LIMIT = 30;
-export const SESSION_CHAT_TURN_LIMIT = 3;
 export const GLOBAL_DAILY_GUEST_LIMIT = 1000;
 
 // 💡 [신규] anonymous_trial_usage.ip_address 보관 기간 — IP 주소는 개인정보이므로 무기한
@@ -217,8 +219,10 @@ async function sessionHasUsedUpload(supabaseAdmin: SupabaseClient, sessionId: st
   return (count ?? 0) > 0;
 }
 
-// 이 세션이 이미 채팅 3턴을 다 썼는지.
-async function sessionChatTurnsUsed(supabaseAdmin: SupabaseClient, sessionId: string): Promise<number> {
+// 이 세션이 이미 채팅 몇 턴을 썼는지 — checkGuestChatAllowed 내부 판정뿐 아니라, 응답에
+// "몇 턴 남았는지"를 실어보내는 API 라우트(app/api/public-chat)에서도 그대로 씁니다. 당근
+// 게이지가 서버가 실제로 기록한 값만 보여주도록(미리 짐작하지 않도록) 하기 위해 export합니다.
+export async function sessionChatTurnsUsed(supabaseAdmin: SupabaseClient, sessionId: string): Promise<number> {
   const { count, error } = await supabaseAdmin
     .from('anonymous_trial_usage')
     .select('id', { count: 'exact', head: true })

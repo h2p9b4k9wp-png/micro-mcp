@@ -445,6 +445,10 @@
         "tooLarge": "アカウントなしでは3MBまで分析できます。",
         "questionsTitle": "予想問題",
         "summaryTitle": "要約"
+      },
+      "usage": {
+        "uploadRemaining": "ファイル体験残り{remaining}/{total}",
+        "chatRemaining": "チャット体験残り{remaining}/{total}ターン"
       }
     }
   },
@@ -685,5 +689,12 @@
       "heading": "お問い合わせ",
       "body": "本規約に関するご質問は<mailto>kcw022@naver.com</mailto>までお送りください。"
     }
+  },
+  "usage": {
+    "title": "今月の残り利用回数",
+    "chatRemaining": "チャット残り{remaining}/{total}回",
+    "fileRemaining": "ファイル処理残り{remaining}/{total}回",
+    "chatLabel": "チャット",
+    "fileLabel": "ファイル"
   }
 }

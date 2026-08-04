@@ -53,6 +53,7 @@ export async function POST(req: Request) {
           error: 'Guided trial already used. Log in to keep using it.',
           limitReached: true,
           limitType: usageCheck.limitType,
+          ...(usageCheck.limitType === 'session' ? { remainingUploads: 0 } : {}),
         },
         { status: 429 }
       );
@@ -92,7 +93,7 @@ export async function POST(req: Request) {
     const recordResult = await recordAnonymousUploadIfAllowed(supabaseAdmin, ip, 'guided', sessionId);
     if (!recordResult.ok) {
       return NextResponse.json(
-        { error: 'Guided trial already used. Log in to keep using it.', limitReached: true, limitType: 'session' },
+        { error: 'Guided trial already used. Log in to keep using it.', limitReached: true, limitType: 'session', remainingUploads: 0 },
         { status: 429 }
       );
     }
@@ -106,6 +107,9 @@ export async function POST(req: Request) {
     return NextResponse.json({
       questions: questions.result,
       summary: summary.result,
+      // 💡 세션당 업로드 1건 예산을 이 요청이 방금 소모했으므로 항상 0 — 당근 게이지가
+      // 다음 429를 기다리지 않고 바로 "잎만 남음"으로 갱신하도록.
+      remainingUploads: 0,
     });
   } catch (error) {
     if (error instanceof LensAnalysisParseError) {

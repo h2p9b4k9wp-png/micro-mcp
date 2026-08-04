@@ -12,6 +12,8 @@ import {
   checkGuestUploadAllowed,
   recordAnonymousUsage,
   recordAnonymousUploadIfAllowed,
+  sessionChatTurnsUsed,
+  SESSION_CHAT_TURN_LIMIT,
 } from '@/lib/anonymous-usage';
 
 // 💡 [신규] 로그인 없이 AI에게 자유 질문 하나를 던져보는 체험(app/login/page.tsx의 "AI에게
@@ -80,6 +82,7 @@ export async function POST(req: Request) {
           limitReached: true,
           limitType: usageCheck.limitType,
           limitScope: 'chat',
+          ...(usageCheck.limitType === 'session' ? { remainingChatTurns: 0 } : {}),
         },
         { status: 429 }
       );
@@ -110,6 +113,7 @@ export async function POST(req: Request) {
             limitReached: true,
             limitType: uploadCheck.limitType,
             limitScope: 'upload',
+            ...(uploadCheck.limitType === 'session' ? { remainingUploads: 0 } : {}),
           },
           { status: 429 }
         );
@@ -149,6 +153,7 @@ export async function POST(req: Request) {
             limitReached: true,
             limitType: 'session',
             limitScope: 'upload',
+            remainingUploads: 0,
           },
           { status: 429 }
         );
@@ -174,6 +179,17 @@ export async function POST(req: Request) {
     // 소진한 것으로 기록합니다. (첨부 검증 실패로 위에서 이미 리턴된 요청은 여기 도달하지
     // 않으므로 채팅 턴을 소모하지 않습니다 — 소모되는 예산은 그 경우 업로드 슬롯뿐입니다.)
     await recordAnonymousUsage(supabaseAdmin, ip, 'chat', sessionId);
+    // 💡 방금 기록을 마친 직후라 이 조회는 이번 요청까지 포함한 정확한 사용량입니다 — 응답
+    // 본문이 스트리밍 텍스트라 JSON 필드로 못 실어보내니 헤더로 내려보내고, 클라이언트(당근
+    // 게이지)가 이 값을 읽습니다. 조회 자체가 실패해도(네트워크 등) 채팅 응답을 막을
+    // 이유는 아니라 실패하면 헤더 없이 진행합니다.
+    let remainingChatTurns: number | null = null;
+    try {
+      const turnsUsed = await sessionChatTurnsUsed(supabaseAdmin, sessionId);
+      remainingChatTurns = Math.max(0, SESSION_CHAT_TURN_LIMIT - turnsUsed);
+    } catch (err) {
+      console.error('[public-chat] 남은 채팅 턴 조회 실패(응답에는 영향 없음):', err);
+    }
 
     const truncatedPrompt = truncateForPrompt(prompt.trim(), MAX_ANONYMOUS_PROMPT_CHARS);
 
@@ -240,8 +256,20 @@ This is a login-free trial of the assistant, so you have no access to any saved 
       },
     });
 
+    // 💡 스트리밍 응답이라 잔여 예산은 JSON 필드가 아니라 헤더로 내려보냅니다 —
+    // app/login/page.tsx가 res.headers.get()으로 읽어 당근 게이지에 반영합니다. 첨부가
+    // 있었던 요청만 업로드 슬롯 헤더를 붙입니다(없었던 요청은 업로드 예산에 아무 변화가
+    // 없으므로 기존 클라이언트 상태를 그대로 둬야 합니다).
+    const responseHeaders = new Headers({ 'Content-Type': 'text/plain; charset=utf-8' });
+    if (remainingChatTurns !== null) {
+      responseHeaders.set('X-Guest-Chat-Turns-Remaining', String(remainingChatTurns));
+    }
+    if (hasAttachment) {
+      responseHeaders.set('X-Guest-Upload-Remaining', '0');
+    }
+
     return new Response(readableStream, {
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      headers: responseHeaders,
     });
   } catch (error) {
     console.error('[public-chat] error:', error);

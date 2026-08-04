@@ -445,6 +445,10 @@
         "tooLarge": "계정 없이는 3MB까지 분석할 수 있어요.",
         "questionsTitle": "예상 문제",
         "summaryTitle": "요약정리"
+      },
+      "usage": {
+        "uploadRemaining": "파일/사진 체험 {remaining}/{total} 남음",
+        "chatRemaining": "채팅 체험 {remaining}/{total}턴 남음"
       }
     }
   },
@@ -685,5 +689,12 @@
       "heading": "문의",
       "body": "본 약관에 대한 질문은 <mailto>kcw022@naver.com</mailto>로 보내주세요."
     }
+  },
+  "usage": {
+    "title": "이번 달 남은 사용량",
+    "chatRemaining": "채팅 {remaining}/{total}회 남음",
+    "fileRemaining": "파일 처리 {remaining}/{total}회 남음",
+    "chatLabel": "채팅",
+    "fileLabel": "파일"
   }
 }

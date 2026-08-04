@@ -47,6 +47,9 @@ export async function POST(req: Request) {
           error: 'Guest trial limit reached. Log in to keep using it.',
           limitReached: true,
           limitType: usageCheck.limitType,
+          // 💡 세션당 업로드는 1건뿐이라, "session" 사유로 막혔다는 건 곧 남은 슬롯이 0이라는
+          // 뜻입니다(components/carrot-gauge.tsx 게이지가 이 값을 그대로 반영합니다).
+          ...(usageCheck.limitType === 'session' ? { remainingUploads: 0 } : {}),
         },
         { status: 429 }
       );
@@ -87,7 +90,7 @@ export async function POST(req: Request) {
     const recordResult = await recordAnonymousUploadIfAllowed(supabaseAdmin, ip, 'analyze', sessionId);
     if (!recordResult.ok) {
       return NextResponse.json(
-        { error: 'Guest trial limit reached. Log in to keep using it.', limitReached: true, limitType: 'session' },
+        { error: 'Guest trial limit reached. Log in to keep using it.', limitReached: true, limitType: 'session', remainingUploads: 0 },
         { status: 429 }
       );
     }
@@ -97,7 +100,10 @@ export async function POST(req: Request) {
 
     // 💡 text를 그대로 함께 돌려줍니다 — 로그인 후 이 결과를 저장할 때 파일을 다시 올리지
     // 않고 이 응답에 담긴 text를 그대로 쓰기 위함입니다(app/login/page.tsx 참고).
-    return NextResponse.json({ fileName, text, lens: lensId, result });
+    // 💡 remainingUploads — 방금 이 요청이 세션당 1건뿐인 업로드 예산을 막 소모했으므로 항상
+    // 0입니다. 당근 게이지(components/carrot-gauge.tsx)가 이 값을 받아 즉시 "잎만 남음"
+    // 상태로 갱신합니다(다음 429를 기다리지 않고).
+    return NextResponse.json({ fileName, text, lens: lensId, result, remainingUploads: 0 });
   } catch (error) {
     if (error instanceof LensAnalysisParseError) {
       return NextResponse.json({ error: error.message }, { status: 500 });

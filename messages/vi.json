@@ -445,6 +445,10 @@
         "tooLarge": "Không cần tài khoản có thể phân tích ảnh tối đa 3MB.",
         "questionsTitle": "Câu hỏi dự kiến",
         "summaryTitle": "Tóm tắt"
+      },
+      "usage": {
+        "uploadRemaining": "Còn {remaining}/{total} lượt dùng thử tệp",
+        "chatRemaining": "Còn {remaining}/{total} lượt chat dùng thử"
       }
     }
   },
@@ -685,5 +689,12 @@
       "heading": "Liên hệ",
       "body": "Câu hỏi về các điều khoản này có thể gửi đến <mailto>kcw022@naver.com</mailto>."
     }
+  },
+  "usage": {
+    "title": "Lượt dùng còn lại tháng này",
+    "chatRemaining": "Còn {remaining}/{total} lượt chat",
+    "fileRemaining": "Còn {remaining}/{total} lượt xử lý tệp",
+    "chatLabel": "Trò chuyện",
+    "fileLabel": "Tệp"
   }
 }

@@ -40,6 +40,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { CarrotGauge } from '@/components/carrot-gauge';
 import { useTranslations, useLocale } from 'next-intl';
 import {
   detectLens,
@@ -320,6 +321,14 @@ export default function HomePage() {
   // 💡 [신규] 유료 전환 준비 — 결제 시스템은 아직 없고 profiles.is_pro만 봅니다(기본 false).
   // "Pro로 업그레이드하기" 배지/한도 도달 시 열리는 요청 폼 공용 상태.
   const [isPro, setIsPro] = useState(false);
+  // 💡 [신규] 사이드바 당근 게이지(components/carrot-gauge.tsx)용 — 이번 달 채팅/파일 처리
+  // 사용량. 한도에 도달했을 때만 알려주던 기존 openUpgradeModal()과 달리, 평소에도 "몇 회
+  // 남았는지"를 보여주기 위한 조회 전용 상태입니다(/api/usage-summary, fetchUsageSummary).
+  const [usageSummary, setUsageSummary] = useState<{
+    isPro: boolean;
+    chat: { used: number; limit: number };
+    file: { used: number; limit: number };
+  } | null>(null);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [upgradeContext, setUpgradeContext] = useState<string | null>(null);
   const [upgradeEmail, setUpgradeEmail] = useState('');
@@ -541,6 +550,7 @@ export default function HomePage() {
         fetchProfessorsAndDocuments(retrySession.user.id);
         fetchConversationFolders(retrySession.user.id);
         fetchIsPro(retrySession.user.id);
+        fetchUsageSummary();
       } else {
         setUser(session.user);
         fetchLogs(session.user.id);
@@ -548,6 +558,7 @@ export default function HomePage() {
         fetchProfessorsAndDocuments(session.user.id);
         fetchConversationFolders(session.user.id);
         fetchIsPro(session.user.id);
+        fetchUsageSummary();
       }
 
       setLoading(false);
@@ -574,6 +585,21 @@ export default function HomePage() {
   const fetchIsPro = async (userId: string) => {
     const { data } = await supabase.from('profiles').select('is_pro').eq('id', userId).single();
     setIsPro(Boolean(data?.is_pro));
+  };
+
+  // 💡 [신규] 사이드바 당근 게이지용 — /api/usage-summary(조회 전용)를 호출합니다. 실패해도
+  // (네트워크 등) 조용히 넘어갑니다 — 게이지가 잠깐 안 보이는 것뿐이라 다른 기능을 막을
+  // 이유가 아닙니다. 초기 로드 시(fetchIsPro와 같은 시점) + 채팅/파일 업로드가 성공할
+  // 때마다(handleExecute의 logs insert, recordDocumentUpload) 다시 불러 최신 상태를 유지합니다.
+  const fetchUsageSummary = async () => {
+    try {
+      const res = await fetch('/api/usage-summary');
+      if (!res.ok) return;
+      const data = await res.json();
+      setUsageSummary({ isPro: Boolean(data.isPro), chat: data.chat, file: data.file });
+    } catch (err) {
+      console.error('사용량 조회 실패:', err);
+    }
   };
 
   // 💡 [신규] 대화 폴더 목록 조회.
@@ -651,6 +677,7 @@ export default function HomePage() {
     try {
       const { error } = await supabase.from('document_uploads').insert({ file_name: name, format });
       if (error) throw error;
+      fetchUsageSummary();
     } catch (err) {
       console.error('문서 업로드 기록 실패:', err);
     }
@@ -1506,6 +1533,7 @@ export default function HomePage() {
 
       if (!error && data) {
         setLogs(prev => [data, ...prev]);
+        fetchUsageSummary();
       }
     } catch (dbErr) {
       console.error('로그 저장 중 오류 발생:', dbErr);
@@ -2091,6 +2119,38 @@ export default function HomePage() {
             <span className="font-semibold text-[var(--text-primary)]">{t('common.aiConnected')}</span>
           </div>
         </div>
+
+        {/* 💡 [신규] 이번 달 남은 사용량 — 당근 게이지(components/carrot-gauge.tsx). Pro는
+            한도가 사실상 무제한(월 1000회/200회)이라 의미가 없으므로 무료 등급에만 보여줍니다.
+            usageSummary가 아직 안 왔으면(로딩 중/조회 실패) 아무것도 그리지 않습니다 — 0/0
+            같은 잘못된 값을 잠깐 보여주는 것보다 안전합니다. */}
+        {!isPro && usageSummary && (
+          <div className="px-4 py-3 border-t border-[var(--border-default)] flex flex-col gap-1.5">
+            <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wide">
+              {t('usage.title')}
+            </span>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-[var(--text-tertiary)]">{t('usage.chatLabel')}</span>
+              <CarrotGauge
+                ratio={Math.max(0, usageSummary.chat.limit - usageSummary.chat.used) / usageSummary.chat.limit}
+                countText={t('usage.chatRemaining', {
+                  remaining: Math.max(0, usageSummary.chat.limit - usageSummary.chat.used),
+                  total: usageSummary.chat.limit,
+                })}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-[var(--text-tertiary)]">{t('usage.fileLabel')}</span>
+              <CarrotGauge
+                ratio={Math.max(0, usageSummary.file.limit - usageSummary.file.used) / usageSummary.file.limit}
+                countText={t('usage.fileRemaining', {
+                  remaining: Math.max(0, usageSummary.file.limit - usageSummary.file.used),
+                  total: usageSummary.file.limit,
+                })}
+              />
+            </div>
+          </div>
+        )}
 
         {/* 💡 [신규] AI 답변 언어 설정 — 브라우저 언어로 자동 감지된 값을 기본으로 쓰고,
             여기서 바꾸면 계정별로 기억됩니다(handleExecute/runLensAnalyze/

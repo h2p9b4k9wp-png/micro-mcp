@@ -445,6 +445,10 @@
         "tooLarge": "Sin cuenta se pueden analizar fotos de hasta 3MB.",
         "questionsTitle": "Preguntas esperadas",
         "summaryTitle": "Resumen"
+      },
+      "usage": {
+        "uploadRemaining": "Queda {remaining}/{total} prueba de archivo",
+        "chatRemaining": "Quedan {remaining}/{total} turnos de chat"
       }
     }
   },
@@ -685,5 +689,12 @@
       "heading": "Contacto",
       "body": "Las preguntas sobre estos términos pueden enviarse a <mailto>kcw022@naver.com</mailto>."
     }
+  },
+  "usage": {
+    "title": "Uso este mes",
+    "chatRemaining": "Quedan {remaining}/{total} chats",
+    "fileRemaining": "Quedan {remaining}/{total} archivos",
+    "chatLabel": "Chat",
+    "fileLabel": "Archivos"
   }
 }

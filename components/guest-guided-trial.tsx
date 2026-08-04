@@ -2,9 +2,11 @@
 
 import { useTranslations } from 'next-intl';
 import { useGuidedTrial } from '@/lib/use-guided-trial';
+import { SESSION_UPLOAD_LIMIT } from '@/lib/guest-trial-limits';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { GuestLimitBanner } from '@/components/guest-limit-banner';
+import { CarrotGauge } from '@/components/carrot-gauge';
 import type { CircuitGraphState } from '@/types/blocks';
 
 // 💡 [신규] 로그인 없이 사진/캡처본 한 장을 올려 회로도 애니메이션 + 예상 문제 + 요약정리를
@@ -15,7 +17,7 @@ import type { CircuitGraphState } from '@/types/blocks';
 // 히어로용은 components/welcome-hero-trial.tsx가 같은 훅으로 별도 레이아웃을 그립니다).
 export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => void }) {
   const t = useTranslations();
-  const { limitType, isAnalyzing, uploaded, error, result, analyzeFile } = useGuidedTrial();
+  const { limitType, isAnalyzing, uploaded, error, result, uploadRemaining, analyzeFile } = useGuidedTrial();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,9 +42,15 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
 
   return (
     <div>
-      <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
-        {t('login.trial.guided.sectionTitle')}
-      </p>
+      <div className="flex items-center justify-between gap-2 mb-2.5">
+        <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">
+          {t('login.trial.guided.sectionTitle')}
+        </p>
+        <CarrotGauge
+          ratio={uploadRemaining / SESSION_UPLOAD_LIMIT}
+          countText={t('login.trial.usage.uploadRemaining', { remaining: uploadRemaining, total: SESSION_UPLOAD_LIMIT })}
+        />
+      </div>
 
       {limitType && !result ? (
         <GuestLimitBanner limitType={limitType} context="upload" onRequestSignUp={onRequestSignUp} />
