@@ -1,0 +1,709 @@
+{
+  "app": {
+    "loadingSession": "Laddar...",
+    "title": "Gör dina föreläsningsanteckningar till sannolika tentafrågor | Carrotly",
+    "description": "Ladda upp ditt eget kursmaterial och få sannolika tentafrågor samt en kortfattad sammanfattning, anpassad efter hur din kurs undervisas. Delas aldrig. Ingen registrering."
+  },
+  "nav": {
+    "workspace": "Fråga AI",
+    "records": "Mina uppgifter",
+    "deadlines": "Deadlines",
+    "professors": "Föreläsare och professorer",
+    "monitoring": "Mina filer",
+    "logs": "Tidigare konversationer"
+  },
+  "common": {
+    "send": "Skicka fråga",
+    "sending": "Skickar...",
+    "delete": "Ta bort",
+    "create": "Skapa",
+    "aiConnected": "OpenAI GPT-4.1 mini ansluten",
+    "close": "Stäng",
+    "openMenu": "Öppna meny",
+    "logout": "Logga ut",
+    "unknownError": "Okänt fel",
+    "responseLanguageLabel": "AI:ns svarsspråk",
+    "themeLabel": "Tema",
+    "aiGeneratedNotice": "AI-genererat — kan vara ofullständigt eller felaktigt."
+  },
+  "workspace": {
+    "subtitle": "AI:n genererar svar baserat på konversationskontexten och innehållet i bifogade dokument.",
+    "promptSectionLabel": "Skicka fråga till AI",
+    "removeAttachment": "Ta bort bilaga {name}",
+    "attachFile": "Bifoga fil/foto",
+    "webSearchToggle": "Växla webbsökning",
+    "webSearchOnTitle": "Webbsökning på — långsammare och kostar mer",
+    "webSearchOffTitle": "Webbsökning av — slå på när du behöver aktuell information",
+    "webSearchLabel": "Webbsökning {state}",
+    "promptPlaceholder": "t.ex. Sammanfatta veckans plan utifrån det bifogade schemat...",
+    "dropHint": "Du kan också släppa filer eller foton här för att bifoga dem. Bilagor finns kvar under resten av den här konversationen.",
+    "aiResponseLabel": "AI-svar",
+    "idleMessage": "Hej! Fråga mig vad som helst!",
+    "actionItemsFound": "✨ Hittade att-göra-punkter med datum",
+    "registerAsDeadline": "Registrera som deadline",
+    "examplePrompts": {
+      "searchTrend": "Sök efter de senaste trenderna inom detta område och berätta för mig",
+      "summarizeDoc": "Sammanfatta huvudpunkterna i det bifogade dokumentet",
+      "weeklyPlan": "Organisera vad jag behöver göra först den här veckan",
+      "extensionEmail": "Skriv ett e-postmeddelande som begär förlängd deadline",
+      "meetingNotes": "Organisera mötesanteckningarna jag just klistrade in"
+    },
+    "lensChoices": {
+      "deadlines": "Extrahera deadlines",
+      "questions": "Förväntade frågor",
+      "digest": "Kärnsammanfattning",
+      "none": "Bara chatta"
+    },
+    "lens": {
+      "noDeadlinesFound": "Kunde inte hitta några poster med förfallodatum.",
+      "registerAll": "Registrera alla",
+      "registerAllDone": "Alla registrerade",
+      "register": "Registrera",
+      "registered": "Registrerad",
+      "noQuestionsFound": "Kunde inte ta fram förväntade frågor.",
+      "weakness": "Svaghet: {text}",
+      "evidencePrefix": "Belägg"
+    },
+    "errors": {
+      "fileTooLarge": "\"{fileName}\" är för stor (över 10 MB). Prova en mindre fil.",
+      "unsupportedImage": "\"{fileName}\" är ett bildformat som AI:n inte kan läsa ({mimeType}). Om det är ett iPhone-foto, byt till \"Mest kompatibel (JPEG)\" i Inställningar, eller spara om det som JPG/PNG innan du laddar upp.",
+      "unknownFormat": "okänt",
+      "fileReadFailed": "Det gick inte att läsa filen.",
+      "extractFailed": "Kunde inte extrahera text från \"{fileName}\": {error}",
+      "attachProcessingFailed": "Ett fel uppstod vid bearbetning av \"{fileName}\": {error}",
+      "unknownError": "Ett okänt fel uppstod.",
+      "requestFailed": "Tyvärr kunde vi inte behandla din förfrågan: {error}",
+      "networkError": "Tyvärr uppstod ett nätverksfel: {error}",
+      "analyzeFailed": "Analysen misslyckades.",
+      "analyzeErrorFallback": "Ett fel uppstod under analysen.",
+      "tooManyAttachments": "Du kan bifoga upp till {max} filer/bilder åt gången (just nu {count}). Ta bort några filer eller rensa befintliga bilagor och försök igen.",
+      "quotaCheckFailed": "Kunde inte kontrollera din kvot."
+    },
+    "viewAsLens": "Visa som {label}",
+    "meetingNotesCourseLabel": "Identifierat från mötes-/föreläsningsanteckningar",
+    "lensRegisterCourseLabel": "Extrahera deadlines · Källa: \"{date}\""
+  },
+  "records": {
+    "title": "Mina uppgifter",
+    "subtitle": "Se på ett ögonblick vilka uppgifter Carrotly har samlat in om dig hittills.",
+    "heroLabel": "Vad Carrotly vet om dig",
+    "unitSuffix": "",
+    "daysSinceJoin": "Du har varit med i {days} dagar",
+    "deadlinesCard": {
+      "title": "Registrerade deadlines",
+      "empty": "Inga deadlines registrerade än.",
+      "noCategory": "Ingen kategori",
+      "moreCategories": "+{count} kategorier till"
+    },
+    "documentsCard": {
+      "title": "Analyserade dokument",
+      "empty": "Inga dokument bifogade än.",
+      "etc": "Övrigt",
+      "formats": {
+        "excel": "Excel",
+        "hwp": "HWP",
+        "ppt": "PPT",
+        "word": "Word",
+        "pdf": "PDF",
+        "image": "Bild"
+      }
+    },
+    "logsCard": {
+      "title": "Sparade konversationer",
+      "empty": "Inga konversationer sparade än.",
+      "mostRecent": "Senaste: {date}"
+    }
+  },
+  "deadlines": {
+    "title": "Deadline-hantering",
+    "subtitle": "Samla alla dina uppgifts- och tentadeadlines på ett ställe, automatiskt sorterade efter hur brådskande de är.",
+    "dashboardTitle": "📊 Instrumentpanel — Vad vi vet hittills",
+    "emptyHint": "Ladda upp en fil för att extrahera deadlines",
+    "goToChatTab": "Gå till chattfliken",
+    "urgencyDistribution": "Brådskandegrad",
+    "timeline": "Kommande tidslinje",
+    "recentFilesLabel": "Senaste bilagor",
+    "noAttachedFiles": "Inga bifogade filer",
+    "moreFiles": "+{count} till",
+    "addManually": "Lägg till manuellt",
+    "form": {
+      "titlePlaceholder": "Uppgift (t.ex. Databasuppgift 3)",
+      "coursePlaceholder": "Ämne/kategori (valfritt)",
+      "submit": "Lägg till"
+    },
+    "noDeadlinesYet": "Inga deadlines registrerade. Lägg till din första deadline ovan!",
+    "kpi": {
+      "total": "Deadlines totalt",
+      "thisWeek": "Förfaller denna vecka",
+      "overdue": "Försenade",
+      "files": "Referensfiler"
+    },
+    "urgency": {
+      "overdue": "Försenad",
+      "critical": "Förfaller idag",
+      "high": "Brådskande (inom 3 dagar)",
+      "medium": "Denna vecka (inom 7 dagar)",
+      "low": "Senare (efter 7 dagar)"
+    },
+    "badgeOverdue": "Försenad",
+    "timelineBuckets": {
+      "overdue": "Försenad",
+      "thisWeek": "Denna vecka",
+      "nextWeek": "Nästa vecka",
+      "in2Weeks": "Om 2 veckor",
+      "in3PlusWeeks": "3+ veckor"
+    }
+  },
+  "professors": {
+    "title": "Föreläsare och professorer",
+    "subtitle": "Samla material efter föreläsare eller professor för att på ett ögonblick se vilka ämnen de betonar och hur de brukar formulera frågor.",
+    "uploadPanel": {
+      "title": "Ladda upp material",
+      "selectProfessor": "Välj föreläsare eller professor",
+      "registerNew": "+ Registrera ny föreläsare eller professor",
+      "namePlaceholder": "Namn (obligatoriskt)",
+      "schoolPlaceholder": "Lärosäte (obligatoriskt)",
+      "departmentPlaceholder": "Institution (obligatoriskt)",
+      "schoolDeptHint": "Information om lärosäte/institution hjälper till att tolka ämnesspecifik terminologi och betygssättningskonventioner mer exakt.",
+      "chooseFile": "Välj fil",
+      "paperHint": "Att ladda upp deras artiklar hjälper oss att fastställa forskningsintressen och fokus mycket mer exakt."
+    },
+    "loading": "Laddar...",
+    "noneRegistered": "Inga föreläsare eller professorer registrerade än. Ladda upp material ovan för att registrera en.",
+    "documentCount": "{count} filer",
+    "docType": {
+      "lecture": "Föreläsningsanteckningar",
+      "exam": "Gammal tenta",
+      "assignment": "Uppgift",
+      "paper": "Artikel"
+    },
+    "backToList": "Tillbaka till föreläsare och professorer",
+    "deleteProfessor": "Ta bort föreläsare eller professor",
+    "noSchoolDept": "Ingen information om lärosäte/institution",
+    "documentListTitle": "Material ({count})",
+    "noDocumentsYet": "Inget material uppladdat än.",
+    "deleteDocumentAria": "Ta bort {fileName}",
+    "circuitHint": "Klicka på AI-kärnan för att analysera deras material",
+    "notConfidentYet": "Inte tillräckligt säkert för att bedöma än",
+    "analyzeButton": "Analysera deras material",
+    "notEnoughData": "Inte tillräckligt med material än för att bedöma med säkerhet.",
+    "teaserTitle": "Ladda upp mer för att låsa upp dessa",
+    "uploadDirectly": "Ladda upp filer nu",
+    "category": {
+      "topics": "Ofta betonade ämnen",
+      "examStyle": "Frågestil",
+      "assignmentStyle": "Uppgiftsstil",
+      "examQuestionTypes": "Typer av tentafrågor",
+      "gradingStrictness": "Betygssättningens stränghet",
+      "researchInterests": "Forskningsintressen"
+    },
+    "circuit": {
+      "expected_questions": "Förväntade frågor",
+      "assignment_direction": "Uppgiftens inriktning",
+      "study_method": "Tentaförberedelsemetod"
+    },
+    "framing": {
+      "first": "Första intryck från 1 dokument",
+      "some": "Baserat på {count} dokument — ett mönster börjar bildas",
+      "clear": "Baserat på {count} dokument — mönstret är tydligt"
+    },
+    "errors": {
+      "schoolDeptRequired": "Ange både lärosäte och institution.",
+      "registerFailed": "Kunde inte registrera föreläsaren eller professorn: {error}",
+      "updateFailed": "Det gick inte att uppdatera analysen.",
+      "saveAnalysisFailed": "Kunde inte spara analysresultatet.",
+      "thisProfessorFallback": "Denna föreläsare eller professor",
+      "updateFailedAlert": "Det gick inte att uppdatera analysen för \"{name}\": {error}\nAntalet dokument och analysresultatet kan tillfälligt vara osynkroniserade — prova knappen \"Analysera deras material\" igen på detaljvyn.",
+      "docLimitReached": "Denna föreläsare eller professor kan ha högst {max} dokument (just nu {count}). Ta bort några onödiga dokument först.",
+      "docSaveFailed": "Kunde inte spara \"{fileName}\": {error}",
+      "nameRequired": "Ange ett namn.",
+      "selectProfessorFirst": "Välj en föreläsare eller professor, eller registrera en ny först.",
+      "docDeleteFailed": "Kunde inte ta bort dokumentet: {error}",
+      "professorDeleteFailed": "Kunde inte ta bort föreläsaren eller professorn: {error}"
+    },
+    "deleteConfirm": "Ta bort \"{name}\" och allt deras registrerade material? Detta kan inte ångras.",
+    "upgradeMaxProfessors": "Gratisversionen tillåter upp till {max} föreläsare eller professorer. Uppgradera till Pro — {price}",
+    "upgradeMaxDocuments": "Gratisversionen tillåter upp till {max} dokument per föreläsare eller professor. Uppgradera till Pro — {price}"
+  },
+  "monitoring": {
+    "title": "Övervakning och filer (RAG-kontext)",
+    "subtitle": "Bifoga scheman, kalkylblad, dokument och bilder som AI:n kan referera till.",
+    "uploadSectionTitle": "Bifoga filer och scheman som AI:n kan referera till",
+    "attachButton": "Bifoga fil eller kalenderhändelse",
+    "orDivider": "Eller skriv in text direkt",
+    "form": {
+      "titlePlaceholder": "Dokumenttitel (t.ex. Majhändelseschema.txt)",
+      "contentPlaceholder": "Ange schemadetaljer eller anteckningar som AI:n kan läsa...",
+      "submit": "Registrera text"
+    },
+    "fileListTitle": "Registrerade kontextfiler",
+    "noFiles": "Inga filer registrerade.",
+    "fileType": "Typ: {mimeType}",
+    "emptyContentPlaceholder": "Detta dokument har inget innehåll.",
+    "errors": {
+      "fileTooLarge": "Filen är för stor (över 10 MB). Kopiera nyckeltexten och skriv in den direkt, eller konvertera filen och ladda upp den!",
+      "unsupportedFormat": "Detta filformat kan inte läsas direkt av webbläsaren. Använd direkt textinmatning istället."
+    }
+  },
+  "logs": {
+    "title": "Databaslogg och AI-svarshistorik",
+    "subtitle": "Visa frågehistoriken som registrerats i Supabase-databasen och AI:ns svar vid den tidpunkten.",
+    "filterAll": "Alla ({count})",
+    "filterUnfiled": "Osorterade ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Ta bort mappen {folderName}",
+    "newFolderPlaceholder": "+ Ny mapp",
+    "noConversationsAtAll": "Inga konversationer sparade. Skicka en fråga från Fråga AI!",
+    "noConversationsInFolder": "Inga konversationer i denna mapp.",
+    "moveToFolderAria": "Flytta till mapp",
+    "unfiledOption": "Osorterad",
+    "collapseAnswer": "▲ Dölj svar",
+    "viewAnswer": "▼ Visa AI-svar",
+    "deleteLogAria": "Ta bort logg",
+    "responseRecordLabel": "[AI-svarspost]",
+    "errors": {
+      "logDeleteFailed": "Ett fel uppstod vid borttagning av loggen: {error}",
+      "folderCreateFailed": "Kunde inte skapa mappen: {error}",
+      "folderDeleteFailed": "Kunde inte ta bort mappen: {error}",
+      "moveToFolderFailed": "Kunde inte flytta konversationen till mappen: {error}"
+    },
+    "deleteFolderConfirm": "Ta bort mappen \"{folderName}\"? Konversationerna i den tas inte bort — de flyttas till Osorterade."
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Detta dokument",
+      "hint": "Refererar bara till dokumentet du tittar på just nu"
+    },
+    "my_library": {
+      "label": "Mitt bibliotek",
+      "hint": "Söker igenom allt du har sparat"
+    },
+    "web_search": {
+      "label": "Sök på webben",
+      "hint": "Söker på webben i realtid"
+    },
+    "deadlines": {
+      "label": "Extrahera deadlines",
+      "hint": "Plockar ut endast poster med datum eller förfallodatum"
+    },
+    "questions": {
+      "label": "Förväntade frågor",
+      "hint": "Förutspår frågor som sannolikt kommer upp"
+    },
+    "digest": {
+      "label": "Kärnsammanfattning",
+      "hint": "Kondenserar innehållet till det viktigaste"
+    },
+    "save_deadline": {
+      "label": "Registrera som deadline",
+      "hint": "Sparar det hittade schemat i deadline-hanteraren"
+    },
+    "sync_calendar": {
+      "label": "Lägg till i kalender",
+      "hint": "Exporterar till en extern kalenderapp"
+    },
+    "export_hwp": {
+      "label": "Exportera som HWP",
+      "hint": "Sparar resultatet som en Hangul (HWP)-fil"
+    },
+    "professor_docs": {
+      "label": "Uppladdat material",
+      "hint": "Refererar till allt som laddats upp hittills"
+    },
+    "professor_ai_core": {
+      "label": "AI-analys",
+      "hint": "Sammanställer det uppladdade materialet för att hitta mönster"
+    },
+    "expected_questions": {
+      "label": "Förväntade frågor",
+      "hint": "Förutspår baserat på frågestil och -typer"
+    },
+    "assignment_direction": {
+      "label": "Uppgiftens inriktning",
+      "hint": "Berättar vilken stil på uppgifter de kräver"
+    },
+    "study_method": {
+      "label": "Tentaförberedelsemetod",
+      "hint": "Fokuserar på de ämnen de oftast betonar"
+    },
+    "guest_upload": {
+      "label": "Uppladdat foto",
+      "hint": "Använder ett foto eller en skärmdump du tillhandahåller"
+    },
+    "guest_ai_core": {
+      "label": "AI-analys",
+      "hint": "Läser och analyserar innehållet i fotot"
+    },
+    "professor_summary": {
+      "label": "Kärnsammanfattning",
+      "hint": "Kokar ner deras material till det viktigaste"
+    },
+    "professor_emphasis": {
+      "label": "Betonade punkter",
+      "hint": "Vad de brukar betona"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Filer",
+      "lens": "Analys",
+      "action": "Resultat"
+    },
+    "gatedTooltip": "{label} kräver minst {count} dokument i Mitt bibliotek för att användas",
+    "estimatedSeconds": "~{seconds} s",
+    "resetZoomAriaLabel": "Återställ zoom/panorering",
+    "resetZoomButtonLabel": "Återställ"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Tenta imorgon,",
+      "headlineLine2": "materialet fortfarande i en hög?",
+      "subheadline": "Ladda upp dina filer och få en sammanfattning och förväntade frågor direkt.",
+      "features": {
+        "automation": {
+          "title": "Anpassat för varje kurs",
+          "desc": "Organiserat olika utifrån vad varje kurs fokuserar på"
+        },
+        "outputs": {
+          "title": "Förväntade frågor · Sammanfattning",
+          "desc": "AI:n plockar fram dem så fort du laddar upp"
+        },
+        "hybridEngine": {
+          "title": "Prova utan att registrera dig",
+          "desc": "Ladda upp en fil nu och se själv"
+        }
+      },
+      "shortTagline": "Tenta imorgon, materialet fortfarande i en hög?",
+      "copyright": "© {year} Carrotly"
+    },
+    "form": {
+      "signUpTitle": "Skapa ett nytt konto",
+      "signInTitle": "Välkommen tillbaka",
+      "signUpSubtitle": "Skapa ett konto för att komma igång",
+      "signInSubtitle": "Logga in för att använda tjänsten",
+      "emailLabel": "E-postadress",
+      "passwordLabel": "Lösenord",
+      "processing": "Bearbetar...",
+      "signUpButton": "Registrera dig",
+      "signInButton": "Logga in",
+      "orDivider": "Snabbinloggning",
+      "continueWithGoogle": "Fortsätt med Google",
+      "toggleToSignIn": "Har du redan ett konto? Logga in",
+      "toggleToSignUp": "Har du inget konto? Registrera dig",
+      "tryWithoutAccount": "Eller prova en fil utan att logga in →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "Vi har skickat ett bekräftelsemejl! Kolla din inkorg.",
+      "authErrorFallback": "Ett fel uppstod vid autentisering.",
+      "oauthErrorFallback": "Social inloggning misslyckades",
+      "trialSavedPrompt": "Logga in så sparas resultatet du precis såg automatiskt."
+    },
+    "trial": {
+      "title": "Prova utan konto",
+      "subtitle": "Prova kärnfunktionerna utan konto — både filanalys och AI-frågor och svar.",
+      "analyzing": "Analyserar din fil…",
+      "chooseFile": "Klicka för att välja en fil",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — upp till 3 MB",
+      "fileTooLarge": "Filer upp till 3 MB kan analyseras utan konto.",
+      "readError": "Kunde inte läsa filen.",
+      "analyzeError": "Kunde inte analysera denna fil.",
+      "genericError": "Något gick fel.",
+      "saveResultTitle": "Logga in för att spara detta resultat",
+      "saveResultButton": "Logga in och spara",
+      "backToLogin": "← Tillbaka till inloggning",
+      "fileSectionTitle": "Prova med en fil",
+      "chatSectionTitle": "Fråga AI:n direkt",
+      "chatPlaceholder": "Fråga vad som helst…",
+      "chatButton": "Fråga",
+      "chatLoading": "Genererar ett svar…",
+      "attach": {
+        "label": "Bifoga en fil eller ett foto",
+        "reading": "Läser fil…",
+        "hint": "PDF, Word, PPT, Excel, HWP eller ett foto — upp till 3 MB, 1 fil",
+        "remove": "Ta bort",
+        "tooLarge": "Filer upp till 3 MB kan bifogas utan konto.",
+        "unsupportedImage": "Endast PNG, JPEG, GIF eller WEBP stöds. Om det är ett HEIC-foto, konvertera det till JPEG och försök igen."
+      },
+      "orDivider": "Eller",
+      "signUpCta": "Skapa ett gratis konto",
+      "limit": {
+        "uploadSessionTitle": "Du har redan använt den här provperiodens uppladdning",
+        "uploadSessionDesc": "Varje provperiod inkluderar 1 uppladdning. Du kan fortfarande använda AI-chatten ovan, och ett gratis konto låter dig även fortsätta ladda upp!",
+        "chatSessionTitle": "Registrera dig för att fortsätta fråga",
+        "chatSessionDesc": "Du har använt slut på den här provperiodens frågor. Skapa ett gratis konto för att fortsätta fråga!",
+        "ipTitle": "Provkapaciteten är full",
+        "ipDesc": "Det är mycket gästprovaktivitet från det här nätverket just nu, så det är tillfälligt begränsat. Skapa ett gratis konto för att fortsätta direkt!",
+        "globalTitle": "Gästprov är pausade för tillfället",
+        "globalDesc": "Gästprovförfrågningarna är ovanligt höga idag, så vi har pausat dem en stund. Skapa ett gratis konto för att fortsätta direkt!"
+      },
+      "guided": {
+        "sectionTitle": "Prova med ett foto",
+        "chooseImage": "Klicka för att välja ett foto",
+        "imageHint": "Foto eller skärmdump (PNG/JPEG/GIF/WEBP) — upp till 3 MB",
+        "analyzing": "Analyserar ditt foto…",
+        "unsupportedFormat": "Endast PNG, JPEG, GIF eller WEBP stöds. Om det är ett HEIC-foto, konvertera det till JPEG och försök igen.",
+        "tooLarge": "Foton upp till 3 MB kan analyseras utan konto.",
+        "questionsTitle": "Förväntade frågor",
+        "summaryTitle": "Sammanfattning"
+      },
+      "usage": {
+        "uploadRemaining": "{remaining}/{total} filprov kvar",
+        "chatRemaining": "{remaining}/{total} chattomgångar kvar"
+      }
+    }
+  },
+  "account": {
+    "deleteConfirm": "Är du säker på att du vill ta bort ditt konto?\n\nAlla uppladdade filer, material från föreläsare eller professorer, konversationshistorik och konversationsmappar — samt själva inloggningskontot (e-post, inloggningsuppgifter) — kommer att raderas permanent och kan inte återställas.",
+    "deleteErrorAlert": "Ett problem uppstod när ditt konto skulle tas bort: {error}\nFörsök igen.",
+    "deleting": "Tar bort...",
+    "delete": "Ta bort konto",
+    "proWarningTitle": "Du har en aktiv Pro-prenumeration",
+    "proWarningBody": "Att ta bort ditt konto avbryter inte automatiskt din Polar-prenumeration. När ditt konto är borta har vi inget sätt att avbryta den å dina vägnar, så du kan fortsätta debiteras. Vi rekommenderar att du avbryter din prenumeration först med knappen nedan.",
+    "goToPortalButton": "Avbryt min prenumeration",
+    "acknowledgeCheckboxLabel": "Jag förstår att jag behöver avbryta prenumerationen separat. Ta bort mitt konto ändå."
+  },
+  "upgrade": {
+    "requestSendFailed": "Kunde inte skicka förfrågan: {error}",
+    "requestReceivedTitle": "Förfrågan mottagen",
+    "requestReceivedDesc": "Vi hör av oss snart!",
+    "title": "Uppgradera till Pro",
+    "priceLine": "Uppgradera till Pro — {price}",
+    "defaultContext": "Pro-fördelarna gäller så snart betalningen är klar.",
+    "checkoutButton": "Gå till Pro-kassan",
+    "orContactDivider": "Eller lämna ett meddelande",
+    "emailLabel": "E-post",
+    "memoLabel": "Anteckning (valfritt)",
+    "memoPlaceholder": "Berätta om eventuella frågor eller funktioner du behöver",
+    "sending": "Skickar...",
+    "sendRequest": "Skicka förfrågan",
+    "societyCode": {
+      "divider": "Har du en föreningskod?",
+      "label": "Föreningskod",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "Använd",
+      "applying": "Använder...",
+      "success": "Koden har använts! Dina Pro-fördelar börjar direkt.",
+      "genericError": "Kunde inte använda koden. Försök igen."
+    }
+  },
+  "landing": {
+    "loginButton": "Logga in",
+    "headline": "Tenta imorgon, materialet fortfarande orört?",
+    "subheadline": "Ladda upp dina filer och få en sammanfattning och förväntade frågor direkt.",
+    "ctaButton": "Prova nu",
+    "ctaHint": "Ingen registrering — kolla in det direkt",
+    "professorAppeal": "Anpassat olika för varje föreläsare eller professor",
+    "startOver": "← Börja om",
+    "noSharingNote": "Ditt uppladdade material delas aldrig med andra användare",
+    "capabilities": {
+      "upload": "Ladda upp filer, foton eller skärmdumpar för analys",
+      "deadlines": "Extrahera deadlines automatiskt",
+      "questions": "Generera förväntade frågor",
+      "summary": "Kärnsammanfattningar",
+      "ask": "Ställ frågor direkt utifrån ditt material"
+    },
+    "professorSection": {
+      "title": "Varje föreläsare eller professor examinerar olika",
+      "description": "Organisera material efter föreläsare eller professor, och med ett klick får du förväntade frågor och en sammanfattning anpassad efter vad de betonar och hur de examinerar.",
+      "demo": {
+        "autoPromptLabel": "Automatisk fråga tillämpad",
+        "promptTemplate": "”Ta fram förväntade frågor och en kärnsammanfattning från {name}s material”",
+        "professors": [
+          {
+            "name": "prof. Andersson",
+            "subject": "Mjukvaruteknik",
+            "emphasis": [
+              "Betonar alltid designprinciper (SOLID) och hur de tillämpas i praktiken",
+              "Bryr sig mer om verkliga kodgranskningsexempel än ren teori"
+            ],
+            "questions": [
+              "Välj en SOLID-princip och förklara den med verklig kod",
+              "Jämför Agile och vattenfallsmodellen ur ett praktiskt perspektiv"
+            ],
+            "summary": "Den här terminen lutar sig tungt mot designprinciper och kodkvalitet — tentafrågorna brukar vara exempeldrivna snarare än teoretiska."
+          },
+          {
+            "name": "prof. Lindqvist",
+            "subject": "Databassystem",
+            "emphasis": [
+              "Gillar att gå igenom normalisering steg för steg",
+              "Föredrar praktiska problem, med stark betoning på att skriva förfrågningar"
+            ],
+            "questions": [
+              "Gå igenom normalisering upp till 3NF med hjälp av en exempeltabell",
+              "Förklara skillnaderna mellan JOIN-typer med SQL-exempel"
+            ],
+            "summary": "Starkt fokus på normalisering och praktisk SQL — förvänta dig problem du faktiskt löser, inte bara begrepp att minnas."
+          },
+          {
+            "name": "prof. Bergström",
+            "subject": "Algoritmer",
+            "emphasis": [
+              "Låter dig alltid räkna ut tidskomplexiteten för hand",
+              "Frågar ofta efter jämförelser mellan giriga algoritmer och dynamisk programmering"
+            ],
+            "questions": [
+              "Analysera tidskomplexiteten för en given algoritm med Big O-notation",
+              "Ge ett exempel där en girig algoritm inte garanterar en optimal lösning"
+            ],
+            "summary": "Komplexitetsanalys och giriga-mot-DP-jämförelser är kärnfokus — föredrar att lösa problem för hand."
+          }
+        ]
+      }
+    }
+  },
+  "themeToggle": {
+    "ariaLabel": "Skärmtema",
+    "system": "System",
+    "light": "Ljust",
+    "dark": "Mörkt"
+  },
+  "loading": {
+    "messages": [
+      "Går igenom ditt material",
+      "Letar efter frågemönster",
+      "Hittar ledtrådar gömda mellan raderna",
+      "Stryker under de viktiga delarna",
+      "Går igenom gamla tentor igen",
+      "Organiserar tentaförberedelseanteckningarna",
+      "Plockar ut det viktigaste",
+      "Läser mellan raderna",
+      "Läser materialet noga",
+      "Hittar och kopplar samman mönster",
+      "Rangordnar saker efter vikt",
+      "Räknar upprepade ord",
+      "Undviker stavfel åt alla håll",
+      "Går igenom varje hörn av dokumentet",
+      "Plockar ut nyckelbegrepp",
+      "Sätter ihop sammanhanget",
+      "Kokar ner det till kärnan",
+      "Hittar vad materialet har gemensamt",
+      "Kontrollerar saker tecken för tecken",
+      "Klurar ut den dolda avsikten",
+      "Stjärnmärker de viktiga meningarna",
+      "Följer flödet",
+      "Vänder på materialet åt alla håll",
+      "Plockar ut nyckelmeningar",
+      "Samlar ledtrådar en efter en",
+      "Arbetar mot en slutsats",
+      "Analyserar över en kopp kaffe",
+      "Gör överstrykningspennorna redo",
+      "Ordnar dina tankar",
+      "Snart klart"
+    ]
+  },
+  "privacy": {
+    "metaTitle": "Integritetspolicy — Carrotly",
+    "metaDescription": "Hur Carrotly samlar in, använder och lagrar dina uppgifter.",
+    "backLink": "← Tillbaka till Carrotly",
+    "title": "Integritetspolicy",
+    "lastUpdated": "Senast uppdaterad: augusti 2026",
+    "intro": "Carrotly (&ldquo;vi&rdquo;, &ldquo;tjänsten&rdquo;) är en personlig AI-arbetsassistent. Den här sidan förklarar vilken information vi samlar in när du använder den, varför vi samlar in den, vem vi delar den med, hur länge vi behåller den och vilka rättigheter du har över den.",
+    "collect": {
+      "heading": "Information vi samlar in",
+      "email": "<b>Din e-postadress</b>, som används för att skapa och identifiera ditt konto.",
+      "files": "<b>Innehållet i filer du laddar upp</b> — dokument, föreläsningsmaterial och bilder du bifogar eller lägger till i tjänsten — inklusive texten som extraherats från dem.",
+      "history": "<b>Din konversationshistorik</b> — frågorna du skickar och svaren du får.",
+      "ip": "<b>Din IP-adress</b>, som samlas in när du använder den inloggningsfria provperioden (filanalys, AI-chatt osv.), för att förhindra missbruk."
+    },
+    "why": {
+      "heading": "Varför vi samlar in den",
+      "intro": "Vi använder denna information för att:",
+      "operate": "Tillhandahålla och driva tjänsten — autentisera dig, spara dina filer och deadlines, och hålla din konversationshistorik tillgänglig på flera enheter.",
+      "analyze": "Generera den AI-drivna analys du begär — sammanfatta dokument, extrahera deadlines, skriva svarsutkast på förväntade frågor och liknande funktioner."
+    },
+    "sharing": {
+      "heading": "Vem vi delar den med",
+      "intro": "Vi säljer inte dina uppgifter. Vi delar dem endast med de tjänsteleverantörer som får Carrotly att fungera:",
+      "openai": "<b>OpenAI</b> — mottar texten i dina frågor, bifogade dokument och bilder för att kunna generera den AI-analys och de svar du begär. Denna behandling sker i USA, vilket också innebär en överföring av dina uppgifter utanför EU/EES — se &ldquo;Internationella dataöverföringar&rdquo; nedan.",
+      "supabase": "<b>Supabase</b> — vår leverantör av databas och autentisering, som används för att lagra ditt konto, dina filer och din konversationshistorik. Dina uppgifter lagras i Supabases <b>{region}</b>-region.",
+      "polar": "<b>Polar</b> — vår betalningsleverantör, som används för att hantera kassa och fakturering för Pro-prenumerationen. Polar mottar den information som behövs för att behandla din betalning (till exempel din e-postadress); vi skickar inte dina filer eller din konversationshistorik till dem.",
+      "analytics": "<b>Vercel Analytics</b> — samlar in anonym sidvisningsstatistik för att hjälpa oss förstå vilka sidor som besöks. Den använder inte cookies och identifierar inte enskilda personer."
+    },
+    "retention": {
+      "heading": "Hur länge vi behåller den",
+      "account": "Dina kontouppgifter (e-post, filer, deadlines) behålls tills du tar bort ditt konto.",
+      "logs": "I gratisversionen sparas konversationshistorik i 30 dagar och tas sedan bort automatiskt. Pro-konton har ingen automatisk borttagning — konversationshistoriken behålls tills kontot tas bort, precis som allt annat.",
+      "ip": "IP-adresser som samlas in för att förhindra missbruk av den inloggningsfria provperioden raderas automatiskt efter {days} dagar."
+    },
+    "transfers": {
+      "heading": "Internationella dataöverföringar",
+      "body1": "Dina uppgifter lagras och behandlas i Sydkorea (Seoul), där Supabase driftar vår databas — detta är utanför EU/Europeiska ekonomiska samarbetsområdet (EES). Om du befinner dig i EU/EES innebär detta att dina personuppgifter överförs till ett tredjeland.",
+      "body2": "Vi förlitar oss på standardavtalsklausulerna (Standard Contractual Clauses, SCC) som ingår i vårt personuppgiftsbiträdesavtal (DPA) med Supabase som rättslig grund för denna överföring. Detsamma gäller överföringen till OpenAI (se ovan), som behandlar uppgifter i USA.",
+      "body3": "Om du har frågor om dessa överföringar, kontakta oss på adressen nedan."
+    },
+    "rights": {
+      "heading": "Dina rättigheter",
+      "copy": "Du kan när som helst begära en kopia av de uppgifter vi har om dig genom att mejla oss på adressen nedan — vi svarar så snart vi kan.",
+      "delete": "För att ta bort ditt konto, använd knappen &ldquo;Ta bort konto&rdquo; längst ner i sidopanelen när du är inloggad — det tar omedelbart och permanent bort dina uppladdade filer, material från föreläsare eller professorer, konversationshistorik och dina inloggningsuppgifter (e-post, inloggningsinformation), utan att du behöver mejla oss först. Om du hellre vill att vi gör det åt dig, mejla oss så tar vi bort det manuellt.",
+      "proSubscription": "Om du har en aktiv Pro-prenumeration avbryter inte borttagning av ditt konto den — Polar (vår Merchant of Record, se <termslink>användarvillkoren</termslink>) hanterar faktureringen oberoende av din Carrotly-inloggning, så vi har inget sätt att avbryta den å dina vägnar. Du måste avbryta din prenumeration först (via länken i kvitto-/bekräftelsemejlet Polar skickade dig, eller genom att mejla oss) innan vi kan ta bort ditt konto."
+    },
+    "contact": {
+      "heading": "Kontakt",
+      "body": "Frågor om denna policy, eller förfrågningar om att komma åt eller ta bort dina uppgifter, kan skickas till <mailto>kcw022@naver.com</mailto>."
+    },
+    "region": "Nordöstra Asien (Seoul), Sydkorea"
+  },
+  "terms": {
+    "metaTitle": "Användarvillkor — Carrotly",
+    "metaDescription": "Villkoren som gäller när du använder Carrotly.",
+    "backLink": "← Tillbaka till Carrotly",
+    "title": "Användarvillkor",
+    "lastUpdated": "Senast uppdaterad: augusti 2026",
+    "intro": "Dessa villkor reglerar din användning av Carrotly (&ldquo;vi&rdquo;, &ldquo;tjänsten&rdquo;), en personlig AI-arbetsassistent som läser och organiserar dokument du laddar upp. Genom att skapa ett konto eller använda tjänsten godkänner du dessa villkor. Om du inte godkänner dem, använd inte tjänsten.",
+    "service": {
+      "heading": "Tjänsten",
+      "body": "Med Carrotly kan du ladda upp dokument, foton och andra filer, och tjänsten använder AI för att extrahera deadlines, sammanfatta innehåll, förutsäga sannolika tenta-/uppgiftsfrågor och besvara frågor om det du har laddat upp. Vissa funktioner kräver ett konto; ett begränsat antal funktioner kan provas utan ett, med förbehåll för de användningsgränser som beskrivs i produkten."
+    },
+    "account": {
+      "heading": "Ditt konto",
+      "body": "Du ansvarar för att hålla dina inloggningsuppgifter säkra och för all aktivitet under ditt konto. Du måste ange en giltig e-postadress och ansvarar för dess korrekthet. Du kan ta bort ditt konto när som helst — se <privacylink>vår integritetspolicy</privacylink> för hur."
+    },
+    "subscriptions": {
+      "heading": "Prenumerationer och betalning",
+      "intro": "Carrotly erbjuder en gratisplan och en betald &ldquo;Pro&rdquo;-plan ({price}) med högre användningsgränser — se <pricinglink>Priser</pricinglink> för aktuella detaljer.",
+      "mor": "<b>Alla betalningar behandlas av Polar Software, Inc. (&ldquo;Polar&rdquo;), som agerar som Merchant of Record för detta köp.</b> Detta innebär att Polar — inte Carrotly — är säljaren du ingår avtal med för själva transaktionen: Polar visas som handlaren på ditt kort-/kontoutdrag, tar ut och redovisar eventuell tillämplig moms, och sköter fakturering och betalningsrelaterad kundsupport. Återbetalningsförfrågningar, faktureringstvister och återköp (chargebacks) hanteras enligt <polarlink>Polars egna villkor</polarlink>. Vi får endast bekräftelse på att en betalning lyckades (och referensen kopplad till ditt konto) så att vi kan uppgradera dig till Pro — vi mottar eller lagrar inte dina fullständiga betalkortsuppgifter. Om du är konsument i en jurisdiktion med en lagstadgad ångerrätt eller betänketid för detta köp, utövas den rätten genom Polar, eftersom de är Merchant of Record för transaktionen.",
+      "renewal": "Prenumerationer förnyas automatiskt varje faktureringsperiod tills de avbryts. Du kan hantera eller avbryta din prenumeration via kvitto-/bekräftelsemejlet Polar skickar dig efter köpet, eller genom att kontakta oss på e-postadressen nedan så hjälper vi dig att nå Polar."
+    },
+    "aiContent": {
+      "heading": "AI-genererat innehåll",
+      "body": "Sammanfattningar, förutsagda frågor, deadlines och svar genereras av AI-modeller och kan vara ofullständiga, föråldrade eller felaktiga. Carrotly är ett studie-/arbetshjälpmedel, inte en ersättning för att läsa ditt faktiska källmaterial eller själv verifiera viktiga datum och krav. Förlita dig inte enbart på AI-resultat för något med verkliga konsekvenser (tentadatum, uppgiftskrav, juridiska eller medicinska beslut osv.)."
+    },
+    "content": {
+      "heading": "Ditt innehåll",
+      "body": "Du behåller äganderätten till allt du laddar upp. Du ansvarar för att ha rätten att ladda upp det, och för att inte ladda upp något olagligt eller innehåll som gör intrång i någon annans rättigheter. Vi använder ditt innehåll endast för att tillhandahålla tjänsten till dig (se <privacylink>vår integritetspolicy</privacylink> för exakt vem det delas med och varför) — vi hävdar inte äganderätt till det och använder det inte för att träna AI-modeller."
+    },
+    "acceptableUse": {
+      "heading": "Godtagbar användning",
+      "intro": "Använd inte Carrotly för att:",
+      "item1": "Bryta mot lagen, eller ladda upp innehåll du inte har rätt att dela.",
+      "item2": "Försöka störa, överbelasta eller få obehörig åtkomst till tjänsten.",
+      "item3": "Sälja vidare eller tillhandahålla tjänsten till andra utan vårt godkännande.",
+      "item4": "Kringgå användningsgränser (t.ex. gräns-/Pro-plansgränser) genom missbruk eller automatisering.",
+      "outro": "Vi kan stänga av eller avsluta konton som bryter mot dessa villkor."
+    },
+    "disclaimer": {
+      "heading": "Ansvarsfriskrivning och ansvarsbegränsning",
+      "body": "Carrotly tillhandahålls &ldquo;i befintligt skick&rdquo;, utan några som helst garantier. Vi garanterar inte att tjänsten kommer att vara oavbruten, felfri, eller att AI-resultatet kommer att vara korrekt. I den utsträckning lagen tillåter är Carrotly inte ansvarigt för indirekta, tillfälliga eller följdskador som uppstår från din användning av tjänsten — inklusive beslut som fattas baserat på AI-genererat innehåll."
+    },
+    "changes": {
+      "heading": "Ändringar av dessa villkor",
+      "body": "Vi kan uppdatera dessa villkor allteftersom tjänsten förändras. Om vi gör väsentliga ändringar uppdaterar vi datumet &ldquo;Senast uppdaterad&rdquo; ovan; fortsatt användning av tjänsten efter en ändring innebär att du godkänner de uppdaterade villkoren."
+    },
+    "governingLaw": {
+      "heading": "Tillämplig lag",
+      "body": "[Ange tillämplig lag/jurisdiktion, t.ex. &ldquo;Republiken Koreas lagar&rdquo;]."
+    },
+    "contact": {
+      "heading": "Kontakt",
+      "body": "Frågor om dessa villkor kan skickas till <mailto>kcw022@naver.com</mailto>."
+    }
+  },
+  "usage": {
+    "title": "Användning denna månad",
+    "chatRemaining": "{remaining}/{total} chattar kvar",
+    "fileRemaining": "{remaining}/{total} filer kvar",
+    "chatLabel": "Chatt",
+    "fileLabel": "Filer"
+  }
+}

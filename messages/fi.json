@@ -1,0 +1,709 @@
+{
+  "app": {
+    "loadingSession": "Ladataan...",
+    "title": "Muuta luentomuistiinpanosi todennäköisiksi tenttikysymyksiksi | Carrotly",
+    "description": "Lataa omat kurssimateriaalisi ja saat todennäköiset tenttikysymykset sekä tiivistetyn yhteenvedon, joka on räätälöity kurssisi opetustavan mukaan. Ei koskaan jaeta. Ei rekisteröitymistä."
+  },
+  "nav": {
+    "workspace": "Kysy AI:lta",
+    "records": "Omat tiedot",
+    "deadlines": "Määräajat",
+    "professors": "Luennoitsijat ja professorit",
+    "monitoring": "Omat tiedostot",
+    "logs": "Aiemmat keskustelut"
+  },
+  "common": {
+    "send": "Lähetä kehote",
+    "sending": "Lähetetään...",
+    "delete": "Poista",
+    "create": "Luo",
+    "aiConnected": "OpenAI GPT-4.1 mini yhdistetty",
+    "close": "Sulje",
+    "openMenu": "Avaa valikko",
+    "logout": "Kirjaudu ulos",
+    "unknownError": "Tuntematon virhe",
+    "responseLanguageLabel": "AI:n vastauskieli",
+    "themeLabel": "Teema",
+    "aiGeneratedNotice": "AI:n luoma — voi olla puutteellinen tai virheellinen."
+  },
+  "workspace": {
+    "subtitle": "AI muodostaa vastauksia keskusteluyhteyden ja liitettyjen tiedostojen sisällön perusteella.",
+    "promptSectionLabel": "Lähetä kehote AI:lle",
+    "removeAttachment": "Poista liite {name}",
+    "attachFile": "Liitä tiedosto/kuva",
+    "webSearchToggle": "Vaihda verkkohaku",
+    "webSearchOnTitle": "Verkkohaku päällä — hitaampi ja kalliimpi",
+    "webSearchOffTitle": "Verkkohaku pois päältä — kytke päälle, kun tarvitset ajantasaista tietoa",
+    "webSearchLabel": "Verkkohaku {state}",
+    "promptPlaceholder": "esim. Tee yhteenveto tämän viikon suunnitelmasta liitetyn aikataulun perusteella...",
+    "dropHint": "Voit myös pudottaa tiedostoja tai kuvia tähän liittääksesi ne. Liitteet pysyvät käytettävissä koko tämän keskustelun ajan.",
+    "aiResponseLabel": "AI:n vastaus",
+    "idleMessage": "Hei! Kysy minulta mitä vain!",
+    "actionItemsFound": "✨ Löytyi tehtäviä päivämäärillä",
+    "registerAsDeadline": "Rekisteröi määräajaksi",
+    "examplePrompts": {
+      "searchTrend": "Etsi tämän alan uusimmat trendit ja kerro minulle",
+      "summarizeDoc": "Tee yhteenveto liitetyn asiakirjan tärkeimmistä kohdista",
+      "weeklyPlan": "Järjestä, mitä minun pitää hoitaa ensin tällä viikolla",
+      "extensionEmail": "Laadi sähköposti, jossa pyydetään lisäaikaa määräaikaan",
+      "meetingNotes": "Järjestä juuri liittämäni kokousmuistiinpanot"
+    },
+    "lensChoices": {
+      "deadlines": "Poimi määräajat",
+      "questions": "Odotetut kysymykset",
+      "digest": "Ydinyhteenveto",
+      "none": "Vain keskustelu"
+    },
+    "lens": {
+      "noDeadlinesFound": "Määräpäivällisiä kohteita ei löytynyt.",
+      "registerAll": "Rekisteröi kaikki",
+      "registerAllDone": "Kaikki rekisteröity",
+      "register": "Rekisteröi",
+      "registered": "Rekisteröity",
+      "noQuestionsFound": "Odotettuja kysymyksiä ei voitu muodostaa.",
+      "weakness": "Heikkous: {text}",
+      "evidencePrefix": "Näyttö"
+    },
+    "errors": {
+      "fileTooLarge": "\"{fileName}\" on liian suuri (yli 10 Mt). Kokeile pienempää tiedostoa.",
+      "unsupportedImage": "\"{fileName}\" on kuvamuoto, jota AI ei pysty lukemaan ({mimeType}). Jos kyseessä on iPhone-kuva, vaihda Asetuksista \"Yhteensopivin (JPEG)\" tai tallenna se uudelleen JPG/PNG-muodossa ennen lataamista.",
+      "unknownFormat": "tuntematon",
+      "fileReadFailed": "Tiedoston lukemisessa oli ongelma.",
+      "extractFailed": "Tekstiä ei voitu poimia tiedostosta \"{fileName}\": {error}",
+      "attachProcessingFailed": "Virhe tiedoston \"{fileName}\" käsittelyssä: {error}",
+      "unknownError": "Tapahtui tuntematon virhe.",
+      "requestFailed": "Valitettavasti pyyntöäsi ei voitu käsitellä: {error}",
+      "networkError": "Valitettavasti tapahtui verkkovirhe: {error}",
+      "analyzeFailed": "Analyysi epäonnistui.",
+      "analyzeErrorFallback": "Analyysin aikana tapahtui virhe.",
+      "tooManyAttachments": "Voit liittää enintään {max} tiedostoa/kuvaa kerralla (nyt {count}). Poista tiedostoja tai tyhjennä nykyiset liitteet ja yritä uudelleen.",
+      "quotaCheckFailed": "Käyttörajaasi ei voitu tarkistaa."
+    },
+    "viewAsLens": "Näytä muodossa {label}",
+    "meetingNotesCourseLabel": "Tunnistettu kokous-/luentomuistiinpanoista",
+    "lensRegisterCourseLabel": "Poimi määräajat · Lähde: \"{date}\""
+  },
+  "records": {
+    "title": "Omat tiedot",
+    "subtitle": "Näe kerralla, mitä tietoja Carrotly on kerännyt sinusta tähän mennessä.",
+    "heroLabel": "Mitä Carrotly tietää sinusta",
+    "unitSuffix": "",
+    "daysSinceJoin": "Olet ollut mukana {days} päivää",
+    "deadlinesCard": {
+      "title": "Rekisteröidyt määräajat",
+      "empty": "Ei vielä rekisteröityjä määräaikoja.",
+      "noCategory": "Ei kategoriaa",
+      "moreCategories": "+{count} kategoriaa lisää"
+    },
+    "documentsCard": {
+      "title": "Analysoidut asiakirjat",
+      "empty": "Ei vielä liitettyjä asiakirjoja.",
+      "etc": "Muu",
+      "formats": {
+        "excel": "Excel",
+        "hwp": "HWP",
+        "ppt": "PPT",
+        "word": "Word",
+        "pdf": "PDF",
+        "image": "Kuva"
+      }
+    },
+    "logsCard": {
+      "title": "Tallennetut keskustelut",
+      "empty": "Ei vielä tallennettuja keskusteluja.",
+      "mostRecent": "Viimeisin: {date}"
+    }
+  },
+  "deadlines": {
+    "title": "Määräaikojen hallinta",
+    "subtitle": "Kerää kaikki tehtävien ja tenttien määräajat yhteen paikkaan, automaattisesti kiireellisyyden mukaan järjestettynä.",
+    "dashboardTitle": "📊 Kojelauta — Mitä tiedämme tähän mennessä",
+    "emptyHint": "Lataa tiedosto poimiaksesi määräajat",
+    "goToChatTab": "Siirry keskustelu-välilehteen",
+    "urgencyDistribution": "Kiireellisyysjakauma",
+    "timeline": "Tulevat aikataulut",
+    "recentFilesLabel": "Viimeisimmät liitteet",
+    "noAttachedFiles": "Ei liitettyjä tiedostoja",
+    "moreFiles": "+{count} lisää",
+    "addManually": "Lisää manuaalisesti",
+    "form": {
+      "titlePlaceholder": "Tehtävä (esim. Tietokantaharjoitus 3)",
+      "coursePlaceholder": "Aihe/kategoria (valinnainen)",
+      "submit": "Lisää"
+    },
+    "noDeadlinesYet": "Ei rekisteröityjä määräaikoja. Lisää ensimmäinen määräaika yllä!",
+    "kpi": {
+      "total": "Määräaikoja yhteensä",
+      "thisWeek": "Erääntyy tällä viikolla",
+      "overdue": "Myöhässä",
+      "files": "Viitetiedostot"
+    },
+    "urgency": {
+      "overdue": "Myöhässä",
+      "critical": "Erääntyy tänään",
+      "high": "Kiireellinen (3 päivän sisällä)",
+      "medium": "Tällä viikolla (7 päivän sisällä)",
+      "low": "Myöhemmin (yli 7 päivän kuluttua)"
+    },
+    "badgeOverdue": "Myöhässä",
+    "timelineBuckets": {
+      "overdue": "Myöhässä",
+      "thisWeek": "Tällä viikolla",
+      "nextWeek": "Ensi viikolla",
+      "in2Weeks": "2 viikon kuluttua",
+      "in3PlusWeeks": "3+ viikkoa"
+    }
+  },
+  "professors": {
+    "title": "Luennoitsijat ja professorit",
+    "subtitle": "Kerää materiaaleja luennoitsijan tai professorin mukaan nähdäksesi kerralla, mitä aiheita he painottavat ja millaisia kysymyksiä he yleensä laativat.",
+    "uploadPanel": {
+      "title": "Lataa materiaaleja",
+      "selectProfessor": "Valitse luennoitsija tai professori",
+      "registerNew": "+ Rekisteröi uusi luennoitsija tai professori",
+      "namePlaceholder": "Nimi (pakollinen)",
+      "schoolPlaceholder": "Koulu (pakollinen)",
+      "departmentPlaceholder": "Laitos (pakollinen)",
+      "schoolDeptHint": "Koulu-/laitostiedot auttavat tulkitsemaan alakohtaista terminologiaa ja arviointikäytäntöjä tarkemmin.",
+      "chooseFile": "Valitse tiedosto",
+      "paperHint": "Heidän julkaisujensa lataaminen auttaa meitä määrittämään tutkimusintressit ja painotukset paljon tarkemmin."
+    },
+    "loading": "Ladataan...",
+    "noneRegistered": "Ei vielä rekisteröityjä luennoitsijoita tai professoreita. Lataa materiaaleja yllä rekisteröidäksesi yhden.",
+    "documentCount": "{count} tiedostoa",
+    "docType": {
+      "lecture": "Luentomuistiinpanot",
+      "exam": "Vanha tentti",
+      "assignment": "Tehtävä",
+      "paper": "Julkaisu"
+    },
+    "backToList": "Takaisin luennoitsijoihin ja professoreihin",
+    "deleteProfessor": "Poista luennoitsija tai professori",
+    "noSchoolDept": "Ei koulu-/laitostietoja",
+    "documentListTitle": "Materiaalit ({count})",
+    "noDocumentsYet": "Ei vielä ladattuja materiaaleja.",
+    "deleteDocumentAria": "Poista {fileName}",
+    "circuitHint": "Napsauta AI-ydintä analysoidaksesi heidän materiaalinsa",
+    "notConfidentYet": "Ei vielä tarpeeksi varmuutta arviointiin",
+    "analyzeButton": "Analysoi heidän materiaalinsa",
+    "notEnoughData": "Materiaalia ei vielä ole tarpeeksi luotettavaan arviointiin.",
+    "teaserTitle": "Lataa lisää avataksesi nämä",
+    "uploadDirectly": "Lataa tiedostot nyt",
+    "category": {
+      "topics": "Usein painotetut aiheet",
+      "examStyle": "Kysymystyyli",
+      "assignmentStyle": "Tehtävätyyli",
+      "examQuestionTypes": "Tenttikysymysten tyypit",
+      "gradingStrictness": "Arvostelun tiukkuus",
+      "researchInterests": "Tutkimusintressit"
+    },
+    "circuit": {
+      "expected_questions": "Odotetut kysymykset",
+      "assignment_direction": "Tehtävän suunta",
+      "study_method": "Tenttiin valmistautumistapa"
+    },
+    "framing": {
+      "first": "Ensivaikutelma 1 asiakirjasta",
+      "some": "Perustuu {count} asiakirjaan — kaava alkaa hahmottua",
+      "clear": "Perustuu {count} asiakirjaan — kaava on selvä"
+    },
+    "errors": {
+      "schoolDeptRequired": "Anna sekä koulu että laitos.",
+      "registerFailed": "Luennoitsijaa tai professoria ei voitu rekisteröidä: {error}",
+      "updateFailed": "Analyysin päivitys epäonnistui.",
+      "saveAnalysisFailed": "Analyysin tulosta ei voitu tallentaa.",
+      "thisProfessorFallback": "Tämä luennoitsija tai professori",
+      "updateFailedAlert": "Analyysin päivitys epäonnistui kohteelle \"{name}\": {error}\nAsiakirjojen määrä ja analyysin tulos saattavat olla hetkellisesti epäsynkassa — kokeile \"Analysoi heidän materiaalinsa\" -painiketta uudelleen yksityiskohtanäytöllä.",
+      "docLimitReached": "Tällä luennoitsijalla tai professorilla voi olla enintään {max} asiakirjaa (nyt {count}). Poista ensin tarpeettomia asiakirjoja.",
+      "docSaveFailed": "\"{fileName}\" ei voitu tallentaa: {error}",
+      "nameRequired": "Anna nimi.",
+      "selectProfessorFirst": "Valitse luennoitsija tai professori, tai rekisteröi ensin uusi.",
+      "docDeleteFailed": "Asiakirjaa ei voitu poistaa: {error}",
+      "professorDeleteFailed": "Luennoitsijaa tai professoria ei voitu poistaa: {error}"
+    },
+    "deleteConfirm": "Poistetaanko \"{name}\" ja kaikki heidän rekisteröidyt materiaalinsa? Tätä ei voi peruuttaa.",
+    "upgradeMaxProfessors": "Ilmaisversiossa voi olla enintään {max} luennoitsijaa tai professoria. Päivitä Pro-versioon — {price}",
+    "upgradeMaxDocuments": "Ilmaisversiossa voi olla enintään {max} asiakirjaa luennoitsijaa tai professoria kohden. Päivitä Pro-versioon — {price}"
+  },
+  "monitoring": {
+    "title": "Valvonta ja tiedostot (RAG-konteksti)",
+    "subtitle": "Liitä aikatauluja, taulukoita, asiakirjoja ja kuvia, joita AI voi käyttää viitteenä.",
+    "uploadSectionTitle": "Liitä tiedostoja ja aikatauluja AI:n viitteeksi",
+    "attachButton": "Liitä tiedosto tai kalenteritapahtuma",
+    "orDivider": "Tai kirjoita teksti suoraan",
+    "form": {
+      "titlePlaceholder": "Asiakirjan otsikko (esim. Toukokuun_tapahtuma-aikataulu.txt)",
+      "contentPlaceholder": "Kirjoita aikataulun tiedot tai muistiinpanot, jotka AI voi lukea...",
+      "submit": "Rekisteröi teksti"
+    },
+    "fileListTitle": "Rekisteröidyt kontekstitiedostot",
+    "noFiles": "Ei rekisteröityjä tiedostoja.",
+    "fileType": "Tyyppi: {mimeType}",
+    "emptyContentPlaceholder": "Tässä asiakirjassa ei ole sisältöä.",
+    "errors": {
+      "fileTooLarge": "Tiedosto on liian suuri (yli 10 Mt). Kopioi keskeinen teksti ja kirjoita se suoraan, tai muunna tiedosto ja lataa se!",
+      "unsupportedFormat": "Selain ei pysty lukemaan tätä tiedostomuotoa suoraan. Käytä sen sijaan suoraa tekstin syöttöä."
+    }
+  },
+  "logs": {
+    "title": "Tietokannan lokit ja AI:n vastaushistoria",
+    "subtitle": "Tarkastele Supabase-tietokantaan tallennettua kehotehistoriaa ja AI:n vastauksia sen ajankohdan mukaan.",
+    "filterAll": "Kaikki ({count})",
+    "filterUnfiled": "Järjestämättömät ({count})",
+    "folderButtonLabel": "{name} ({count})",
+    "deleteFolderAria": "Poista kansio {folderName}",
+    "newFolderPlaceholder": "+ Uusi kansio",
+    "noConversationsAtAll": "Ei tallennettuja keskusteluja. Lähetä kysymys Kysy AI:lta -osiosta!",
+    "noConversationsInFolder": "Ei keskusteluja tässä kansiossa.",
+    "moveToFolderAria": "Siirrä kansioon",
+    "unfiledOption": "Järjestämätön",
+    "collapseAnswer": "▲ Piilota vastaus",
+    "viewAnswer": "▼ Näytä AI:n vastaus",
+    "deleteLogAria": "Poista loki",
+    "responseRecordLabel": "[AI:n vastaustallenne]",
+    "errors": {
+      "logDeleteFailed": "Virhe lokin poistamisessa: {error}",
+      "folderCreateFailed": "Kansiota ei voitu luoda: {error}",
+      "folderDeleteFailed": "Kansiota ei voitu poistaa: {error}",
+      "moveToFolderFailed": "Keskustelua ei voitu siirtää kansioon: {error}"
+    },
+    "deleteFolderConfirm": "Poistetaanko kansio \"{folderName}\"? Sen sisällä olevia keskusteluja ei poisteta — ne siirtyvät järjestämättömiin."
+  },
+  "nodes": {
+    "this_doc": {
+      "label": "Tämä asiakirja",
+      "hint": "Viittaa vain parhaillaan katsomaasi asiakirjaan"
+    },
+    "my_library": {
+      "label": "Oma kirjasto",
+      "hint": "Hakee kaikesta, mitä olet tallentanut"
+    },
+    "web_search": {
+      "label": "Hae verkosta",
+      "hint": "Hakee verkosta reaaliajassa"
+    },
+    "deadlines": {
+      "label": "Poimi määräajat",
+      "hint": "Poimii vain päivämäärällisiä tai määräaikaisia kohteita"
+    },
+    "questions": {
+      "label": "Odotetut kysymykset",
+      "hint": "Ennustaa todennäköisesti esiin tulevia kysymyksiä"
+    },
+    "digest": {
+      "label": "Ydinyhteenveto",
+      "hint": "Tiivistää sisällön olennaisimpaan"
+    },
+    "save_deadline": {
+      "label": "Rekisteröi määräajaksi",
+      "hint": "Tallentaa löydetyn aikataulun määräaikojen hallintaan"
+    },
+    "sync_calendar": {
+      "label": "Lisää kalenteriin",
+      "hint": "Vie ulkoiseen kalenterisovellukseen"
+    },
+    "export_hwp": {
+      "label": "Vie HWP-muodossa",
+      "hint": "Tallentaa tuloksen Hangul (HWP) -tiedostona"
+    },
+    "professor_docs": {
+      "label": "Ladatut materiaalit",
+      "hint": "Viittaa kaikkeen tähän mennessä ladattuun"
+    },
+    "professor_ai_core": {
+      "label": "AI-analyysi",
+      "hint": "Yhdistää ladatut materiaalit kaavojen löytämiseksi"
+    },
+    "expected_questions": {
+      "label": "Odotetut kysymykset",
+      "hint": "Ennustaa kysymystyylin ja -tyyppien perusteella"
+    },
+    "assignment_direction": {
+      "label": "Tehtävän suunta",
+      "hint": "Kertoo, millaista tyyliä tehtävissä vaaditaan"
+    },
+    "study_method": {
+      "label": "Tenttiin valmistautumistapa",
+      "hint": "Keskittyy heidän useimmin painottamiinsa aiheisiin"
+    },
+    "guest_upload": {
+      "label": "Ladattu kuva",
+      "hint": "Käyttää yhtä antamaasi kuvaa tai kuvakaappausta"
+    },
+    "guest_ai_core": {
+      "label": "AI-analyysi",
+      "hint": "Lukee ja analysoi kuvan sisällön"
+    },
+    "professor_summary": {
+      "label": "Ydinyhteenveto",
+      "hint": "Tiivistää heidän materiaalinsa olennaisimpaan"
+    },
+    "professor_emphasis": {
+      "label": "Painotetut kohdat",
+      "hint": "Mitä he yleensä painottavat"
+    }
+  },
+  "circuit": {
+    "layerTitle": {
+      "source": "Tiedostot",
+      "lens": "Analyysi",
+      "action": "Tulos"
+    },
+    "gatedTooltip": "{label} vaatii vähintään {count} asiakirjaa Omassa kirjastossa käyttääkseen",
+    "estimatedSeconds": "~{seconds} s",
+    "resetZoomAriaLabel": "Nollaa zoomaus/panorointi",
+    "resetZoomButtonLabel": "Nollaa"
+  },
+  "login": {
+    "brand": {
+      "headlineLine1": "Tentti huomenna,",
+      "headlineLine2": "materiaalit vielä kasassa?",
+      "subheadline": "Lataa tiedostosi ja saat yhteenvedon sekä odotetut kysymykset heti.",
+      "features": {
+        "automation": {
+          "title": "Räätälöity jokaiselle kurssille",
+          "desc": "Järjestetty eri tavalla sen mukaan, mihin kukin kurssi keskittyy"
+        },
+        "outputs": {
+          "title": "Odotetut kysymykset · Yhteenveto",
+          "desc": "AI poimii ne heti latauksen yhteydessä"
+        },
+        "hybridEngine": {
+          "title": "Kokeile ilman rekisteröitymistä",
+          "desc": "Lataa yksi tiedosto nyt ja katso itse"
+        }
+      },
+      "shortTagline": "Tentti huomenna, materiaalit vielä kasassa?",
+      "copyright": "© {year} Carrotly"
+    },
+    "form": {
+      "signUpTitle": "Luo uusi tili",
+      "signInTitle": "Tervetuloa takaisin",
+      "signUpSubtitle": "Luo tili aloittaaksesi",
+      "signInSubtitle": "Kirjaudu sisään käyttääksesi palvelua",
+      "emailLabel": "Sähköpostiosoite",
+      "passwordLabel": "Salasana",
+      "processing": "Käsitellään...",
+      "signUpButton": "Rekisteröidy",
+      "signInButton": "Kirjaudu sisään",
+      "orDivider": "Pikakirjautuminen",
+      "continueWithGoogle": "Jatka Googlella",
+      "toggleToSignIn": "Onko sinulla jo tili? Kirjaudu sisään",
+      "toggleToSignUp": "Eikö sinulla ole tiliä? Rekisteröidy",
+      "tryWithoutAccount": "Tai kokeile yhtä tiedostoa kirjautumatta →"
+    },
+    "messages": {
+      "signUpConfirmEmail": "Lähetimme vahvistussähköpostin! Tarkista postilaatikkosi.",
+      "authErrorFallback": "Todennuksen aikana tapahtui virhe.",
+      "oauthErrorFallback": "Sosiaalinen kirjautuminen epäonnistui",
+      "trialSavedPrompt": "Kirjaudu sisään, niin juuri näkemäsi tulos tallennetaan automaattisesti."
+    },
+    "trial": {
+      "title": "Kokeile ilman tiliä",
+      "subtitle": "Kokeile ydintoimintoja ilman tiliä — sekä tiedostoanalyysiä että AI-kysymyksiä.",
+      "analyzing": "Analysoidaan tiedostoasi…",
+      "chooseFile": "Napsauta valitaksesi tiedoston",
+      "fileHint": "PDF, Word, PPT, Excel, HWP — enintään 3 Mt",
+      "fileTooLarge": "Enintään 3 Mt:n tiedostoja voidaan analysoida ilman tiliä.",
+      "readError": "Tiedostoa ei voitu lukea.",
+      "analyzeError": "Tätä tiedostoa ei voitu analysoida.",
+      "genericError": "Jokin meni pieleen.",
+      "saveResultTitle": "Kirjaudu sisään tallentaaksesi tämän tuloksen",
+      "saveResultButton": "Kirjaudu sisään ja tallenna",
+      "backToLogin": "← Takaisin kirjautumiseen",
+      "fileSectionTitle": "Kokeile tiedostolla",
+      "chatSectionTitle": "Kysy suoraan AI:lta",
+      "chatPlaceholder": "Kysy mitä vain…",
+      "chatButton": "Kysy",
+      "chatLoading": "Muodostetaan vastausta…",
+      "attach": {
+        "label": "Liitä tiedosto tai kuva",
+        "reading": "Luetaan tiedostoa…",
+        "hint": "PDF, Word, PPT, Excel, HWP tai kuva — enintään 3 Mt, 1 tiedosto",
+        "remove": "Poista",
+        "tooLarge": "Enintään 3 Mt:n tiedostoja voidaan liittää ilman tiliä.",
+        "unsupportedImage": "Vain PNG, JPEG, GIF tai WEBP tuetaan. Jos kyseessä on HEIC-kuva, muunna se JPEG-muotoon ja yritä uudelleen."
+      },
+      "orDivider": "Tai",
+      "signUpCta": "Luo ilmainen tili",
+      "limit": {
+        "uploadSessionTitle": "Olet jo käyttänyt tämän kokeilun latauksen",
+        "uploadSessionDesc": "Jokaiseen kokeiluun sisältyy 1 lataus. Voit silti käyttää yllä olevaa AI-keskustelua, ja ilmainen tili antaa sinun myös jatkaa lataamista!",
+        "chatSessionTitle": "Rekisteröidy jatkaaksesi kysymistä",
+        "chatSessionDesc": "Olet käyttänyt tämän kokeilun kysymykset loppuun. Luo ilmainen tili jatkaaksesi kysymistä!",
+        "ipTitle": "Kokeilun kapasiteetti on täynnä",
+        "ipDesc": "Tästä verkosta on juuri nyt paljon vierailijakokeilutoimintaa, joten sitä on tilapäisesti rajoitettu. Luo ilmainen tili jatkaaksesi heti!",
+        "globalTitle": "Vierailijakokeilut on toistaiseksi keskeytetty",
+        "globalDesc": "Vierailijakokeilupyyntöjä on tänään poikkeuksellisen paljon, joten olemme keskeyttäneet ne hetkeksi. Luo ilmainen tili jatkaaksesi heti!"
+      },
+      "guided": {
+        "sectionTitle": "Kokeile kuvalla",
+        "chooseImage": "Napsauta valitaksesi kuvan",
+        "imageHint": "Kuva tai kuvakaappaus (PNG/JPEG/GIF/WEBP) — enintään 3 Mt",
+        "analyzing": "Analysoidaan kuvaasi…",
+        "unsupportedFormat": "Vain PNG, JPEG, GIF tai WEBP tuetaan. Jos kyseessä on HEIC-kuva, muunna se JPEG-muotoon ja yritä uudelleen.",
+        "tooLarge": "Enintään 3 Mt:n kuvia voidaan analysoida ilman tiliä.",
+        "questionsTitle": "Odotetut kysymykset",
+        "summaryTitle": "Yhteenveto"
+      },
+      "usage": {
+        "uploadRemaining": "{remaining}/{total} tiedostokokeilua jäljellä",
+        "chatRemaining": "{remaining}/{total} keskusteluvuoroa jäljellä"
+      }
+    }
+  },
+  "account": {
+    "deleteConfirm": "Haluatko varmasti poistaa tilisi?\n\nKaikki ladatut tiedostot, luennoitsija- tai professorimateriaalit, keskusteluhistoria ja keskustelukansiot — sekä itse kirjautumistilisi (sähköposti, kirjautumistiedot) — poistetaan pysyvästi eikä tätä voi peruuttaa.",
+    "deleteErrorAlert": "Tilisi poistamisessa tapahtui ongelma: {error}\nYritä uudelleen.",
+    "deleting": "Poistetaan...",
+    "delete": "Poista tili",
+    "proWarningTitle": "Sinulla on aktiivinen Pro-tilaus",
+    "proWarningBody": "Tilisi poistaminen ei peruuta Polar-tilaustasi automaattisesti. Kun tilisi on poistettu, meillä ei ole enää mahdollisuutta peruuttaa sitä puolestasi, joten sinulta saatetaan edelleen veloittaa. Suosittelemme peruuttamaan tilauksen ensin alla olevalla painikkeella.",
+    "goToPortalButton": "Peruuta tilaukseni",
+    "acknowledgeCheckboxLabel": "Ymmärrän, että minun täytyy peruuttaa tilaus erikseen. Poista tilini silti."
+  },
+  "upgrade": {
+    "requestSendFailed": "Pyyntöä ei voitu lähettää: {error}",
+    "requestReceivedTitle": "Pyyntö vastaanotettu",
+    "requestReceivedDesc": "Olemme yhteydessä pian!",
+    "title": "Päivitä Pro-versioon",
+    "priceLine": "Päivitä Pro-versioon — {price}",
+    "defaultContext": "Pro-edut tulevat käyttöön heti, kun maksu on suoritettu.",
+    "checkoutButton": "Siirry Pro-kassalle",
+    "orContactDivider": "Tai jätä viesti",
+    "emailLabel": "Sähköposti",
+    "memoLabel": "Huomautus (valinnainen)",
+    "memoPlaceholder": "Kerro kysymyksistäsi tai tarvitsemistasi ominaisuuksista",
+    "sending": "Lähetetään...",
+    "sendRequest": "Lähetä pyyntö",
+    "societyCode": {
+      "divider": "Onko sinulla yhteisökoodi?",
+      "label": "Yhteisökoodi",
+      "placeholder": "SOC-XXXX-XXXX",
+      "applyButton": "Käytä",
+      "applying": "Käytetään...",
+      "success": "Koodi käytetty! Pro-etusi alkavat heti.",
+      "genericError": "Koodia ei voitu käyttää. Yritä uudelleen."
+    }
+  },
+  "landing": {
+    "loginButton": "Kirjaudu sisään",
+    "headline": "Tentti huomenna, materiaalit vielä koskematta?",
+    "subheadline": "Lataa tiedostosi ja saat yhteenvedon sekä odotetut kysymykset heti.",
+    "ctaButton": "Kokeile nyt",
+    "ctaHint": "Ei rekisteröitymistä — kokeile heti",
+    "professorAppeal": "Räätälöity eri tavalla jokaiselle luennoitsijalle tai professorille",
+    "startOver": "← Aloita alusta",
+    "noSharingNote": "Lataamiasi materiaaleja ei koskaan jaeta muille käyttäjille",
+    "capabilities": {
+      "upload": "Lataa tiedostoja, kuvia tai kuvakaappauksia analysoitavaksi",
+      "deadlines": "Poimi määräajat automaattisesti",
+      "questions": "Luo odotettuja kysymyksiä",
+      "summary": "Ydinyhteenvedot",
+      "ask": "Kysy kysymyksiä suoraan materiaaleistasi"
+    },
+    "professorSection": {
+      "title": "Jokainen luennoitsija tai professori testaa eri tavalla",
+      "description": "Järjestä materiaalit luennoitsijan tai professorin mukaan, ja yhdellä napsautuksella saat odotetut kysymykset ja yhteenvedon, joka on räätälöity sen mukaan, mitä he painottavat ja miten he testaavat.",
+      "demo": {
+        "autoPromptLabel": "Automaattinen kehote käytössä",
+        "promptTemplate": "”Poimi odotetut kysymykset ja ydinyhteenveto {name}:n materiaaleista”",
+        "professors": [
+          {
+            "name": "prof. Virtanen",
+            "subject": "Ohjelmistotekniikka",
+            "emphasis": [
+              "Korostaa aina suunnitteluperiaatteita (SOLID) ja niiden käytännön soveltamista",
+              "Arvostaa oikeita koodikatselmusesimerkkejä enemmän kuin pelkkää teoriaa"
+            ],
+            "questions": [
+              "Valitse yksi SOLID-periaate ja selitä se oikealla koodilla",
+              "Vertaile Agilea ja vesiputousmallia käytännön näkökulmasta"
+            ],
+            "summary": "Tällä jaksolla painotetaan vahvasti suunnitteluperiaatteita ja koodin laatua — tenttikysymykset ovat yleensä esimerkkipohjaisia teorian sijaan."
+          },
+          {
+            "name": "prof. Korhonen",
+            "subject": "Tietokannat",
+            "emphasis": [
+              "Pitää normalisointiprosessin läpikäymisestä vaihe vaiheelta",
+              "Suosii käytännön tehtäviä, joissa painotetaan vahvasti kyselyjen kirjoittamista"
+            ],
+            "questions": [
+              "Käy läpi normalisointi 3NF:ään asti käyttäen esimerkkitaulua",
+              "Selitä JOIN-tyyppien väliset erot SQL-esimerkein"
+            ],
+            "summary": "Vahva painotus normalisoinnissa ja käytännön SQL:ssä — odota tehtäviä, jotka pitää oikeasti ratkaista, ei vain käsitteitä muistettavaksi."
+          },
+          {
+            "name": "prof. Mäkinen",
+            "subject": "Algoritmit",
+            "emphasis": [
+              "Teettää aina aikavaativuuden laskemisen käsin",
+              "Kysyy usein ahneiden algoritmien ja dynaamisen ohjelmoinnin vertailua"
+            ],
+            "questions": [
+              "Analysoi annetun algoritmin aikavaativuus Big-O-merkinnällä",
+              "Anna esimerkki, jossa ahne algoritmi ei takaa optimaalista ratkaisua"
+            ],
+            "summary": "Vaativuusanalyysi ja ahne-vs-DP-vertailut ovat pääpaino — suosii tehtävien ratkaisemista käsin."
+          }
+        ]
+      }
+    }
+  },
+  "themeToggle": {
+    "ariaLabel": "Näytön teema",
+    "system": "Järjestelmä",
+    "light": "Vaalea",
+    "dark": "Tumma"
+  },
+  "loading": {
+    "messages": [
+      "Käydään materiaalejasi läpi",
+      "Etsitään kysymyskaavoja",
+      "Etsitään rivien väliin piilotettuja vihjeitä",
+      "Alleviivataan tärkeitä kohtia",
+      "Käydään vanhoja tenttejä läpi uudelleen",
+      "Järjestetään tenttiin valmistautumismuistiinpanoja",
+      "Poimitaan olennaisimmat asiat",
+      "Luetaan rivien välistä",
+      "Luetaan materiaalia tarkasti",
+      "Etsitään ja yhdistetään kaavoja",
+      "Järjestetään asioita tärkeysjärjestykseen",
+      "Lasketaan toistuvia sanoja",
+      "Väistellään kirjoitusvirheitä joka suuntaan",
+      "Käydään asiakirja läpi joka nurkasta",
+      "Poimitaan avaintermejä",
+      "Kootaan asiayhteyttä yhteen",
+      "Tiivistetään ydinasiaan",
+      "Etsitään materiaalien yhteisiä piirteitä",
+      "Tarkistetaan asioita merkki merkiltä",
+      "Selvitetään piilotettua tarkoitusta",
+      "Merkitään tärkeät lauseet tähdellä",
+      "Seurataan kulkua",
+      "Käännellään materiaalia joka suunnasta",
+      "Poimitaan avainlauseita",
+      "Kerätään vihjeitä yksi kerrallaan",
+      "Edetään kohti johtopäätöstä",
+      "Analysoidaan kupposen kahvin äärellä",
+      "Valmistellaan korostuskyniä",
+      "Järjestellään ajatuksia",
+      "Melkein valmista"
+    ]
+  },
+  "privacy": {
+    "metaTitle": "Tietosuojakäytäntö — Carrotly",
+    "metaDescription": "Kuinka Carrotly kerää, käyttää ja säilyttää tietojasi.",
+    "backLink": "← Takaisin Carrotlyyn",
+    "title": "Tietosuojakäytäntö",
+    "lastUpdated": "Viimeksi päivitetty: elokuu 2026",
+    "intro": "Carrotly (&ldquo;me&rdquo;, &ldquo;palvelu&rdquo;) on henkilökohtainen tekoälyavusteinen työavustaja. Tämä sivu selittää, mitä tietoja keräämme käyttäessäsi sitä, miksi keräämme niitä, kenen kanssa jaamme niitä, kuinka kauan säilytämme niitä ja mitä oikeuksia sinulla on niihin.",
+    "collect": {
+      "heading": "Keräämämme tiedot",
+      "email": "<b>Sähköpostiosoitteesi</b>, jota käytetään tilisi luomiseen ja tunnistamiseen.",
+      "files": "<b>Lataamiesi tiedostojen sisältö</b> — asiakirjat, luentomateriaalit ja kuvat, jotka liität tai lisäät palveluun — mukaan lukien niistä poimittu teksti.",
+      "history": "<b>Keskusteluhistoriasi</b> — lähettämäsi kehotteet ja saamasi vastaukset.",
+      "ip": "<b>IP-osoitteesi</b>, joka kerätään, kun käytät kirjautumisvapaata kokeilua (tiedostoanalyysi, AI-keskustelu jne.), väärinkäytösten estämiseksi."
+    },
+    "why": {
+      "heading": "Miksi keräämme niitä",
+      "intro": "Käytämme näitä tietoja:",
+      "operate": "Palvelun tarjoamiseen ja ylläpitoon — tunnistamiseesi, tiedostojesi ja määräaikojesi tallentamiseen sekä keskusteluhistoriasi pitämiseen saatavilla eri laitteilla.",
+      "analyze": "Pyytämäsi tekoälypohjaisen analyysin luomiseen — asiakirjojen tiivistämiseen, määräaikojen poimimiseen, vastausluonnosten laatimiseen odotettuihin kysymyksiin ja vastaaviin ominaisuuksiin."
+    },
+    "sharing": {
+      "heading": "Kenen kanssa jaamme niitä",
+      "intro": "Emme myy tietojasi. Jaamme niitä vain niiden palveluntarjoajien kanssa, jotka saavat Carrotlyn toimimaan:",
+      "openai": "<b>OpenAI</b> — vastaanottaa kehotteidesi, liitettyjen asiakirjojen ja kuvien tekstin voidakseen luoda pyytämäsi tekoälyanalyysin ja vastaukset. Tämä käsittely tapahtuu Yhdysvalloissa, mikä on myös tietojesi siirto EU:n/ETA:n ulkopuolelle — katso alta &ldquo;Kansainväliset tiedonsiirrot&rdquo;.",
+      "supabase": "<b>Supabase</b> — tietokanta- ja tunnistautumispalveluntarjoajamme, jota käytetään tilisi, tiedostojesi ja keskusteluhistoriasi tallentamiseen. Tietosi säilytetään Supabasen <b>{region}</b>-alueella.",
+      "polar": "<b>Polar</b> — maksunkäsittelijämme, jota käytetään Pro-tilauksen kassan ja laskutuksen hoitamiseen. Polar vastaanottaa maksusi käsittelyyn tarvittavat tiedot (kuten sähköpostiosoitteesi); emme lähetä sille tiedostojasi tai keskusteluhistoriaasi.",
+      "analytics": "<b>Vercel Analytics</b> — kerää anonyymejä sivunkatselutilastoja, jotka auttavat meitä ymmärtämään, mitä sivuja käydään. Se ei käytä evästeitä eikä tunnista yksittäisiä henkilöitä."
+    },
+    "retention": {
+      "heading": "Kuinka kauan säilytämme niitä",
+      "account": "Tilitietosi (sähköposti, tiedostot, määräajat) säilytetään, kunnes poistat tilisi.",
+      "logs": "Ilmaisversiossa keskusteluhistoria säilytetään 30 päivää, minkä jälkeen se poistetaan automaattisesti. Pro-tileillä ei ole automaattista poistoa — keskusteluhistoria säilytetään tilin poistoon asti, kuten kaikki muukin.",
+      "ip": "Kirjautumisvapaan kokeilun väärinkäytösten estämiseksi kerätyt IP-osoitteet poistetaan automaattisesti {days} päivän kuluttua."
+    },
+    "transfers": {
+      "heading": "Kansainväliset tiedonsiirrot",
+      "body1": "Tietosi tallennetaan ja käsitellään Etelä-Koreassa (Soulissa), jossa Supabase isännöi tietokantaamme — tämä on EU:n/Euroopan talousalueen (ETA) ulkopuolella. Jos olet EU:ssa/ETA:lla, tämä tarkoittaa, että henkilötietosi siirretään kolmanteen maahan.",
+      "body2": "Nojaamme Supabasen kanssa tehdyn tietojenkäsittelysopimuksen (DPA) sisältämiin vakiosopimuslausekkeisiin (Standard Contractual Clauses, SCC) tämän siirron oikeusperustana. Sama koskee siirtoa OpenAI:lle (katso yllä), joka käsittelee tietoja Yhdysvalloissa.",
+      "body3": "Jos sinulla on kysyttävää näistä siirroista, ota yhteyttä alla olevaan osoitteeseen."
+    },
+    "rights": {
+      "heading": "Oikeutesi",
+      "copy": "Voit milloin tahansa pyytää kopion hallussamme olevista tiedoistasi lähettämällä sähköpostia alla olevaan osoitteeseen — vastaamme mahdollisimman pian.",
+      "delete": "Poistaaksesi tilisi käytä sivupalkin alareunassa olevaa &ldquo;Poista tili&rdquo; -painiketta kirjauduttuasi sisään — se poistaa välittömästi ja pysyvästi lataamasi tiedostot, luennoitsija- tai professorimateriaalit, keskusteluhistorian sekä itse kirjautumistietosi (sähköposti, kirjautumistiedot) ilman, että sinun tarvitsee ensin ottaa meihin yhteyttä sähköpostitse. Jos haluat mieluummin, että me teemme sen puolestasi, lähetä meille sähköpostia, niin poistamme sen manuaalisesti.",
+      "proSubscription": "Jos sinulla on aktiivinen Pro-tilaus, tilisi poistaminen ei peruuta sitä — Polar (kaupallisena myyjänä toimiva Merchant of Record, katso <termslink>käyttöehdot</termslink>) hoitaa laskutuksen erillään Carrotly-kirjautumisestasi, joten emme voi peruuttaa sitä puolestasi. Sinun täytyy peruuttaa tilauksesi ensin (Polarin lähettämän kuitti-/vahvistussähköpostin linkin kautta tai ottamalla meihin yhteyttä), ennen kuin voimme poistaa tilisi."
+    },
+    "contact": {
+      "heading": "Yhteystiedot",
+      "body": "Kysymykset tästä käytännöstä tai pyynnöt tietojesi tarkasteluun tai poistamiseen voi lähettää osoitteeseen <mailto>kcw022@naver.com</mailto>."
+    },
+    "region": "Koillis-Aasia (Soul), Etelä-Korea"
+  },
+  "terms": {
+    "metaTitle": "Käyttöehdot — Carrotly",
+    "metaDescription": "Ehdot, joita sovelletaan käyttäessäsi Carrotlyä.",
+    "backLink": "← Takaisin Carrotlyyn",
+    "title": "Käyttöehdot",
+    "lastUpdated": "Viimeksi päivitetty: elokuu 2026",
+    "intro": "Nämä ehdot koskevat Carrotlyn (&ldquo;me&rdquo;, &ldquo;palvelu&rdquo;) käyttöäsi — henkilökohtaista tekoälyavusteista työavustajaa, joka lukee ja järjestää lataamiasi asiakirjoja. Luomalla tilin tai käyttämällä palvelua hyväksyt nämä ehdot. Jos et hyväksy niitä, älä käytä palvelua.",
+    "service": {
+      "heading": "Palvelu",
+      "body": "Carrotlyn avulla voit ladata asiakirjoja, kuvia ja muita tiedostoja, ja se käyttää tekoälyä määräaikojen poimimiseen, sisällön tiivistämiseen, todennäköisten tentti-/tehtäväkysymysten ennustamiseen ja kysymyksiin vastaamiseen lataamastasi materiaalista. Osa ominaisuuksista vaatii tilin; rajoitettua ominaisuusvalikoimaa voi kokeilla ilman tiliä, tuotteessa kuvattujen käyttörajojen mukaisesti."
+    },
+    "account": {
+      "heading": "Tilisi",
+      "body": "Olet vastuussa kirjautumistietojesi pitämisestä turvassa ja kaikesta tilisi alla tapahtuvasta toiminnasta. Sinun on annettava kelvollinen sähköpostiosoite, ja olet vastuussa sen oikeellisuudesta. Voit poistaa tilisi milloin tahansa — katso <privacylink>tietosuojakäytäntömme</privacylink> ohjeet."
+    },
+    "subscriptions": {
+      "heading": "Tilaukset ja maksut",
+      "intro": "Carrotly tarjoaa ilmaisen version ja maksullisen &ldquo;Pro&rdquo;-version ({price}) korkeammilla käyttörajoilla — katso ajantasaiset tiedot kohdasta <pricinglink>Hinnoittelu</pricinglink>.",
+      "mor": "<b>Kaikki maksut käsittelee Polar Software, Inc. (&ldquo;Polar&rdquo;), joka toimii tämän ostoksen Merchant of Recordina (kaupallisena myyjänä).</b> Tämä tarkoittaa, että Polar — ei Carrotly — on myyjä, jonka kanssa teet sopimuksen itse liiketoimesta: Polar näkyy kortti-/pankkitiliotteessasi kauppiaana, kerää ja tilittää sovellettavan myyntiveron tai ALV:n, ja hoitaa laskutuksen ja maksuihin liittyvän asiakastuen. Palautuspyynnöt, laskutusriidat ja maksupalautukset (chargeback) käsitellään <polarlink>Polarin omien ehtojen</polarlink> mukaisesti. Saamme vain vahvistuksen siitä, että maksu onnistui (ja tiliisi liittyvän viitteen), jotta voimme päivittää sinut Pro-versioon — emme vastaanota tai säilytä täydellisiä maksukorttitietojasi. Jos olet kuluttaja lainkäyttöalueella, jossa on lakisääteinen peruuttamisoikeus tai harkinta-aika tälle ostokselle, tämä oikeus käytetään Polarin kautta, koska se on liiketoimen Merchant of Record.",
+      "renewal": "Tilaukset uusiutuvat automaattisesti jokaisen laskutuskauden yhteydessä, kunnes ne peruutetaan. Voit hallita tai peruuttaa tilauksesi Polarin ostoksen jälkeen lähettämän kuitti-/vahvistussähköpostin kautta, tai ottamalla meihin yhteyttä alla olevaan sähköpostiosoitteeseen, niin autamme sinua tavoittamaan Polarin."
+    },
+    "aiContent": {
+      "heading": "Tekoälyn luoma sisältö",
+      "body": "Yhteenvedot, ennustetut kysymykset, määräajat ja vastaukset ovat tekoälymallien luomia, ja ne voivat olla puutteellisia, vanhentuneita tai virheellisiä. Carrotly on opiskelu-/työapuväline, ei korvike sille, että luet varsinaisen lähdemateriaalisi itse tai tarkistat tärkeät päivämäärät ja vaatimukset itse. Älä luota pelkästään tekoälyn tuottamaan sisältöön asioissa, joilla on todellisia seurauksia (tenttipäivät, tehtävävaatimukset, lakiin tai lääketieteeseen liittyvät päätökset jne.)."
+    },
+    "content": {
+      "heading": "Sisältösi",
+      "body": "Säilytät omistusoikeuden kaikkeen lataamaasi. Olet vastuussa siitä, että sinulla on oikeus ladata se, etkä lataa mitään laitonta tai sisältöä, joka loukkaa jonkun muun oikeuksia. Käytämme sisältöäsi vain tarjotaksemme sinulle palvelun (katso <privacylink>tietosuojakäytäntömme</privacylink> tarkasti, kenen kanssa se jaetaan ja miksi) — emme vaadi sen omistusoikeutta emmekä käytä sitä tekoälymallien kouluttamiseen."
+    },
+    "acceptableUse": {
+      "heading": "Hyväksyttävä käyttö",
+      "intro": "Älä käytä Carrotlyä:",
+      "item1": "Lain rikkomiseen tai sellaisen sisällön lataamiseen, jota sinulla ei ole oikeutta jakaa.",
+      "item2": "Palvelun häiritsemisen, ylikuormittamisen tai luvattoman käytön yrittämiseen.",
+      "item3": "Palvelun jälleenmyymiseen tai tarjoamiseen muille ilman suostumustamme.",
+      "item4": "Käyttörajojen (esim. ilmais-/Pro-version rajat) kiertämiseen väärinkäytöllä tai automaatiolla.",
+      "outro": "Voimme keskeyttää tai lopettaa näitä ehtoja rikkovat tilit."
+    },
+    "disclaimer": {
+      "heading": "Vastuuvapauslauseke ja vastuunrajoitus",
+      "body": "Carrotly tarjotaan &ldquo;sellaisenaan&rdquo;, ilman minkäänlaisia takuita. Emme takaa, että palvelu on keskeytymätön, virheetön tai että tekoälyn tuottama sisältö on tarkkaa. Lain sallimissa laajimmissa rajoissa Carrotly ei ole vastuussa välillisistä, satunnaisista tai seurannaisvahingoista, jotka johtuvat palvelun käytöstäsi — mukaan lukien tekoälyn tuottamaan sisältöön perustuvat päätökset."
+    },
+    "changes": {
+      "heading": "Muutokset näihin ehtoihin",
+      "body": "Voimme päivittää näitä ehtoja palvelun muuttuessa. Jos teemme olennaisia muutoksia, päivitämme yllä olevan &ldquo;Viimeksi päivitetty&rdquo; -päivämäärän; palvelun jatkuva käyttö muutoksen jälkeen tarkoittaa, että hyväksyt päivitetyt ehdot."
+    },
+    "governingLaw": {
+      "heading": "Sovellettava laki",
+      "body": "[Lisää sovellettava laki / lainkäyttöalue, esim. &ldquo;Korean tasavallan lait&rdquo;]."
+    },
+    "contact": {
+      "heading": "Yhteystiedot",
+      "body": "Kysymykset näistä ehdoista voi lähettää osoitteeseen <mailto>kcw022@naver.com</mailto>."
+    }
+  },
+  "usage": {
+    "title": "Tämän kuukauden käyttö",
+    "chatRemaining": "{remaining}/{total} keskustelua jäljellä",
+    "fileRemaining": "{remaining}/{total} tiedostoa jäljellä",
+    "chatLabel": "Keskustelu",
+    "fileLabel": "Tiedostot"
+  }
+}

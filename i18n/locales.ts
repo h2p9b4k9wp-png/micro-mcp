@@ -6,7 +6,12 @@
 // app/page.tsx)는 이미 자유 텍스트로 어떤 언어든 지원하지만, 메뉴·버튼 같은 고정 UI는
 // next-intl 메시지 파일(messages/{locale}.json)이 실제로 있어야만 그 언어로 보입니다 —
 // 여기 추가한 언어만큼만 messages/ 폴더에 대응 파일이 있어야 합니다.
-export const SUPPORTED_LOCALES = ['ko', 'en', 'ja', 'vi', 'es', 'fr', 'de', 'it', 'pt', 'nl'] as const;
+// 💡 [수정] 핀란드어(fi)·스웨덴어(sv) 추가 — 핀란드는 공용어가 핀란드어·스웨덴어 둘이고,
+// 스웨덴어는 스웨덴을 포함해 북유럽 전체로 확장할 때도 그대로 재사용됩니다. messages/fi.json·
+// messages/sv.json은 영어판을 기준으로 번역하되(요청대로), 시험(tentti)·기출문제
+// (vanhat tentit)·강의자료(luentomateriaali)·강사(luennoitsija) 같은 대학 생활 용어는
+// 정확한 핀란드어 표현을 그대로 썼습니다.
+export const SUPPORTED_LOCALES = ['ko', 'en', 'ja', 'vi', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'fi', 'sv'] as const;
 export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
 export const DEFAULT_LOCALE: AppLocale = 'ko';
 
@@ -25,4 +30,6 @@ export const LOCALE_LABELS: Record<AppLocale, string> = {
   it: 'Italiano',
   pt: 'Português',
   nl: 'Nederlands',
+  fi: 'Suomi',
+  sv: 'Svenska',
 };

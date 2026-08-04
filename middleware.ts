@@ -12,7 +12,7 @@ import { SUPPORTED_LOCALES, type AppLocale } from './i18n/locales';
 // 붙어있던, 훨씬 낮은 우선순위의 지원 언어가 먼저 골라지는 오탐이 날 수 있습니다(네덜란드어가
 // 뜬 사례가 이 경로로 재현됩니다 — 실제 1순위 언어가 지원 목록에 없고, q값은 낮지만 목록상
 // 앞쪽에 'nl'이 끼어 있던 경우). q값을 실제로 비교해 정렬하면 이 오탐이 사라집니다.
-// 지원 로케일 코드가 전부 ISO 639-1 주 언어 서브태그(ko/en/ja/vi/es/fr/de/it/pt/nl)라
+// 지원 로케일 코드가 전부 ISO 639-1 주 언어 서브태그(ko/en/ja/vi/es/fr/de/it/pt/nl/fi/sv)라
 // 지역 서브태그(-DE, -BR 등)는 무시하고 앞부분만 비교합니다. 아무 것도 안 맞으면 'en'으로 —
 // 한국어가 아닌 방문자를 지원하지 않는 언어라고 계속 한국어로 두는 것보다는 영어가 더 도움이 됩니다.
 function detectLocaleFromAcceptLanguage(header: string): AppLocale {
