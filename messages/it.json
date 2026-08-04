@@ -604,7 +604,8 @@
       "intro": "Non vendiamo i tuoi dati. Li condividiamo solo con i fornitori di servizi che fanno funzionare Carrotly:",
       "openai": "<b>OpenAI</b> — riceve il testo dei tuoi messaggi, dei documenti allegati e delle immagini per generare l&rsquo;analisi e le risposte IA che richiedi. Questo trattamento avviene negli Stati Uniti, il che costituisce anche un trasferimento dei tuoi dati al di fuori dell&rsquo;UE/SEE — vedi &laquo;Trasferimenti internazionali di dati&raquo; qui sotto.",
       "supabase": "<b>Supabase</b> — il nostro fornitore di database e autenticazione, usato per archiviare il tuo account, i file e la cronologia delle conversazioni. I tuoi dati sono ospitati nella regione <b>{region}</b> di Supabase.",
-      "polar": "<b>Polar</b> — il nostro processore di pagamenti, usato per gestire il checkout e la fatturazione dell&rsquo;abbonamento Pro. Polar riceve le informazioni necessarie per elaborare il pagamento (come il tuo indirizzo email); non gli inviamo i tuoi file né la cronologia delle conversazioni."
+      "polar": "<b>Polar</b> — il nostro processore di pagamenti, usato per gestire il checkout e la fatturazione dell&rsquo;abbonamento Pro. Polar riceve le informazioni necessarie per elaborare il pagamento (come il tuo indirizzo email); non gli inviamo i tuoi file né la cronologia delle conversazioni.",
+      "analytics": "<b>Vercel Analytics</b> — raccoglie statistiche anonime sulle visualizzazioni di pagina per aiutarci a capire quali pagine vengono visitate. Non usa cookie e non identifica le persone."
     },
     "retention": {
       "heading": "Per quanto tempo le conserviamo",

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
@@ -80,6 +81,10 @@ export default async function RootLayout({
           </NextIntlClientProvider>
           <SiteFooter />
         </ThemeProvider>
+        {/* 💡 [신규] Vercel Web Analytics — 쿠키 없이 익명 페이지 조회 통계만 수집합니다
+            (Vercel 공식 문서: 개인을 식별하는 쿠키/로컬스토리지를 쓰지 않음). /privacy
+            페이지의 sharing.analytics 항목이 이 사실을 고지합니다. */}
+        <Analytics />
       </body>
     </html>
   );

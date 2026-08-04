@@ -604,7 +604,8 @@
       "intro": "We verkopen je gegevens niet. We delen ze alleen met de serviceproviders die Carrotly laten werken:",
       "openai": "<b>OpenAI</b> — ontvangt de tekst van je prompts, bijgevoegde documenten en afbeeldingen om de door jou gevraagde AI-analyse en -antwoorden te genereren. Deze verwerking vindt plaats in de Verenigde Staten, wat ook een doorgifte van je gegevens buiten de EU/EER inhoudt — zie &ldquo;Internationale gegevensdoorgifte&rdquo; hieronder.",
       "supabase": "<b>Supabase</b> — onze database- en authenticatieprovider, gebruikt om je account, bestanden en gespreksgeschiedenis op te slaan. Je gegevens worden gehost in de regio <b>{region}</b> van Supabase.",
-      "polar": "<b>Polar</b> — onze betalingsverwerker, gebruikt voor de checkout en facturering van het Pro-abonnement. Polar ontvangt de informatie die nodig is om je betaling te verwerken (zoals je e-mailadres); we sturen ze geen bestanden of gespreksgeschiedenis."
+      "polar": "<b>Polar</b> — onze betalingsverwerker, gebruikt voor de checkout en facturering van het Pro-abonnement. Polar ontvangt de informatie die nodig is om je betaling te verwerken (zoals je e-mailadres); we sturen ze geen bestanden of gespreksgeschiedenis.",
+      "analytics": "<b>Vercel Analytics</b> — verzamelt anonieme paginaweergavestatistieken om te begrijpen welke pagina&rsquo;s worden bezocht. Gebruikt geen cookies en identificeert geen personen."
     },
     "retention": {
       "heading": "Hoe lang we ze bewaren",

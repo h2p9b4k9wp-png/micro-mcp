@@ -89,6 +89,7 @@ export default async function PrivacyPage() {
               <li>{t.rich('sharing.openai', { b: bold })}</li>
               <li>{t.rich('sharing.supabase', { b: bold, region: t('region') })}</li>
               <li>{t.rich('sharing.polar', { b: bold })}</li>
+              <li>{t.rich('sharing.analytics', { b: bold })}</li>
             </ul>
           </section>
 
