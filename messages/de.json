@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Wird geladen...",
-    "title": "Carrotly — Ihr persönlicher KI-Arbeitsassistent",
-    "description": "Eine KI-Workflow-Plattform, die Ihre Arbeit und Ihren Alltag Baustein für Baustein automatisiert."
+    "title": "Verwandeln Sie Ihre Vorlesungsunterlagen in wahrscheinliche Prüfungsfragen | Carrotly",
+    "description": "Laden Sie Ihre eigenen Kursunterlagen hoch und erhalten Sie wahrscheinliche Prüfungsfragen sowie eine kompakte Zusammenfassung, abgestimmt darauf, wie Ihr Dozent Prüfungen stellt. Wird niemals geteilt. Keine Anmeldung nötig."
   },
   "nav": {
     "workspace": "KI fragen",

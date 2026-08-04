@@ -31,14 +31,28 @@ const geistMono = Geist_Mono({
 // 대시보드)는 이 루트 레이아웃 말고는 별도 layout.tsx가 없어서 라우트별 override를 걸 곳이
 // 없습니다. 더 구체적인 라우트(로그인/웰컴/프라이버시 등)는 자기 자신의 layout.tsx나
 // generateMetadata()에서 이 값을 덮어씁니다.
+// 💡 [신규] openGraph — Next.js는 title/description을 지정해도 openGraph 블록을 자동으로
+// 채워주지 않습니다(명시적으로 따로 지정해야 함). Reddit·Discord 같은 곳에 링크를 공유하면
+// 이 og:title/og:description으로 미리보기가 뜨는데, 지금까지 이 블록 자체가 없어서 그런
+// 서비스들이 미리보기를 제대로 못 만들었습니다 — title/description과 같은 번역 값을
+// 그대로 재사용해 한 곳에서만 관리되게 합니다(둘이 따로 놀며 어긋날 일이 없음).
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('app');
+  const title = t('title');
+  const description = t('description');
   return {
-    title: t('title'),
-    description: t('description'),
+    title,
+    description,
     metadataBase: new URL(SITE_URL),
     alternates: {
       canonical: `${SITE_URL}/`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/`,
+      siteName: 'Carrotly',
+      type: 'website',
     },
   };
 }

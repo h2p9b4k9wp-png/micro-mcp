@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Đang tải...",
-    "title": "Carrotly — Trợ lý công việc AI của riêng bạn",
-    "description": "Nền tảng quy trình làm việc AI tự động hóa công việc và cuộc sống hằng ngày của bạn, như lắp từng khối."
+    "title": "Biến tài liệu bài giảng thành câu hỏi thi dự đoán | Carrotly",
+    "description": "Tải lên tài liệu học tập của bạn và nhận câu hỏi thi dự đoán cùng bản tóm tắt cô đọng, phù hợp với cách giảng viên ra đề. Không bao giờ chia sẻ. Không cần đăng ký."
   },
   "nav": {
     "workspace": "Hỏi AI",

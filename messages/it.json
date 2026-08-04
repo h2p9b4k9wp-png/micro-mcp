@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Caricamento...",
-    "title": "Carrotly — Il tuo assistente di lavoro IA",
-    "description": "Una piattaforma di workflow IA che automatizza il tuo lavoro e la tua vita quotidiana, un blocco alla volta."
+    "title": "Trasforma i tuoi appunti di lezione in probabili domande d'esame | Carrotly",
+    "description": "Carica i tuoi materiali del corso e ottieni probabili domande d'esame più un riassunto conciso, calibrato sul modo in cui il tuo docente imposta le prove. Mai condiviso. Nessuna registrazione."
   },
   "nav": {
     "workspace": "Chiedi all'IA",

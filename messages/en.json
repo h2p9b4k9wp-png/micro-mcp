@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Loading...",
-    "title": "Carrotly — Your Personal AI Work Assistant",
-    "description": "An AI workflow platform that automates your work and daily life, block by block."
+    "title": "Turn your lecture notes into likely exam questions | Carrotly",
+    "description": "Upload your own course materials and get likely exam questions plus a condensed summary, tuned to how your lecturer sets papers. Never shared. No signup."
   },
   "nav": {
     "workspace": "Ask AI",

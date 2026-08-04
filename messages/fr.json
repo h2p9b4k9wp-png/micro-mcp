@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Chargement...",
-    "title": "Carrotly — Votre assistant de travail IA",
-    "description": "Une plateforme de flux de travail IA qui automatise votre travail et votre quotidien, bloc par bloc."
+    "title": "Transformez vos notes de cours en questions d'examen probables | Carrotly",
+    "description": "Téléversez vos propres supports de cours et obtenez des questions d'examen probables ainsi qu'un résumé condensé, adapté à la façon dont votre enseignant conçoit ses épreuves. Jamais partagé. Sans inscription."
   },
   "nav": {
     "workspace": "Demander à l'IA",

@@ -1,8 +1,8 @@
 {
   "app": {
     "loadingSession": "Carregando...",
-    "title": "Carrotly — Seu assistente de trabalho com IA",
-    "description": "Uma plataforma de fluxo de trabalho com IA que automatiza seu trabalho e seu dia a dia, bloco a bloco."
+    "title": "Transforme suas anotações de aula em prováveis questões de prova | Carrotly",
+    "description": "Envie seus próprios materiais de curso e receba prováveis questões de prova além de um resumo conciso, ajustado ao estilo do seu professor de elaborar provas. Nunca compartilhado. Sem cadastro."
   },
   "nav": {
     "workspace": "Perguntar à IA",
