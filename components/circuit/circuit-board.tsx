@@ -221,13 +221,19 @@ export function CircuitBoard({ graph, onNodeClick, compact = false, forceVertica
                 height: isLens ? (isCompact ? '60px' : 'clamp(84px, 15vw, 128px)') : undefined,
                 padding: isLens ? undefined : isCompact ? '6px 4px' : '10px 8px',
                 border: `2px solid ${isGated ? 'var(--border-default)' : status.borderColor}`,
+                // 💡 [수정] running/done 상태의 source·action 노드 배경이 '#2A1520' 하드코딩
+                // 다크 색이었어서, 라이트 테마에서는 카드만 어둡게 뜨고 그 위 라벨은
+                // text-[var(--text-primary)](라이트 테마에서 거의 검정)라 어두운 배경 위에
+                // 어두운 글자로 겹쳐 안 읽혔습니다. lens 노드가 이미 쓰던 것과 같은
+                // var(--bg-accent-subtle)(테마별로 정의된 옅은 핑크 톤 배경)로 바꿔서
+                // 두 테마 모두에서 text-primary와 대비가 유지되도록 했습니다.
                 background: isGated
                   ? 'var(--bg-page-alt)'
                   : isLens
                     ? 'radial-gradient(circle, var(--bg-accent-subtle) 0%, var(--bg-page) 70%)'
                     : node.status === 'idle'
                       ? 'var(--bg-page-alt)'
-                      : '#2A1520',
+                      : 'var(--bg-accent-subtle)',
                 boxShadow: !isGated && status.glow
                   ? isLens
                     ? '0 0 32px 6px rgba(244,103,155,0.4)'
