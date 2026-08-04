@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import { getSessionUserEmail } from '@/lib/auth/session';
@@ -64,9 +65,14 @@ export default async function AdminFunnelPage() {
   return (
     <div className="min-h-screen bg-[#15131A] text-[#E4DEEA]">
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] mb-2 tracking-tight">
-          전환 퍼널
-        </h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#F5F2F7] tracking-tight">
+            전환 퍼널
+          </h1>
+          <Link href="/admin/ai-usage" className="text-xs text-[#857C93] hover:text-[#F4679B] transition-colors">
+            AI 토큰 사용량 →
+          </Link>
+        </div>
         <p className="text-sm text-[#AFA6BD] mb-10">
           단계별 순방문자 수(anon_id 기준 중복 제거) · 랜딩 방문 대비 비율 · 직전 단계 대비 이탈률
         </p>

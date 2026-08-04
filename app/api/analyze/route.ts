@@ -4,6 +4,7 @@ import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { getIsPro, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
+import { recordAiUsage } from '@/lib/ai-usage-logging';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 
@@ -55,7 +56,16 @@ export async function POST(req: Request) {
       );
     }
 
-    const { lensId, result } = await runLensAnalysis({ apiKey, text, fileName, lens, responseLanguage });
+    const { lensId, result, usage } = await runLensAnalysis({ apiKey, text, fileName, lens, responseLanguage });
+
+    // 💡 [신규] 추정이 아니라 OpenAI가 실제로 돌려준 토큰 수를 그대로 기록합니다. 응답을
+    // 내려보내기 전에 await합니다 — 서버리스 함수는 응답을 반환하면 그대로 종료될 수 있어
+    // await 없이 던져두면(fire-and-forget) 인서트가 완료되기 전에 함수가 죽어 기록이 조용히
+    // 누락될 수 있습니다. 기록 자체가 실패해도(네트워크 등) 응답은 그대로 내려줍니다 —
+    // recordAiUsage는 실패 시 throw하지 않고 로그만 남깁니다(lib/ai-usage-logging.ts).
+    if (userId && usage) {
+      await recordAiUsage(supabase, userId, 'analyze', 'gpt-4.1-mini', usage);
+    }
 
     return NextResponse.json({ lens: lensId, result });
   } catch (error) {
