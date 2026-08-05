@@ -58,13 +58,13 @@ function WelcomeCircuitDemo() {
     nodes: [
       { id: 'guest_upload', layer: 'source', status: phase === 'idle' ? 'idle' : 'done' },
       { id: 'guest_ai_core', layer: 'lens', status: phase === 'running' ? 'running' : phase === 'done' ? 'done' : 'idle' },
-      { id: 'questions', layer: 'action', status: phase === 'done' ? 'done' : 'idle' },
       { id: 'digest', layer: 'action', status: phase === 'done' ? 'done' : 'idle' },
+      { id: 'questions', layer: 'action', status: phase === 'done' ? 'done' : 'idle' },
     ],
     edges: [
       { from: 'guest_upload', to: 'guest_ai_core' },
-      { from: 'guest_ai_core', to: 'questions' },
       { from: 'guest_ai_core', to: 'digest' },
+      { from: 'guest_ai_core', to: 'questions' },
     ],
   };
 
@@ -130,13 +130,13 @@ export function WelcomeHeroTrial() {
     nodes: [
       { id: 'guest_upload', layer: 'source', status: uploaded ? 'done' : 'idle' },
       { id: 'guest_ai_core', layer: 'lens', status: isAnalyzing ? 'running' : result ? 'done' : 'idle' },
-      { id: 'questions', layer: 'action', status: result ? 'done' : 'idle' },
       { id: 'digest', layer: 'action', status: result ? 'done' : 'idle' },
+      { id: 'questions', layer: 'action', status: result ? 'done' : 'idle' },
     ],
     edges: [
       { from: 'guest_upload', to: 'guest_ai_core' },
-      { from: 'guest_ai_core', to: 'questions' },
       { from: 'guest_ai_core', to: 'digest' },
+      { from: 'guest_ai_core', to: 'questions' },
     ],
   };
 
@@ -241,22 +241,25 @@ export function WelcomeHeroTrial() {
               </p>
             )}
 
+            {/* 💡 [수정] 요약정리 먼저, 예상 문제 나중 — components/guest-guided-trial.tsx의
+                같은 자리와 순서를 맞춥니다(두 화면이 같은 결과를 다른 레이아웃으로 그리므로
+                순서가 어긋나면 안 됩니다). */}
             {result && (
               <div className="w-full max-w-xl mx-auto flex flex-col gap-3 mt-2 text-left">
                 <div className="professor-circuit-reveal bg-[#211E28] border border-[#322D3B] rounded-xl p-3.5">
                   <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
-                    {t('login.trial.guided.questionsTitle')}
+                    {t('login.trial.guided.summaryTitle')}
                   </p>
-                  {renderTrialResult('questions', result.questions, t)}
+                  {renderTrialResult('digest', result.summary, t)}
                 </div>
                 <div
                   className="professor-circuit-reveal bg-[#211E28] border border-[#322D3B] rounded-xl p-3.5"
                   style={{ animationDelay: '300ms' }}
                 >
                   <p className="text-xs font-semibold text-[#857C93] uppercase tracking-wide mb-2.5">
-                    {t('login.trial.guided.summaryTitle')}
+                    {t('login.trial.guided.questionsTitle')}
                   </p>
-                  {renderTrialResult('digest', result.summary, t)}
+                  {renderTrialResult('questions', result.questions, t)}
                 </div>
               </div>
             )}

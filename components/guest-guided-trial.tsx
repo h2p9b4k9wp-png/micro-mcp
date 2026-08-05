@@ -53,13 +53,13 @@ export function GuestGuidedTrial({
     nodes: [
       { id: 'guest_upload', layer: 'source', status: uploaded ? 'done' : 'idle' },
       { id: 'guest_ai_core', layer: 'lens', status: isAnalyzing ? 'running' : result ? 'done' : 'idle' },
-      { id: 'questions', layer: 'action', status: result ? 'done' : 'idle' },
       { id: 'digest', layer: 'action', status: result ? 'done' : 'idle' },
+      { id: 'questions', layer: 'action', status: result ? 'done' : 'idle' },
     ],
     edges: [
       { from: 'guest_upload', to: 'guest_ai_core' },
-      { from: 'guest_ai_core', to: 'questions' },
       { from: 'guest_ai_core', to: 'digest' },
+      { from: 'guest_ai_core', to: 'questions' },
     ],
   };
 
@@ -128,22 +128,25 @@ export function GuestGuidedTrial({
             </div>
           )}
 
+          {/* 💡 [수정] 요약정리를 예상 문제보다 먼저 보여줍니다 — 올린 자료가 무엇인지
+              먼저 확인한 다음 예상 문제로 넘어가는 순서가 자연스럽습니다. 스태거 애니메이션
+              지연(300ms)과 위 회로도 노드 순서도 화면에 보이는 순서를 그대로 따라갑니다. */}
           {result && (
             <div className="flex flex-col gap-3 mt-4">
               <div className="professor-circuit-reveal bg-[var(--bg-page)] border border-[var(--border-default)] rounded-xl p-3.5">
                 <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
-                  {t('login.trial.guided.questionsTitle')}
+                  {t('login.trial.guided.summaryTitle')}
                 </p>
-                {renderTrialResult('questions', result.questions, t)}
+                {renderTrialResult('digest', result.summary, t)}
               </div>
               <div
                 className="professor-circuit-reveal bg-[var(--bg-page)] border border-[var(--border-default)] rounded-xl p-3.5"
                 style={{ animationDelay: '300ms' }}
               >
                 <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-2.5">
-                  {t('login.trial.guided.summaryTitle')}
+                  {t('login.trial.guided.questionsTitle')}
                 </p>
-                {renderTrialResult('digest', result.summary, t)}
+                {renderTrialResult('questions', result.questions, t)}
               </div>
             </div>
           )}
