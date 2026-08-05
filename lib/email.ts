@@ -67,3 +67,55 @@ export async function sendRedditDigestEmail({
     throw new Error(`Resend send failed: ${error.message}`);
   }
 }
+
+// 💡 [신규] 결제 웹훅(app/api/webhooks/polar)이 2xx가 아닌 응답을 낼 때 보내는 즉시 알림.
+// 실제 돈이 오간 요청이 실패했는데 아무도 모르는 상황을 막는 게 목적입니다 — 결제는
+// 사용자가 "돈은 나갔는데 Pro가 안 켜졌다"고 문의하기 전까지 조용히 깨져 있을 수 있고,
+// Polar 대시보드의 배달 로그는 누가 열어보기 전까지 아무 신호도 주지 않습니다.
+//
+// 새 서비스를 붙이지 않고 이미 매일 돌고 있는 Resend 경로(sendRedditDigestEmail과 같은
+// RESEND_API_KEY/DIGEST_EMAIL_FROM)를 그대로 재사용합니다. 수신 주소도 새 환경변수를
+// 만들지 않고 DIGEST_EMAIL_TO를 그대로 씁니다 — 결제 알림만 따로 받고 싶어지면 그때
+// 별도 변수를 추가하면 됩니다.
+export async function sendPaymentWebhookAlertEmail({
+  apiKey,
+  to,
+  from,
+  status,
+  body,
+}: {
+  apiKey: string;
+  to: string;
+  from: string;
+  status: number;
+  body: string;
+}): Promise<void> {
+  // 응답 본문이 길거나 통째로 HTML일 수 있어 잘라서 넣습니다(메일이 비대해지는 것 방지).
+  const excerpt = body.length > 2000 ? `${body.slice(0, 2000)}\n… (이하 생략)` : body || '(응답 본문 없음)';
+  const html = `<div style="font-family:sans-serif;max-width:640px;margin:0 auto;">
+    <h1 style="font-size:20px;color:#b4232c;">Polar 결제 웹훅 실패 (HTTP ${status})</h1>
+    <p style="font-size:14px;color:#5b5566;line-height:1.6;">
+      <code>/api/webhooks/polar</code>가 2xx가 아닌 응답을 반환했습니다.
+      결제가 발생했는데 <code>profiles.is_pro</code>가 켜지지 않았을 수 있습니다.
+    </p>
+    <p style="font-size:13px;color:#5b5566;line-height:1.6;">
+      확인 순서: ① Polar 대시보드 → Webhooks → Deliveries에서 해당 이벤트 확인
+      ② 그 계정의 <code>profiles</code> 행과 <code>is_pro</code> 상태를 DB에서 직접 확인
+      ③ 원인을 고친 뒤 Polar에서 <strong>Redeliver</strong>
+    </p>
+    <p style="margin:16px 0 4px;font-size:12px;font-weight:700;color:#857c93;">응답 본문</p>
+    <pre style="font-size:12px;white-space:pre-wrap;word-break:break-all;background:#f7f5f9;padding:12px;border-radius:6px;">${escapeHtml(excerpt)}</pre>
+    <p style="font-size:12px;color:#857c93;">발생 시각(UTC): ${new Date().toISOString()}</p>
+  </div>`;
+
+  const resend = new Resend(apiKey);
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    subject: `[Carrotly] 결제 웹훅 실패 — HTTP ${status}`,
+    html,
+  });
+  if (error) {
+    throw new Error(`Resend send failed: ${error.message}`);
+  }
+}

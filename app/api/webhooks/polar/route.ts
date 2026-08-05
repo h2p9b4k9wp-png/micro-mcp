@@ -1,5 +1,7 @@
 import { Webhooks } from '@polar-sh/nextjs';
+import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { sendPaymentWebhookAlertEmail } from '@/lib/email';
 
 // 💡 [신규] Polar 결제 웹훅 — Checkout Link(NEXT_PUBLIC_POLAR_CHECKOUT_URL 환경변수,
 // lib/plan-limits.ts의 getPolarCheckoutUrl()이 씀)로
@@ -62,7 +64,7 @@ async function setIsPro(userId: string, isPro: boolean, eventType: string) {
   console.log(`[polar webhook] ${eventType}: user ${userId} → is_pro=${isPro} (${data.length}행 갱신)`);
 }
 
-export const POST = Webhooks({
+const handleWebhook = Webhooks({
   webhookSecret: process.env.POLAR_WEBHOOK_SECRET!,
 
   // 결제 완료 — "구독이 활성화됐다"는 이 이벤트가 최초 결제와 결제 재시도 회복(dunning
@@ -99,3 +101,47 @@ export const POST = Webhooks({
     await setIsPro(userId, false, 'subscription.revoked');
   },
 });
+
+// 💡 [신규] 위 핸들러를 얇게 감싸서 2xx가 아닌 응답이 나오면 알림 메일을 한 통 보냅니다.
+//
+// 핸들러 "안"이 아니라 "바깥"에서 응답 코드만 보는 이유: 이 그물에 걸려야 하는 실패가
+// 핸들러 안에서 던지는 예외(위 setIsPro의 0행 방어 등)만이 아니기 때문입니다. 서명 검증
+// 실패(403 — POLAR_WEBHOOK_SECRET 불일치나 시크릿 회전 사고)는 Webhooks()가 핸들러를
+// 호출하기도 전에 반환하므로, 핸들러 안에 알림을 넣으면 그 케이스를 통째로 놓칩니다.
+// 응답 코드 하나만 보면 서명 실패·Supabase 설정 누락·예상 못 한 예외까지 전부 같은
+// 그물에 걸립니다.
+//
+// 알림 전송은 어디까지나 부수효과이므로, 메일이 실패하더라도 Polar에 돌려주는 응답을
+// 절대 바꾸지 않습니다 — 응답이 바뀌면 Polar의 재시도 판단이 왜곡됩니다. await하지 않고
+// catch로 삼켜 로그만 남깁니다.
+//
+// 한계: 이 방식은 요청이 우리 앱에 도달했을 때만 동작합니다. 배포가 통째로 깨져 라우트가
+// 아예 뜨지 않는 상황은 감지하지 못합니다 — 거기까지 필요해지면 외부 모니터링(Sentry,
+// Vercel Log Drain 등)이 답입니다.
+export const POST = async (req: NextRequest): Promise<Response> => {
+  const res = await handleWebhook(req);
+
+  if (!res.ok) {
+    const apiKey = process.env.RESEND_API_KEY;
+    // 수신 주소는 새 환경변수를 만들지 않고 Reddit 다이제스트가 쓰는 것을 그대로 재사용합니다.
+    const to = process.env.DIGEST_EMAIL_TO;
+    const from = process.env.DIGEST_EMAIL_FROM || 'onboarding@resend.dev';
+
+    if (apiKey && to) {
+      // 본문은 clone()에서 읽습니다 — 원본 res의 body 스트림을 소비하면 Polar에 돌려줄
+      // 응답이 비어버립니다.
+      void res
+        .clone()
+        .text()
+        .then((body) => sendPaymentWebhookAlertEmail({ apiKey, to, from, status: res.status, body }))
+        .catch((err) => console.error('[polar webhook] 실패 알림 메일 전송 실패:', err));
+    } else {
+      console.error(
+        `[polar webhook] 웹훅이 HTTP ${res.status}로 실패했지만 알림 메일을 보낼 수 없습니다 — ` +
+          'RESEND_API_KEY 또는 DIGEST_EMAIL_TO가 설정되지 않았습니다.'
+      );
+    }
+  }
+
+  return res;
+};
