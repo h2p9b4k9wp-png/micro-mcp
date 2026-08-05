@@ -1,0 +1,63 @@
+-- 💡 [보안] public.update_modified_column()에 고정 search_path를 설정합니다.
+--
+-- ── 왜 위험한가 ──────────────────────────────────────────────────────
+-- search_path가 고정돼 있지 않은 함수는 "호출 시점의 search_path"를 따라 이름을
+-- 해석합니다. 그래서 공격자가 검색 경로 앞쪽 스키마에 같은 이름의 함수·연산자·테이블을
+-- 미리 만들어두면, 함수 본문이 의도한 객체 대신 공격자가 심어둔 객체를 실행하게
+-- 만들 수 있습니다(search_path hijacking).
+--
+-- 이 함수는 트리거 함수라 INSERT/UPDATE가 일어날 때마다 자동으로 실행되고, 트리거는
+-- 대상 테이블 소유자 권한으로 도는 경우가 많아 탈취당했을 때 파급이 큽니다. 게다가
+-- 이 함수가 SECURITY DEFINER이기까지 하다면 소유자(보통 postgres) 권한으로 공격자
+-- 코드가 실행되는 것이라 사실상 DB 전체가 열립니다.
+--
+-- ── CREATE OR REPLACE 대신 ALTER FUNCTION을 쓰는 이유 ────────────────
+-- 이 함수는 이 저장소에 DDL이 없습니다(supabase/migrations 어디에도 정의가 없음 —
+-- profiles/prompts처럼 migrations 폴더가 생기기 전에 만들어진 객체로 보입니다).
+-- 즉 실제 본문이 무엇인지 이 저장소만 봐서는 알 수 없습니다. 흔히 쓰이는
+-- "NEW.updated_at = now(); RETURN NEW;" 형태일 가능성이 높지만, 그렇게 "추정해서"
+-- CREATE OR REPLACE로 덮어쓰면 실제 본문이 조금이라도 다를 경우(다른 컬럼명, 추가
+-- 로직 등) 조용히 동작이 바뀝니다.
+--
+-- ALTER FUNCTION ... SET search_path는 본문을 전혀 건드리지 않고 설정만 바꾸므로
+-- 그 위험이 없습니다. 경고를 해소하는 데도 이걸로 충분합니다.
+--
+-- ── search_path = '' 가 안전한 이유 ──────────────────────────────────
+-- pg_catalog은 search_path에 명시하지 않아도 항상 암묵적으로 먼저 검색됩니다(PostgreSQL
+-- 문서). 따라서 표준적인 갱신 트리거 본문이 쓰는 now() / current_timestamp 같은 내장
+-- 함수는 빈 search_path에서도 정상 해석됩니다. NEW/OLD 레코드 필드 참조도 스키마와
+-- 무관합니다. 다만 본문이 public의 테이블·타입·함수를 스키마 없이 참조하고 있다면
+-- 그건 깨질 수 있으니, 아래 검증 절차를 반드시 함께 수행하세요.
+
+alter function public.update_modified_column() set search_path = '';
+
+-- ── 적용 후 검증 (권장) ──────────────────────────────────────────────
+-- 1) 설정이 실제로 붙었는지 확인 — proconfig에 {search_path=""}가 보여야 합니다.
+--    select p.oid::regprocedure as signature,
+--           p.prosecdef as is_security_definer,
+--           p.proconfig as settings
+--    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+--    where n.nspname = 'public' and p.proname = 'update_modified_column';
+--
+-- 2) 이 함수를 쓰는 트리거가 어떤 테이블에 걸려 있는지 확인
+--    select c.relname as table_name, t.tgname as trigger_name
+--    from pg_trigger t
+--    join pg_class c on c.oid = t.tgrelid
+--    join pg_proc  p on p.oid = t.tgfoid
+--    join pg_namespace n on n.oid = p.pronamespace
+--    where n.nspname = 'public' and p.proname = 'update_modified_column'
+--      and not t.tgisinternal;
+--
+-- 3) 위에서 나온 테이블 중 하나를 실제로 UPDATE 해보고 updated_at이 갱신되는지 확인.
+--    (이 저장소 기준으로는 profiles / prompts / professor_analysis가 updated_at을
+--     가지고 있습니다.) 예:
+--       update public.profiles set username = username where id = '<본인 uuid>';
+--       select id, updated_at from public.profiles where id = '<본인 uuid>';
+--
+-- 만약 3)에서 "relation ... does not exist" 류의 에러가 난다면 본문이 스키마 없이
+-- public 객체를 참조하고 있다는 뜻입니다. 그 경우 아래로 되돌린 뒤,
+-- 본문을 확인해서 해당 참조를 public.으로 명시하는 쪽으로 고쳐야 합니다.
+--
+--   되돌리기: alter function public.update_modified_column() reset search_path;
+--   대안(덜 엄격하지만 경고는 해소): alter function public.update_modified_column()
+--                                     set search_path = pg_catalog, public;
