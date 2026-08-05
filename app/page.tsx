@@ -2213,13 +2213,18 @@ export default function HomePage() {
       <div className="md:hidden flex items-center justify-between bg-[var(--bg-page)] border-b border-[var(--border-default)] px-4 py-3.5">
         <div className="flex items-center gap-2">
           <span className="font-extrabold text-[15px] text-[var(--text-primary)] tracking-tight">Carrotly</span>
-          <button
-            type="button"
-            onClick={() => openUpgradeModal()}
-            className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-          >
-            {isPro ? 'PRO' : 'Pro'}
-          </button>
+          {/* 💡 [수정] 예전엔 무료 사용자에게도 이 배지가 떴고, Pro와의 차이가
+              {isPro ? 'PRO' : 'Pro'} — 즉 대소문자뿐이라 사실상 구분이 불가능했습니다
+              (테두리·색·크기가 전부 동일). 이제 Pro일 때만 렌더링합니다. */}
+          {isPro && (
+            <button
+              type="button"
+              onClick={() => openUpgradeModal()}
+              className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+            >
+              PRO
+            </button>
+          )}
         </div>
         {/* 💡 [신규] 데스크톱 사이드바 헤더의 LocaleSwitcher는 md:flex 행 안에 있어 모바일에선
             햄버거 메뉴를 열어도 안 보였습니다 — "헤더에 언어 선택기 항상 노출" 요건을
@@ -2250,13 +2255,16 @@ export default function HomePage() {
               <Logomark className="w-full h-full" />
             </div>
             <span className="text-[16px] font-extrabold text-[var(--text-primary)] tracking-tight">Carrotly</span>
-            <button
-              type="button"
-              onClick={() => openUpgradeModal()}
-              className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-            >
-              {isPro ? 'PRO' : 'Pro'}
-            </button>
+            {/* 💡 [수정] 모바일 상단 바와 같은 이유로 Pro일 때만 렌더링합니다 — 위 주석 참고. */}
+            {isPro && (
+              <button
+                type="button"
+                onClick={() => openUpgradeModal()}
+                className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              >
+                PRO
+              </button>
+            )}
           </div>
           <LocaleSwitcher />
         </div>
