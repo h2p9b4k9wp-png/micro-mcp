@@ -30,17 +30,36 @@ function extractUserId(metadata: Record<string, string | number | boolean> | und
 // 덮어씁니다 — 코드로 먼저 Pro였던 사용자가 나중에 결제하면, 코드 만료와 무관하게 계속
 // Pro를 유지해야 하니 결제가 코드보다 우선합니다. isPro=false(구독 해지)면 소스가 무엇이든
 // pro_source/pro_expires_at을 함께 null로 되돌려 무료 등급으로 완전히 리셋합니다.
+// 💡 [수정] .select('id')로 "실제로 몇 행이 갱신됐는지"를 받아 0행이면 throw합니다.
+// UPDATE ... WHERE id = <user>가 아무 행에도 매칭되지 않는 것은 Postgres/PostgREST 기준
+// 에러가 아니라 정상 응답(빈 배열)입니다 — 그래서 이 확인이 없으면 대상 profiles 행이
+// 없는 사용자의 결제가 "성공"으로 처리되고, Polar는 200을 받고 재시도하지 않으며, 로그에도
+// 성공으로 남습니다(실제 돈이 오간 뒤 Pro는 안 켜진 상태). 20260816 마이그레이션의 가입
+// 트리거가 그 전제(모든 사용자에게 profiles 행이 있다)를 보장하지만, 트리거가 어떤 이유로든
+// 실패한 계정이 하나라도 생기면 같은 증상이 재발하므로 여기서 직접 확인합니다.
+//
+// throw하면 @polar-sh/nextjs의 Webhooks() 핸들러가 이를 non-2xx 응답으로 바꾸고, Polar가
+// 자체 재시도 정책에 따라 같은 이벤트를 다시 보냅니다 — 그 사이 트리거 문제를 고치거나
+// 행을 수동으로 만들어두면 재시도가 성공합니다. 조용히 넘어가는 것보다 훨씬 낫습니다.
 async function setIsPro(userId: string, isPro: boolean, eventType: string) {
   const supabaseAdmin = getSupabaseAdmin();
-  const { error } = await supabaseAdmin
+  const { data, error } = await supabaseAdmin
     .from('profiles')
     .update({ is_pro: isPro, pro_source: isPro ? 'payment' : null, pro_expires_at: null })
-    .eq('id', userId);
+    .eq('id', userId)
+    .select('id');
   if (error) {
     console.error(`[polar webhook] ${eventType}: profiles.is_pro 업데이트 실패 (user ${userId}):`, error);
     throw error;
   }
-  console.log(`[polar webhook] ${eventType}: user ${userId} → is_pro=${isPro}`);
+  if (!data || data.length === 0) {
+    console.error(
+      `[polar webhook] ${eventType}: profiles 행이 없어 is_pro를 갱신하지 못했습니다 (user ${userId}). ` +
+        'Polar가 재시도할 수 있도록 에러를 던집니다 — 해당 사용자의 profiles 행이 있는지 확인하세요.'
+    );
+    throw new Error(`profiles row not found for user ${userId} (${eventType})`);
+  }
+  console.log(`[polar webhook] ${eventType}: user ${userId} → is_pro=${isPro} (${data.length}행 갱신)`);
 }
 
 export const POST = Webhooks({
