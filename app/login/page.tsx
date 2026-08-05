@@ -412,20 +412,29 @@ function LoginPageContent() {
           배경만 밝아지면 흰 글씨가 안 보이게 됨), /welcome 페이지가 앱 테마와 무관하게
           항상 라이트인 것과 같은 이유로 이 브랜드 패널도 의도적으로 테마 변수를 쓰지
           않습니다. */}
-      <div className="hidden md:flex md:w-[44%] lg:w-[40%] relative overflow-hidden bg-[#17141D] text-white flex-col justify-between p-12 lg:p-16">
+      {/* 💡 [수정] 마스코트를 줄이면서 이 패널에 빈 여백이 생겨, 폭을 조금 줄여 그만큼을
+          오른쪽 폼 쪽으로 넘깁니다(44/40% → 40/36%). 폼 자체의 max-w-[380px]는 그대로라
+          입력 필드 크기는 변하지 않고, 폼이 화면 중앙에 더 가깝게 놓입니다. */}
+      <div className="hidden md:flex md:w-[40%] lg:w-[36%] relative overflow-hidden bg-[#17141D] text-white flex-col justify-between p-12 lg:p-16">
         {/* 은은한 색색 조명 효과 (귀여운 분위기용, 단색 그라데이션 대신 부드러운 블러 블롭) */}
         <div className="absolute w-72 h-72 bg-[#F4679B] rounded-full blur-3xl opacity-[0.18] -top-10 -left-16 pointer-events-none" />
         <div className="absolute w-72 h-72 bg-[#6EE7B7] rounded-full blur-3xl opacity-[0.12] -bottom-16 -right-10 pointer-events-none" />
 
-        {/* 💡 큼직한 캐릭터 마스코트 — 흰색 원형 배경으로 감쌉니다. 검게 보이던 진짜 원인은
+        {/* 💡 캐릭터 마스코트 — 흰색 원형 배경으로 감쌉니다. 검게 보이던 진짜 원인은
             다운스케일 아티팩트로 이미 확인·해결됐지만(components/logomark.tsx 상단 주석),
             투명 PNG를 어두운 배경 위에 직접 놓는 구조 자체를 없애 원인이 뭐든 상관없게
-            만들고, 다크 테마에서 마스코트가 더 잘 보이는 디자인 효과도 노립니다. */}
-        <div className="absolute right-8 bottom-24 w-40 h-40 rounded-full bg-white border border-[var(--border-default)] p-2 flex items-center justify-center">
-          <Logomark className="w-full h-full" size="lg" />
+            만들고, 다크 테마에서 마스코트가 더 잘 보이는 디자인 효과도 노립니다.
+            💡 [수정] 크기를 w-40(160px) → w-16(64px)으로 줄이고 패널 오른쪽 아래 구석으로
+            내렸습니다. 예전 크기·위치(bottom-24)에서는 폼 경계 바로 옆 중간 높이에 큼직하게
+            떠 있어 시선이 폼에서 마스코트로 끌려갔습니다. size="lg"도 뗐습니다 — 64px 박스에
+            큰 소스를 넣으면 다운스케일 아티팩트(위 주석의 그 문제)를 다시 부를 수 있습니다. */}
+        <div className="absolute right-8 bottom-8 w-16 h-16 rounded-full bg-white border border-[var(--border-default)] p-1.5 flex items-center justify-center">
+          <Logomark className="w-full h-full" />
         </div>
-        <span className="absolute right-16 bottom-[168px] w-2 h-2 rounded-full bg-[#6EE7B7]" />
-        <span className="absolute right-32 bottom-[228px] w-1.5 h-1.5 rounded-full bg-[#FFD97D]" />
+        {/* 장식 점 — 큰 마스코트를 감싸도록 배치돼 있던 좌표라, 마스코트를 줄인 뒤에는 허공에
+            떠 보입니다. 작아진 마스코트 주변으로 함께 당겨 붙입니다. */}
+        <span className="absolute right-7 bottom-[92px] w-1.5 h-1.5 rounded-full bg-[#6EE7B7]" />
+        <span className="absolute right-[104px] bottom-[26px] w-1 h-1 rounded-full bg-[#FFD97D]" />
 
         <div className="flex items-center gap-2.5 relative">
           {/* 💡 큰 마스코트와 동일한 흰색 원형 배경 패턴 — 바깥 박스 크기(w-8 h-8)는 기존과
