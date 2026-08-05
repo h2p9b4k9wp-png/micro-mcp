@@ -437,12 +437,12 @@
         "globalDesc": "Gästprovförfrågningarna är ovanligt höga idag, så vi har pausat dem en stund. Skapa ett gratis konto för att fortsätta direkt!"
       },
       "guided": {
-        "sectionTitle": "Prova med ett foto",
-        "chooseImage": "Klicka för att välja ett foto",
-        "imageHint": "Foto eller skärmdump (PNG/JPEG/GIF/WEBP) — upp till 3 MB",
+        "sectionTitle": "Prova med ditt eget material",
+        "chooseImage": "Klicka för att välja en fil",
+        "imageHint": "PDF, Word, PPT, Excel, HWP eller ett foto — upp till 3 MB",
         "analyzing": "Analyserar ditt foto…",
-        "unsupportedFormat": "Endast PNG, JPEG, GIF eller WEBP stöds. Om det är ett HEIC-foto, konvertera det till JPEG och försök igen.",
-        "tooLarge": "Foton upp till 3 MB kan analyseras utan konto.",
+        "unsupportedFormat": "Det här fotoformatet kan inte läsas. Om det är ett HEIC-foto, konvertera det till JPEG och försök igen.",
+        "tooLarge": "Filer upp till 3 MB kan analyseras utan konto.",
         "questionsTitle": "Förväntade frågor",
         "summaryTitle": "Sammanfattning"
       },
@@ -491,7 +491,7 @@
     "headline": "Tenta imorgon, materialet fortfarande orört?",
     "subheadline": "Ladda upp dina filer och få en sammanfattning och förväntade frågor direkt.",
     "ctaButton": "Prova nu",
-    "ctaHint": "Ingen registrering — kolla in det direkt",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP eller ett foto — utan registrering",
     "professorAppeal": "Anpassat olika för varje föreläsare eller professor",
     "startOver": "← Börja om",
     "noSharingNote": "Ditt uppladdade material delas aldrig med andra användare",

@@ -437,12 +437,12 @@
         "globalDesc": "Guest trial requests are unusually high today, so we've paused them for a bit. Create a free account to keep going right away!"
       },
       "guided": {
-        "sectionTitle": "Try with a photo",
-        "chooseImage": "Click to choose a photo",
-        "imageHint": "Photo or screenshot (PNG/JPEG/GIF/WEBP) — up to 3MB",
+        "sectionTitle": "Try with your own material",
+        "chooseImage": "Click to choose a file",
+        "imageHint": "PDF, Word, PPT, Excel, HWP or a photo — up to 3MB",
         "analyzing": "Analyzing your photo…",
-        "unsupportedFormat": "Only PNG, JPEG, GIF, or WEBP are supported. If it's a HEIC photo, convert it to JPEG and try again.",
-        "tooLarge": "Photos up to 3MB can be analyzed without an account.",
+        "unsupportedFormat": "This photo format can't be read. If it's a HEIC photo, convert it to JPEG and try again.",
+        "tooLarge": "Files up to 3MB can be analyzed without an account.",
         "questionsTitle": "Expected Questions",
         "summaryTitle": "Summary"
       },
@@ -491,7 +491,7 @@
     "headline": "Exam tomorrow, materials still untouched?",
     "subheadline": "Upload your files and get a summary and expected questions instantly.",
     "ctaButton": "Try It Now",
-    "ctaHint": "No sign-up — check it out right now",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP or a photo — no sign-up needed",
     "professorAppeal": "Tailored differently for every lecturer or professor",
     "startOver": "← Start over",
     "noSharingNote": "Your uploaded materials are never shared with other users",

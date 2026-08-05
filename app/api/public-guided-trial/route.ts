@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { runLensAnalysisOnImage, LensAnalysisParseError } from '@/lib/run-lens-analysis';
-import { MAX_ANONYMOUS_UPLOAD_BYTES } from '@/lib/upload-limits';
+import { runLensAnalysis, runLensAnalysisOnImage, LensAnalysisParseError } from '@/lib/run-lens-analysis';
+import { extractFileText, FileExtractError } from '@/lib/file-text-extract';
+import { MAX_ANONYMOUS_UPLOAD_BYTES, MAX_ANONYMOUS_FILENAME_CHARS } from '@/lib/upload-limits';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES } from '@/lib/image-constraints';
 import {
   getClientIp,
@@ -10,9 +11,16 @@ import {
   recordAnonymousUploadIfAllowed,
 } from '@/lib/anonymous-usage';
 
-// 💡 [신규] 로그인 없이 사진/캡처본 한 장을 올려 회로도 애니메이션 + 예상 문제 + 요약정리를
+// 💡 [신규] 로그인 없이 자료 하나를 올려 회로도 애니메이션 + 예상 문제 + 요약정리를
 // 보여주는 "가이드 체험" 전용 라우트입니다. middleware.ts의 isPublicRoute에 이 경로가
 // 등록돼 있어야 세션 없이도 호출할 수 있습니다.
+//
+// 💡 [수정] 원래 이미지 한 장만 받았지만, 이 라우트를 쓰는 /welcome 히어로의 "지금 체험하기"가
+// 랜딩 페이지의 유일한 주 CTA라 사진이 아닌 자료(PDF·워드·PPT·엑셀·한글)를 고른 방문자가
+// 형식 오류만 보고 이탈했습니다. 이제 mimeType으로 갈라서, 이미지는 기존 비전 경로 그대로,
+// 그 외 문서는 app/api/public-analyze와 같은 extractFileText()로 텍스트를 뽑아 텍스트 렌즈로
+// 분석합니다 — 두 갈래 모두 결과 모양({questions, summary})이 같아서 클라이언트 UI는
+// 그대로입니다.
 //
 // app/api/public-analyze와 같은 게스트 세션의 "업로드" 예산(세션당 1건)을 공유합니다 —
 // 이미지 체험은 비전 호출이라 비용이 더 큰 편이라 파일 분석과 같은 슬롯을 두고 어느 한쪽만
@@ -60,16 +68,21 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { fileName, mimeType, content } = body as {
+    const { fileName: rawFileName, mimeType, content } = body as {
       fileName?: string;
       mimeType?: string;
       content?: string; // base64
     };
-    if (!content || !fileName) {
-      return NextResponse.json({ error: '이미지 내용이 없습니다.' }, { status: 400 });
+    if (!content || !rawFileName) {
+      return NextResponse.json({ error: '파일 내용이 없습니다.' }, { status: 400 });
     }
+    const fileName = rawFileName.slice(0, MAX_ANONYMOUS_FILENAME_CHARS);
 
-    if (!mimeType || !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(mimeType)) {
+    // 💡 이미지 계열인데 비전이 못 읽는 형식(대표적으로 아이폰 기본 HEIC)만 여기서 거절합니다.
+    // 이미지가 아닌 파일은 아래 문서 경로로 내려가고, 거기서 실제로 지원하지 않는 형식이면
+    // extractFileText()가 형식별 안내 메시지를 담은 FileExtractError를 던집니다.
+    const isImage = Boolean(mimeType?.startsWith('image/'));
+    if (isImage && !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(mimeType!)) {
       return NextResponse.json(
         { error: 'PNG, JPEG, GIF, WEBP 형식만 지원해요. HEIC 사진이라면 JPEG로 변환해서 다시 시도해주세요.' },
         { status: 400 }
@@ -79,7 +92,7 @@ export async function POST(req: Request) {
     const approxBytes = (content.length * 3) / 4;
     if (approxBytes > MAX_ANONYMOUS_UPLOAD_BYTES) {
       return NextResponse.json(
-        { error: '로그인 없이 체험할 수 있는 이미지는 3MB까지예요. 더 작은 사진으로 시도하거나, 계정을 만들면 더 큰 파일도 분석할 수 있어요.' },
+        { error: '로그인 없이 체험할 수 있는 파일은 3MB까지예요. 더 작은 파일로 시도하거나, 계정을 만들면 더 큰 파일도 분석할 수 있어요.' },
         { status: 413 }
       );
     }
@@ -98,11 +111,29 @@ export async function POST(req: Request) {
       );
     }
 
-    const dataUrl = `data:${mimeType};base64,${content}`;
-    const [questions, summary] = await Promise.all([
-      runLensAnalysisOnImage({ apiKey, dataUrl, lens: 'questions' }),
-      runLensAnalysisOnImage({ apiKey, dataUrl, lens: 'digest' }),
-    ]);
+    // 💡 이미지는 비전으로(OCR이 약한 손글씨·기울어진 사진 때문에 — 위 주석 참고), 문서는
+    // 텍스트를 뽑아 같은 두 렌즈로 분석합니다. 렌즈(questions/digest)를 명시적으로 넘겨서
+    // 문서 경로에서도 detectLens의 자동 감지가 끼어들지 않게 합니다 — 이 체험 화면은 항상
+    // "예상 문제 + 요약정리" 두 카드를 보여주는 고정 구성이라 렌즈가 바뀌면 결과 모양이
+    // UI와 어긋납니다.
+    const [questions, summary] = isImage
+      ? await (async () => {
+          const dataUrl = `data:${mimeType};base64,${content}`;
+          return Promise.all([
+            runLensAnalysisOnImage({ apiKey, dataUrl, lens: 'questions' }),
+            runLensAnalysisOnImage({ apiKey, dataUrl, lens: 'digest' }),
+          ]);
+        })()
+      : await (async () => {
+          const text = await extractFileText(fileName, mimeType, content);
+          if (!text.trim()) {
+            throw new FileExtractError('파일에서 읽을 수 있는 글자를 찾지 못했어요. 다른 자료로 시도해주세요.');
+          }
+          return Promise.all([
+            runLensAnalysis({ apiKey, text, fileName, lens: 'questions' }),
+            runLensAnalysis({ apiKey, text, fileName, lens: 'digest' }),
+          ]);
+        })();
 
     return NextResponse.json({
       questions: questions.result,
@@ -114,6 +145,9 @@ export async function POST(req: Request) {
   } catch (error) {
     if (error instanceof LensAnalysisParseError) {
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    if (error instanceof FileExtractError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error('[public-guided-trial] 처리 중 오류 발생:', error);
     return NextResponse.json(

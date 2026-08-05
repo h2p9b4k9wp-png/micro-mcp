@@ -437,12 +437,12 @@
         "globalDesc": "Oggi ci sono molte richieste di prova ospite, quindi le abbiamo messe in pausa per un po'. Crea un account gratuito per continuare subito!"
       },
       "guided": {
-        "sectionTitle": "Prova con una foto",
-        "chooseImage": "Clicca per scegliere una foto",
-        "imageHint": "Foto o screenshot (PNG/JPEG/GIF/WEBP) — fino a 3MB",
+        "sectionTitle": "Prova con il tuo materiale",
+        "chooseImage": "Clicca per scegliere un file",
+        "imageHint": "PDF, Word, PPT, Excel, HWP o una foto — fino a 3MB",
         "analyzing": "Analisi della foto in corso…",
-        "unsupportedFormat": "Sono supportati solo PNG, JPEG, GIF o WEBP. Se è una foto HEIC, convertila in JPEG e riprova.",
-        "tooLarge": "Senza account puoi analizzare foto fino a 3MB.",
+        "unsupportedFormat": "Questo formato di foto non può essere letto. Se è una foto HEIC, convertila in JPEG e riprova.",
+        "tooLarge": "Senza account puoi analizzare file fino a 3MB.",
         "questionsTitle": "Domande previste",
         "summaryTitle": "Riepilogo"
       },
@@ -491,7 +491,7 @@
     "headline": "Esame domani, materiale ancora intatto?",
     "subheadline": "Carica i file e ottieni subito riassunto e domande previste.",
     "ctaButton": "Provalo ora",
-    "ctaHint": "Senza registrazione, provalo subito",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP o una foto — senza registrazione",
     "professorAppeal": "Organizzato in modo diverso per ogni professore",
     "startOver": "← Ricomincia",
     "noSharingNote": "I materiali che carichi non vengono mai condivisi con altri utenti",

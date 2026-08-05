@@ -437,12 +437,12 @@
         "globalDesc": "Die Nachfrage nach Gast-Tests ist heute ungewöhnlich hoch, daher haben wir sie kurz pausiert. Erstellen Sie ein kostenloses Konto, um sofort weiterzumachen!"
       },
       "guided": {
-        "sectionTitle": "Mit einem Foto testen",
-        "chooseImage": "Klicken, um ein Foto auszuwählen",
-        "imageHint": "Foto oder Screenshot (PNG/JPEG/GIF/WEBP) — bis zu 3 MB",
+        "sectionTitle": "Mit eigenen Unterlagen testen",
+        "chooseImage": "Klicken, um eine Datei auszuwählen",
+        "imageHint": "PDF, Word, PPT, Excel, HWP oder ein Foto — bis zu 3 MB",
         "analyzing": "Ihr Foto wird analysiert…",
-        "unsupportedFormat": "Nur PNG, JPEG, GIF oder WEBP werden unterstützt. Bei einem HEIC-Foto bitte in JPEG umwandeln und erneut versuchen.",
-        "tooLarge": "Ohne Konto können Fotos bis 3 MB analysiert werden.",
+        "unsupportedFormat": "Dieses Fotoformat kann nicht gelesen werden. Wenn es sich um ein HEIC-Foto handelt, konvertiere es in JPEG und versuche es erneut.",
+        "tooLarge": "Ohne Konto können Dateien bis 3 MB analysiert werden.",
         "questionsTitle": "Erwartete Fragen",
         "summaryTitle": "Zusammenfassung"
       },
@@ -491,7 +491,7 @@
     "headline": "Prüfung morgen, Unterlagen noch unberührt?",
     "subheadline": "Datei hochladen – Zusammenfassung und erwartete Fragen sofort erhalten.",
     "ctaButton": "Jetzt ausprobieren",
-    "ctaHint": "Ohne Anmeldung, gleich jetzt testen",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP oder ein Foto — ohne Anmeldung",
     "professorAppeal": "Für jeden Professor anders aufbereitet",
     "startOver": "← Von vorn beginnen",
     "noSharingNote": "Ihre hochgeladenen Materialien werden niemals mit anderen Nutzern geteilt",

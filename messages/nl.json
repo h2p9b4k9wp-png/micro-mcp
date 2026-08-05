@@ -437,12 +437,12 @@
         "globalDesc": "Er zijn vandaag ongewoon veel aanvragen voor gastproeven, dus we hebben ze even gepauzeerd. Maak een gratis account aan om meteen door te gaan!"
       },
       "guided": {
-        "sectionTitle": "Proberen met een foto",
-        "chooseImage": "Klik om een foto te kiezen",
-        "imageHint": "Foto of screenshot (PNG/JPEG/GIF/WEBP) — tot 3MB",
+        "sectionTitle": "Proberen met eigen materiaal",
+        "chooseImage": "Klik om een bestand te kiezen",
+        "imageHint": "PDF, Word, PPT, Excel, HWP of een foto — tot 3MB",
         "analyzing": "Je foto wordt geanalyseerd…",
-        "unsupportedFormat": "Alleen PNG, JPEG, GIF of WEBP worden ondersteund. Is het een HEIC-foto, zet deze dan om naar JPEG en probeer opnieuw.",
-        "tooLarge": "Zonder account kun je foto's tot 3MB analyseren.",
+        "unsupportedFormat": "Dit fotoformaat kan niet worden gelezen. Als het een HEIC-foto is, converteer die naar JPEG en probeer het opnieuw.",
+        "tooLarge": "Zonder account kun je bestanden tot 3MB analyseren.",
         "questionsTitle": "Verwachte vragen",
         "summaryTitle": "Samenvatting"
       },
@@ -491,7 +491,7 @@
     "headline": "Morgen examen, stapel nog ongelezen?",
     "subheadline": "Upload je bestanden en krijg direct een samenvatting en verwachte vragen.",
     "ctaButton": "Probeer het nu",
-    "ctaHint": "Zonder account, probeer het meteen",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP of een foto — zonder registratie",
     "professorAppeal": "Voor elke docent anders samengesteld",
     "startOver": "← Opnieuw beginnen",
     "noSharingNote": "Je geüploade materiaal wordt nooit gedeeld met andere gebruikers",

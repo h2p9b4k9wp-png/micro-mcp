@@ -437,12 +437,12 @@
         "globalDesc": "Les demandes d'essai invité sont inhabituellement nombreuses aujourd'hui, nous les avons donc mises en pause un moment. Créez un compte gratuit pour continuer tout de suite !"
       },
       "guided": {
-        "sectionTitle": "Essayer avec une photo",
-        "chooseImage": "Cliquez pour choisir une photo",
-        "imageHint": "Photo ou capture d'écran (PNG/JPEG/GIF/WEBP) — jusqu'à 3 Mo",
+        "sectionTitle": "Essayer avec vos documents",
+        "chooseImage": "Cliquez pour choisir un fichier",
+        "imageHint": "PDF, Word, PPT, Excel, HWP ou une photo — jusqu'à 3 Mo",
         "analyzing": "Analyse de votre photo…",
-        "unsupportedFormat": "Seuls les formats PNG, JPEG, GIF ou WEBP sont pris en charge. S'il s'agit d'une photo HEIC, convertissez-la en JPEG et réessayez.",
-        "tooLarge": "Sans compte, vous pouvez analyser des photos jusqu'à 3 Mo.",
+        "unsupportedFormat": "Ce format de photo ne peut pas être lu. S'il s'agit d'une photo HEIC, convertissez-la en JPEG et réessayez.",
+        "tooLarge": "Sans compte, vous pouvez analyser des fichiers jusqu'à 3 Mo.",
         "questionsTitle": "Questions attendues",
         "summaryTitle": "Résumé"
       },
@@ -491,7 +491,7 @@
     "headline": "Examen demain, dossiers encore intacts ?",
     "subheadline": "Déposez vos fichiers, obtenez résumé et questions probables à l'instant.",
     "ctaButton": "Essayer maintenant",
-    "ctaHint": "Sans inscription, essayez tout de suite",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP ou une photo — sans inscription",
     "professorAppeal": "Organisé différemment pour chaque professeur",
     "startOver": "← Recommencer",
     "noSharingNote": "Les documents que vous téléversez ne sont jamais partagés avec d'autres utilisateurs",
