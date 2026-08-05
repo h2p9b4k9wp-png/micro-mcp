@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "„{name}\" und alle registrierten Materialien löschen? Dies kann nicht rückgängig gemacht werden.",
     "upgradeMaxProfessors": "Die kostenlose Stufe erlaubt bis zu {max} Professoren. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "Die kostenlose Stufe erlaubt bis zu {max} Dokumente pro Professor. Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "Die kostenlose Stufe erlaubt bis zu {max} Dokumente pro Professor. Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "Bei weniger als {count} Dokumenten kann die Genauigkeit etwas geringer sein. Ab {count} Dokumenten steigt sie deutlich.",
+    "tentativeBadge": "vorläufig",
+    "digest": {
+      "title": "Zusammenfassung & Kernpunkte",
+      "hint": "Fasst die Kernpunkte aller Materialien dieser Lehrkraft zusammen.",
+      "generate": "Zusammenfassung erstellen",
+      "regenerate": "Neu erstellen",
+      "empty": "Noch keine Zusammenfassung.",
+      "docButton": "Diese Datei zusammenfassen",
+      "docHide": "Zusammenfassung ausblenden",
+      "docLoading": "Wird zusammengefasst…"
+    }
   },
   "monitoring": {
     "title": "Überwachung & Dateien (RAG-Kontext)",

@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "\"{name}\" 교수님과 등록된 자료를 모두 삭제할까요? 이 작업은 되돌릴 수 없어요.",
     "upgradeMaxProfessors": "무료 등급은 교수님을 {max}명까지만 등록할 수 있어요. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "무료 등급은 교수님 한 분당 자료를 {max}개까지만 등록할 수 있어요. Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "무료 등급은 교수님 한 분당 자료를 {max}개까지만 등록할 수 있어요. Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "자료가 {count}개 미만이면 정확도가 다소 떨어질 수 있어요. {count}개 이상이면 정확도가 크게 올라갑니다.",
+    "tentativeBadge": "잠정",
+    "digest": {
+      "title": "요약·핵심정리",
+      "hint": "이 교수님 자료를 전부 합쳐 핵심만 정리해요.",
+      "generate": "요약 만들기",
+      "regenerate": "다시 요약하기",
+      "empty": "아직 요약을 만들지 않았어요.",
+      "docButton": "이 자료 요약",
+      "docHide": "요약 접기",
+      "docLoading": "요약 중…"
+    }
   },
   "monitoring": {
     "title": "모니터링 & 파일 (RAG 컨텍스트)",

@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "Eliminare \"{name}\" e tutti i materiali registrati? Questa azione non può essere annullata.",
     "upgradeMaxProfessors": "Il piano gratuito consente fino a {max} professori. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "Il piano gratuito consente fino a {max} documenti per professore. Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "Il piano gratuito consente fino a {max} documenti per professore. Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "Con meno di {count} documenti, la precisione può essere un po' inferiore. Da {count} documenti in poi migliora molto.",
+    "tentativeBadge": "provvisorio",
+    "digest": {
+      "title": "Riassunto e punti chiave",
+      "hint": "Raccoglie i punti chiave di tutti i materiali di questo professore.",
+      "generate": "Crea riassunto",
+      "regenerate": "Rigenera",
+      "empty": "Nessun riassunto ancora.",
+      "docButton": "Riassumi questo file",
+      "docHide": "Nascondi riassunto",
+      "docLoading": "Riassunto in corso…"
+    }
   },
   "monitoring": {
     "title": "Monitoraggio e file (contesto RAG)",

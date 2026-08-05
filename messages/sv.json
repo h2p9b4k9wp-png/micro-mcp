@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "Ta bort \"{name}\" och allt deras registrerade material? Detta kan inte ångras.",
     "upgradeMaxProfessors": "Gratisversionen tillåter upp till {max} föreläsare eller professorer. Uppgradera till Pro — {price}",
-    "upgradeMaxDocuments": "Gratisversionen tillåter upp till {max} dokument per föreläsare eller professor. Uppgradera till Pro — {price}"
+    "upgradeMaxDocuments": "Gratisversionen tillåter upp till {max} dokument per föreläsare eller professor. Uppgradera till Pro — {price}",
+    "lowDataAccuracyNotice": "Med färre än {count} dokument kan träffsäkerheten bli något lägre. Från {count} dokument och uppåt ökar den rejält.",
+    "tentativeBadge": "preliminär",
+    "digest": {
+      "title": "Sammanfattning och kärnpunkter",
+      "hint": "Samlar kärnpunkterna från allt material för den här läraren.",
+      "generate": "Skapa sammanfattning",
+      "regenerate": "Skapa på nytt",
+      "empty": "Ingen sammanfattning än.",
+      "docButton": "Sammanfatta den här filen",
+      "docHide": "Dölj sammanfattning",
+      "docLoading": "Sammanfattar…"
+    }
   },
   "monitoring": {
     "title": "Övervakning och filer (RAG-kontext)",

@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "Excluir \"{name}\" e todos os materiais registrados? Isso não pode ser desfeito.",
     "upgradeMaxProfessors": "O plano gratuito permite até {max} professores. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "O plano gratuito permite até {max} documentos por professor. Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "O plano gratuito permite até {max} documentos por professor. Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "Com menos de {count} documentos, a precisão pode ser um pouco menor. A partir de {count} documentos melhora bastante.",
+    "tentativeBadge": "provisório",
+    "digest": {
+      "title": "Resumo e pontos-chave",
+      "hint": "Reúne os pontos-chave de todos os materiais deste professor.",
+      "generate": "Criar resumo",
+      "regenerate": "Gerar de novo",
+      "empty": "Ainda sem resumo.",
+      "docButton": "Resumir este ficheiro",
+      "docHide": "Ocultar resumo",
+      "docLoading": "A resumir…"
+    }
   },
   "monitoring": {
     "title": "Monitoramento e arquivos (contexto RAG)",

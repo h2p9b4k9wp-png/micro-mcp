@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "\"{name}\" en alle geregistreerde materialen verwijderen? Dit kan niet ongedaan worden gemaakt.",
     "upgradeMaxProfessors": "Het gratis abonnement staat maximaal {max} docenten toe. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "Het gratis abonnement staat maximaal {max} documenten per docent toe. Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "Het gratis abonnement staat maximaal {max} documenten per docent toe. Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "Met minder dan {count} documenten kan de nauwkeurigheid wat lager liggen. Vanaf {count} documenten gaat die flink omhoog.",
+    "tentativeBadge": "voorlopig",
+    "digest": {
+      "title": "Samenvatting en kernpunten",
+      "hint": "Bundelt de kernpunten uit al het materiaal van deze docent.",
+      "generate": "Samenvatting maken",
+      "regenerate": "Opnieuw maken",
+      "empty": "Nog geen samenvatting.",
+      "docButton": "Dit bestand samenvatten",
+      "docHide": "Samenvatting verbergen",
+      "docLoading": "Samenvatten…"
+    }
   },
   "monitoring": {
     "title": "Monitoring & bestanden (RAG-context)",

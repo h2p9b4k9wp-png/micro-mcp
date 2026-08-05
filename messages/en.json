@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "Delete \"{name}\" and all their registered materials? This cannot be undone.",
     "upgradeMaxProfessors": "The free tier allows up to {max} lecturers or professors. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "The free tier allows up to {max} documents per lecturer or professor. Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "The free tier allows up to {max} documents per lecturer or professor. Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "With fewer than {count} documents, accuracy may be somewhat lower. Accuracy improves a lot from {count} documents onwards.",
+    "tentativeBadge": "tentative",
+    "digest": {
+      "title": "Summary & key points",
+      "hint": "Pulls the key points from all of this professor's materials together.",
+      "generate": "Create summary",
+      "regenerate": "Regenerate",
+      "empty": "No summary yet.",
+      "docButton": "Summarise this file",
+      "docHide": "Hide summary",
+      "docLoading": "Summarising…"
+    }
   },
   "monitoring": {
     "title": "Monitoring & Files (RAG Context)",

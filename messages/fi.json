@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "Poistetaanko \"{name}\" ja kaikki heidän rekisteröidyt materiaalinsa? Tätä ei voi peruuttaa.",
     "upgradeMaxProfessors": "Ilmaisversiossa voi olla enintään {max} luennoitsijaa tai professoria. Päivitä Pro-versioon — {price}",
-    "upgradeMaxDocuments": "Ilmaisversiossa voi olla enintään {max} asiakirjaa luennoitsijaa tai professoria kohden. Päivitä Pro-versioon — {price}"
+    "upgradeMaxDocuments": "Ilmaisversiossa voi olla enintään {max} asiakirjaa luennoitsijaa tai professoria kohden. Päivitä Pro-versioon — {price}",
+    "lowDataAccuracyNotice": "Jos aineistoja on alle {count}, tarkkuus voi olla hieman heikompi. {count} aineistosta alkaen tarkkuus paranee selvästi.",
+    "tentativeBadge": "alustava",
+    "digest": {
+      "title": "Tiivistelmä ja ydinkohdat",
+      "hint": "Kokoaa ydinkohdat kaikista tämän opettajan aineistoista.",
+      "generate": "Luo tiivistelmä",
+      "regenerate": "Luo uudelleen",
+      "empty": "Ei vielä tiivistelmää.",
+      "docButton": "Tiivistä tämä tiedosto",
+      "docHide": "Piilota tiivistelmä",
+      "docLoading": "Tiivistetään…"
+    }
   },
   "monitoring": {
     "title": "Valvonta ja tiedostot (RAG-konteksti)",

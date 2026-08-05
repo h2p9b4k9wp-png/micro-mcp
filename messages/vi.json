@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "Xóa \"{name}\" và toàn bộ tài liệu đã đăng ký? Thao tác này không thể hoàn tác.",
     "upgradeMaxProfessors": "Gói miễn phí chỉ cho phép đăng ký tối đa {max} giáo sư. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "Gói miễn phí chỉ cho phép tối đa {max} tài liệu cho mỗi giáo sư. Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "Gói miễn phí chỉ cho phép tối đa {max} tài liệu cho mỗi giáo sư. Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "Nếu có ít hơn {count} tài liệu, độ chính xác có thể giảm đôi chút. Từ {count} tài liệu trở lên, độ chính xác tăng đáng kể.",
+    "tentativeBadge": "tạm thời",
+    "digest": {
+      "title": "Tóm tắt & ý chính",
+      "hint": "Tổng hợp ý chính từ toàn bộ tài liệu của giảng viên này.",
+      "generate": "Tạo tóm tắt",
+      "regenerate": "Tạo lại",
+      "empty": "Chưa có tóm tắt.",
+      "docButton": "Tóm tắt tệp này",
+      "docHide": "Ẩn tóm tắt",
+      "docLoading": "Đang tóm tắt…"
+    }
   },
   "monitoring": {
     "title": "Giám sát & Tệp (Ngữ cảnh RAG)",

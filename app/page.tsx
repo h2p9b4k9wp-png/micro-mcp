@@ -41,6 +41,7 @@ import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { CarrotGauge } from '@/components/carrot-gauge';
+import { renderTrialResult } from '@/components/trial-result-view';
 import { useTranslations, useLocale } from 'next-intl';
 import {
   detectLens,
@@ -120,11 +121,33 @@ interface ProfessorDocument {
   created_at: string;
 }
 
-// 카테고리별로 "이 자료만으로 확신 있게 판단했는지(confident)"와 "판단 내용(items)"을 나눠서 받습니다.
-// confident가 false인 카테고리는 화면에서 "더 올리면 알 수 있는 것"으로 회색 표시됩니다.
+// 카테고리별로 "여러 자료에서 교차 확인됐는지(confident)"와 "판단 내용(items)"을 나눠서 받습니다.
+//
+// 💡 [수정] items의 모양이 바뀌었습니다: 예전에는 string[]이었고 confident가 false면 항상
+// 빈 배열이었는데, 이제는 확신이 낮아도 채우되 항목마다 근거(evidence)를 의무화한
+// {text, evidence}[]입니다(app/api/analyze-professor/route.ts의 CATEGORY_SCHEMA 참고).
+// confident는 더 이상 "보여줄지 말지"의 게이트가 아니라 신뢰도 표시로만 씁니다.
+//
+// 💡 professor_analysis 테이블에 이미 저장돼 있는 예전 결과는 여전히 string[] 모양이라,
+// 화면에서는 normalizeProfessorItems()로 두 모양을 모두 받아냅니다 — 기존 사용자가 재분석을
+// 누르기 전까지 결과가 깨져 보이지 않도록 하기 위함입니다(재분석하면 새 모양으로 덮어씀).
+interface ProfessorAnalysisItem {
+  text: string;
+  evidence: string;
+}
+
 interface ProfessorAnalysisCategory {
   confident: boolean;
-  items: string[];
+  items: (string | ProfessorAnalysisItem)[];
+}
+
+// 예전 모양(string[])과 새 모양({text, evidence}[])을 모두 받아 항상 새 모양으로 돌려줍니다.
+// 예전 데이터에는 근거가 없으므로 evidence는 빈 문자열이 되고, 화면에서는 근거 줄을 생략합니다.
+function normalizeProfessorItems(items: (string | ProfessorAnalysisItem)[] | undefined): ProfessorAnalysisItem[] {
+  if (!items) return [];
+  return items.map((item) =>
+    typeof item === 'string' ? { text: item, evidence: '' } : { text: item.text, evidence: item.evidence || '' }
+  );
 }
 
 interface ProfessorAnalysisResult {
@@ -204,6 +227,11 @@ const PROFESSOR_CATEGORY_KEYS: (keyof ProfessorAnalysisResult)[] = [
   'topics', 'examStyle', 'assignmentStyle', 'examQuestionTypes', 'gradingStrictness', 'researchInterests',
 ];
 
+// 💡 [신규] "이 개수 이상이면 정확도가 확 올라간다"고 안내하는 기준값. 분석을 막는 문턱이
+// 아니라 안내 문구를 띄울지만 정하는 값입니다 — 자료가 1개여도 분석은 그대로 돌아갑니다.
+// getProfessorAnalysisFramingLine의 문구 구간과 같은 값(3)을 씁니다.
+const PROFESSOR_RELIABLE_DOC_COUNT = 3;
+
 // 💡 [신규] 교수님 상세 화면 회로도의 action 노드 3개 — 이미 계산된 6개 카테고리 결과를 재활용해서
 // 매핑합니다(별도 API 호출 없음). "공부 방식"은 어느 카테고리와도 정확히 대응되지 않아서, 자주
 // 강조되는 주제(topics)를 "무엇을 중점적으로 공부해야 하는지"로 재해석해서 씁니다. 라벨은
@@ -214,12 +242,16 @@ const PROFESSOR_CIRCUIT_NODE_DEFS: { nodeId: Extract<NodeId, 'expected_questions
   { nodeId: 'study_method', keys: ['topics'] },
 ];
 
+// 💡 [수정] 예전에는 confident인 카테고리의 items만 모아서, 확신이 낮으면 카드가 통째로
+// "아직 확신 있게 판단하지 못했어요"로 바뀌었습니다. 이제는 confident와 무관하게 items를
+// 전부 모읍니다 — 근거(evidence)가 붙은 항목만 서버가 내려주므로, 자료가 1개여도 보여줄
+// 내용이 있으면 보여줍니다. confident는 "여러 자료에서 교차 확인됨" 여부를 나타내는 표시로만
+// 남아, 화면에서는 정확도 안내 문구를 띄울지 판단하는 데 씁니다.
 function getProfessorCircuitCardData(result: ProfessorAnalysisResult | undefined, keys: (keyof ProfessorAnalysisResult)[]) {
-  if (!result) return { confident: false, items: [] as string[] };
-  const confidentKeys = keys.filter((k) => result[k].confident);
+  if (!result) return { confident: false, items: [] as ProfessorAnalysisItem[] };
   return {
-    confident: confidentKeys.length > 0,
-    items: confidentKeys.flatMap((k) => result[k].items),
+    confident: keys.some((k) => result[k].confident),
+    items: keys.flatMap((k) => normalizeProfessorItems(result[k].items)),
   };
 }
 
@@ -317,6 +349,22 @@ export default function HomePage() {
   const [professorAnalyses, setProfessorAnalyses] = useState<ProfessorAnalysisRow[]>([]);
   const [isAnalyzingProfessor, setIsAnalyzingProfessor] = useState(false);
   const [professorAnalysisError, setProfessorAnalysisError] = useState<string | null>(null);
+
+  // 💡 [신규] 교수님 탭 요약·핵심정리 — 채팅창의 "핵심 정리"(digest 렌즈)를 그대로 재사용합니다.
+  // 통합 요약(교수님 자료 전체를 합쳐 1회 호출)과 문서별 요약(문서 1개씩 호출)을 따로 담습니다.
+  // 서버에 저장하지 않고 화면 상태로만 들고 있습니다 — professor_analysis처럼 영속화하려면
+  // 테이블이 하나 더 필요한데, 요약은 언제든 다시 만들 수 있는 파생 결과라 새 스키마를 만들
+  // 만큼의 이득이 없다고 판단했습니다(교수님을 바꾸면 초기화됩니다).
+  // 💡 통합 요약과 그 오류는 "어느 교수님 것인지"를 함께 들고 있습니다 — 교수님을 바꿀 때
+  // useEffect로 초기화하는 대신, 렌더 시점에 현재 선택된 교수님 것일 때만 보여주는 방식입니다
+  // (effect 안에서 setState를 연쇄로 호출하지 않아도 되고, 이전 교수님 결과가 잠깐 스쳐
+  // 보이는 문제도 없습니다). 문서별 요약은 문서 id로 키를 잡으므로 애초에 섞이지 않습니다.
+  const [professorDigest, setProfessorDigest] = useState<{ professorId: string; result: DigestResult } | null>(null);
+  const [isDigestingProfessor, setIsDigestingProfessor] = useState(false);
+  const [professorDigestError, setProfessorDigestError] = useState<{ professorId: string; message: string } | null>(null);
+  const [professorDocDigests, setProfessorDocDigests] = useState<Record<string, DigestResult>>({});
+  const [digestingDocId, setDigestingDocId] = useState<string | null>(null);
+  const [professorDocDigestError, setProfessorDocDigestError] = useState<{ professorId: string; message: string } | null>(null);
 
   // 💡 [신규] 유료 전환 준비 — 결제 시스템은 아직 없고 profiles.is_pro만 봅니다(기본 false).
   // "Pro로 업그레이드하기" 배지/한도 도달 시 열리는 요청 폼 공용 상태.
@@ -1290,6 +1338,75 @@ export default function HomePage() {
       },
       docs.length
     );
+  };
+
+  // 💡 [신규] 교수님 탭 요약·핵심정리 — 채팅창이 쓰는 것과 완전히 같은 경로(/api/analyze의
+  // digest 렌즈, lib/lenses.ts의 "핵심 정리")를 그대로 호출합니다. 새 프롬프트나 새 라우트를
+  // 만들지 않은 이유는 그 렌즈의 anti-hallucination 규칙(COMMON_RULES, 근거 없는 항목 드롭)이
+  // 이미 잘 튜닝돼 있어서, 같은 일을 하는 두 번째 구현을 만들면 드리프트만 생기기 때문입니다.
+  // 속도 제한·월 사용량·크기 상한도 그 라우트에 이미 붙어 있어 그대로 적용됩니다.
+  const runDigest = async (text: string, fileName: string): Promise<DigestResult> => {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, fileName, lens: 'digest', responseLanguage }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.limitReached) openUpgradeModal(data.error);
+      throw new Error(data.error || t('workspace.errors.analyzeFailed'));
+    }
+    return data.result as DigestResult;
+  };
+
+  // 통합 요약 — 이 교수님 자료를 전부 이어붙여 한 번만 호출합니다. 문서마다 따로 부르는 것보다
+  // 호출 횟수·비용이 훨씬 적고, 여러 자료를 가로지르는 핵심을 뽑는 데도 이쪽이 맞습니다.
+  // (길이는 /api/analyze가 서버에서 truncateForPrompt로 잘라내므로 여기서 따로 자르지 않습니다.)
+  const handleDigestProfessorAll = async (professorId: string) => {
+    const docs = professorDocuments.filter((d) => d.professor_id === professorId);
+    if (docs.length === 0) return;
+    const professor = professors.find((p) => p.id === professorId);
+
+    setIsDigestingProfessor(true);
+    setProfessorDigestError(null);
+    try {
+      const combined = docs.map((d) => `[${d.file_name}]\n${d.content}`).join('\n\n---\n\n');
+      const result = await runDigest(combined, professor?.name || 'professor');
+      setProfessorDigest({ professorId, result });
+    } catch (err) {
+      setProfessorDigestError({
+        professorId,
+        message: err instanceof Error ? err.message : t('workspace.errors.analyzeErrorFallback'),
+      });
+    } finally {
+      setIsDigestingProfessor(false);
+    }
+  };
+
+  // 문서별 요약 — 자료 목록에서 개별 문서 하나만 요약합니다. 이미 만들어둔 요약이 있으면
+  // 다시 호출하지 않고 접기/펴기만 합니다(불필요한 유료 호출 방지).
+  const handleDigestProfessorDocument = async (doc: ProfessorDocument, professorId: string) => {
+    if (professorDocDigests[doc.id]) {
+      setProfessorDocDigests((prev) => {
+        const next = { ...prev };
+        delete next[doc.id];
+        return next;
+      });
+      return;
+    }
+    setDigestingDocId(doc.id);
+    setProfessorDocDigestError(null);
+    try {
+      const result = await runDigest(doc.content, doc.file_name);
+      setProfessorDocDigests((prev) => ({ ...prev, [doc.id]: result }));
+    } catch (err) {
+      setProfessorDocDigestError({
+        professorId,
+        message: err instanceof Error ? err.message : t('workspace.errors.analyzeErrorFallback'),
+      });
+    } finally {
+      setDigestingDocId(null);
+    }
   };
 
   // 💡 [신규] 파일에서 글자를 뽑아(/api/extract) documents 테이블에 저장하고, doc_chunks로도 쪼개
@@ -2910,8 +3027,20 @@ export default function HomePage() {
             const subtitle = [professor.school, professor.department].filter(Boolean).join(' · ');
             const analysisRow = professorAnalyses.find((a) => a.professor_id === selectedProfessorId);
             const result = analysisRow?.result;
-            const confidentDefs = result ? professorCategoryDefs.filter((def) => result[def.key].confident) : [];
-            const unconfidentDefs = result ? professorCategoryDefs.filter((def) => !result[def.key].confident) : [];
+            // 💡 [수정] 예전엔 confident 여부로 "실제 결과"와 "더 올리면 알 수 있는 것"을 갈랐는데,
+            // 이제는 근거가 붙은 항목이 실제로 있는지(items 유무)로 가릅니다 — 확신이 낮아도 근거를
+            // 댈 수 있는 판단은 결과로 보여주고, 정말 내용이 없는 카테고리만 아래 티저로 내립니다.
+            const defsWithItems = result
+              ? professorCategoryDefs.filter((def) => normalizeProfessorItems(result[def.key].items).length > 0)
+              : [];
+            const emptyDefs = result
+              ? professorCategoryDefs.filter((def) => normalizeProfessorItems(result[def.key].items).length === 0)
+              : [];
+            // 자료가 3개 미만이면 결과는 그대로 보여주되 정확도가 낮을 수 있다는 안내를 함께 띄웁니다.
+            const showLowDataNotice = docs.length > 0 && docs.length < PROFESSOR_RELIABLE_DOC_COUNT;
+            // 통합 요약은 교수님 id를 함께 들고 있어, 지금 보고 있는 교수님 것일 때만 렌더합니다.
+            const currentProfessorDigest =
+              professorDigest?.professorId === professor.id ? professorDigest.result : null;
 
             // 💡 [신규] 왼쪽 "이 교수님 자료" → 중앙 AI 코어 → 오른쪽 예상 문제/과제 방향/공부 방식
             // 3갈래. 기존 물어보기 미니 전선(chatLensGraph)과 같은 방식으로 매 렌더마다 새로 계산해서
@@ -3014,30 +3143,55 @@ export default function HomePage() {
                   ) : (
                     <div className="flex flex-col gap-2">
                       {docs.map((d) => (
-                        <div key={d.id} className="flex items-center justify-between gap-3 bg-[var(--bg-surface)] p-3 rounded-lg border border-[var(--border-default)] text-sm">
-                          <span className="text-[var(--text-primary)] truncate flex items-center gap-2 min-w-0">
-                            <span className="shrink-0">{FORMAT_ICONS[d.format] || '📄'}</span>
-                            <span className="truncate">{d.file_name}</span>
-                            <span className="shrink-0 text-[10px] font-semibold text-[var(--text-tertiary)] bg-[var(--surface-chip)] border border-[var(--border-chip-hover)] px-2 py-0.5 rounded-full">
-                              {docTypeLabels[d.doc_type] || d.doc_type}
+                        <div key={d.id} className="bg-[var(--bg-surface)] rounded-lg border border-[var(--border-default)] text-sm">
+                          <div className="flex items-center justify-between gap-3 p-3">
+                            <span className="text-[var(--text-primary)] truncate flex items-center gap-2 min-w-0">
+                              <span className="shrink-0">{FORMAT_ICONS[d.format] || '📄'}</span>
+                              <span className="truncate">{d.file_name}</span>
+                              <span className="shrink-0 text-[10px] font-semibold text-[var(--text-tertiary)] bg-[var(--surface-chip)] border border-[var(--border-chip-hover)] px-2 py-0.5 rounded-full">
+                                {docTypeLabels[d.doc_type] || d.doc_type}
+                              </span>
                             </span>
-                          </span>
-                          <div className="shrink-0 flex items-center gap-2.5">
-                            <span className="text-xs text-[var(--text-muted)]">
-                              {new Date(d.created_at).toLocaleDateString(locale, { month: 'long', day: 'numeric' })}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteProfessorDocument(d.id, professor.id)}
-                              aria-label={t('professors.deleteDocumentAria', { fileName: d.file_name })}
-                              className="w-6 h-6 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--accent-danger)] hover:bg-[var(--surface-chip)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
-                            >
-                              <X className="w-3.5 h-3.5" strokeWidth={2.5} />
-                            </button>
+                            <div className="shrink-0 flex items-center gap-2.5">
+                              {/* 💡 [신규] 문서 1개만 따로 요약 — 이미 만들어둔 요약이 있으면 다시
+                                  호출하지 않고 접기/펴기만 합니다. */}
+                              <button
+                                type="button"
+                                onClick={() => handleDigestProfessorDocument(d, professor.id)}
+                                disabled={digestingDocId !== null}
+                                className="text-xs font-semibold text-[#F4679B] hover:text-[#D1477F] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed cursor-pointer bg-transparent border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+                              >
+                                {digestingDocId === d.id
+                                  ? t('professors.digest.docLoading')
+                                  : professorDocDigests[d.id]
+                                    ? t('professors.digest.docHide')
+                                    : t('professors.digest.docButton')}
+                              </button>
+                              <span className="text-xs text-[var(--text-muted)]">
+                                {new Date(d.created_at).toLocaleDateString(locale, { month: 'long', day: 'numeric' })}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteProfessorDocument(d.id, professor.id)}
+                                aria-label={t('professors.deleteDocumentAria', { fileName: d.file_name })}
+                                className="w-6 h-6 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--accent-danger)] hover:bg-[var(--surface-chip)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-danger)]"
+                              >
+                                <X className="w-3.5 h-3.5" strokeWidth={2.5} />
+                              </button>
+                            </div>
                           </div>
+                          {professorDocDigests[d.id] && (
+                            <div className="border-t border-[var(--border-default)] p-3">
+                              {renderTrialResult('digest', professorDocDigests[d.id], t)}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
+                  )}
+
+                  {professorDocDigestError?.professorId === professor.id && (
+                    <p className="text-sm text-[var(--accent-danger)] mt-3">{professorDocDigestError.message}</p>
                   )}
                 </div>
 
@@ -3056,10 +3210,13 @@ export default function HomePage() {
                               style={{ animationDelay: `${i * 300}ms` }}
                             >
                               <h5 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">{def.label}</h5>
-                              {card.confident ? (
+                              {/* 💡 [수정] confident가 아니라 items 유무로 판단합니다 — 자료가 1개여도
+                                  근거가 붙은 항목이 있으면 그대로 보여줍니다. 정말 보여줄 게 없을 때만
+                                  안내 문구로 대체합니다. */}
+                              {card.items.length > 0 ? (
                                 <ul className="flex flex-col gap-1">
                                   {card.items.slice(0, 4).map((item, j) => (
-                                    <li key={j} className="text-xs text-[var(--text-oncard)] leading-relaxed">· {item}</li>
+                                    <li key={j} className="text-xs text-[var(--text-oncard)] leading-relaxed" title={item.evidence || undefined}>· {item.text}</li>
                                   ))}
                                 </ul>
                               ) : (
@@ -3094,23 +3251,85 @@ export default function HomePage() {
                   <p className="text-sm text-[var(--accent-danger)] mt-3">{professorAnalysisError}</p>
                 )}
 
+                {/* 💡 [신규] 요약·핵심정리 — 채팅창의 "핵심 정리"(digest 렌즈)와 같은 결과를
+                    교수님 자료 전체에 대해 한 번에 뽑습니다. 자료 목록의 문서별 요약 버튼과
+                    같은 기능이되 이쪽은 전체를 합쳐서 봅니다. */}
+                <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mt-5 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
+                    <h4 className="text-sm font-bold text-[var(--text-primary)]">{t('professors.digest.title')}</h4>
+                    <button
+                      type="button"
+                      disabled={docs.length === 0 || isDigestingProfessor}
+                      onClick={() => handleDigestProfessorAll(professor.id)}
+                      className="inline-flex items-center gap-2 border border-[var(--border-strong)] bg-[var(--bg-surface)] hover:bg-[var(--surface-chip)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--text-secondary)] px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                    >
+                      {isDigestingProfessor ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                          <LoadingText />
+                        </>
+                      ) : currentProfessorDigest ? (
+                        t('professors.digest.regenerate')
+                      ) : (
+                        t('professors.digest.generate')
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-[var(--text-muted)] mb-4">{t('professors.digest.hint')}</p>
+
+                  {professorDigestError?.professorId === professor.id && (
+                    <p className="text-sm text-[var(--accent-danger)] mb-3">{professorDigestError.message}</p>
+                  )}
+
+                  {currentProfessorDigest ? (
+                    <>
+                      {renderTrialResult('digest', currentProfessorDigest, t)}
+                      <p className="mt-3 text-xs text-[var(--text-muted)] text-center">{t('common.aiGeneratedNotice')}</p>
+                    </>
+                  ) : (
+                    !isDigestingProfessor && (
+                      <p className="text-sm text-[var(--text-muted)]">{t('professors.digest.empty')}</p>
+                    )
+                  )}
+                </div>
+
                 {analysisRow && result && (
                   <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mt-5 shadow-sm">
                     <p className="text-xs sm:text-sm font-semibold text-[#F4679B] mb-4">
                       {getProfessorAnalysisFramingLine(analysisRow.document_count)}
                     </p>
 
-                    {confidentDefs.length === 0 ? (
+                    {/* 💡 [신규] 자료가 3개 미만일 때만 뜨는 정확도 안내 — 결과를 막지 않고
+                        같이 보여주기만 합니다. */}
+                    {showLowDataNotice && (
+                      <p className="text-xs text-[var(--text-muted)] bg-[var(--surface-chip)] border border-[var(--border-default)] rounded-lg px-3 py-2.5 mb-4 leading-relaxed">
+                        {t('professors.lowDataAccuracyNotice', { count: PROFESSOR_RELIABLE_DOC_COUNT })}
+                      </p>
+                    )}
+
+                    {defsWithItems.length === 0 ? (
                       <p className="text-sm text-[var(--text-muted)]">{t('professors.notEnoughData')}</p>
                     ) : (
                       <div className="flex flex-col gap-5 sm:gap-4">
-                        {confidentDefs.map((def) => (
+                        {defsWithItems.map((def) => (
                           <div key={def.key}>
-                            <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">{def.label}</h4>
+                            <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-2">
+                              {def.label}
+                              {/* 확신이 낮은(교차 확인 안 된) 카테고리는 라벨 옆에 작게 표시만 합니다. */}
+                              {!result[def.key].confident && (
+                                <span className="ml-1.5 normal-case font-medium text-[10px] text-[var(--text-faint)]">
+                                  {t('professors.tentativeBadge')}
+                                </span>
+                              )}
+                            </h4>
                             <div className="flex flex-wrap gap-2 sm:gap-1.5">
-                              {result[def.key].items.map((item, i) => (
-                                <span key={i} className="bg-[var(--surface-chip)] border border-[var(--border-chip-hover)] text-[var(--text-oncard)] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
-                                  {item}
+                              {normalizeProfessorItems(result[def.key].items).map((item, i) => (
+                                <span
+                                  key={i}
+                                  title={item.evidence || undefined}
+                                  className="bg-[var(--surface-chip)] border border-[var(--border-chip-hover)] text-[var(--text-oncard)] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full"
+                                >
+                                  {item.text}
                                 </span>
                               ))}
                             </div>
@@ -3119,11 +3338,11 @@ export default function HomePage() {
                       </div>
                     )}
 
-                    {unconfidentDefs.length > 0 && (
+                    {emptyDefs.length > 0 && (
                       <div className="mt-6 pt-5 border-t border-[var(--border-default)]">
                         <h4 className="text-sm font-bold text-[var(--text-primary)] mb-2.5">{t('professors.teaserTitle')}</h4>
                         <div className="flex flex-wrap gap-2 sm:gap-1.5 mb-4">
-                          {unconfidentDefs.map((def) => (
+                          {emptyDefs.map((def) => (
                             <span key={def.key} className="bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-faint)] text-xs sm:text-[11px] px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-full">
                               {def.label}
                             </span>

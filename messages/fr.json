@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "Supprimer « {name} » et tous ses documents enregistrés ? Cette action est irréversible.",
     "upgradeMaxProfessors": "L'offre gratuite permet d'enregistrer jusqu'à {max} professeurs. Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "L'offre gratuite permet jusqu'à {max} documents par professeur. Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "L'offre gratuite permet jusqu'à {max} documents par professeur. Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "Avec moins de {count} documents, la précision peut être un peu plus faible. À partir de {count} documents, elle s'améliore nettement.",
+    "tentativeBadge": "provisoire",
+    "digest": {
+      "title": "Résumé et points clés",
+      "hint": "Rassemble les points clés de tous les documents de ce professeur.",
+      "generate": "Créer un résumé",
+      "regenerate": "Régénérer",
+      "empty": "Pas encore de résumé.",
+      "docButton": "Résumer ce fichier",
+      "docHide": "Masquer le résumé",
+      "docLoading": "Résumé en cours…"
+    }
   },
   "monitoring": {
     "title": "Surveillance et fichiers (contexte RAG)",

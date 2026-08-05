@@ -223,7 +223,19 @@
     },
     "deleteConfirm": "「{name}」教授と登録済みの資料をすべて削除しますか？この操作は元に戻せません。",
     "upgradeMaxProfessors": "無料プランでは教授を{max}人までしか登録できません。Upgrade to Pro — {price}",
-    "upgradeMaxDocuments": "無料プランでは教授1人あたり資料を{max}件までしか登録できません。Upgrade to Pro — {price}"
+    "upgradeMaxDocuments": "無料プランでは教授1人あたり資料を{max}件までしか登録できません。Upgrade to Pro — {price}",
+    "lowDataAccuracyNotice": "資料が{count}件未満だと精度がやや下がることがあります。{count}件以上になると精度が大きく上がります。",
+    "tentativeBadge": "暫定",
+    "digest": {
+      "title": "要約・重要ポイント",
+      "hint": "この教授の資料をすべてまとめて要点を整理します。",
+      "generate": "要約を作成",
+      "regenerate": "再作成",
+      "empty": "まだ要約がありません。",
+      "docButton": "この資料を要約",
+      "docHide": "要約を閉じる",
+      "docLoading": "要約中…"
+    }
   },
   "monitoring": {
     "title": "モニタリング＆ファイル（RAGコンテキスト）",
