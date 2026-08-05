@@ -31,7 +31,7 @@ import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
-import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, logProfileLookupFailure, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import { trackFunnelEvent } from '@/lib/funnel-tracking';
@@ -638,8 +638,19 @@ export default function HomePage() {
 
   // 💡 [신규] 유료 전환 준비 — profiles.is_pro 조회. 프로필 행이 아직 없거나(가입 직후 등)
   // 조회에 실패해도 무료 등급(false)으로 안전하게 취급합니다.
+  //
+  // 💡 [수정] 예전에는 `const { data } = ...`로 error를 버려서, 조회 실패와 "실제로 무료
+  // 등급"이 화면에서도 콘솔에서도 완전히 구분되지 않았습니다(둘 다 배지가 'Pro', 게이지
+  // 표시). is_pro를 수동으로 켰는데 화면에 반영이 안 될 때 원인을 좁힐 단서가 아예 없었던
+  // 이유입니다. 이제 실패 원인을 lib/plan-limits.ts의 logProfileLookupFailure로 분류해
+  // 콘솔에 남기고, 화면 동작(무료 등급 폴백)은 그대로 유지합니다.
   const fetchIsPro = async (userId: string) => {
-    const { data } = await supabase.from('profiles').select('is_pro').eq('id', userId).single();
+    const { data, error } = await supabase.from('profiles').select('is_pro').eq('id', userId).single();
+    if (error) {
+      logProfileLookupFailure('fetchIsPro', userId, error);
+      setIsPro(false);
+      return;
+    }
     setIsPro(Boolean(data?.is_pro));
   };
 
@@ -1120,7 +1131,18 @@ export default function HomePage() {
   const handleDeleteAccount = async () => {
     if (!user) return;
 
-    const { data: freshProfile } = await supabase.from('profiles').select('is_pro').eq('id', user.id).single();
+    // 💡 [수정] 여기서도 error를 버리고 있었습니다. 조회가 실패하면 freshProfile이 null이
+    // 되어 아래 분기를 그냥 통과하므로, 실제로는 Pro인 사용자가 "구독 먼저 취소하세요"
+    // 경고를 못 보고 삭제로 직행할 수 있습니다. 삭제 자체를 막지는 않되(위 GDPR 관련
+    // 판단 그대로) 실패했다는 사실은 로그로 남깁니다.
+    const { data: freshProfile, error: freshProfileError } = await supabase
+      .from('profiles')
+      .select('is_pro')
+      .eq('id', user.id)
+      .single();
+    if (freshProfileError) {
+      logProfileLookupFailure('handleDeleteAccount', user.id, freshProfileError);
+    }
     if (freshProfile?.is_pro) {
       setDeleteAcknowledged(false);
       setIsProDeleteWarningOpen(true);

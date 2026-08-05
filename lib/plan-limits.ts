@@ -142,8 +142,61 @@ export async function checkFileQuota(supabase: SupabaseClient, userId: string): 
 // 무관하게 "이 호출자가 Pro인지"만 필요한 라우트를 위한 최소 조회. checkFileQuota와 달리
 // document_uploads는 건드리지 않습니다 — 이 두 라우트는 파일 업로드 자체가 아니라 이미
 // 추출된 텍스트를 분석하는 라우트라 월간 파일 처리 횟수 한도와는 별개입니다.
+// 💡 [신규] profiles 조회 실패를 원인별로 구분해 로그로 남깁니다.
+//
+// 이 파일과 app/page.tsx의 profiles 조회들은 원래 전부 `const { data } = await ...`로
+// error를 통째로 버리고 있었습니다. 그래서 조회가 실패해도 data가 null이 되어
+// Boolean(data?.is_pro) === false, 즉 **"이 사용자는 무료 등급"과 완전히 같은 결과**가
+// 나왔습니다 — 실제로 Pro인 사용자가 무료로 취급돼도 아무 흔적이 남지 않았습니다.
+// (실제로 pro_source 컬럼이 없는 상태를 진단할 때 이 침묵 때문에 원인 파악이 늦어졌습니다.)
+//
+// 세 가지를 구분합니다. 셋 다 호출부는 "무료 등급"으로 안전하게 폴백하되, 로그에서는
+// 명확히 갈립니다:
+//   - PGRST116 : .single()이 0행(또는 2행 이상)을 받음 = profiles 행 자체가 없음.
+//                20260816 마이그레이션의 가입 트리거·백필로 해결되는 경우.
+//   - 42703    : 컬럼이 존재하지 않음. 마이그레이션 미적용(예: pro_source는 20260812가 생성).
+//   - 그 외    : 네트워크·권한(RLS)·기타 오류.
+export type ProfileLookupFailure = 'missing_row' | 'missing_column' | 'query_failed';
+
+export function logProfileLookupFailure(
+  context: string,
+  userId: string,
+  error: { code?: string; message?: string } | null
+): ProfileLookupFailure | null {
+  if (!error) return null;
+
+  if (error.code === 'PGRST116') {
+    console.error(
+      `[${context}] profiles 행이 없어 등급을 확인하지 못했습니다 (user ${userId}). ` +
+        '무료 등급으로 처리합니다 — 가입 트리거/백필(20260816 마이그레이션)이 적용됐는지 확인하세요.',
+      error
+    );
+    return 'missing_row';
+  }
+
+  if (error.code === '42703') {
+    console.error(
+      `[${context}] profiles에 조회하려는 컬럼이 없습니다 (user ${userId}). ` +
+        '무료 등급으로 처리합니다 — 관련 마이그레이션이 적용되지 않았습니다(pro_source/pro_expires_at은 20260812).',
+      error
+    );
+    return 'missing_column';
+  }
+
+  console.error(
+    `[${context}] profiles 조회에 실패했습니다 (user ${userId}). 무료 등급으로 처리하지만, ` +
+      '이는 "실제로 무료 등급"이 아니라 "확인 실패"입니다.',
+    error
+  );
+  return 'query_failed';
+}
+
 export async function getIsPro(supabase: SupabaseClient, userId: string): Promise<boolean> {
-  const { data } = await supabase.from('profiles').select('is_pro').eq('id', userId).single();
+  const { data, error } = await supabase.from('profiles').select('is_pro').eq('id', userId).single();
+  if (error) {
+    logProfileLookupFailure('getIsPro', userId, error);
+    return false;
+  }
   return Boolean(data?.is_pro);
 }
 
@@ -153,7 +206,16 @@ export async function getIsPro(supabase: SupabaseClient, userId: string): Promis
 // 월 분석 횟수 상한(lib/society-codes.ts의 checkSocietyCodeAnalysisQuota)을 적용해야
 // 하는 곳만 이 값을 씁니다. profiles SELECT RLS 정책이 본인 행만 허용하므로 세션 클라이언트로도
 // 안전하게 조회할 수 있습니다.
+// 💡 [수정] 조회 실패를 더 이상 조용히 삼키지 않습니다. 반환값 자체는 그대로 null이지만
+// (호출부인 checkSocietyCodeAnalysisQuota는 null이면 상한을 적용하지 않고 통과시킵니다 —
+// 부가 안전장치라 조회 실패로 정상 요청을 막지 않는 fail-open이 맞습니다), 실패했다는
+// 사실은 반드시 로그로 남깁니다. "코드 기반 Pro가 아님(null)"과 "확인 실패(null)"가
+// 값으로는 같아서, 로그가 없으면 상한이 조용히 꺼져 있어도 알 방법이 없습니다.
 export async function getProSource(supabase: SupabaseClient, userId: string): Promise<'payment' | 'code' | null> {
-  const { data } = await supabase.from('profiles').select('pro_source').eq('id', userId).single();
+  const { data, error } = await supabase.from('profiles').select('pro_source').eq('id', userId).single();
+  if (error) {
+    logProfileLookupFailure('getProSource', userId, error);
+    return null;
+  }
   return (data?.pro_source as 'payment' | 'code' | null) ?? null;
 }
