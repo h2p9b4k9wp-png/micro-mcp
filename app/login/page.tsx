@@ -91,6 +91,14 @@ function LoginPageContent() {
   const [remainingUploads, setRemainingUploads] = useState(SESSION_UPLOAD_LIMIT);
   const [remainingChatTurns, setRemainingChatTurns] = useState(SESSION_CHAT_TURN_LIMIT);
 
+  // 💡 [신규] 체험으로 할 수 있는 게 하나도 남지 않은 상태 — 업로드 예산과 채팅 턴을 둘 다
+  // 소진했을 때입니다. 이 값이 true면 (1) 패널 맨 아래에 마무리 카드를 띄우고, (2) 섹션별
+  // 한도 배너(업로드/채팅/사진)는 전부 감춥니다 — 같은 안내와 같은 가입 버튼이 네 번 쌓이면
+  // 오히려 읽히지 않기 때문입니다.
+  // guestSuspended(ip/global)는 제외합니다: 그때는 패널 맨 위에 다른 사유의 배너가 이미
+  // 떠 있고, "다 썼다"가 아니라 "지금은 막혔다"라 문구가 어긋납니다.
+  const allTrialUsed = uploadSessionUsed && chatSessionUsed && !guestSuspended;
+
   // 💡 [신규] PWA 서비스워커 등록 (홈 화면에 앱으로 설치 가능하게 해줍니다)
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -613,15 +621,19 @@ function LoginPageContent() {
                   이 섹션만 안내 배너로 바꿉니다(파일 분석과 이미지 체험이 같은 업로드 예산을
                   공유하므로, 아래 GuestGuidedTrial에서 먼저 썼어도 여기서 똑같이 나타납니다). */}
               {uploadSessionUsed && !guestSuspended ? (
-                <GuestLimitBanner
-                  limitType="session"
-                  context="upload"
-                  onRequestSignUp={() => {
-                    setShowTrial(false);
-                    setIsSignUp(true);
-                    setMessage(null);
-                  }}
-                />
+                // 💡 [수정] 체험을 통째로 소진해 맨 아래 마무리 카드가 뜨는 상황이면, 같은
+                // 안내(카드+가입 버튼)를 세 번 쌓지 않도록 이 섹션 배너는 감춥니다.
+                allTrialUsed ? null : (
+                  <GuestLimitBanner
+                    limitType="session"
+                    context="upload"
+                    onRequestSignUp={() => {
+                      setShowTrial(false);
+                      setIsSignUp(true);
+                      setMessage(null);
+                    }}
+                  />
+                )
               ) : (
                 !trialResult && (
                   <label
@@ -694,15 +706,18 @@ function LoginPageContent() {
                 )}
               </div>
               {chatSessionUsed && !guestSuspended ? (
-                <GuestLimitBanner
-                  limitType="session"
-                  context="chat"
-                  onRequestSignUp={() => {
-                    setShowTrial(false);
-                    setIsSignUp(true);
-                    setMessage(null);
-                  }}
-                />
+                // 위 업로드 섹션과 같은 이유로 감춥니다.
+                allTrialUsed ? null : (
+                  <GuestLimitBanner
+                    limitType="session"
+                    context="chat"
+                    onRequestSignUp={() => {
+                      setShowTrial(false);
+                      setIsSignUp(true);
+                      setMessage(null);
+                    }}
+                  />
+                )
               ) : (
                 <form onSubmit={handleGuestAsk} className="flex flex-col gap-2.5">
                   <textarea
@@ -791,6 +806,8 @@ function LoginPageContent() {
                   둘 중 하나만 세션당 한 번 쓸 수 있습니다. 컴포넌트가 lib/use-guided-trial.ts 훅으로
                   자기 상태를 관리하고, 여기 guestSuspended와는 별도로 자체 배너를 보여줍니다. */}
               <GuestGuidedTrial
+                uploadUsed={uploadSessionUsed}
+                suppressLimitBanner={allTrialUsed}
                 onRequestSignUp={() => {
                   setShowTrial(false);
                   setIsSignUp(true);
@@ -804,7 +821,7 @@ function LoginPageContent() {
                   guestSuspended(ip/global)일 때는 띄우지 않습니다 — 그 경우는 이미 패널
                   맨 위에 다른 사유의 배너가 떠 있고, "다 썼다"가 아니라 "지금은 막혔다"라
                   문구가 어긋납니다. */}
-              {uploadSessionUsed && chatSessionUsed && !guestSuspended && (
+              {allTrialUsed && (
                 <div className="mt-6">
                   <GuestLimitBanner
                     limitType="session"
