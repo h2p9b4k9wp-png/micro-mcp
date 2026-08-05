@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "資料で体験する",
-        "chooseImage": "クリックしてファイルを選択",
+        "chooseImage": "クリックして資料をアップ",
         "imageHint": "PDF・Word・PPT・Excel・HWP・写真 — 最大3MB",
         "analyzing": "写真を分析中…",
         "unsupportedFormat": "この写真形式は読み取れません。HEICの写真ならJPEGに変換して再度お試しください。",
         "tooLarge": "アカウントなしでは3MBまで分析できます。",
         "questionsTitle": "予想問題",
-        "summaryTitle": "要約"
+        "summaryTitle": "要約",
+        "progress": {
+          "steps": [
+            "資料を開いて読んでいます",
+            "重要なポイントを整理中",
+            "予想問題を作成中",
+            "最後の仕上げ中"
+          ],
+          "longWait": "もう少しだけお待ちください、じっくり読んでいます"
+        }
       },
       "usage": {
         "uploadRemaining": "ファイル体験残り{remaining}/{total}",

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useGuidedTrial } from '@/lib/use-guided-trial';
 import { SESSION_UPLOAD_LIMIT } from '@/lib/guest-trial-limits';
 import { CircuitBoard } from '@/components/circuit/circuit-board';
+import { LoadingText } from '@/components/loading-text';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { CarrotGauge } from '@/components/carrot-gauge';
 import { trackFunnelEvent } from '@/lib/funnel-tracking';
@@ -225,6 +226,20 @@ export function WelcomeHeroTrial() {
         <div key="result" className="professor-circuit-reveal w-full flex flex-col items-center">
           <div className="w-full bg-[#15131A] rounded-[28px] border border-[#2A2632] p-4 sm:p-8">
             <CircuitBoard graph={graph} onNodeClick={() => {}} pannable={false} />
+
+            {/* 💡 [신규] 분석 중 진행 상태 문구 — 이 자리는 게스트가 처음 업로드하고 결과를
+                기다리는 유일한 화면인데, 회로도 애니메이션만 돌고 아무 글자도 없어서 "멈춘
+                건가/오류인가"로 읽힐 수 있었습니다. 로그인 후 채팅·분석에서 쓰는 것과 같은
+                LoadingText를 그대로 쓰되, 무작위 문구 대신 단계 문구(stepsKey)를 넘겨
+                "지금 뭘 하고 있는지"를 순서대로 보여줍니다. */}
+            {isAnalyzing && (
+              <p className="mt-5 text-center text-sm font-medium text-[#C9C2D4]" aria-live="polite">
+                <LoadingText
+                  stepsKey="login.trial.guided.progress.steps"
+                  longWaitKey="login.trial.guided.progress.longWait"
+                />
+              </p>
+            )}
 
             {result && (
               <div className="w-full max-w-xl mx-auto flex flex-col gap-3 mt-2 text-left">

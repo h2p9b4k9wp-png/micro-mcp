@@ -65,7 +65,16 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
             >
               <span className="text-2xl">📎</span>
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                {isAnalyzing ? <LoadingText /> : t('login.trial.guided.chooseImage')}
+                {/* 분석 중에는 무작위 문구 대신 단계 문구를 보여줍니다 — 이유는
+                    components/welcome-hero-trial.tsx의 같은 자리 주석 참고. */}
+                {isAnalyzing ? (
+                  <LoadingText
+                    stepsKey="login.trial.guided.progress.steps"
+                    longWaitKey="login.trial.guided.progress.longWait"
+                  />
+                ) : (
+                  t('login.trial.guided.chooseImage')
+                )}
               </span>
               <span className="text-xs text-[var(--text-faint)]">{t('login.trial.guided.imageHint')}</span>
               {/* accept를 비워둔 이유는 components/welcome-hero-trial.tsx의 같은 input 주석 참고. */}

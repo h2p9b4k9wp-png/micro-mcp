@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "Experimentar com o seu material",
-        "chooseImage": "Clique para escolher um arquivo",
+        "chooseImage": "Clique para enviar o seu material",
         "imageHint": "PDF, Word, PPT, Excel, HWP ou uma foto — até 3MB",
         "analyzing": "Analisando sua foto…",
         "unsupportedFormat": "Não é possível ler este formato de foto. Se for uma foto HEIC, converta para JPEG e tente novamente.",
         "tooLarge": "Sem conta é possível analisar arquivos de até 3MB.",
         "questionsTitle": "Perguntas esperadas",
-        "summaryTitle": "Resumo"
+        "summaryTitle": "Resumo",
+        "progress": {
+          "steps": [
+            "Abrindo o seu material",
+            "Organizando os pontos principais",
+            "Criando as perguntas prováveis",
+            "Dando os retoques finais"
+          ],
+          "longWait": "Só mais um instante, estamos lendo com atenção"
+        }
       },
       "usage": {
         "uploadRemaining": "Resta {remaining}/{total} teste de arquivo",

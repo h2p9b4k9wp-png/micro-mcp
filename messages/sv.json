@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "Prova med ditt eget material",
-        "chooseImage": "Klicka för att välja en fil",
+        "chooseImage": "Klicka för att ladda upp ditt material",
         "imageHint": "PDF, Word, PPT, Excel, HWP eller ett foto — upp till 3 MB",
         "analyzing": "Analyserar ditt foto…",
         "unsupportedFormat": "Det här fotoformatet kan inte läsas. Om det är ett HEIC-foto, konvertera det till JPEG och försök igen.",
         "tooLarge": "Filer upp till 3 MB kan analyseras utan konto.",
         "questionsTitle": "Förväntade frågor",
-        "summaryTitle": "Sammanfattning"
+        "summaryTitle": "Sammanfattning",
+        "progress": {
+          "steps": [
+            "Öppnar ditt material",
+            "Sorterar de viktigaste punkterna",
+            "Hittar på troliga tentafrågor",
+            "Lägger sista handen vid det"
+          ],
+          "longWait": "Ett ögonblick till — vi läser igenom allt noga"
+        }
       },
       "usage": {
         "uploadRemaining": "{remaining}/{total} filprov kvar",

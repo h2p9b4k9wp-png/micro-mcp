@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "Essayer avec vos documents",
-        "chooseImage": "Cliquez pour choisir un fichier",
+        "chooseImage": "Cliquez pour envoyer vos documents",
         "imageHint": "PDF, Word, PPT, Excel, HWP ou une photo — jusqu'à 3 Mo",
         "analyzing": "Analyse de votre photo…",
         "unsupportedFormat": "Ce format de photo ne peut pas être lu. S'il s'agit d'une photo HEIC, convertissez-la en JPEG et réessayez.",
         "tooLarge": "Sans compte, vous pouvez analyser des fichiers jusqu'à 3 Mo.",
         "questionsTitle": "Questions attendues",
-        "summaryTitle": "Résumé"
+        "summaryTitle": "Résumé",
+        "progress": {
+          "steps": [
+            "Ouverture de vos documents",
+            "Mise au clair des points clés",
+            "Préparation des questions probables",
+            "Dernières retouches"
+          ],
+          "longWait": "Encore un instant, on lit tout attentivement"
+        }
       },
       "usage": {
         "uploadRemaining": "Il reste {remaining}/{total} essai de fichier",

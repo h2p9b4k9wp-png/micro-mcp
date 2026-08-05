@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "Proberen met eigen materiaal",
-        "chooseImage": "Klik om een bestand te kiezen",
+        "chooseImage": "Klik om je materiaal te uploaden",
         "imageHint": "PDF, Word, PPT, Excel, HWP of een foto — tot 3MB",
         "analyzing": "Je foto wordt geanalyseerd…",
         "unsupportedFormat": "Dit fotoformaat kan niet worden gelezen. Als het een HEIC-foto is, converteer die naar JPEG en probeer het opnieuw.",
         "tooLarge": "Zonder account kun je bestanden tot 3MB analyseren.",
         "questionsTitle": "Verwachte vragen",
-        "summaryTitle": "Samenvatting"
+        "summaryTitle": "Samenvatting",
+        "progress": {
+          "steps": [
+            "Je materiaal wordt opengeslagen",
+            "De kernpunten worden op een rij gezet",
+            "Waarschijnlijke vragen worden bedacht",
+            "Nog even de puntjes op de i"
+          ],
+          "longWait": "Nog heel even — we lezen alles zorgvuldig door"
+        }
       },
       "usage": {
         "uploadRemaining": "Nog {remaining}/{total} bestandsproef over",

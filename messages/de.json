@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "Mit eigenen Unterlagen testen",
-        "chooseImage": "Klicken, um eine Datei auszuwählen",
+        "chooseImage": "Klicken, um Unterlagen hochzuladen",
         "imageHint": "PDF, Word, PPT, Excel, HWP oder ein Foto — bis zu 3 MB",
         "analyzing": "Ihr Foto wird analysiert…",
         "unsupportedFormat": "Dieses Fotoformat kann nicht gelesen werden. Wenn es sich um ein HEIC-Foto handelt, konvertiere es in JPEG und versuche es erneut.",
         "tooLarge": "Ohne Konto können Dateien bis 3 MB analysiert werden.",
         "questionsTitle": "Erwartete Fragen",
-        "summaryTitle": "Zusammenfassung"
+        "summaryTitle": "Zusammenfassung",
+        "progress": {
+          "steps": [
+            "Deine Unterlagen werden geöffnet",
+            "Die Kernpunkte werden sortiert",
+            "Mögliche Prüfungsfragen entstehen",
+            "Letzter Feinschliff"
+          ],
+          "longWait": "Noch kurz Geduld — wir schauen ganz genau hin"
+        }
       },
       "usage": {
         "uploadRemaining": "Noch {remaining}/{total} Datei-Test übrig",

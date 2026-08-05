@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "자료로 체험하기",
-        "chooseImage": "클릭해서 파일 선택",
+        "chooseImage": "클릭해서 자료 올리기",
         "imageHint": "PDF·워드·PPT·엑셀·한글·사진 — 최대 3MB",
         "analyzing": "사진을 분석하는 중…",
         "unsupportedFormat": "이 사진 형식은 읽을 수 없어요. HEIC 사진이라면 JPEG로 바꿔서 다시 시도해주세요.",
         "tooLarge": "계정 없이는 3MB까지 분석할 수 있어요.",
         "questionsTitle": "예상 문제",
-        "summaryTitle": "요약정리"
+        "summaryTitle": "요약정리",
+        "progress": {
+          "steps": [
+            "자료를 펼쳐 읽는 중",
+            "핵심 내용을 정리하는 중",
+            "예상 질문을 뽑아내는 중",
+            "마지막으로 다듬는 중"
+          ],
+          "longWait": "조금만 더 기다려주세요, 꼼꼼히 보는 중이에요"
+        }
       },
       "usage": {
         "uploadRemaining": "파일/사진 체험 {remaining}/{total} 남음",

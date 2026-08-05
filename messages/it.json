@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "Prova con il tuo materiale",
-        "chooseImage": "Clicca per scegliere un file",
+        "chooseImage": "Clicca per caricare il tuo materiale",
         "imageHint": "PDF, Word, PPT, Excel, HWP o una foto — fino a 3MB",
         "analyzing": "Analisi della foto in corso…",
         "unsupportedFormat": "Questo formato di foto non può essere letto. Se è una foto HEIC, convertila in JPEG e riprova.",
         "tooLarge": "Senza account puoi analizzare file fino a 3MB.",
         "questionsTitle": "Domande previste",
-        "summaryTitle": "Riepilogo"
+        "summaryTitle": "Riepilogo",
+        "progress": {
+          "steps": [
+            "Apriamo il tuo materiale",
+            "Mettiamo in ordine i punti chiave",
+            "Inventiamo le domande probabili",
+            "Ultimi ritocchi"
+          ],
+          "longWait": "Ancora un attimo, stiamo guardando tutto con calma"
+        }
       },
       "usage": {
         "uploadRemaining": "Rimane {remaining}/{total} prova file",

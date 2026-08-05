@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "Trải nghiệm với tài liệu của bạn",
-        "chooseImage": "Nhấn để chọn tệp",
+        "chooseImage": "Nhấn để tải tài liệu lên",
         "imageHint": "PDF, Word, PPT, Excel, HWP hoặc ảnh — tối đa 3MB",
         "analyzing": "Đang phân tích ảnh…",
         "unsupportedFormat": "Không đọc được định dạng ảnh này. Nếu là ảnh HEIC, hãy chuyển sang JPEG và thử lại.",
         "tooLarge": "Không cần tài khoản có thể phân tích tệp tối đa 3MB.",
         "questionsTitle": "Câu hỏi dự kiến",
-        "summaryTitle": "Tóm tắt"
+        "summaryTitle": "Tóm tắt",
+        "progress": {
+          "steps": [
+            "Đang mở tài liệu ra đọc",
+            "Đang sắp xếp các ý chính",
+            "Đang nghĩ ra câu hỏi có thể gặp",
+            "Đang hoàn thiện nốt"
+          ],
+          "longWait": "Chờ chút nhé, đang xem thật kỹ đây"
+        }
       },
       "usage": {
         "uploadRemaining": "Còn {remaining}/{total} lượt dùng thử tệp",

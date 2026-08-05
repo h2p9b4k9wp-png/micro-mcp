@@ -450,13 +450,22 @@
       },
       "guided": {
         "sectionTitle": "Try with your own material",
-        "chooseImage": "Click to choose a file",
+        "chooseImage": "Click to upload your material",
         "imageHint": "PDF, Word, PPT, Excel, HWP or a photo — up to 3MB",
         "analyzing": "Analyzing your photo…",
         "unsupportedFormat": "This photo format can't be read. If it's a HEIC photo, convert it to JPEG and try again.",
         "tooLarge": "Files up to 3MB can be analyzed without an account.",
         "questionsTitle": "Expected Questions",
-        "summaryTitle": "Summary"
+        "summaryTitle": "Summary",
+        "progress": {
+          "steps": [
+            "Opening up your material",
+            "Pulling out the key points",
+            "Coming up with likely questions",
+            "Putting on the finishing touches"
+          ],
+          "longWait": "Hang tight — going through it carefully"
+        }
       },
       "usage": {
         "uploadRemaining": "{remaining}/{total} file trial left",
