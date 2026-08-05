@@ -446,7 +446,9 @@
         "ipTitle": "Proefcapaciteit is vol",
         "ipDesc": "Er is nu veel gastproefactiviteit vanaf dit netwerk, dus het is tijdelijk beperkt. Maak een gratis account aan om meteen door te gaan!",
         "globalTitle": "Gastproeven zijn tijdelijk gepauzeerd",
-        "globalDesc": "Er zijn vandaag ongewoon veel aanvragen voor gastproeven, dus we hebben ze even gepauzeerd. Maak een gratis account aan om meteen door te gaan!"
+        "globalDesc": "Er zijn vandaag ongewoon veel aanvragen voor gastproeven, dus we hebben ze even gepauzeerd. Maak een gratis account aan om meteen door te gaan!",
+        "allUsedTitle": "Je hebt de gratis proef helemaal gebruikt",
+        "allUsedDesc": "Je hebt alle uploads en vragen van deze proef gebruikt. Maak een gratis account en ga verder waar je gebleven was!"
       },
       "guided": {
         "sectionTitle": "Proberen met eigen materiaal",

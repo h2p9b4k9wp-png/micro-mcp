@@ -446,7 +446,9 @@
         "ipTitle": "Provkapaciteten är full",
         "ipDesc": "Det är mycket gästprovaktivitet från det här nätverket just nu, så det är tillfälligt begränsat. Skapa ett gratis konto för att fortsätta direkt!",
         "globalTitle": "Gästprov är pausade för tillfället",
-        "globalDesc": "Gästprovförfrågningarna är ovanligt höga idag, så vi har pausat dem en stund. Skapa ett gratis konto för att fortsätta direkt!"
+        "globalDesc": "Gästprovförfrågningarna är ovanligt höga idag, så vi har pausat dem en stund. Skapa ett gratis konto för att fortsätta direkt!",
+        "allUsedTitle": "Du har använt hela gratisprovet",
+        "allUsedDesc": "Du har använt alla uppladdningar och frågor som ingår i provet. Skapa ett gratiskonto så fortsätter du precis där du slutade!"
       },
       "guided": {
         "sectionTitle": "Prova med ditt eget material",

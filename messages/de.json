@@ -446,7 +446,9 @@
         "ipTitle": "Testkapazität ist ausgeschöpft",
         "ipDesc": "Von diesem Netzwerk aus gibt es gerade viele Gast-Testanfragen, daher ist es vorübergehend begrenzt. Erstellen Sie ein kostenloses Konto, um sofort weiterzumachen!",
         "globalTitle": "Gast-Tests sind vorübergehend pausiert",
-        "globalDesc": "Die Nachfrage nach Gast-Tests ist heute ungewöhnlich hoch, daher haben wir sie kurz pausiert. Erstellen Sie ein kostenloses Konto, um sofort weiterzumachen!"
+        "globalDesc": "Die Nachfrage nach Gast-Tests ist heute ungewöhnlich hoch, daher haben wir sie kurz pausiert. Erstellen Sie ein kostenloses Konto, um sofort weiterzumachen!",
+        "allUsedTitle": "Du hast die kostenlose Testversion aufgebraucht",
+        "allUsedDesc": "Du hast alle Uploads und Fragen dieser Testversion genutzt. Erstelle ein kostenloses Konto und mach genau dort weiter!"
       },
       "guided": {
         "sectionTitle": "Mit eigenen Unterlagen testen",

@@ -446,7 +446,9 @@
         "ipTitle": "Places d'essai complètes",
         "ipDesc": "Il y a beaucoup d'activité d'essai invité depuis ce réseau en ce moment, donc c'est temporairement limité. Créez un compte gratuit pour continuer tout de suite !",
         "globalTitle": "Les essais invités sont en pause",
-        "globalDesc": "Les demandes d'essai invité sont inhabituellement nombreuses aujourd'hui, nous les avons donc mises en pause un moment. Créez un compte gratuit pour continuer tout de suite !"
+        "globalDesc": "Les demandes d'essai invité sont inhabituellement nombreuses aujourd'hui, nous les avons donc mises en pause un moment. Créez un compte gratuit pour continuer tout de suite !",
+        "allUsedTitle": "Vous avez utilisé tout l'essai gratuit",
+        "allUsedDesc": "Vous avez utilisé tous les envois et toutes les questions de cet essai. Créez un compte gratuit pour reprendre là où vous en étiez !"
       },
       "guided": {
         "sectionTitle": "Essayer avec vos documents",

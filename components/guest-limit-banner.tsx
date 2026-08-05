@@ -9,13 +9,19 @@ import type { GuidedTrialLimitType } from '@/lib/use-guided-trial';
 // 있습니다(업로드 예산 소진 vs 채팅 3턴 소진은 안내 문구가 다릅니다) — ip/global은 어느
 // 섹션에서 왔든 같은 문구를 씁니다(그 시점엔 해당 세션이 아직 아무것도 안 썼을 때만
 // 발생하므로, 업로드/채팅 구분이 의미가 없습니다 — lib/anonymous-usage.ts 참고).
+//
+// 💡 [수정] context에 'all'을 추가했습니다 — 업로드 예산과 채팅 턴을 "둘 다" 소진해서
+// 체험으로 할 수 있는 게 남지 않은 상태를 체험 패널 맨 아래에서 한 번 정리해주는 용도입니다
+// (app/login/page.tsx). 섹션별 배너(upload/chat)가 "이 기능은 다 썼다"를 알려준다면, 이쪽은
+// "체험 자체가 끝났다"를 알려주는 마무리 카드라 문구가 따로 필요합니다. 마크업·버튼은
+// 그대로 재사용하므로 톤과 생김새는 기존 배너들과 완전히 같습니다.
 export function GuestLimitBanner({
   limitType,
   context = 'upload',
   onRequestSignUp,
 }: {
   limitType: GuidedTrialLimitType;
-  context?: 'upload' | 'chat';
+  context?: 'upload' | 'chat' | 'all';
   onRequestSignUp: () => void;
 }) {
   const t = useTranslations();
@@ -24,7 +30,9 @@ export function GuestLimitBanner({
     limitType === 'session'
       ? context === 'chat'
         ? 'chatSession'
-        : 'uploadSession'
+        : context === 'all'
+          ? 'allUsed'
+          : 'uploadSession'
       : limitType;
 
   return (

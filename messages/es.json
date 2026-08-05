@@ -446,7 +446,9 @@
         "ipTitle": "Cupo de prueba completo",
         "ipDesc": "Hay mucha actividad de prueba de invitado desde esta red en este momento, así que está limitada temporalmente. ¡Crea una cuenta gratuita para seguir ahora mismo!",
         "globalTitle": "Las pruebas de invitado están en pausa",
-        "globalDesc": "Hoy hay muchas solicitudes de prueba de invitado, así que las pausamos por un momento. ¡Crea una cuenta gratuita para seguir ahora mismo!"
+        "globalDesc": "Hoy hay muchas solicitudes de prueba de invitado, así que las pausamos por un momento. ¡Crea una cuenta gratuita para seguir ahora mismo!",
+        "allUsedTitle": "Has agotado la prueba gratuita",
+        "allUsedDesc": "Has usado todas las subidas y preguntas que incluye esta prueba. ¡Crea una cuenta gratuita y sigue justo donde lo dejaste!"
       },
       "guided": {
         "sectionTitle": "Prueba con tu propio material",

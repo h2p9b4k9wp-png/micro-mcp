@@ -446,7 +446,9 @@
         "ipTitle": "Posti prova esauriti",
         "ipDesc": "C'è molta attività di prova ospite da questa rete in questo momento, quindi è temporaneamente limitata. Crea un account gratuito per continuare subito!",
         "globalTitle": "Le prove ospite sono in pausa",
-        "globalDesc": "Oggi ci sono molte richieste di prova ospite, quindi le abbiamo messe in pausa per un po'. Crea un account gratuito per continuare subito!"
+        "globalDesc": "Oggi ci sono molte richieste di prova ospite, quindi le abbiamo messe in pausa per un po'. Crea un account gratuito per continuare subito!",
+        "allUsedTitle": "Hai esaurito la prova gratuita",
+        "allUsedDesc": "Hai usato tutti i caricamenti e le domande di questa prova. Crea un account gratuito e riprendi da dove eri rimasto!"
       },
       "guided": {
         "sectionTitle": "Prova con il tuo materiale",

@@ -446,7 +446,9 @@
         "ipTitle": "Kokeilun kapasiteetti on täynnä",
         "ipDesc": "Tästä verkosta on juuri nyt paljon vierailijakokeilutoimintaa, joten sitä on tilapäisesti rajoitettu. Luo ilmainen tili jatkaaksesi heti!",
         "globalTitle": "Vierailijakokeilut on toistaiseksi keskeytetty",
-        "globalDesc": "Vierailijakokeilupyyntöjä on tänään poikkeuksellisen paljon, joten olemme keskeyttäneet ne hetkeksi. Luo ilmainen tili jatkaaksesi heti!"
+        "globalDesc": "Vierailijakokeilupyyntöjä on tänään poikkeuksellisen paljon, joten olemme keskeyttäneet ne hetkeksi. Luo ilmainen tili jatkaaksesi heti!",
+        "allUsedTitle": "Ilmainen kokeilu on käytetty loppuun",
+        "allUsedDesc": "Käytit kaikki tämän kokeilun lataukset ja kysymykset. Luo ilmainen tili, niin voit jatkaa siitä mihin jäit!"
       },
       "guided": {
         "sectionTitle": "Kokeile omalla materiaalilla",

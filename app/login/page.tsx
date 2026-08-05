@@ -798,6 +798,26 @@ function LoginPageContent() {
                 }}
               />
 
+              {/* 💡 [신규] 체험 예산(업로드 1건 + 채팅 3턴)을 둘 다 소진했을 때, 결과 화면
+                  아래에 자연스럽게 이어지는 마무리 카드. 모달이 아니라 문서 흐름 안의
+                  카드라 스크롤을 막거나 결과를 가리지 않습니다.
+                  guestSuspended(ip/global)일 때는 띄우지 않습니다 — 그 경우는 이미 패널
+                  맨 위에 다른 사유의 배너가 떠 있고, "다 썼다"가 아니라 "지금은 막혔다"라
+                  문구가 어긋납니다. */}
+              {uploadSessionUsed && chatSessionUsed && !guestSuspended && (
+                <div className="mt-6">
+                  <GuestLimitBanner
+                    limitType="session"
+                    context="all"
+                    onRequestSignUp={() => {
+                      setShowTrial(false);
+                      setIsSignUp(true);
+                      setMessage(null);
+                    }}
+                  />
+                </div>
+              )}
+
               <div className="mt-6 text-center">
                 <button
                   onClick={() => {

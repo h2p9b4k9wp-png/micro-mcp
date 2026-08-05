@@ -446,7 +446,9 @@
         "ipTitle": "Trial capacity is full",
         "ipDesc": "There's a lot of guest trial activity from this network right now, so it's temporarily limited. Create a free account to keep going right away!",
         "globalTitle": "Guest trials are paused for now",
-        "globalDesc": "Guest trial requests are unusually high today, so we've paused them for a bit. Create a free account to keep going right away!"
+        "globalDesc": "Guest trial requests are unusually high today, so we've paused them for a bit. Create a free account to keep going right away!",
+        "allUsedTitle": "You've used up the free trial",
+        "allUsedDesc": "That's all the uploads and questions this trial includes. Create a free account to pick up right where you left off!"
       },
       "guided": {
         "sectionTitle": "Try with your own material",

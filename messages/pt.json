@@ -446,7 +446,9 @@
         "ipTitle": "Vagas de teste esgotadas",
         "ipDesc": "Há muita atividade de teste de convidado nesta rede agora, então está temporariamente limitado. Crie uma conta gratuita para continuar agora mesmo!",
         "globalTitle": "Os testes de convidado estão pausados",
-        "globalDesc": "Hoje há muitas solicitações de teste de convidado, então pausamos por um momento. Crie uma conta gratuita para continuar agora mesmo!"
+        "globalDesc": "Hoje há muitas solicitações de teste de convidado, então pausamos por um momento. Crie uma conta gratuita para continuar agora mesmo!",
+        "allUsedTitle": "Já usaste todo o teste gratuito",
+        "allUsedDesc": "Usaste todos os carregamentos e perguntas incluídos neste teste. Cria uma conta gratuita e continua exatamente onde ficaste!"
       },
       "guided": {
         "sectionTitle": "Experimentar com o seu material",

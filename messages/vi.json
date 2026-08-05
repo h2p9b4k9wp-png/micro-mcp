@@ -446,7 +446,9 @@
         "ipTitle": "Đã đầy chỗ trải nghiệm",
         "ipDesc": "Hiện có quá nhiều yêu cầu trải nghiệm khách từ mạng này nên tạm thời bị giới hạn. Tạo tài khoản miễn phí để tiếp tục ngay!",
         "globalTitle": "Trải nghiệm khách đang tạm dừng",
-        "globalDesc": "Hôm nay có quá nhiều yêu cầu trải nghiệm khách nên đã tạm dừng một chút. Tạo tài khoản miễn phí để tiếp tục ngay!"
+        "globalDesc": "Hôm nay có quá nhiều yêu cầu trải nghiệm khách nên đã tạm dừng một chút. Tạo tài khoản miễn phí để tiếp tục ngay!",
+        "allUsedTitle": "Bạn đã dùng hết bản dùng thử miễn phí",
+        "allUsedDesc": "Bạn đã dùng hết số lần tải lên và câu hỏi của bản dùng thử này. Tạo tài khoản miễn phí để tiếp tục ngay từ chỗ đang dở!"
       },
       "guided": {
         "sectionTitle": "Trải nghiệm với tài liệu của bạn",
