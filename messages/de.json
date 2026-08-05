@@ -24,7 +24,8 @@
     "unknownError": "Unbekannter Fehler",
     "responseLanguageLabel": "KI-Antwortsprache",
     "themeLabel": "Design",
-    "aiGeneratedNotice": "KI-generierter Inhalt — kann unvollständig oder ungenau sein."
+    "aiGeneratedNotice": "KI-generierter Inhalt — kann unvollständig oder ungenau sein.",
+    "upgradeToPro": "Auf Pro upgraden"
   },
   "workspace": {
     "subtitle": "Die KI erstellt Antworten basierend auf dem Gesprächskontext und dem Inhalt angehängter Dokumente.",

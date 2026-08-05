@@ -24,7 +24,8 @@
     "unknownError": "Onbekende fout",
     "responseLanguageLabel": "AI-antwoordtaal",
     "themeLabel": "Thema",
-    "aiGeneratedNotice": "Door AI gegenereerde inhoud — kan onvolledig of onnauwkeurig zijn."
+    "aiGeneratedNotice": "Door AI gegenereerde inhoud — kan onvolledig of onnauwkeurig zijn.",
+    "upgradeToPro": "Upgraden naar Pro"
   },
   "workspace": {
     "subtitle": "De AI genereert antwoorden op basis van de gesprekscontext en de inhoud van bijgevoegde documenten.",

@@ -24,7 +24,8 @@
     "unknownError": "Unknown error",
     "responseLanguageLabel": "AI Response Language",
     "themeLabel": "Theme",
-    "aiGeneratedNotice": "AI-generated — may be incomplete or inaccurate."
+    "aiGeneratedNotice": "AI-generated — may be incomplete or inaccurate.",
+    "upgradeToPro": "Upgrade to Pro"
   },
   "workspace": {
     "subtitle": "The AI generates answers based on the conversation context and any attached document content.",

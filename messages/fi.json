@@ -24,7 +24,8 @@
     "unknownError": "Tuntematon virhe",
     "responseLanguageLabel": "AI:n vastauskieli",
     "themeLabel": "Teema",
-    "aiGeneratedNotice": "AI:n luoma — voi olla puutteellinen tai virheellinen."
+    "aiGeneratedNotice": "AI:n luoma — voi olla puutteellinen tai virheellinen.",
+    "upgradeToPro": "Päivitä Pro-tilaukseen"
   },
   "workspace": {
     "subtitle": "AI muodostaa vastauksia keskusteluyhteyden ja liitettyjen tiedostojen sisällön perusteella.",

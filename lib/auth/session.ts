@@ -49,3 +49,18 @@ export async function getSessionUserEmail(): Promise<string | null> {
   const { data: { user } } = await supabase.auth.getUser();
   return user?.email ?? null;
 }
+
+// 💡 [신규] id·email·RLS 클라이언트가 "한꺼번에" 필요할 때 쓰는 헬퍼 — app/pricing/page.tsx가
+// 로그인 상태에 따라 결제 버튼을 분기하면서 (1) 로그인 여부, (2) profiles.is_pro 조회,
+// (3) getPolarCheckoutUrl(userId, email)에 넘길 이메일을 모두 필요로 해서 추가했습니다.
+// 위 헬퍼들을 조합하면 auth.getUser()가 여러 번 호출되는데(매번 Auth 서버 왕복), 이 함수는
+// 한 번만 호출합니다.
+export async function getSessionUser(): Promise<{
+  supabase: SupabaseClient;
+  userId: string | null;
+  email: string | null;
+}> {
+  const supabase = await buildSessionClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  return { supabase, userId: user?.id ?? null, email: user?.email ?? null };
+}

@@ -2354,6 +2354,22 @@ export default function HomePage() {
           <ThemeToggle />
         </div>
 
+        {/* 💡 [신규] "Pro로 업그레이드" — Pro 배지를 Pro 사용자 전용으로 바꾸면서 무료
+            사용자에게 자발적 업그레이드 경로가 사라졌던 걸 되살립니다. 배지처럼 등급 표시를
+            겸하는 애매한 자리가 아니라, 무엇을 하는 항목인지 문구로 분명한 별도 줄입니다.
+            이미 Pro인 사용자에게는 보여줄 이유가 없어 숨깁니다(그쪽은 배지가 대신합니다).
+            클릭하면 기존 업그레이드 모달을 그대로 엽니다 — 모달 안에 Polar 결제 링크와
+            소사이어티 코드 입력이 함께 있어서, 여기서 결제로 바로 보내는 것보다 낫습니다. */}
+        {!isPro && (
+          <button
+            type="button"
+            onClick={() => openUpgradeModal()}
+            className="w-full text-left block px-4 py-3 border-t border-[var(--border-default)] bg-transparent text-xs font-semibold text-[#F4679B] hover:bg-[var(--surface-chip)] cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-inset"
+          >
+            {t('common.upgradeToPro')}
+          </button>
+        )}
+
         <Link
           href="/pricing"
           className="block px-4 py-3 border-t border-[var(--border-default)] text-xs text-[var(--text-muted)] hover:text-[#F4679B] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-inset"

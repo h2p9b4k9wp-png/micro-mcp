@@ -24,7 +24,8 @@
     "unknownError": "Erreur inconnue",
     "responseLanguageLabel": "Langue de réponse de l'IA",
     "themeLabel": "Thème",
-    "aiGeneratedNotice": "Contenu généré par IA ; peut être inexact ou différer de la réalité."
+    "aiGeneratedNotice": "Contenu généré par IA ; peut être inexact ou différer de la réalité.",
+    "upgradeToPro": "Passer à Pro"
   },
   "workspace": {
     "subtitle": "L'IA génère des réponses en fonction du contexte de la conversation et du contenu de tout document joint.",

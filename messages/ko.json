@@ -24,7 +24,8 @@
     "unknownError": "알 수 없는 오류",
     "responseLanguageLabel": "AI 답변 언어",
     "themeLabel": "화면 테마",
-    "aiGeneratedNotice": "AI가 생성한 내용으로, 실제와 다르거나 부정확할 수 있어요."
+    "aiGeneratedNotice": "AI가 생성한 내용으로, 실제와 다르거나 부정확할 수 있어요.",
+    "upgradeToPro": "Pro로 업그레이드"
   },
   "workspace": {
     "subtitle": "첨부한 문서 내용과 대화 맥락을 바탕으로 AI가 실제 답변을 도출합니다.",

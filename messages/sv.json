@@ -24,7 +24,8 @@
     "unknownError": "Okänt fel",
     "responseLanguageLabel": "AI:ns svarsspråk",
     "themeLabel": "Tema",
-    "aiGeneratedNotice": "AI-genererat — kan vara ofullständigt eller felaktigt."
+    "aiGeneratedNotice": "AI-genererat — kan vara ofullständigt eller felaktigt.",
+    "upgradeToPro": "Uppgradera till Pro"
   },
   "workspace": {
     "subtitle": "AI:n genererar svar baserat på konversationskontexten och innehållet i bifogade dokument.",
