@@ -63,14 +63,14 @@ export function GuestGuidedTrial({ onRequestSignUp }: { onRequestSignUp: () => v
                 isAnalyzing ? 'border-[var(--border-default)] cursor-wait' : 'border-[var(--border-strong)] hover:border-[#F4679B]/50 cursor-pointer'
               }`}
             >
-              <span className="text-2xl">📸</span>
+              <span className="text-2xl">📎</span>
               <span className="text-sm font-medium text-[var(--text-secondary)]">
                 {isAnalyzing ? <LoadingText /> : t('login.trial.guided.chooseImage')}
               </span>
               <span className="text-xs text-[var(--text-faint)]">{t('login.trial.guided.imageHint')}</span>
+              {/* accept를 비워둔 이유는 components/welcome-hero-trial.tsx의 같은 input 주석 참고. */}
               <input
                 type="file"
-                accept="image/*"
                 className="hidden"
                 disabled={isAnalyzing}
                 onChange={handleFileChange}

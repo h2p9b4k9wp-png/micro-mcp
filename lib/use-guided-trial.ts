@@ -38,8 +38,14 @@ export function useGuidedTrial() {
   // 서버가 실제로 알려주는 값(analyzeFile 성공/429 응답의 remainingUploads)으로만 갱신합니다.
   const [uploadRemaining, setUploadRemaining] = useState(SESSION_UPLOAD_LIMIT);
 
+  // 💡 [수정] 예전엔 이미지만 받고 나머지는 전부 "지원하지 않는 형식"으로 되돌려보냈습니다 —
+  // 이 훅을 쓰는 /welcome 히어로의 "지금 체험하기"가 랜딩의 유일한 주 CTA라, PDF·PPT 같은
+  // 실제 수업 자료를 고른 방문자가 그 자리에서 막혔습니다. 이제 사진이 아닌 파일은 그대로
+  // 서버로 보내고(app/api/public-guided-trial이 extractFileText로 텍스트를 뽑습니다),
+  // 이미지 전용 처리(비전이 못 읽는 HEIC 거절, 긴 변 다운스케일)는 이미지일 때만 합니다.
   const analyzeFile = async (file: File) => {
-    if (!SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
+    const isImage = file.type.startsWith('image/');
+    if (isImage && !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
       setError(t('login.trial.guided.unsupportedFormat'));
       return;
     }
@@ -59,10 +65,13 @@ export function useGuidedTrial() {
         reader.onerror = () => reject(new Error(t('login.trial.readError')));
         reader.readAsDataURL(file);
       });
-      const resized = await resizeImageDataUrl(dataUrl);
-      const commaIndex = resized.indexOf(',');
-      const base64Content = commaIndex !== -1 ? resized.substring(commaIndex + 1) : resized;
-      const mimeMatch = resized.match(/^data:([^;]+);/);
+      // 다운스케일은 이미지에만 의미가 있습니다(비전 토큰 비용). 문서는 원본 base64 그대로
+      // 보냅니다 — 리사이즈를 시도하면 canvas가 디코딩에 실패해 원본을 그대로 돌려주긴 하지만,
+      // 굳이 이미지 디코딩 경로를 태울 이유가 없습니다.
+      const payload = isImage ? await resizeImageDataUrl(dataUrl) : dataUrl;
+      const commaIndex = payload.indexOf(',');
+      const base64Content = commaIndex !== -1 ? payload.substring(commaIndex + 1) : payload;
+      const mimeMatch = payload.match(/^data:([^;]+);/);
       const mimeType = mimeMatch ? mimeMatch[1] : file.type;
 
       const res = await fetch('/api/public-guided-trial', {

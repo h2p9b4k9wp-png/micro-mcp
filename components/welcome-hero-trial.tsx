@@ -151,10 +151,14 @@ export function WelcomeHeroTrial() {
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
     >
+      {/* 💡 [수정] accept="image/*"를 뗐습니다 — 파일 선택창이 사진만 보여주는 바람에 PDF·PPT
+          같은 실제 수업 자료를 가진 방문자가 이 CTA에서 그대로 막혔습니다. 특정 확장자 목록을
+          accept에 나열하는 대신 아예 비워둔 건, 서버의 extractFileText()가 모르는 확장자도
+          일단 텍스트로 읽어보기 때문입니다(lib/file-text-extract.ts) — accept로 미리
+          걸러버리면 실제로는 읽을 수 있는 파일까지 선택 자체가 안 됩니다. */}
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
         className="hidden"
         onChange={handleFileChange}
       />

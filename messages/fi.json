@@ -449,12 +449,12 @@
         "globalDesc": "Vierailijakokeilupyyntöjä on tänään poikkeuksellisen paljon, joten olemme keskeyttäneet ne hetkeksi. Luo ilmainen tili jatkaaksesi heti!"
       },
       "guided": {
-        "sectionTitle": "Kokeile kuvalla",
-        "chooseImage": "Napsauta valitaksesi kuvan",
-        "imageHint": "Kuva tai kuvakaappaus (PNG/JPEG/GIF/WEBP) — enintään 3 Mt",
+        "sectionTitle": "Kokeile omalla materiaalilla",
+        "chooseImage": "Napsauta valitaksesi tiedoston",
+        "imageHint": "PDF, Word, PPT, Excel, HWP tai kuva — enintään 3 Mt",
         "analyzing": "Analysoidaan kuvaasi…",
-        "unsupportedFormat": "Vain PNG, JPEG, GIF tai WEBP tuetaan. Jos kyseessä on HEIC-kuva, muunna se JPEG-muotoon ja yritä uudelleen.",
-        "tooLarge": "Enintään 3 Mt:n kuvia voidaan analysoida ilman tiliä.",
+        "unsupportedFormat": "Tätä kuvamuotoa ei voi lukea. Jos kyseessä on HEIC-kuva, muunna se JPEG-muotoon ja yritä uudelleen.",
+        "tooLarge": "Enintään 3 Mt:n tiedostoja voidaan analysoida ilman tiliä.",
         "questionsTitle": "Odotetut kysymykset",
         "summaryTitle": "Yhteenveto"
       },
@@ -503,7 +503,7 @@
     "headline": "Tentti huomenna, materiaalit vielä koskematta?",
     "subheadline": "Lataa tiedostosi ja saat yhteenvedon sekä odotetut kysymykset heti.",
     "ctaButton": "Kokeile nyt",
-    "ctaHint": "Ei rekisteröitymistä — kokeile heti",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP tai kuva — ilman rekisteröitymistä",
     "professorAppeal": "Räätälöity eri tavalla jokaiselle luennoitsijalle tai professorille",
     "startOver": "← Aloita alusta",
     "noSharingNote": "Lataamiasi materiaaleja ei koskaan jaeta muille käyttäjille",

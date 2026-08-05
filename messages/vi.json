@@ -449,12 +449,12 @@
         "globalDesc": "Hôm nay có quá nhiều yêu cầu trải nghiệm khách nên đã tạm dừng một chút. Tạo tài khoản miễn phí để tiếp tục ngay!"
       },
       "guided": {
-        "sectionTitle": "Trải nghiệm với ảnh",
-        "chooseImage": "Nhấn để chọn ảnh",
-        "imageHint": "Ảnh hoặc ảnh chụp màn hình (PNG/JPEG/GIF/WEBP) — tối đa 3MB",
+        "sectionTitle": "Trải nghiệm với tài liệu của bạn",
+        "chooseImage": "Nhấn để chọn tệp",
+        "imageHint": "PDF, Word, PPT, Excel, HWP hoặc ảnh — tối đa 3MB",
         "analyzing": "Đang phân tích ảnh…",
-        "unsupportedFormat": "Chỉ hỗ trợ định dạng PNG, JPEG, GIF, WEBP. Nếu là ảnh HEIC, hãy chuyển sang JPEG rồi thử lại.",
-        "tooLarge": "Không cần tài khoản có thể phân tích ảnh tối đa 3MB.",
+        "unsupportedFormat": "Không đọc được định dạng ảnh này. Nếu là ảnh HEIC, hãy chuyển sang JPEG và thử lại.",
+        "tooLarge": "Không cần tài khoản có thể phân tích tệp tối đa 3MB.",
         "questionsTitle": "Câu hỏi dự kiến",
         "summaryTitle": "Tóm tắt"
       },
@@ -503,7 +503,7 @@
     "headline": "Mai thi rồi, tài liệu vẫn còn nguyên?",
     "subheadline": "Tải tệp lên là có ngay tóm tắt và câu hỏi dự đoán.",
     "ctaButton": "Trải nghiệm ngay",
-    "ctaHint": "Không cần đăng ký, thử ngay bây giờ",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP hoặc ảnh — không cần đăng ký",
     "professorAppeal": "Mỗi giáo sư một kiểu tổng hợp riêng",
     "startOver": "← Bắt đầu lại",
     "noSharingNote": "Tài liệu bạn tải lên không được chia sẻ với người dùng khác",

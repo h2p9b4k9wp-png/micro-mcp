@@ -449,12 +449,12 @@
         "globalDesc": "Hoje há muitas solicitações de teste de convidado, então pausamos por um momento. Crie uma conta gratuita para continuar agora mesmo!"
       },
       "guided": {
-        "sectionTitle": "Experimentar com uma foto",
-        "chooseImage": "Clique para escolher uma foto",
-        "imageHint": "Foto ou captura de tela (PNG/JPEG/GIF/WEBP) — até 3MB",
+        "sectionTitle": "Experimentar com o seu material",
+        "chooseImage": "Clique para escolher um arquivo",
+        "imageHint": "PDF, Word, PPT, Excel, HWP ou uma foto — até 3MB",
         "analyzing": "Analisando sua foto…",
-        "unsupportedFormat": "Apenas PNG, JPEG, GIF ou WEBP são compatíveis. Se for uma foto HEIC, converta para JPEG e tente novamente.",
-        "tooLarge": "Sem conta é possível analisar fotos de até 3MB.",
+        "unsupportedFormat": "Não é possível ler este formato de foto. Se for uma foto HEIC, converta para JPEG e tente novamente.",
+        "tooLarge": "Sem conta é possível analisar arquivos de até 3MB.",
         "questionsTitle": "Perguntas esperadas",
         "summaryTitle": "Resumo"
       },
@@ -503,7 +503,7 @@
     "headline": "Prova amanhã, material ainda intocado?",
     "subheadline": "Envie seus arquivos e receba resumo e questões esperadas na hora.",
     "ctaButton": "Experimentar agora",
-    "ctaHint": "Sem cadastro, confira agora mesmo",
+    "ctaHint": "PDF, Word, PPT, Excel, HWP ou uma foto — sem cadastro",
     "professorAppeal": "Organizado de forma diferente para cada professor",
     "startOver": "← Começar de novo",
     "noSharingNote": "Os materiais que você envia nunca são compartilhados com outros usuários",
