@@ -63,7 +63,8 @@
       "registered": "Registered",
       "noQuestionsFound": "Couldn't come up with expected questions.",
       "weakness": "Weakness: {text}",
-      "evidencePrefix": "Evidence"
+      "evidencePrefix": "Evidence",
+      "noExamQuestionsFound": "Couldn't create any practice exam questions."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" is too large (over 10MB). Please try a smaller file.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "View as {label}",
     "meetingNotesCourseLabel": "Detected from meeting/lecture notes",
-    "lensRegisterCourseLabel": "Extract Deadlines · Source: \"{date}\""
+    "lensRegisterCourseLabel": "Extract Deadlines · Source: \"{date}\"",
+    "professorGen": {
+      "title": "Create from a professor's materials",
+      "profileApplied": "Style applied",
+      "selectLabel": "Select a professor",
+      "selectPlaceholder": "Choose a professor",
+      "optionLabel": "{name} ({count} files)",
+      "noDocuments": "No materials uploaded for this professor yet.",
+      "lenses": {
+        "digest": "Lecture summary",
+        "questions": "Expected questions",
+        "examQuestions": "Practice exam questions"
+      }
+    }
   },
   "records": {
     "title": "My Records",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "With fewer than {count} documents, accuracy may be somewhat lower. Accuracy improves a lot from {count} documents onwards.",
     "tentativeBadge": "tentative",
     "digest": {
-      "title": "Summary & key points",
-      "hint": "Pulls the key points from all of this professor's materials together.",
-      "generate": "Create summary",
-      "regenerate": "Regenerate",
-      "empty": "No summary yet.",
       "docButton": "Summarise this file",
       "docHide": "Hide summary",
       "docLoading": "Summarising…"
+    },
+    "generateElsewhere": {
+      "title": "Create from these materials in chat",
+      "hint": "Get a lecture summary, expected questions, or practice exam questions in the chat tab."
     }
   },
   "monitoring": {

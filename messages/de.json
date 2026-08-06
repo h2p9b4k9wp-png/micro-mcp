@@ -63,7 +63,8 @@
       "registered": "Registriert",
       "noQuestionsFound": "Es konnten keine erwarteten Fragen erstellt werden.",
       "weakness": "Schwachstelle: {text}",
-      "evidencePrefix": "Beleg"
+      "evidencePrefix": "Beleg",
+      "noExamQuestionsFound": "Es konnten keine Prüfungsfragen erstellt werden."
     },
     "errors": {
       "fileTooLarge": "„{fileName}“ ist zu groß (über 10 MB). Bitte versuche es mit einer kleineren Datei.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Als {label} anzeigen",
     "meetingNotesCourseLabel": "Aus Meeting-/Vorlesungsnotizen erkannt",
-    "lensRegisterCourseLabel": "Fristen extrahieren · Quelle: „{date}\""
+    "lensRegisterCourseLabel": "Fristen extrahieren · Quelle: „{date}\"",
+    "professorGen": {
+      "title": "Aus Professorenmaterial erstellen",
+      "profileApplied": "Stil berücksichtigt",
+      "selectLabel": "Professor auswählen",
+      "selectPlaceholder": "Professor wählen",
+      "optionLabel": "{name} ({count} Dateien)",
+      "noDocuments": "Für diesen Professor wurden noch keine Materialien hochgeladen.",
+      "lenses": {
+        "digest": "Vorlesungszusammenfassung",
+        "questions": "Erwartete Fragen",
+        "examQuestions": "Übungsprüfungsfragen"
+      }
+    }
   },
   "records": {
     "title": "Meine Aufzeichnungen",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Bei weniger als {count} Dokumenten kann die Genauigkeit etwas geringer sein. Ab {count} Dokumenten steigt sie deutlich.",
     "tentativeBadge": "vorläufig",
     "digest": {
-      "title": "Zusammenfassung & Kernpunkte",
-      "hint": "Fasst die Kernpunkte aller Materialien dieser Lehrkraft zusammen.",
-      "generate": "Zusammenfassung erstellen",
-      "regenerate": "Neu erstellen",
-      "empty": "Noch keine Zusammenfassung.",
       "docButton": "Diese Datei zusammenfassen",
       "docHide": "Zusammenfassung ausblenden",
       "docLoading": "Wird zusammengefasst…"
+    },
+    "generateElsewhere": {
+      "title": "Im Chat aus diesen Materialien erstellen",
+      "hint": "Zusammenfassung, erwartete Fragen und Prüfungsfragen gibt es im Chat-Tab."
     }
   },
   "monitoring": {

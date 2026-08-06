@@ -63,7 +63,8 @@
       "registered": "登録済み",
       "noQuestionsFound": "想定質問を作成できませんでした。",
       "weakness": "弱点: {text}",
-      "evidencePrefix": "根拠"
+      "evidencePrefix": "根拠",
+      "noExamQuestionsFound": "予想試験問題を作成できませんでした。"
     },
     "errors": {
       "fileTooLarge": "「{fileName}」は大きすぎます（10MB超）。より小さいファイルでお試しください。",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "{label}で見る",
     "meetingNotesCourseLabel": "会議・講義ノートから検出",
-    "lensRegisterCourseLabel": "締め切り抽出・原文：「{date}」"
+    "lensRegisterCourseLabel": "締め切り抽出・原文：「{date}」",
+    "professorGen": {
+      "title": "教授の資料から作成",
+      "profileApplied": "傾向を反映",
+      "selectLabel": "教授を選択",
+      "selectPlaceholder": "教授を選んでください",
+      "optionLabel": "{name}（資料{count}件）",
+      "noDocuments": "この教授の資料はまだアップロードされていません。",
+      "lenses": {
+        "digest": "講義まとめ",
+        "questions": "想定質問",
+        "examQuestions": "予想試験問題"
+      }
+    }
   },
   "records": {
     "title": "マイ履歴",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "資料が{count}件未満だと精度がやや下がることがあります。{count}件以上になると精度が大きく上がります。",
     "tentativeBadge": "暫定",
     "digest": {
-      "title": "要約・重要ポイント",
-      "hint": "この教授の資料をすべてまとめて要点を整理します。",
-      "generate": "要約を作成",
-      "regenerate": "再作成",
-      "empty": "まだ要約がありません。",
       "docButton": "この資料を要約",
       "docHide": "要約を閉じる",
       "docLoading": "要約中…"
+    },
+    "generateElsewhere": {
+      "title": "チャットでこの資料から作成",
+      "hint": "講義まとめ・想定質問・予想試験問題はチャットタブで作成できます。"
     }
   },
   "monitoring": {

@@ -24,6 +24,7 @@ import {
   X,
   GraduationCap,
   ArrowLeft,
+  ArrowRight,
 } from 'lucide-react';
 import type { NodeId, CircuitGraphState, GraphNode } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
@@ -45,12 +46,21 @@ import { renderTrialResult } from '@/components/trial-result-view';
 import { useTranslations, useLocale } from 'next-intl';
 import {
   detectLens,
+  CIRCUIT_LENS_IDS,
   type LensId,
+  type CircuitLensId,
   type DeadlinesResult,
   type DeadlineItem,
   type QuestionsResult,
   type DigestResult,
+  type ExamQuestionsResult,
 } from '@/lib/lenses';
+import {
+  buildProfessorContext,
+  normalizeProfessorItems,
+  type ProfessorAnalysisItem,
+  type ProfessorAnalysisResult,
+} from '@/lib/professor-analysis';
 
 interface LogItem {
   id: string;
@@ -121,43 +131,10 @@ interface ProfessorDocument {
   created_at: string;
 }
 
-// 카테고리별로 "여러 자료에서 교차 확인됐는지(confident)"와 "판단 내용(items)"을 나눠서 받습니다.
-//
-// 💡 [수정] items의 모양이 바뀌었습니다: 예전에는 string[]이었고 confident가 false면 항상
-// 빈 배열이었는데, 이제는 확신이 낮아도 채우되 항목마다 근거(evidence)를 의무화한
-// {text, evidence}[]입니다(app/api/analyze-professor/route.ts의 CATEGORY_SCHEMA 참고).
-// confident는 더 이상 "보여줄지 말지"의 게이트가 아니라 신뢰도 표시로만 씁니다.
-//
-// 💡 professor_analysis 테이블에 이미 저장돼 있는 예전 결과는 여전히 string[] 모양이라,
-// 화면에서는 normalizeProfessorItems()로 두 모양을 모두 받아냅니다 — 기존 사용자가 재분석을
-// 누르기 전까지 결과가 깨져 보이지 않도록 하기 위함입니다(재분석하면 새 모양으로 덮어씀).
-interface ProfessorAnalysisItem {
-  text: string;
-  evidence: string;
-}
-
-interface ProfessorAnalysisCategory {
-  confident: boolean;
-  items: (string | ProfessorAnalysisItem)[];
-}
-
-// 예전 모양(string[])과 새 모양({text, evidence}[])을 모두 받아 항상 새 모양으로 돌려줍니다.
-// 예전 데이터에는 근거가 없으므로 evidence는 빈 문자열이 되고, 화면에서는 근거 줄을 생략합니다.
-function normalizeProfessorItems(items: (string | ProfessorAnalysisItem)[] | undefined): ProfessorAnalysisItem[] {
-  if (!items) return [];
-  return items.map((item) =>
-    typeof item === 'string' ? { text: item, evidence: '' } : { text: item.text, evidence: item.evidence || '' }
-  );
-}
-
-interface ProfessorAnalysisResult {
-  topics: ProfessorAnalysisCategory;
-  examStyle: ProfessorAnalysisCategory;
-  assignmentStyle: ProfessorAnalysisCategory;
-  examQuestionTypes: ProfessorAnalysisCategory;
-  gradingStrictness: ProfessorAnalysisCategory;
-  researchInterests: ProfessorAnalysisCategory;
-}
+// 💡 ProfessorAnalysisItem/Category/Result와 normalizeProfessorItems는 lib/professor-analysis.ts로
+// 옮겼습니다 — 채팅 탭의 "교수님 자료로 만들기"가 같은 결과를 프롬프트 블록으로 바꿔
+// /api/analyze에 넘겨야 해서, 화면 코드와 그 변환 로직이 같은 타입을 공유해야 했습니다.
+// (예전 string[] 모양과 새 {text, evidence}[] 모양을 모두 받아내는 이유도 그 파일에 적어뒀습니다.)
 
 // professor_analysis 테이블 한 행 — 교수님 1명당 최신 분석 결과 하나(upsert).
 interface ProfessorAnalysisRow {
@@ -212,11 +189,22 @@ const EXAMPLE_PROMPT_DEFS = [
 
 // 채팅 입력창 위 미니 전선에서 고를 수 있는 답변 종류. 'none' = 그냥 대화(관점 분석 없이 평소처럼).
 // 라벨은 messages/*.json의 workspace.lensChoices.{key}에서 지역화되어 렌더링 시점에 가져옵니다.
-const CHAT_LENS_CHOICE_DEFS: { id: LensId | 'none'; key: string }[] = [
+const CHAT_LENS_CHOICE_DEFS: { id: CircuitLensId | 'none'; key: string }[] = [
   { id: 'deadlines', key: 'deadlines' },
   { id: 'questions', key: 'questions' },
   { id: 'digest', key: 'digest' },
   { id: 'none', key: 'none' },
+];
+
+// 💡 [신규] 채팅 탭 "교수님 자료로 만들기"에서 만들 수 있는 세 가지 결과물. 위
+// CHAT_LENS_CHOICE_DEFS(채팅에 붙인 파일 하나를 다른 관점으로 보는 것)와는 대상이 다릅니다 —
+// 이쪽은 고른 교수님의 자료 전체가 대상이고, 교수님 성향까지 프롬프트에 함께 들어갑니다.
+// '마감 뽑기'가 빠진 이유: 마감은 교수님 성향과 무관하고 강의계획서 한 장에서 뽑는 게
+// 맞아서, 기존 첨부 파일 경로에 그대로 두는 편이 낫습니다.
+const PROFESSOR_GEN_LENS_DEFS: { id: LensId; key: string }[] = [
+  { id: 'digest', key: 'digest' },
+  { id: 'questions', key: 'questions' },
+  { id: 'examQuestions', key: 'examQuestions' },
 ];
 
 // 💡 교수님 분석 결과의 6개 카테고리 — ProfessorAnalysisResult의 키와 1:1 대응. 라벨이
@@ -359,10 +347,24 @@ export default function HomePage() {
   // useEffect로 초기화하는 대신, 렌더 시점에 현재 선택된 교수님 것일 때만 보여주는 방식입니다
   // (effect 안에서 setState를 연쇄로 호출하지 않아도 되고, 이전 교수님 결과가 잠깐 스쳐
   // 보이는 문제도 없습니다). 문서별 요약은 문서 id로 키를 잡으므로 애초에 섞이지 않습니다.
-  const [professorDigest, setProfessorDigest] = useState<{ professorId: string; result: DigestResult } | null>(null);
-  const [isDigestingProfessor, setIsDigestingProfessor] = useState(false);
-  const [professorDigestError, setProfessorDigestError] = useState<{ professorId: string; message: string } | null>(null);
+  // 💡 교수님 자료 "통합 요약"은 여기서 없어졌습니다 — 채팅 탭의 "교수님 자료로 만들기 →
+  // 강의 요약"이 완전히 같은 일(이 교수님 자료 전체를 digest 렌즈로 한 번에 정리)을 하고
+  // 있어 같은 기능이 두 군데에 있던 상태였습니다. 아래 문서별 요약(professorDocDigests)은
+  // 대상이 다르므로(자료 목록에서 파일 하나만) 그대로 남겨둡니다.
   const [professorDocDigests, setProfessorDocDigests] = useState<Record<string, DigestResult>>({});
+
+  // 💡 [신규] 채팅 탭의 "교수님 자료로 만들기" — 고른 교수님의 자료 전체를 세 가지 결과물
+  // (강의 요약 / 예상 질문 / 예상 시험 문제) 중 하나로 만듭니다. 첨부 문서용 렌즈 상태
+  // (lensId/lensStage/lensResult)와 일부러 분리했습니다: 그쪽은 "지금 채팅에 붙인 파일 하나"에
+  // 묶인 상태 기계라, 첨부가 없어도 동작해야 하는 이 기능을 같은 슬롯에 태우면 미니 전선
+  // (chatLensGraph)과 마감 등록 인덱스까지 얽힙니다.
+  const [professorGenProfessorId, setProfessorGenProfessorId] = useState<string | null>(null);
+  const [professorGenLens, setProfessorGenLens] = useState<LensId | null>(null);
+  const [professorGenResult, setProfessorGenResult] = useState<
+    DigestResult | QuestionsResult | ExamQuestionsResult | null
+  >(null);
+  const [isGeneratingFromProfessor, setIsGeneratingFromProfessor] = useState(false);
+  const [professorGenError, setProfessorGenError] = useState<string | null>(null);
   const [digestingDocId, setDigestingDocId] = useState<string | null>(null);
   const [professorDocDigestError, setProfessorDocDigestError] = useState<{ professorId: string; message: string } | null>(null);
 
@@ -434,7 +436,7 @@ export default function HomePage() {
   const [lensError, setLensError] = useState<string | null>(null);
 
   // 채팅 입력창 위 미니 전선에서 직접 고른 관점. null = 아직 안 골랐으니 detectLens 자동 판단을 씁니다.
-  const [chatLensChoice, setChatLensChoice] = useState<LensId | 'none' | null>(null);
+  const [chatLensChoice, setChatLensChoice] = useState<CircuitLensId | 'none' | null>(null);
 
   // 💡 [신규] 문서 업로드 이력 (DB 저장 — 기기가 바뀌어도 '나의 기록'에서 동일하게 보임)
   const [documentUploads, setDocumentUploads] = useState<DocumentUploadRecord[]>([]);
@@ -769,7 +771,7 @@ export default function HomePage() {
   // 💡 [신규] 채팅에 첨부한 문서 중 가장 최근 텍스트 첨부 하나를 미니 전선의 대상으로 삼습니다
   // (기존 "파일 분석" 탭과 같은 단일 문서 모델). 직접 관점을 안 골랐으면 detectLens가 자동으로 고릅니다.
   const latestTextAttachment = [...chatAttachments].reverse().find((a) => a.kind === 'text');
-  const effectiveChatLens: LensId | 'none' = chatLensChoice
+  const effectiveChatLens: CircuitLensId | 'none' = chatLensChoice
     ?? (latestTextAttachment ? detectLens(latestTextAttachment.text || '', latestTextAttachment.name) : 'none');
 
   // this_doc(source) → 고른 관점(lens) 두 노드뿐인 최소 그래프. 아직 실행 전이면 lens는 idle,
@@ -792,7 +794,27 @@ export default function HomePage() {
           edges: [{ from: 'this_doc', to: effectiveChatLens }],
         };
 
-  const handleSelectChatLens = (choice: LensId | 'none') => {
+  // 💡 [신규] "교수님 자료로 만들기"에서 지금 고른 교수님의 자료 수와, 성향 블록이 실제로
+  // 만들어지는지(= 화면에 "성향 반영" 표시를 띄울지). buildProfessorContext는 confident한
+  // 카테고리가 하나도 없으면 빈 문자열을 돌려주므로, 길이만 보면 충분합니다.
+  const professorGenDocCount = professorGenProfessorId
+    ? professorDocuments.filter((d) => d.professor_id === professorGenProfessorId).length
+    : 0;
+  const professorGenHasProfile = (() => {
+    if (!professorGenProfessorId) return false;
+    const professor = professors.find((p) => p.id === professorGenProfessorId);
+    const analysisRow = professorAnalyses.find((a) => a.professor_id === professorGenProfessorId);
+    return (
+      buildProfessorContext({
+        result: analysisRow?.result,
+        professorName: professor?.name,
+        school: professor?.school,
+        department: professor?.department,
+      }).length > 0
+    );
+  })();
+
+  const handleSelectChatLens = (choice: CircuitLensId | 'none') => {
     setChatLensChoice((prev) => (prev === choice ? null : choice));
     if (choice === 'none') {
       setLensStage('idle');
@@ -1367,41 +1389,63 @@ export default function HomePage() {
   // 만들지 않은 이유는 그 렌즈의 anti-hallucination 규칙(COMMON_RULES, 근거 없는 항목 드롭)이
   // 이미 잘 튜닝돼 있어서, 같은 일을 하는 두 번째 구현을 만들면 드리프트만 생기기 때문입니다.
   // 속도 제한·월 사용량·크기 상한도 그 라우트에 이미 붙어 있어 그대로 적용됩니다.
-  const runDigest = async (text: string, fileName: string): Promise<DigestResult> => {
+  const runAnalyzeRequest = async (
+    text: string,
+    fileName: string,
+    lens: LensId,
+    professorContext?: string
+  ): Promise<unknown> => {
     const res = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, fileName, lens: 'digest', responseLanguage }),
+      body: JSON.stringify({ text, fileName, lens, responseLanguage, professorContext }),
     });
     const data = await res.json();
     if (!res.ok) {
       if (data.limitReached) openUpgradeModal(data.error);
       throw new Error(data.error || t('workspace.errors.analyzeFailed'));
     }
-    return data.result as DigestResult;
+    return data.result;
   };
 
-  // 통합 요약 — 이 교수님 자료를 전부 이어붙여 한 번만 호출합니다. 문서마다 따로 부르는 것보다
-  // 호출 횟수·비용이 훨씬 적고, 여러 자료를 가로지르는 핵심을 뽑는 데도 이쪽이 맞습니다.
-  // (길이는 /api/analyze가 서버에서 truncateForPrompt로 잘라내므로 여기서 따로 자르지 않습니다.)
-  const handleDigestProfessorAll = async (professorId: string) => {
+  const runDigest = async (text: string, fileName: string): Promise<DigestResult> =>
+    (await runAnalyzeRequest(text, fileName, 'digest')) as DigestResult;
+
+  // 💡 [신규] 고른 교수님의 자료 전체를 이어붙여 한 번만 호출합니다. 문서마다 따로 부르는
+  // 것보다 호출 횟수·비용이 훨씬 적고, 여러 자료를 가로지르는 결과를 뽑는 데도 이쪽이
+  // 맞습니다(길이는 /api/analyze가 서버에서 truncateForPrompt로 잘라냅니다).
+  //
+  // 💡 이 교수님의 professor_analysis 결과가 있으면 성향 블록으로 만들어 함께 보냅니다 —
+  // 이게 없으면 "교수님을 고른다"는 행위가 사실상 파일 묶음을 고르는 것에 지나지 않아,
+  // 같은 파일을 그냥 채팅에 첨부한 것과 결과가 똑같아집니다. 분석 결과가 아직 없거나
+  // 모든 카테고리가 confident: false면 buildProfessorContext가 빈 문자열을 돌려주고,
+  // 그때는 평소 렌즈 분석과 동일하게 동작합니다(기능이 막히지는 않습니다).
+  const handleGenerateFromProfessor = async (lens: LensId) => {
+    const professorId = professorGenProfessorId;
+    if (!professorId) return;
     const docs = professorDocuments.filter((d) => d.professor_id === professorId);
     if (docs.length === 0) return;
     const professor = professors.find((p) => p.id === professorId);
+    const analysisRow = professorAnalyses.find((a) => a.professor_id === professorId);
 
-    setIsDigestingProfessor(true);
-    setProfessorDigestError(null);
+    setProfessorGenLens(lens);
+    setProfessorGenResult(null);
+    setProfessorGenError(null);
+    setIsGeneratingFromProfessor(true);
     try {
       const combined = docs.map((d) => `[${d.file_name}]\n${d.content}`).join('\n\n---\n\n');
-      const result = await runDigest(combined, professor?.name || 'professor');
-      setProfessorDigest({ professorId, result });
-    } catch (err) {
-      setProfessorDigestError({
-        professorId,
-        message: err instanceof Error ? err.message : t('workspace.errors.analyzeErrorFallback'),
+      const professorContext = buildProfessorContext({
+        result: analysisRow?.result,
+        professorName: professor?.name,
+        school: professor?.school,
+        department: professor?.department,
       });
+      const result = await runAnalyzeRequest(combined, professor?.name || 'professor', lens, professorContext);
+      setProfessorGenResult(result as DigestResult | QuestionsResult | ExamQuestionsResult);
+    } catch (err) {
+      setProfessorGenError(err instanceof Error ? err.message : t('workspace.errors.analyzeErrorFallback'));
     } finally {
-      setIsDigestingProfessor(false);
+      setIsGeneratingFromProfessor(false);
     }
   };
 
@@ -1869,7 +1913,7 @@ export default function HomePage() {
   // 💡 [신규] 관점 전환 버튼 — 이미 분석한 문서를 재추출 없이 다른 관점으로 다시 봅니다.
   const chatLensActionsRow = lensId && lensStage !== 'idle' && (
     <div className="flex flex-wrap items-center gap-2">
-      {(['deadlines', 'questions', 'digest'] as LensId[])
+      {CIRCUIT_LENS_IDS
         .filter((id) => id !== lensId)
         .map((id) => {
           const meta = getNodeMeta(id);
@@ -2455,6 +2499,93 @@ export default function HomePage() {
                         </button>
                       </span>
                     ))}
+                  </div>
+                )}
+
+                {/* 💡 [신규] 교수님 자료로 만들기 — 교수님 탭에 흩어져 있던 "자료 전체 요약"을
+                    여기로 옮기면서, 예상 질문/예상 시험 문제까지 같은 자리에서 뽑을 수 있게
+                    했습니다. 교수님 탭은 자료를 쌓고 성향을 보는 곳, 여기는 쌓인 걸 꺼내
+                    쓰는 곳으로 역할을 나눕니다. */}
+                {professors.length > 0 && (
+                  <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-3 mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <GraduationCap className="w-4 h-4 text-[#F4679B] shrink-0" strokeWidth={2} />
+                      <h4 className="text-xs font-bold text-[var(--text-primary)]">
+                        {t('workspace.professorGen.title')}
+                      </h4>
+                      {professorGenHasProfile && (
+                        <span className="text-[10px] font-semibold text-[#F4679B] bg-[var(--bg-accent-subtle)] px-2 py-0.5 rounded-full">
+                          {t('workspace.professorGen.profileApplied')}
+                        </span>
+                      )}
+                    </div>
+
+                    <select
+                      value={professorGenProfessorId ?? ''}
+                      onChange={(e) => {
+                        setProfessorGenProfessorId(e.target.value || null);
+                        setProfessorGenResult(null);
+                        setProfessorGenError(null);
+                        setProfessorGenLens(null);
+                      }}
+                      aria-label={t('workspace.professorGen.selectLabel')}
+                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] cursor-pointer"
+                    >
+                      <option value="">{t('workspace.professorGen.selectPlaceholder')}</option>
+                      {professors.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {t('workspace.professorGen.optionLabel', {
+                            name: p.name,
+                            count: professorDocuments.filter((d) => d.professor_id === p.id).length,
+                          })}
+                        </option>
+                      ))}
+                    </select>
+
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {PROFESSOR_GEN_LENS_DEFS.map((def) => (
+                        <button
+                          key={def.id}
+                          type="button"
+                          disabled={!professorGenProfessorId || professorGenDocCount === 0 || isGeneratingFromProfessor}
+                          onClick={() => handleGenerateFromProfessor(def.id)}
+                          className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                            professorGenLens === def.id
+                              ? 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[#F4679B]'
+                              : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
+                          }`}
+                        >
+                          {t(`workspace.professorGen.lenses.${def.key}`)}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* 자료가 0개면 만들 게 없으므로, 버튼을 막아두고 이유를 알려줍니다. */}
+                    {professorGenProfessorId && professorGenDocCount === 0 && (
+                      <p className="text-[11px] text-[var(--text-muted)] mt-2">
+                        {t('workspace.professorGen.noDocuments')}
+                      </p>
+                    )}
+
+                    {isGeneratingFromProfessor && (
+                      <div className="flex items-center gap-2 text-[11px] text-[var(--text-tertiary)] mt-2">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                        <LoadingText />
+                      </div>
+                    )}
+
+                    {professorGenError && (
+                      <p className="text-[11px] text-[var(--accent-danger)] mt-2">{professorGenError}</p>
+                    )}
+
+                    {professorGenLens && professorGenResult && !isGeneratingFromProfessor && (
+                      <div className="mt-3">
+                        {renderTrialResult(professorGenLens, professorGenResult, t)}
+                        <p className="mt-2 text-[10px] text-[var(--text-muted)] text-center">
+                          {t('common.aiGeneratedNotice')}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -3084,9 +3215,6 @@ export default function HomePage() {
               : [];
             // 자료가 3개 미만이면 결과는 그대로 보여주되 정확도가 낮을 수 있다는 안내를 함께 띄웁니다.
             const showLowDataNotice = docs.length > 0 && docs.length < PROFESSOR_RELIABLE_DOC_COUNT;
-            // 통합 요약은 교수님 id를 함께 들고 있어, 지금 보고 있는 교수님 것일 때만 렌더합니다.
-            const currentProfessorDigest =
-              professorDigest?.professorId === professor.id ? professorDigest.result : null;
 
             // 💡 [신규] 왼쪽 "이 교수님 자료" → 중앙 AI 코어 → 오른쪽 예상 문제/과제 방향/공부 방식
             // 3갈래. 기존 물어보기 미니 전선(chatLensGraph)과 같은 방식으로 매 렌더마다 새로 계산해서
@@ -3297,47 +3425,33 @@ export default function HomePage() {
                   <p className="text-sm text-[var(--accent-danger)] mt-3">{professorAnalysisError}</p>
                 )}
 
-                {/* 💡 [신규] 요약·핵심정리 — 채팅창의 "핵심 정리"(digest 렌즈)와 같은 결과를
-                    교수님 자료 전체에 대해 한 번에 뽑습니다. 자료 목록의 문서별 요약 버튼과
-                    같은 기능이되 이쪽은 전체를 합쳐서 봅니다. */}
-                <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mt-5 shadow-sm">
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
-                    <h4 className="text-sm font-bold text-[var(--text-primary)]">{t('professors.digest.title')}</h4>
-                    <button
-                      type="button"
-                      disabled={docs.length === 0 || isDigestingProfessor}
-                      onClick={() => handleDigestProfessorAll(professor.id)}
-                      className="inline-flex items-center gap-2 border border-[var(--border-strong)] bg-[var(--bg-surface)] hover:bg-[var(--surface-chip)] disabled:opacity-50 disabled:cursor-not-allowed text-[var(--text-secondary)] px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                    >
-                      {isDigestingProfessor ? (
-                        <>
-                          <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
-                          <LoadingText />
-                        </>
-                      ) : currentProfessorDigest ? (
-                        t('professors.digest.regenerate')
-                      ) : (
-                        t('professors.digest.generate')
-                      )}
-                    </button>
-                  </div>
-                  <p className="text-xs text-[var(--text-muted)] mb-4">{t('professors.digest.hint')}</p>
-
-                  {professorDigestError?.professorId === professor.id && (
-                    <p className="text-sm text-[var(--accent-danger)] mb-3">{professorDigestError.message}</p>
-                  )}
-
-                  {currentProfessorDigest ? (
-                    <>
-                      {renderTrialResult('digest', currentProfessorDigest, t)}
-                      <p className="mt-3 text-xs text-[var(--text-muted)] text-center">{t('common.aiGeneratedNotice')}</p>
-                    </>
-                  ) : (
-                    !isDigestingProfessor && (
-                      <p className="text-sm text-[var(--text-muted)]">{t('professors.digest.empty')}</p>
-                    )
-                  )}
-                </div>
+                {/* 💡 [수정] 여기 있던 "요약·핵심정리"(자료 전체 통합 요약)는 채팅 탭의
+                    "교수님 자료로 만들기"로 옮겼습니다 — 같은 digest 렌즈로 같은 자료를
+                    정리하는 기능이 두 군데에 있었기 때문입니다. 기능을 조용히 없애면
+                    쓰던 사람이 찾지 못하므로, 옮겨간 자리로 바로 보내주는 안내만 남깁니다
+                    (이 교수님이 선택된 상태로 열립니다). */}
+                {docs.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfessorGenProfessorId(professor.id);
+                      setActiveTab('workspace');
+                    }}
+                    className="w-full text-left bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mt-5 shadow-sm hover:border-[#F4679B] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">
+                          {t('professors.generateElsewhere.title')}
+                        </h4>
+                        <p className="text-xs text-[var(--text-muted)]">
+                          {t('professors.generateElsewhere.hint')}
+                        </p>
+                      </div>
+                      <ArrowRight className="w-4 h-4 shrink-0 text-[#F4679B]" strokeWidth={2.5} />
+                    </div>
+                  </button>
+                )}
 
                 {analysisRow && result && (
                   <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mt-5 shadow-sm">

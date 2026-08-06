@@ -63,7 +63,8 @@
       "registered": "Rekisteröity",
       "noQuestionsFound": "Odotettuja kysymyksiä ei voitu muodostaa.",
       "weakness": "Heikkous: {text}",
-      "evidencePrefix": "Näyttö"
+      "evidencePrefix": "Näyttö",
+      "noExamQuestionsFound": "Koekysymyksiä ei voitu luoda."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" on liian suuri (yli 10 Mt). Kokeile pienempää tiedostoa.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Näytä muodossa {label}",
     "meetingNotesCourseLabel": "Tunnistettu kokous-/luentomuistiinpanoista",
-    "lensRegisterCourseLabel": "Poimi määräajat · Lähde: \"{date}\""
+    "lensRegisterCourseLabel": "Poimi määräajat · Lähde: \"{date}\"",
+    "professorGen": {
+      "title": "Luo heidän aineistostaan",
+      "profileApplied": "Tyyli huomioitu",
+      "selectLabel": "Valitse luennoitsija",
+      "selectPlaceholder": "Valitse luennoitsija",
+      "optionLabel": "{name} ({count} tiedostoa)",
+      "noDocuments": "Tälle luennoitsijalle ei ole vielä ladattu aineistoa.",
+      "lenses": {
+        "digest": "Luennon tiivistelmä",
+        "questions": "Odotettavat kysymykset",
+        "examQuestions": "Koekysymykset"
+      }
+    }
   },
   "records": {
     "title": "Omat tiedot",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Jos aineistoja on alle {count}, tarkkuus voi olla hieman heikompi. {count} aineistosta alkaen tarkkuus paranee selvästi.",
     "tentativeBadge": "alustava",
     "digest": {
-      "title": "Tiivistelmä ja ydinkohdat",
-      "hint": "Kokoaa ydinkohdat kaikista tämän opettajan aineistoista.",
-      "generate": "Luo tiivistelmä",
-      "regenerate": "Luo uudelleen",
-      "empty": "Ei vielä tiivistelmää.",
       "docButton": "Tiivistä tämä tiedosto",
       "docHide": "Piilota tiivistelmä",
       "docLoading": "Tiivistetään…"
+    },
+    "generateElsewhere": {
+      "title": "Luo tästä aineistosta chatissa",
+      "hint": "Tiivistelmä, odotettavat kysymykset ja koekysymykset löytyvät chat-välilehdeltä."
     }
   },
   "monitoring": {

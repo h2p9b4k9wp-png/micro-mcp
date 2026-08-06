@@ -63,7 +63,8 @@
       "registered": "Registrado",
       "noQuestionsFound": "Não foi possível gerar perguntas esperadas.",
       "weakness": "Ponto fraco: {text}",
-      "evidencePrefix": "Evidência"
+      "evidencePrefix": "Evidência",
+      "noExamQuestionsFound": "Não foi possível criar questões de prova."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" é muito grande (mais de 10 MB). Tente um arquivo menor.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Ver como {label}",
     "meetingNotesCourseLabel": "Detectado em notas de reunião/aula",
-    "lensRegisterCourseLabel": "Extrair prazos · Origem: \"{date}\""
+    "lensRegisterCourseLabel": "Extrair prazos · Origem: \"{date}\"",
+    "professorGen": {
+      "title": "Criar a partir do material do professor",
+      "profileApplied": "Estilo aplicado",
+      "selectLabel": "Selecionar professor",
+      "selectPlaceholder": "Escolha um professor",
+      "optionLabel": "{name} ({count} arquivos)",
+      "noDocuments": "Ainda não há material enviado para este professor.",
+      "lenses": {
+        "digest": "Resumo da aula",
+        "questions": "Perguntas esperadas",
+        "examQuestions": "Questões de prova"
+      }
+    }
   },
   "records": {
     "title": "Meus registros",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Com menos de {count} documentos, a precisão pode ser um pouco menor. A partir de {count} documentos melhora bastante.",
     "tentativeBadge": "provisório",
     "digest": {
-      "title": "Resumo e pontos-chave",
-      "hint": "Reúne os pontos-chave de todos os materiais deste professor.",
-      "generate": "Criar resumo",
-      "regenerate": "Gerar de novo",
-      "empty": "Ainda sem resumo.",
       "docButton": "Resumir este ficheiro",
       "docHide": "Ocultar resumo",
       "docLoading": "A resumir…"
+    },
+    "generateElsewhere": {
+      "title": "Criar com este material no chat",
+      "hint": "Resumo, perguntas esperadas e questões de prova estão na aba de chat."
     }
   },
   "monitoring": {

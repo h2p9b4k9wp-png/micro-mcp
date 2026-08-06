@@ -63,7 +63,8 @@
       "registered": "Registrato",
       "noQuestionsFound": "Non è stato possibile generare domande previste.",
       "weakness": "Punto debole: {text}",
-      "evidencePrefix": "Prova"
+      "evidencePrefix": "Prova",
+      "noExamQuestionsFound": "Non è stato possibile creare domande d'esame."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" è troppo grande (oltre 10 MB). Prova con un file più piccolo.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Visualizza come {label}",
     "meetingNotesCourseLabel": "Rilevato da appunti di riunione/lezione",
-    "lensRegisterCourseLabel": "Estrai scadenze · Fonte: \"{date}\""
+    "lensRegisterCourseLabel": "Estrai scadenze · Fonte: \"{date}\"",
+    "professorGen": {
+      "title": "Crea dai materiali del professore",
+      "profileApplied": "Stile applicato",
+      "selectLabel": "Seleziona un professore",
+      "selectPlaceholder": "Scegli un professore",
+      "optionLabel": "{name} ({count} file)",
+      "noDocuments": "Non hai ancora caricato materiali per questo professore.",
+      "lenses": {
+        "digest": "Riassunto della lezione",
+        "questions": "Domande previste",
+        "examQuestions": "Domande d'esame"
+      }
+    }
   },
   "records": {
     "title": "I miei archivi",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Con meno di {count} documenti, la precisione può essere un po' inferiore. Da {count} documenti in poi migliora molto.",
     "tentativeBadge": "provvisorio",
     "digest": {
-      "title": "Riassunto e punti chiave",
-      "hint": "Raccoglie i punti chiave di tutti i materiali di questo professore.",
-      "generate": "Crea riassunto",
-      "regenerate": "Rigenera",
-      "empty": "Nessun riassunto ancora.",
       "docButton": "Riassumi questo file",
       "docHide": "Nascondi riassunto",
       "docLoading": "Riassunto in corso…"
+    },
+    "generateElsewhere": {
+      "title": "Crea da questi materiali nella chat",
+      "hint": "Riassunto, domande previste e domande d'esame si trovano nella scheda chat."
     }
   },
   "monitoring": {

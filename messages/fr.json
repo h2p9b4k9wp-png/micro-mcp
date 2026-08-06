@@ -63,7 +63,8 @@
       "registered": "Enregistré",
       "noQuestionsFound": "Impossible de générer des questions attendues.",
       "weakness": "Point faible : {text}",
-      "evidencePrefix": "Preuve"
+      "evidencePrefix": "Preuve",
+      "noExamQuestionsFound": "Impossible de créer des questions d'examen."
     },
     "errors": {
       "fileTooLarge": "« {fileName} » est trop volumineux (plus de 10 Mo). Essayez un fichier plus petit.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Voir comme {label}",
     "meetingNotesCourseLabel": "Détecté à partir des notes de réunion/cours",
-    "lensRegisterCourseLabel": "Extraire les échéances · Source : \"{date}\""
+    "lensRegisterCourseLabel": "Extraire les échéances · Source : \"{date}\"",
+    "professorGen": {
+      "title": "Créer à partir des documents du professeur",
+      "profileApplied": "Style pris en compte",
+      "selectLabel": "Sélectionner un professeur",
+      "selectPlaceholder": "Choisissez un professeur",
+      "optionLabel": "{name} ({count} fichiers)",
+      "noDocuments": "Aucun document n'a encore été ajouté pour ce professeur.",
+      "lenses": {
+        "digest": "Résumé du cours",
+        "questions": "Questions attendues",
+        "examQuestions": "Questions d'examen"
+      }
+    }
   },
   "records": {
     "title": "Mes historiques",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Avec moins de {count} documents, la précision peut être un peu plus faible. À partir de {count} documents, elle s'améliore nettement.",
     "tentativeBadge": "provisoire",
     "digest": {
-      "title": "Résumé et points clés",
-      "hint": "Rassemble les points clés de tous les documents de ce professeur.",
-      "generate": "Créer un résumé",
-      "regenerate": "Régénérer",
-      "empty": "Pas encore de résumé.",
       "docButton": "Résumer ce fichier",
       "docHide": "Masquer le résumé",
       "docLoading": "Résumé en cours…"
+    },
+    "generateElsewhere": {
+      "title": "Créer à partir de ces documents dans le chat",
+      "hint": "Le résumé, les questions attendues et les questions d'examen sont dans l'onglet chat."
     }
   },
   "monitoring": {

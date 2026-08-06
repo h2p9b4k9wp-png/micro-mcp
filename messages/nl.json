@@ -63,7 +63,8 @@
       "registered": "Geregistreerd",
       "noQuestionsFound": "Er konden geen verwachte vragen worden gegenereerd.",
       "weakness": "Zwak punt: {text}",
-      "evidencePrefix": "Bewijs"
+      "evidencePrefix": "Bewijs",
+      "noExamQuestionsFound": "Er konden geen examenvragen worden gemaakt."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" is te groot (meer dan 10 MB). Probeer een kleiner bestand.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Bekijk als {label}",
     "meetingNotesCourseLabel": "Gedetecteerd uit vergader-/collegenotities",
-    "lensRegisterCourseLabel": "Deadlines extraheren · Bron: \"{date}\""
+    "lensRegisterCourseLabel": "Deadlines extraheren · Bron: \"{date}\"",
+    "professorGen": {
+      "title": "Maken op basis van docentmateriaal",
+      "profileApplied": "Stijl toegepast",
+      "selectLabel": "Selecteer een docent",
+      "selectPlaceholder": "Kies een docent",
+      "optionLabel": "{name} ({count} bestanden)",
+      "noDocuments": "Er is nog geen materiaal geüpload voor deze docent.",
+      "lenses": {
+        "digest": "Samenvatting van het college",
+        "questions": "Verwachte vragen",
+        "examQuestions": "Examenvragen"
+      }
+    }
   },
   "records": {
     "title": "Mijn overzicht",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Met minder dan {count} documenten kan de nauwkeurigheid wat lager liggen. Vanaf {count} documenten gaat die flink omhoog.",
     "tentativeBadge": "voorlopig",
     "digest": {
-      "title": "Samenvatting en kernpunten",
-      "hint": "Bundelt de kernpunten uit al het materiaal van deze docent.",
-      "generate": "Samenvatting maken",
-      "regenerate": "Opnieuw maken",
-      "empty": "Nog geen samenvatting.",
       "docButton": "Dit bestand samenvatten",
       "docHide": "Samenvatting verbergen",
       "docLoading": "Samenvatten…"
+    },
+    "generateElsewhere": {
+      "title": "Maken van dit materiaal in de chat",
+      "hint": "Samenvatting, verwachte vragen en examenvragen vind je op het chattabblad."
     }
   },
   "monitoring": {

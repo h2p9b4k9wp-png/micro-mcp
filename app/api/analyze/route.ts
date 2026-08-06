@@ -27,11 +27,12 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { text, fileName, lens, responseLanguage } = body as {
+    const { text, fileName, lens, responseLanguage, professorContext } = body as {
       text?: string;
       fileName?: string;
       lens?: LensId;
       responseLanguage?: string;
+      professorContext?: string;
     };
 
     if (!text) {
@@ -42,9 +43,13 @@ export async function POST(req: Request) {
     // 파일 크기 검증(무료 5MB/Pro 20MB)을 우회할 수 있었습니다 — 채팅 첨부문서를 붙여넣어
     // 직접 호출하거나, 텍스트를 아주 크게 붙여넣는 식으로. 같은 상한을 텍스트 바이트 수에도
     // 적용해 우회 경로를 막습니다.
+    // 💡 professorContext도 클라이언트가 만들어 보내는 문자열이라 크기 검증에 함께
+    // 포함해야 합니다 — text만 재면 본문을 작게 쪼개고 참고자료 쪽에 거대한 문자열을
+    // 실어 보내는 식으로 상한을 그대로 우회할 수 있습니다.
     const isPro = userId ? await getIsPro(supabase, userId) : false;
     const maxUploadBytes = getPlanLimits(isPro).maxUploadBytes;
-    const textBytes = Buffer.byteLength(text, 'utf-8');
+    const textBytes =
+      Buffer.byteLength(text, 'utf-8') + (professorContext ? Buffer.byteLength(professorContext, 'utf-8') : 0);
     if (textBytes > maxUploadBytes) {
       const maxMB = Math.round(maxUploadBytes / (1024 * 1024));
       return NextResponse.json(
@@ -67,7 +72,14 @@ export async function POST(req: Request) {
       }
     }
 
-    const { lensId, result, usage } = await runLensAnalysis({ apiKey, text, fileName, lens, responseLanguage });
+    const { lensId, result, usage } = await runLensAnalysis({
+      apiKey,
+      text,
+      fileName,
+      lens,
+      responseLanguage,
+      professorContext,
+    });
 
     // 💡 [신규] 추정이 아니라 OpenAI가 실제로 돌려준 토큰 수를 그대로 기록합니다. 응답을
     // 내려보내기 전에 await합니다 — 서버리스 함수는 응답을 반환하면 그대로 종료될 수 있어

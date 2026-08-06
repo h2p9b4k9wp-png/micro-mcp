@@ -1,5 +1,11 @@
 import type { useTranslations } from 'next-intl';
-import type { LensId, DeadlinesResult, QuestionsResult, DigestResult } from '@/lib/lenses';
+import type {
+  LensId,
+  DeadlinesResult,
+  QuestionsResult,
+  DigestResult,
+  ExamQuestionsResult,
+} from '@/lib/lenses';
 
 // 💡 [신규] 로그인 없이 체험해본 분석 결과를 보여주는 간단한 렌더러 — app/page.tsx의
 // renderLensResult()와 달리 "등록" 같은 저장 액션은 없습니다(로그인 전이라 저장할 계정이
@@ -9,7 +15,7 @@ import type { LensId, DeadlinesResult, QuestionsResult, DigestResult } from '@/l
 // 렌더링해야 해서 공용 파일로 뺐습니다.
 export function renderTrialResult(
   lens: LensId,
-  result: DeadlinesResult | QuestionsResult | DigestResult,
+  result: DeadlinesResult | QuestionsResult | DigestResult | ExamQuestionsResult,
   t: ReturnType<typeof useTranslations>
 ) {
   if (lens === 'deadlines') {
@@ -42,6 +48,29 @@ export function renderTrialResult(
           <li key={i} className="border border-[var(--border-chip-hover)] rounded-lg p-3">
             <p className="text-sm font-semibold text-[var(--text-primary)] mb-1">Q. {item.question}</p>
             <p className="text-xs text-[var(--text-oncard)]">A. {item.draftAnswer}</p>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  // 💡 [신규] 예상 시험 문제 — questions와 비슷한 카드지만 문항 유형 배지와 모범답안을
+  // 함께 보여줍니다("A."가 답변 초안이 아니라 모범답안이라는 점이 다릅니다).
+  if (lens === 'examQuestions') {
+    const r = result as ExamQuestionsResult;
+    if (r.items.length === 0) {
+      return <p className="text-sm text-[var(--text-secondary)]">{t('workspace.lens.noExamQuestionsFound')}</p>;
+    }
+    return (
+      <ul className="flex flex-col gap-2.5">
+        {r.items.map((item, i) => (
+          <li key={i} className="border border-[var(--border-chip-hover)] rounded-lg p-3">
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Q{i + 1}. {item.question}</p>
+              <span className="shrink-0 text-[11px] font-semibold text-[#F4679B] bg-[var(--bg-accent-subtle)] px-2 py-0.5 rounded-full">
+                {item.questionType}
+              </span>
+            </div>
+            <p className="text-xs text-[var(--text-oncard)]">A. {item.modelAnswer}</p>
           </li>
         ))}
       </ul>

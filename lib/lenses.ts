@@ -1,7 +1,15 @@
 // 문서를 바라보는 세 가지 "관점(lens)"을 정의합니다.
 // 각 관점은 시스템 프롬프트와, OpenAI Structured Outputs(strict JSON)에 사용할 JSON 스키마로 구성됩니다.
 
-export type LensId = 'deadlines' | 'questions' | 'digest';
+export type LensId = 'deadlines' | 'questions' | 'digest' | 'examQuestions';
+
+// 💡 [신규] 회로도(components/circuit/circuit-board.tsx)에 대응하는 노드가 존재하는 관점들.
+// examQuestions는 NODE_REGISTRY에 노드를 만들지 않았기 때문에 여기서 빠집니다 — 이 관점은
+// 채팅 미니 전선이 아니라 "교수님 자료로 만들기" 버튼에서만 쓰이므로 회로에 그릴 자리가
+// 없습니다. 미니 전선 관련 상태(chatLensChoice 등)는 LensId가 아니라 이 타입을 써서,
+// 노드가 없는 관점이 그래프로 흘러드는 걸 타입 단계에서 막습니다.
+export type CircuitLensId = Exclude<LensId, 'examQuestions'>;
+export const CIRCUIT_LENS_IDS: CircuitLensId[] = ['deadlines', 'questions', 'digest'];
 
 export interface LensDefinition {
   id: LensId;
@@ -45,6 +53,19 @@ export interface DigestResult {
   summary: string;
   keyPoints: DigestKeyPoint[];
   terms: DigestTerm[];
+}
+
+// 💡 [신규] "예상 시험 문제" 렌즈의 결과 타입. questions 렌즈(발표 때 받을 질문)와 겹쳐
+// 보이지만 만들어내는 물건이 다릅니다 — 이쪽은 시험지에 실제로 실릴 법한 문항이라
+// 문항 유형(questionType)과 모범답안(modelAnswer)을 함께 냅니다.
+export interface ExamQuestionItem {
+  question: string;
+  questionType: string;
+  modelAnswer: string;
+  evidence: string;
+}
+export interface ExamQuestionsResult {
+  items: ExamQuestionItem[];
 }
 
 // 모든 관점이 공유하는 공통 규칙. 각 관점의 systemPrompt 맨 앞에 붙습니다.
@@ -173,6 +194,40 @@ const DIGEST_SCHEMA = {
   required: ['summary', 'keyPoints', 'terms'],
 };
 
+const EXAM_QUESTIONS_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    items: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          question: {
+            type: 'string',
+            description: '시험에 실제로 나올 법한 문항. 자료에 실린 내용만으로 풀 수 있어야 함.',
+          },
+          questionType: {
+            type: 'string',
+            description: '문항 유형 (예: "서술형", "약술형", "객관식", "단답형", "계산형")',
+          },
+          modelAnswer: {
+            type: 'string',
+            description: '이 문항의 모범답안. 자료에 적힌 내용만으로 작성.',
+          },
+          evidence: {
+            type: 'string',
+            description: '이 문항이 근거로 삼은, 원문에서 그대로 발췌한 30자 이내의 문구',
+          },
+        },
+        required: ['question', 'questionType', 'modelAnswer', 'evidence'],
+      },
+    },
+  },
+  required: ['items'],
+};
+
 export const LENSES: Record<LensId, LensDefinition> = {
   deadlines: {
     id: 'deadlines',
@@ -199,7 +254,8 @@ export const LENSES: Record<LensId, LensDefinition> = {
 - 질문은 최대 8개까지입니다. 근거가 부족하면 8개를 억지로 채우지 말고 더 적게 만드세요 — 개수보다 근거가 훨씬 중요합니다.
 - 각 질문마다 그 질문이 겨냥하는 문서의 약점이나 허점(targetWeakness)과, 그에 대한 답변 초안(draftAnswer)을 함께 작성하세요.
 - 각 질문은 반드시 문서의 특정 문장이 근거가 되어야 합니다. source_quote에 그 문장을 30자 이내로 그대로 발췌하세요.
-- 문서에 아예 언급되지 않은 내용(예: 타깃 고객, 리스크 관리 등)에 대해 "언급이 없다"는 이유로 질문을 만들지 마세요. source_quote에 "자료에 없음", "언급되지 않음" 같은 문구를 쓰지 말고, 애초에 그런 질문 자체를 만들지 마세요 — source_quote는 항상 문서에 실제로 적힌 문장이어야 합니다.`,
+- 문서에 아예 언급되지 않은 내용(예: 타깃 고객, 리스크 관리 등)에 대해 "언급이 없다"는 이유로 질문을 만들지 마세요. source_quote에 "자료에 없음", "언급되지 않음" 같은 문구를 쓰지 말고, 애초에 그런 질문 자체를 만들지 마세요 — source_quote는 항상 문서에 실제로 적힌 문장이어야 합니다.
+- 사용자 메시지에 [교수님 성향 참고자료]가 함께 주어졌다면, 질문의 초점과 난이도를 그 성향에 맞추세요. 다만 질문의 내용과 source_quote는 반드시 문서 본문에서만 가져와야 합니다.`,
     schema: QUESTIONS_SCHEMA,
   },
   digest: {
@@ -211,8 +267,26 @@ export const LENSES: Record<LensId, LensDefinition> = {
 - 문서 전체를 한 줄로 요약하세요(summary).
 - 핵심 항목을 최대 7개까지 뽑으세요(keyPoints).
 - 문서를 이해하는 데 막힐 만한 전문 용어나 생소한 단어를 뽑으세요(terms). 용어에 대한 설명은 지어내지 말고 용어 자체만 나열하세요.
-- 원문에 없는 내용은 절대 덧붙이지 마세요.`,
+- 원문에 없는 내용은 절대 덧붙이지 마세요.
+- 사용자 메시지에 [교수님 성향 참고자료]가 함께 주어졌다면, 그 교수님이 비중 있게 다루는 주제와 겹치는 내용을 keyPoints에서 우선 고르세요. 다만 요약·핵심 항목·용어와 evidence는 반드시 문서 본문에서만 가져와야 합니다.`,
     schema: DIGEST_SCHEMA,
+  },
+  // 💡 [신규] questions 렌즈와 개수 문구를 일부러 같은 방식으로 썼습니다 — 그쪽에서 "최대 8개를
+  // 뽑으세요"가 근거 없는 문항을 할당량만큼 만들어내게 했던 것과 똑같은 함정이 여기에도
+  // 그대로 있습니다(오히려 시험 문제는 "그럴듯한 문항"을 지어내기가 더 쉬워서 위험이 큽니다).
+  // 개수를 목표처럼 제시하지 말고, 근거가 부족하면 적게 내라고 명시하는 형태를 유지하세요.
+  examQuestions: {
+    id: 'examQuestions',
+    label: '예상 시험 문제',
+    systemPrompt: `${COMMON_RULES}
+
+당신은 주어진 강의 자료로 시험을 낸다고 가정했을 때, 실제 시험지에 실릴 법한 문항을 만들어내는 역할입니다.
+- 문항은 최대 8개까지입니다. 근거가 되는 내용이 부족하면 8개를 억지로 채우지 말고 더 적게 만드세요 — 개수보다 각 문항이 자료에 실제로 근거하는지가 훨씬 중요합니다.
+- 각 문항은 자료에 실린 내용만으로 풀 수 있어야 합니다. 자료에서 다루지 않은 개념을 묻는 문항은 만들지 마세요.
+- 각 문항마다 문항 유형(questionType, 예: 서술형·약술형·객관식·단답형·계산형)과 모범답안(modelAnswer)을 함께 작성하세요. 모범답안도 자료에 적힌 내용만으로 쓰세요.
+- 각 문항은 반드시 자료의 특정 문장이 근거가 되어야 합니다. evidence에 그 문장을 30자 이내로 그대로 발췌하세요. evidence에 "자료에 없음" 같은 문구를 쓰지 말고, 발췌할 문장이 없으면 애초에 그 문항을 만들지 마세요.
+- 사용자 메시지에 [교수님 성향 참고자료]가 함께 주어졌다면, 문항 유형과 난이도, 무엇을 비중 있게 물을지를 그 성향에 맞추세요. 다만 문항의 내용 자체와 evidence는 반드시 문서 본문에서만 가져와야 합니다 — 성향 참고자료는 출제 방향을 정하는 데에만 쓰고, 거기 적힌 내용을 문제로 만들지 마세요.`,
+    schema: EXAM_QUESTIONS_SCHEMA,
   },
 };
 
@@ -225,8 +299,13 @@ const DATE_PATTERN = /\d{1,4}\s*[.\-/년]\s*\d{1,2}\s*[.\-/월]\s*\d{0,2}\s*일?
 /**
  * AI를 쓰지 않고 키워드/파일명만으로 세 관점 중 하나를 고릅니다.
  * 애매하면 무조건 digest로 떨어집니다.
+ *
+ * 💡 examQuestions는 여기서 절대 반환하지 않습니다 — 자동 감지로 붙일 관점이 아니라
+ * 사용자가 "예상 시험 문제"를 명시적으로 눌렀을 때만 쓰는 opt-in 관점입니다. 문서만 보고
+ * 시험 문제를 만들어주는 건 대개 사용자가 원한 게 아니고, 자동으로 걸리면 채팅에 자료를
+ * 붙일 때마다 엉뚱하게 시험지가 나옵니다.
  */
-export function detectLens(text: string, fileName?: string): LensId {
+export function detectLens(text: string, fileName?: string): CircuitLensId {
   const body = text || '';
   const lowerName = (fileName || '').toLowerCase();
 

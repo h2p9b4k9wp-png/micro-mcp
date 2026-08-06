@@ -63,7 +63,8 @@
       "registered": "Registrado",
       "noQuestionsFound": "No se pudieron generar preguntas esperadas.",
       "weakness": "Debilidad: {text}",
-      "evidencePrefix": "Evidencia"
+      "evidencePrefix": "Evidencia",
+      "noExamQuestionsFound": "No se pudieron crear preguntas de examen."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" es demasiado grande (supera los 10MB). Prueba con un archivo más pequeño.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Ver como {label}",
     "meetingNotesCourseLabel": "Detectado en notas de reunión/clase",
-    "lensRegisterCourseLabel": "Extraer plazos · Fuente: \"{date}\""
+    "lensRegisterCourseLabel": "Extraer plazos · Fuente: \"{date}\"",
+    "professorGen": {
+      "title": "Crear a partir del material del profesor",
+      "profileApplied": "Estilo aplicado",
+      "selectLabel": "Seleccionar profesor",
+      "selectPlaceholder": "Elige un profesor",
+      "optionLabel": "{name} ({count} archivos)",
+      "noDocuments": "Aún no has subido material para este profesor.",
+      "lenses": {
+        "digest": "Resumen de la clase",
+        "questions": "Preguntas esperadas",
+        "examQuestions": "Preguntas de examen"
+      }
+    }
   },
   "records": {
     "title": "Mis registros",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Con menos de {count} documentos, la precisión puede ser algo menor. A partir de {count} documentos mejora mucho.",
     "tentativeBadge": "provisional",
     "digest": {
-      "title": "Resumen y puntos clave",
-      "hint": "Reúne los puntos clave de todos los materiales de este profesor.",
-      "generate": "Crear resumen",
-      "regenerate": "Regenerar",
-      "empty": "Aún no hay resumen.",
       "docButton": "Resumir este archivo",
       "docHide": "Ocultar resumen",
       "docLoading": "Resumiendo…"
+    },
+    "generateElsewhere": {
+      "title": "Crear con este material en el chat",
+      "hint": "El resumen, las preguntas esperadas y las preguntas de examen están en la pestaña de chat."
     }
   },
   "monitoring": {

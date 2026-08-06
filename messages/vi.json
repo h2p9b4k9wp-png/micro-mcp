@@ -63,7 +63,8 @@
       "registered": "Đã đăng ký",
       "noQuestionsFound": "Không thể tạo câu hỏi dự kiến.",
       "weakness": "Điểm yếu: {text}",
-      "evidencePrefix": "Bằng chứng"
+      "evidencePrefix": "Bằng chứng",
+      "noExamQuestionsFound": "Không thể tạo câu hỏi thi dự kiến."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" quá lớn (vượt quá 10MB). Vui lòng thử tệp nhỏ hơn.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Xem dưới dạng {label}",
     "meetingNotesCourseLabel": "Được phát hiện từ ghi chú cuộc họp/bài giảng",
-    "lensRegisterCourseLabel": "Trích xuất hạn chót · Nguồn: \"{date}\""
+    "lensRegisterCourseLabel": "Trích xuất hạn chót · Nguồn: \"{date}\"",
+    "professorGen": {
+      "title": "Tạo từ tài liệu của giáo sư",
+      "profileApplied": "Đã áp dụng phong cách",
+      "selectLabel": "Chọn giáo sư",
+      "selectPlaceholder": "Hãy chọn giáo sư",
+      "optionLabel": "{name} ({count} tài liệu)",
+      "noDocuments": "Chưa có tài liệu nào được tải lên cho giáo sư này.",
+      "lenses": {
+        "digest": "Tóm tắt bài giảng",
+        "questions": "Câu hỏi dự kiến",
+        "examQuestions": "Câu hỏi thi dự kiến"
+      }
+    }
   },
   "records": {
     "title": "Nhật ký của tôi",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Nếu có ít hơn {count} tài liệu, độ chính xác có thể giảm đôi chút. Từ {count} tài liệu trở lên, độ chính xác tăng đáng kể.",
     "tentativeBadge": "tạm thời",
     "digest": {
-      "title": "Tóm tắt & ý chính",
-      "hint": "Tổng hợp ý chính từ toàn bộ tài liệu của giảng viên này.",
-      "generate": "Tạo tóm tắt",
-      "regenerate": "Tạo lại",
-      "empty": "Chưa có tóm tắt.",
       "docButton": "Tóm tắt tệp này",
       "docHide": "Ẩn tóm tắt",
       "docLoading": "Đang tóm tắt…"
+    },
+    "generateElsewhere": {
+      "title": "Tạo từ tài liệu này trong chat",
+      "hint": "Tóm tắt, câu hỏi dự kiến và câu hỏi thi có trong tab trò chuyện."
     }
   },
   "monitoring": {

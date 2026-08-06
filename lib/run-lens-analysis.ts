@@ -22,6 +22,10 @@ export interface RunLensAnalysisParams {
   fileName?: string;
   lens?: LensId;
   responseLanguage?: string;
+  // 💡 [신규] 교수님 성향 참고자료 블록(lib/professor-analysis.ts의 buildProfessorContext가
+  // 만든 문자열). "교수님 자료로 만들기"에서만 채워지고, 평소 채팅 첨부 분석이나 게스트
+  // 체험에서는 undefined입니다.
+  professorContext?: string;
 }
 
 export interface LensAnalysisUsage {
@@ -50,6 +54,7 @@ export async function runLensAnalysis({
   fileName,
   lens,
   responseLanguage,
+  professorContext,
 }: RunLensAnalysisParams): Promise<RunLensAnalysisResult> {
   const truncatedText = truncateForPrompt(text);
   const lensId: LensId = lens && lens in LENSES ? lens : detectLens(truncatedText, fileName);
@@ -64,7 +69,10 @@ export async function runLensAnalysis({
   const languageDirective = responseLanguage
     ? `Respond entirely in ${responseLanguage}. This overrides the document's language.\n\n`
     : '';
-  const userContent = `${languageDirective}${truncatedText}`;
+  // 💡 교수님 성향 블록도 같은 이유로 user 메시지에 넣습니다 — 교수님마다 내용이 달라
+  // 시스템 프롬프트에 넣으면 교수님 수만큼 캐시가 갈라집니다. 블록 자체가 "[분석 대상 문서]"
+  // 머리말로 끝나므로 바로 뒤에 본문을 이어붙이면 됩니다(lib/professor-analysis.ts 참고).
+  const userContent = `${languageDirective}${professorContext || ''}${truncatedText}`;
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4.1-mini',

@@ -63,7 +63,8 @@
       "registered": "등록됨",
       "noQuestionsFound": "예상 질문을 뽑지 못했어요.",
       "weakness": "약점: {text}",
-      "evidencePrefix": "근거"
+      "evidencePrefix": "근거",
+      "noExamQuestionsFound": "예상 시험 문제를 만들지 못했어요."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "{label}(으)로 보기",
     "meetingNotesCourseLabel": "회의·강의 노트에서 감지됨",
-    "lensRegisterCourseLabel": "마감 뽑기 · 원문: \"{date}\""
+    "lensRegisterCourseLabel": "마감 뽑기 · 원문: \"{date}\"",
+    "professorGen": {
+      "title": "교수님 자료로 만들기",
+      "profileApplied": "성향 반영",
+      "selectLabel": "교수님 선택",
+      "selectPlaceholder": "교수님을 골라주세요",
+      "optionLabel": "{name} (자료 {count}개)",
+      "noDocuments": "이 교수님께 올린 자료가 아직 없어요.",
+      "lenses": {
+        "digest": "강의 요약",
+        "questions": "예상 질문",
+        "examQuestions": "예상 시험 문제"
+      }
+    }
   },
   "records": {
     "title": "나의 기록",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "자료가 {count}개 미만이면 정확도가 다소 떨어질 수 있어요. {count}개 이상이면 정확도가 크게 올라갑니다.",
     "tentativeBadge": "잠정",
     "digest": {
-      "title": "요약·핵심정리",
-      "hint": "이 교수님 자료를 전부 합쳐 핵심만 정리해요.",
-      "generate": "요약 만들기",
-      "regenerate": "다시 요약하기",
-      "empty": "아직 요약을 만들지 않았어요.",
       "docButton": "이 자료 요약",
       "docHide": "요약 접기",
       "docLoading": "요약 중…"
+    },
+    "generateElsewhere": {
+      "title": "채팅에서 이 자료로 만들기",
+      "hint": "강의 요약·예상 질문·예상 시험 문제를 물어보기 탭에서 뽑을 수 있어요."
     }
   },
   "monitoring": {

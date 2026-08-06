@@ -63,7 +63,8 @@
       "registered": "Registrerad",
       "noQuestionsFound": "Kunde inte ta fram förväntade frågor.",
       "weakness": "Svaghet: {text}",
-      "evidencePrefix": "Belägg"
+      "evidencePrefix": "Belägg",
+      "noExamQuestionsFound": "Det gick inte att skapa några tentafrågor."
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" är för stor (över 10 MB). Prova en mindre fil.",
@@ -82,7 +83,20 @@
     },
     "viewAsLens": "Visa som {label}",
     "meetingNotesCourseLabel": "Identifierat från mötes-/föreläsningsanteckningar",
-    "lensRegisterCourseLabel": "Extrahera deadlines · Källa: \"{date}\""
+    "lensRegisterCourseLabel": "Extrahera deadlines · Källa: \"{date}\"",
+    "professorGen": {
+      "title": "Skapa utifrån deras material",
+      "profileApplied": "Stil tillämpad",
+      "selectLabel": "Välj lärare",
+      "selectPlaceholder": "Välj en lärare",
+      "optionLabel": "{name} ({count} filer)",
+      "noDocuments": "Inget material har laddats upp för den här läraren än.",
+      "lenses": {
+        "digest": "Föreläsningssammanfattning",
+        "questions": "Förväntade frågor",
+        "examQuestions": "Tentafrågor"
+      }
+    }
   },
   "records": {
     "title": "Mina uppgifter",
@@ -228,14 +242,13 @@
     "lowDataAccuracyNotice": "Med färre än {count} dokument kan träffsäkerheten bli något lägre. Från {count} dokument och uppåt ökar den rejält.",
     "tentativeBadge": "preliminär",
     "digest": {
-      "title": "Sammanfattning och kärnpunkter",
-      "hint": "Samlar kärnpunkterna från allt material för den här läraren.",
-      "generate": "Skapa sammanfattning",
-      "regenerate": "Skapa på nytt",
-      "empty": "Ingen sammanfattning än.",
       "docButton": "Sammanfatta den här filen",
       "docHide": "Dölj sammanfattning",
       "docLoading": "Sammanfattar…"
+    },
+    "generateElsewhere": {
+      "title": "Skapa utifrån det här materialet i chatten",
+      "hint": "Sammanfattning, förväntade frågor och tentafrågor finns i chattfliken."
     }
   },
   "monitoring": {
