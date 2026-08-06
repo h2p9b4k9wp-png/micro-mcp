@@ -64,7 +64,12 @@
       "noQuestionsFound": "Kunde inte ta fram förväntade frågor.",
       "weakness": "Svaghet: {text}",
       "evidencePrefix": "Belägg",
-      "noExamQuestionsFound": "Det gick inte att skapa några tentafrågor."
+      "noExamQuestionsFound": "Det gick inte att skapa några tentafrågor.",
+      "showModelAnswer": "Visa modellsvar",
+      "hideModelAnswer": "Dölj modellsvar",
+      "showDraftAnswer": "Visa svarsutkast",
+      "hideDraftAnswer": "Dölj svarsutkast",
+      "skipTyping": "Visa allt direkt"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" är för stor (över 10 MB). Prova en mindre fil.",

@@ -137,3 +137,29 @@ body {
     content: '...';
   }
 }
+
+/* 💡 [신규] 요약이 한 글자씩 타이핑될 때 지금 찍히는 자리를 표시하는 커서
+   (components/use-typewriter.ts + trial-result-view.tsx의 DigestTypewriterView).
+   위 .loading-dots와 같은 이유로 전역 스타일시트에 둡니다 — 게스트 체험(app/login)에서도
+   같은 렌더러를 쓰기 때문에 app/page.tsx 전용 스타일 블록에 두면 그쪽엔 주입되지 않습니다.
+   동작 줄이기를 켠 사용자는 useTypewriter가 애초에 타이핑을 건너뛰므로 커서 자체가
+   렌더링되지 않지만, 깜빡임만 따로 꺼두는 편이 안전해 미디어 쿼리도 함께 둡니다. */
+@keyframes typewriterCaret {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+.typewriter-caret {
+  display: inline-block;
+  width: 0.08em;
+  min-width: 1px;
+  height: 1em;
+  margin-left: 0.08em;
+  vertical-align: text-bottom;
+  background-color: currentColor;
+  animation: typewriterCaret 1s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .typewriter-caret {
+    animation: none;
+  }
+}

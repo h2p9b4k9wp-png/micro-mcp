@@ -64,7 +64,12 @@
       "noQuestionsFound": "예상 질문을 뽑지 못했어요.",
       "weakness": "약점: {text}",
       "evidencePrefix": "근거",
-      "noExamQuestionsFound": "예상 시험 문제를 만들지 못했어요."
+      "noExamQuestionsFound": "예상 시험 문제를 만들지 못했어요.",
+      "showModelAnswer": "모범답안 보기",
+      "hideModelAnswer": "모범답안 숨기기",
+      "showDraftAnswer": "답변 초안 보기",
+      "hideDraftAnswer": "답변 초안 숨기기",
+      "skipTyping": "바로 보기"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.",

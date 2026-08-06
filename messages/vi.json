@@ -64,7 +64,12 @@
       "noQuestionsFound": "Không thể tạo câu hỏi dự kiến.",
       "weakness": "Điểm yếu: {text}",
       "evidencePrefix": "Bằng chứng",
-      "noExamQuestionsFound": "Không thể tạo câu hỏi thi dự kiến."
+      "noExamQuestionsFound": "Không thể tạo câu hỏi thi dự kiến.",
+      "showModelAnswer": "Xem đáp án mẫu",
+      "hideModelAnswer": "Ẩn đáp án mẫu",
+      "showDraftAnswer": "Xem bản nháp trả lời",
+      "hideDraftAnswer": "Ẩn bản nháp trả lời",
+      "skipTyping": "Hiện tất cả ngay"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" quá lớn (vượt quá 10MB). Vui lòng thử tệp nhỏ hơn.",

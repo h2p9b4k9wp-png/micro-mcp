@@ -64,7 +64,12 @@
       "noQuestionsFound": "Couldn't come up with expected questions.",
       "weakness": "Weakness: {text}",
       "evidencePrefix": "Evidence",
-      "noExamQuestionsFound": "Couldn't create any practice exam questions."
+      "noExamQuestionsFound": "Couldn't create any practice exam questions.",
+      "showModelAnswer": "Show model answer",
+      "hideModelAnswer": "Hide model answer",
+      "showDraftAnswer": "Show draft answer",
+      "hideDraftAnswer": "Hide draft answer",
+      "skipTyping": "Show all now"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" is too large (over 10MB). Please try a smaller file.",

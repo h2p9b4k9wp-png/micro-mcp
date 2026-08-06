@@ -1,4 +1,8 @@
+'use client';
+
 import type { useTranslations } from 'next-intl';
+import { AnswerDisclosure } from '@/components/answer-disclosure';
+import { useTypewriter } from '@/components/use-typewriter';
 import type {
   LensId,
   DeadlinesResult,
@@ -46,8 +50,12 @@ export function renderTrialResult(
       <ul className="flex flex-col gap-2.5">
         {r.items.map((item, i) => (
           <li key={i} className="border border-[var(--border-chip-hover)] rounded-lg p-3">
-            <p className="text-sm font-semibold text-[var(--text-primary)] mb-1">Q. {item.question}</p>
-            <p className="text-xs text-[var(--text-oncard)]">A. {item.draftAnswer}</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">Q. {item.question}</p>
+            <AnswerDisclosure
+              answer={item.draftAnswer}
+              showLabel={t('workspace.lens.showDraftAnswer')}
+              hideLabel={t('workspace.lens.hideDraftAnswer')}
+            />
           </li>
         ))}
       </ul>
@@ -70,22 +78,69 @@ export function renderTrialResult(
                 {item.questionType}
               </span>
             </div>
-            <p className="text-xs text-[var(--text-oncard)]">A. {item.modelAnswer}</p>
+            <AnswerDisclosure
+              answer={item.modelAnswer}
+              showLabel={t('workspace.lens.showModelAnswer')}
+              hideLabel={t('workspace.lens.hideModelAnswer')}
+            />
           </li>
         ))}
       </ul>
     );
   }
   const r = result as DigestResult;
+  // 💡 key로 새 결과마다 다시 마운트시켜야 타이핑이 처음부터 다시 시작합니다
+  // (useTypewriter가 effect 안에서 상태를 되돌리지 않는 대신 두는 조건 — 그 파일 참고).
+  // 요약 문장만으로는 다시 만들었을 때 우연히 같을 수 있어 항목 수까지 함께 넣습니다.
+  return <DigestTypewriterView key={`${r.summary}|${r.keyPoints.length}`} result={r} t={t} />;
+}
+
+// 💡 [신규] 요약을 한 번에 띄우지 않고 한 글자씩 타자 치듯 드러냅니다. 요약 한 줄이 끝나면
+// 이어서 핵심 항목이 하나씩 타이핑됩니다 — 타이머 하나로 순서대로 이어지도록 segments
+// 배열을 그대로 넘깁니다.
+function DigestTypewriterView({
+  result,
+  t,
+}: {
+  result: DigestResult;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const segments = [result.summary, ...result.keyPoints.map((p) => p.text)];
+  const { parts, isTyping, skip } = useTypewriter(segments);
+
+  // 지금 타이핑 중인 조각(= 아직 다 안 나온 첫 조각)에만 커서를 붙입니다.
+  const typingIndex = isTyping ? parts.findIndex((part, i) => part.length < segments[i].length) : -1;
+  const caret = <span className="typewriter-caret" aria-hidden="true" />;
+
   return (
     <div className="flex flex-col gap-2.5">
-      <p className="text-sm font-semibold text-[var(--text-primary)]">{r.summary}</p>
-      {r.keyPoints.length > 0 && (
+      <p className="text-sm font-semibold text-[var(--text-primary)]">
+        {parts[0]}
+        {typingIndex === 0 && caret}
+      </p>
+      {result.keyPoints.length > 0 && (
         <ul className="flex flex-col gap-1.5">
-          {r.keyPoints.map((p, i) => (
-            <li key={i} className="text-xs text-[var(--text-oncard)] list-disc list-inside ml-1">{p.text}</li>
-          ))}
+          {result.keyPoints.map((p, i) => {
+            // 아직 차례가 오지 않은 항목은 자리조차 만들지 않습니다 — 빈 불릿이 미리
+            // 줄줄이 떠 있으면 "한 글자씩 나온다"는 느낌이 사라집니다.
+            if (parts[i + 1].length === 0) return null;
+            return (
+              <li key={i} className="text-xs text-[var(--text-oncard)] list-disc list-inside ml-1">
+                {parts[i + 1]}
+                {typingIndex === i + 1 && caret}
+              </li>
+            );
+          })}
         </ul>
+      )}
+      {isTyping && (
+        <button
+          type="button"
+          onClick={skip}
+          className="self-start text-[11px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] underline underline-offset-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
+        >
+          {t('workspace.lens.skipTyping')}
+        </button>
       )}
     </div>
   );

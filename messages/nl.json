@@ -64,7 +64,12 @@
       "noQuestionsFound": "Er konden geen verwachte vragen worden gegenereerd.",
       "weakness": "Zwak punt: {text}",
       "evidencePrefix": "Bewijs",
-      "noExamQuestionsFound": "Er konden geen examenvragen worden gemaakt."
+      "noExamQuestionsFound": "Er konden geen examenvragen worden gemaakt.",
+      "showModelAnswer": "Modelantwoord tonen",
+      "hideModelAnswer": "Modelantwoord verbergen",
+      "showDraftAnswer": "Conceptantwoord tonen",
+      "hideDraftAnswer": "Conceptantwoord verbergen",
+      "skipTyping": "Alles direct tonen"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" is te groot (meer dan 10 MB). Probeer een kleiner bestand.",

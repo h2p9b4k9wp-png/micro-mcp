@@ -64,7 +64,12 @@
       "noQuestionsFound": "No se pudieron generar preguntas esperadas.",
       "weakness": "Debilidad: {text}",
       "evidencePrefix": "Evidencia",
-      "noExamQuestionsFound": "No se pudieron crear preguntas de examen."
+      "noExamQuestionsFound": "No se pudieron crear preguntas de examen.",
+      "showModelAnswer": "Ver respuesta modelo",
+      "hideModelAnswer": "Ocultar respuesta modelo",
+      "showDraftAnswer": "Ver borrador de respuesta",
+      "hideDraftAnswer": "Ocultar borrador de respuesta",
+      "skipTyping": "Mostrar todo ya"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" es demasiado grande (supera los 10MB). Prueba con un archivo más pequeño.",

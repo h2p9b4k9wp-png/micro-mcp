@@ -64,7 +64,12 @@
       "noQuestionsFound": "想定質問を作成できませんでした。",
       "weakness": "弱点: {text}",
       "evidencePrefix": "根拠",
-      "noExamQuestionsFound": "予想試験問題を作成できませんでした。"
+      "noExamQuestionsFound": "予想試験問題を作成できませんでした。",
+      "showModelAnswer": "模範解答を見る",
+      "hideModelAnswer": "模範解答を隠す",
+      "showDraftAnswer": "回答案を見る",
+      "hideDraftAnswer": "回答案を隠す",
+      "skipTyping": "すぐに表示"
     },
     "errors": {
       "fileTooLarge": "「{fileName}」は大きすぎます（10MB超）。より小さいファイルでお試しください。",

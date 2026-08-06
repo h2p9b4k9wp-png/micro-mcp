@@ -64,7 +64,12 @@
       "noQuestionsFound": "Não foi possível gerar perguntas esperadas.",
       "weakness": "Ponto fraco: {text}",
       "evidencePrefix": "Evidência",
-      "noExamQuestionsFound": "Não foi possível criar questões de prova."
+      "noExamQuestionsFound": "Não foi possível criar questões de prova.",
+      "showModelAnswer": "Ver resposta modelo",
+      "hideModelAnswer": "Ocultar resposta modelo",
+      "showDraftAnswer": "Ver rascunho da resposta",
+      "hideDraftAnswer": "Ocultar rascunho da resposta",
+      "skipTyping": "Mostrar tudo agora"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" é muito grande (mais de 10 MB). Tente um arquivo menor.",

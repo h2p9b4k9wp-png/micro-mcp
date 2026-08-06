@@ -64,7 +64,12 @@
       "noQuestionsFound": "Impossible de générer des questions attendues.",
       "weakness": "Point faible : {text}",
       "evidencePrefix": "Preuve",
-      "noExamQuestionsFound": "Impossible de créer des questions d'examen."
+      "noExamQuestionsFound": "Impossible de créer des questions d'examen.",
+      "showModelAnswer": "Voir la réponse type",
+      "hideModelAnswer": "Masquer la réponse type",
+      "showDraftAnswer": "Voir le brouillon de réponse",
+      "hideDraftAnswer": "Masquer le brouillon de réponse",
+      "skipTyping": "Tout afficher"
     },
     "errors": {
       "fileTooLarge": "« {fileName} » est trop volumineux (plus de 10 Mo). Essayez un fichier plus petit.",

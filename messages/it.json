@@ -64,7 +64,12 @@
       "noQuestionsFound": "Non è stato possibile generare domande previste.",
       "weakness": "Punto debole: {text}",
       "evidencePrefix": "Prova",
-      "noExamQuestionsFound": "Non è stato possibile creare domande d'esame."
+      "noExamQuestionsFound": "Non è stato possibile creare domande d'esame.",
+      "showModelAnswer": "Mostra risposta modello",
+      "hideModelAnswer": "Nascondi risposta modello",
+      "showDraftAnswer": "Mostra bozza di risposta",
+      "hideDraftAnswer": "Nascondi bozza di risposta",
+      "skipTyping": "Mostra tutto subito"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" è troppo grande (oltre 10 MB). Prova con un file più piccolo.",

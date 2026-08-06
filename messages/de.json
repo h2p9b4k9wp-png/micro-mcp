@@ -64,7 +64,12 @@
       "noQuestionsFound": "Es konnten keine erwarteten Fragen erstellt werden.",
       "weakness": "Schwachstelle: {text}",
       "evidencePrefix": "Beleg",
-      "noExamQuestionsFound": "Es konnten keine Prüfungsfragen erstellt werden."
+      "noExamQuestionsFound": "Es konnten keine Prüfungsfragen erstellt werden.",
+      "showModelAnswer": "Musterlösung anzeigen",
+      "hideModelAnswer": "Musterlösung ausblenden",
+      "showDraftAnswer": "Antwortentwurf anzeigen",
+      "hideDraftAnswer": "Antwortentwurf ausblenden",
+      "skipTyping": "Sofort anzeigen"
     },
     "errors": {
       "fileTooLarge": "„{fileName}“ ist zu groß (über 10 MB). Bitte versuche es mit einer kleineren Datei.",

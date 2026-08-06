@@ -43,6 +43,7 @@ import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { CarrotGauge } from '@/components/carrot-gauge';
 import { renderTrialResult } from '@/components/trial-result-view';
+import { AnswerDisclosure } from '@/components/answer-disclosure';
 import { useTranslations, useLocale } from 'next-intl';
 import {
   detectLens,
@@ -896,7 +897,15 @@ export default function HomePage() {
             <li key={i} className="border border-[var(--border-chip-hover)] rounded-xl p-4 sm:p-3.5">
               <p className="text-base sm:text-sm font-semibold text-[var(--text-primary)] mb-2 sm:mb-1.5 leading-relaxed">Q. {item.question}</p>
               <p className="text-sm sm:text-xs text-[#F4679B] mb-2 sm:mb-1.5 leading-loose">{t('workspace.lens.weakness', { text: item.targetWeakness })}</p>
-              <p className="text-sm sm:text-xs text-[var(--text-oncard)] leading-loose">A. {item.draftAnswer}</p>
+              {/* 💡 답변 초안은 처음엔 가려둡니다 — 교수님 자료로 만든 예상 질문과 같은 동작.
+                  AnswerDisclosure는 열림 상태를 스스로 들고 있어서, 훅을 부를 수 없는
+                  이 함수(renderLensResult) 안에서도 그대로 쓸 수 있습니다. */}
+              <AnswerDisclosure
+                answer={item.draftAnswer}
+                showLabel={t('workspace.lens.showDraftAnswer')}
+                hideLabel={t('workspace.lens.hideDraftAnswer')}
+                answerClassName="text-sm sm:text-xs text-[var(--text-oncard)] leading-loose"
+              />
               {item.source_quote && (
                 <p className="text-xs sm:text-[11px] text-[var(--text-muted)] italic leading-loose mt-1.5">{t('workspace.lens.evidencePrefix')}: &quot;{item.source_quote}&quot;</p>
               )}
