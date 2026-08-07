@@ -93,14 +93,15 @@
       "title": "Aus Professorenmaterial erstellen",
       "profileApplied": "Stil berücksichtigt",
       "selectLabel": "Professor auswählen",
-      "selectPlaceholder": "Professor wählen",
       "optionLabel": "{name} ({count} Dateien)",
       "noDocuments": "Für diesen Professor wurden noch keine Materialien hochgeladen.",
       "lenses": {
         "digest": "Vorlesungszusammenfassung",
         "questions": "Erwartete Fragen",
         "examQuestions": "Übungsprüfungsfragen"
-      }
+      },
+      "step1": "1. Professor auswählen",
+      "step2": "2. Was soll erstellt werden?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "{fileName} löschen",
     "circuitHint": "Klicke auf den KI-Kern, um die Materialien dieses Professors zu analysieren",
     "notConfidentYet": "Noch nicht sicher genug für eine Einschätzung",
-    "analyzeButton": "Diesen Professor analysieren",
     "notEnoughData": "Noch nicht genug Material für eine sichere Einschätzung.",
     "teaserTitle": "Lade mehr hoch, um Folgendes freizuschalten",
     "uploadDirectly": "Jetzt Dateien hochladen",
@@ -250,10 +250,6 @@
       "docButton": "Diese Datei zusammenfassen",
       "docHide": "Zusammenfassung ausblenden",
       "docLoading": "Wird zusammengefasst…"
-    },
-    "generateElsewhere": {
-      "title": "Im Chat aus diesen Materialien erstellen",
-      "hint": "Zusammenfassung, erwartete Fragen und Prüfungsfragen gibt es im Chat-Tab."
     }
   },
   "monitoring": {

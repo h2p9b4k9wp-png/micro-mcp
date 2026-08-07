@@ -93,14 +93,15 @@
       "title": "Créer à partir des documents du professeur",
       "profileApplied": "Style pris en compte",
       "selectLabel": "Sélectionner un professeur",
-      "selectPlaceholder": "Choisissez un professeur",
       "optionLabel": "{name} ({count} fichiers)",
       "noDocuments": "Aucun document n'a encore été ajouté pour ce professeur.",
       "lenses": {
         "digest": "Résumé du cours",
         "questions": "Questions attendues",
         "examQuestions": "Questions d'examen"
-      }
+      },
+      "step1": "1. Choisissez un professeur",
+      "step2": "2. Que voulez-vous créer ?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "Supprimer {fileName}",
     "circuitHint": "Cliquez sur le cœur IA pour analyser les documents de ce professeur",
     "notConfidentYet": "Pas encore assez sûr pour se prononcer",
-    "analyzeButton": "Analyser ce professeur",
     "notEnoughData": "Pas encore assez de documents pour se prononcer avec confiance.",
     "teaserTitle": "Importez-en davantage pour débloquer ceci",
     "uploadDirectly": "Importer des fichiers maintenant",
@@ -250,10 +250,6 @@
       "docButton": "Résumer ce fichier",
       "docHide": "Masquer le résumé",
       "docLoading": "Résumé en cours…"
-    },
-    "generateElsewhere": {
-      "title": "Créer à partir de ces documents dans le chat",
-      "hint": "Le résumé, les questions attendues et les questions d'examen sont dans l'onglet chat."
     }
   },
   "monitoring": {

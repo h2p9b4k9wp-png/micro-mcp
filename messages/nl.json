@@ -93,14 +93,15 @@
       "title": "Maken op basis van docentmateriaal",
       "profileApplied": "Stijl toegepast",
       "selectLabel": "Selecteer een docent",
-      "selectPlaceholder": "Kies een docent",
       "optionLabel": "{name} ({count} bestanden)",
       "noDocuments": "Er is nog geen materiaal geüpload voor deze docent.",
       "lenses": {
         "digest": "Samenvatting van het college",
         "questions": "Verwachte vragen",
         "examQuestions": "Examenvragen"
-      }
+      },
+      "step1": "1. Kies een docent",
+      "step2": "2. Wat wil je maken?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "{fileName} verwijderen",
     "circuitHint": "Klik op de AI-kern om het materiaal van deze docent te analyseren",
     "notConfidentYet": "Nog niet zeker genoeg om te beoordelen",
-    "analyzeButton": "Analyseer deze docent",
     "notEnoughData": "Nog niet genoeg materiaal om met vertrouwen te beoordelen.",
     "teaserTitle": "Upload meer om dit te ontgrendelen",
     "uploadDirectly": "Nu bestanden uploaden",
@@ -250,10 +250,6 @@
       "docButton": "Dit bestand samenvatten",
       "docHide": "Samenvatting verbergen",
       "docLoading": "Samenvatten…"
-    },
-    "generateElsewhere": {
-      "title": "Maken van dit materiaal in de chat",
-      "hint": "Samenvatting, verwachte vragen en examenvragen vind je op het chattabblad."
     }
   },
   "monitoring": {

@@ -24,7 +24,6 @@ import {
   X,
   GraduationCap,
   ArrowLeft,
-  ArrowRight,
 } from 'lucide-react';
 import type { NodeId, CircuitGraphState, GraphNode } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
@@ -2529,51 +2528,73 @@ export default function HomePage() {
                       )}
                     </div>
 
-                    <select
-                      value={professorGenProfessorId ?? ''}
-                      onChange={(e) => {
-                        setProfessorGenProfessorId(e.target.value || null);
-                        setProfessorGenResult(null);
-                        setProfessorGenError(null);
-                        setProfessorGenLens(null);
-                      }}
-                      aria-label={t('workspace.professorGen.selectLabel')}
-                      className="w-full bg-[var(--bg-surface)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] cursor-pointer"
-                    >
-                      <option value="">{t('workspace.professorGen.selectPlaceholder')}</option>
-                      {professors.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {t('workspace.professorGen.optionLabel', {
-                            name: p.name,
-                            count: professorDocuments.filter((d) => d.professor_id === p.id).length,
-                          })}
-                        </option>
-                      ))}
-                    </select>
-
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {PROFESSOR_GEN_LENS_DEFS.map((def) => (
-                        <button
-                          key={def.id}
-                          type="button"
-                          disabled={!professorGenProfessorId || professorGenDocCount === 0 || isGeneratingFromProfessor}
-                          onClick={() => handleGenerateFromProfessor(def.id)}
-                          className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
-                            professorGenLens === def.id
-                              ? 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[#F4679B]'
-                              : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
-                          }`}
-                        >
-                          {t(`workspace.professorGen.lenses.${def.key}`)}
-                        </button>
-                      ))}
+                    {/* 1단계 — 교수님 고르기. 드롭다운이 아니라 버튼으로 둡니다: 대부분
+                        교수님이 서너 명이라 목록을 펼치는 동작 자체가 군더더기이고,
+                        자료 개수를 한눈에 비교하면서 고를 수 있어야 하기 때문입니다. */}
+                    <p className="text-[11px] text-[var(--text-muted)] mb-1.5">
+                      {t('workspace.professorGen.step1')}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5" role="group" aria-label={t('workspace.professorGen.selectLabel')}>
+                      {professors.map((p) => {
+                        const count = professorDocuments.filter((d) => d.professor_id === p.id).length;
+                        const isSelected = professorGenProfessorId === p.id;
+                        return (
+                          <button
+                            key={p.id}
+                            type="button"
+                            aria-pressed={isSelected}
+                            onClick={() => {
+                              // 같은 교수님을 다시 누르면 선택 해제. 교수님이 바뀌면
+                              // 이전 결과는 남겨두면 안 됩니다(누구 것인지 헷갈림).
+                              const next = isSelected ? null : p.id;
+                              setProfessorGenProfessorId(next);
+                              setProfessorGenResult(null);
+                              setProfessorGenError(null);
+                              setProfessorGenLens(null);
+                            }}
+                            className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                              isSelected
+                                ? 'bg-[#F4679B] text-white border-[#F4679B]'
+                                : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
+                            }`}
+                          >
+                            {t('workspace.professorGen.optionLabel', { name: p.name, count })}
+                          </button>
+                        );
+                      })}
                     </div>
 
-                    {/* 자료가 0개면 만들 게 없으므로, 버튼을 막아두고 이유를 알려줍니다. */}
-                    {professorGenProfessorId && professorGenDocCount === 0 && (
-                      <p className="text-[11px] text-[var(--text-muted)] mt-2">
-                        {t('workspace.professorGen.noDocuments')}
-                      </p>
+                    {/* 2단계 — 교수님을 고른 뒤에만 나타납니다. 고르기 전부터 비활성 버튼
+                        세 개가 떠 있으면 뭘 먼저 해야 하는지가 흐려집니다. */}
+                    {professorGenProfessorId && (
+                      professorGenDocCount === 0 ? (
+                        <p className="text-[11px] text-[var(--text-muted)] mt-2.5">
+                          {t('workspace.professorGen.noDocuments')}
+                        </p>
+                      ) : (
+                        <>
+                          <p className="text-[11px] text-[var(--text-muted)] mt-2.5 mb-1.5">
+                            {t('workspace.professorGen.step2')}
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {PROFESSOR_GEN_LENS_DEFS.map((def, i) => (
+                              <button
+                                key={def.id}
+                                type="button"
+                                disabled={isGeneratingFromProfessor}
+                                onClick={() => handleGenerateFromProfessor(def.id)}
+                                className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                                  professorGenLens === def.id
+                                    ? 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[#F4679B]'
+                                    : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
+                                }`}
+                              >
+                                {i + 1}. {t(`workspace.professorGen.lenses.${def.key}`)}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )
                     )}
 
                     {isGeneratingFromProfessor && (
@@ -3248,12 +3269,11 @@ export default function HomePage() {
               ],
             };
 
-            const handleProfessorCircuitNodeClick = (nodeId: NodeId) => {
-              if (nodeId === 'professor_docs' || nodeId === 'professor_ai_core') {
-                if (docs.length === 0 || isAnalyzingProfessor) return;
-                recomputeProfessorAnalysisFull(professor.id);
-              }
-            };
+            // 💡 [수정] 예전에는 자료/AI 코어 노드를 누르면 "이 교수님 분석" 버튼과 똑같이
+            // 전체 재분석이 돌았습니다. 그 버튼을 없애면서 이 경로도 함께 껐습니다 —
+            // 화면에 보이는 분석 버튼은 없는데 그림을 누르면 유료 호출이 나가는 건
+            // 사용자가 예측할 수 없는 동작입니다. 이제 이 회로도는 전부 읽기 전용입니다.
+            const handleProfessorCircuitNodeClick = () => {};
 
             return (
               <div>
@@ -3414,52 +3434,14 @@ export default function HomePage() {
                   )}
                 </div>
 
-                <button
-                  type="button"
-                  disabled={docs.length === 0 || isAnalyzingProfessor}
-                  onClick={() => recomputeProfessorAnalysisFull(professor.id)}
-                  className="inline-flex items-center gap-2 bg-[#F4679B] hover:bg-[#D1477F] disabled:bg-[var(--surface-chip)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                >
-                  {isAnalyzingProfessor ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                      <LoadingText />
-                    </>
-                  ) : (
-                    t('professors.analyzeButton')
-                  )}
-                </button>
-
+                {/* 💡 [수정] 여기 있던 "이 교수님 분석" 버튼과 "요약 만들기" 버튼을 모두
+                    없앴습니다. 이 탭은 이제 "자료를 쌓고 지금까지 뭐가 파악됐는지 보는 곳"만
+                    담당하고, 결과물을 뽑는 건 물어보기 탭의 "교수님 자료로 만들기"가 전담합니다.
+                    수동 분석 버튼이 없어도 분석 자체는 계속 최신으로 유지됩니다 — 자료를 올리면
+                    recomputeProfessorAnalysisIncremental()이, 지우면 recomputeProfessorAnalysisFull()이
+                    자동으로 돌기 때문에 사용자가 눌러줘야 갱신되는 구조가 아니었습니다. */}
                 {professorAnalysisError && (
                   <p className="text-sm text-[var(--accent-danger)] mt-3">{professorAnalysisError}</p>
-                )}
-
-                {/* 💡 [수정] 여기 있던 "요약·핵심정리"(자료 전체 통합 요약)는 채팅 탭의
-                    "교수님 자료로 만들기"로 옮겼습니다 — 같은 digest 렌즈로 같은 자료를
-                    정리하는 기능이 두 군데에 있었기 때문입니다. 기능을 조용히 없애면
-                    쓰던 사람이 찾지 못하므로, 옮겨간 자리로 바로 보내주는 안내만 남깁니다
-                    (이 교수님이 선택된 상태로 열립니다). */}
-                {docs.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setProfessorGenProfessorId(professor.id);
-                      setActiveTab('workspace');
-                    }}
-                    className="w-full text-left bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mt-5 shadow-sm hover:border-[#F4679B] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">
-                          {t('professors.generateElsewhere.title')}
-                        </h4>
-                        <p className="text-xs text-[var(--text-muted)]">
-                          {t('professors.generateElsewhere.hint')}
-                        </p>
-                      </div>
-                      <ArrowRight className="w-4 h-4 shrink-0 text-[#F4679B]" strokeWidth={2.5} />
-                    </div>
-                  </button>
                 )}
 
                 {analysisRow && result && (

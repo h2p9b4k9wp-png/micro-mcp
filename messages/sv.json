@@ -93,14 +93,15 @@
       "title": "Skapa utifrån deras material",
       "profileApplied": "Stil tillämpad",
       "selectLabel": "Välj lärare",
-      "selectPlaceholder": "Välj en lärare",
       "optionLabel": "{name} ({count} filer)",
       "noDocuments": "Inget material har laddats upp för den här läraren än.",
       "lenses": {
         "digest": "Föreläsningssammanfattning",
         "questions": "Förväntade frågor",
         "examQuestions": "Tentafrågor"
-      }
+      },
+      "step1": "1. Välj en lärare",
+      "step2": "2. Vad vill du skapa?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "Ta bort {fileName}",
     "circuitHint": "Klicka på AI-kärnan för att analysera deras material",
     "notConfidentYet": "Inte tillräckligt säkert för att bedöma än",
-    "analyzeButton": "Analysera deras material",
     "notEnoughData": "Inte tillräckligt med material än för att bedöma med säkerhet.",
     "teaserTitle": "Ladda upp mer för att låsa upp dessa",
     "uploadDirectly": "Ladda upp filer nu",
@@ -250,10 +250,6 @@
       "docButton": "Sammanfatta den här filen",
       "docHide": "Dölj sammanfattning",
       "docLoading": "Sammanfattar…"
-    },
-    "generateElsewhere": {
-      "title": "Skapa utifrån det här materialet i chatten",
-      "hint": "Sammanfattning, förväntade frågor och tentafrågor finns i chattfliken."
     }
   },
   "monitoring": {

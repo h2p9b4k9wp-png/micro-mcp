@@ -93,14 +93,15 @@
       "title": "Luo heidän aineistostaan",
       "profileApplied": "Tyyli huomioitu",
       "selectLabel": "Valitse luennoitsija",
-      "selectPlaceholder": "Valitse luennoitsija",
       "optionLabel": "{name} ({count} tiedostoa)",
       "noDocuments": "Tälle luennoitsijalle ei ole vielä ladattu aineistoa.",
       "lenses": {
         "digest": "Luennon tiivistelmä",
         "questions": "Odotettavat kysymykset",
         "examQuestions": "Koekysymykset"
-      }
+      },
+      "step1": "1. Valitse luennoitsija",
+      "step2": "2. Mitä haluat luoda?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "Poista {fileName}",
     "circuitHint": "Napsauta AI-ydintä analysoidaksesi heidän materiaalinsa",
     "notConfidentYet": "Ei vielä tarpeeksi varmuutta arviointiin",
-    "analyzeButton": "Analysoi heidän materiaalinsa",
     "notEnoughData": "Materiaalia ei vielä ole tarpeeksi luotettavaan arviointiin.",
     "teaserTitle": "Lataa lisää avataksesi nämä",
     "uploadDirectly": "Lataa tiedostot nyt",
@@ -250,10 +250,6 @@
       "docButton": "Tiivistä tämä tiedosto",
       "docHide": "Piilota tiivistelmä",
       "docLoading": "Tiivistetään…"
-    },
-    "generateElsewhere": {
-      "title": "Luo tästä aineistosta chatissa",
-      "hint": "Tiivistelmä, odotettavat kysymykset ja koekysymykset löytyvät chat-välilehdeltä."
     }
   },
   "monitoring": {

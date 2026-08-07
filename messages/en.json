@@ -93,14 +93,15 @@
       "title": "Create from a professor's materials",
       "profileApplied": "Style applied",
       "selectLabel": "Select a professor",
-      "selectPlaceholder": "Choose a professor",
       "optionLabel": "{name} ({count} files)",
       "noDocuments": "No materials uploaded for this professor yet.",
       "lenses": {
         "digest": "Lecture summary",
         "questions": "Expected questions",
         "examQuestions": "Practice exam questions"
-      }
+      },
+      "step1": "1. Pick a professor",
+      "step2": "2. What should I make?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "Delete {fileName}",
     "circuitHint": "Click the AI core to analyze their materials",
     "notConfidentYet": "Not confident enough to judge yet",
-    "analyzeButton": "Analyze Their Materials",
     "notEnoughData": "Not enough material yet to judge with confidence.",
     "teaserTitle": "Upload more to unlock these",
     "uploadDirectly": "Upload Files Now",
@@ -250,10 +250,6 @@
       "docButton": "Summarise this file",
       "docHide": "Hide summary",
       "docLoading": "Summarising…"
-    },
-    "generateElsewhere": {
-      "title": "Create from these materials in chat",
-      "hint": "Get a lecture summary, expected questions, or practice exam questions in the chat tab."
     }
   },
   "monitoring": {

@@ -93,14 +93,15 @@
       "title": "教授の資料から作成",
       "profileApplied": "傾向を反映",
       "selectLabel": "教授を選択",
-      "selectPlaceholder": "教授を選んでください",
       "optionLabel": "{name}（資料{count}件）",
       "noDocuments": "この教授の資料はまだアップロードされていません。",
       "lenses": {
         "digest": "講義まとめ",
         "questions": "想定質問",
         "examQuestions": "予想試験問題"
-      }
+      },
+      "step1": "1. 教授を選んでください",
+      "step2": "2. 何を作りますか?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "{fileName}を削除",
     "circuitHint": "AIコアをクリックすると、この教授の資料を分析します",
     "notConfidentYet": "まだ確信を持って判断できていません",
-    "analyzeButton": "この教授を分析",
     "notEnoughData": "確信を持って判断できるほど資料がまだ蓄積されていません。",
     "teaserTitle": "資料を追加すると、こんなことがわかります",
     "uploadDirectly": "今すぐファイルをアップロード",
@@ -250,10 +250,6 @@
       "docButton": "この資料を要約",
       "docHide": "要約を閉じる",
       "docLoading": "要約中…"
-    },
-    "generateElsewhere": {
-      "title": "チャットでこの資料から作成",
-      "hint": "講義まとめ・想定質問・予想試験問題はチャットタブで作成できます。"
     }
   },
   "monitoring": {

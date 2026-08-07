@@ -93,14 +93,15 @@
       "title": "Crear a partir del material del profesor",
       "profileApplied": "Estilo aplicado",
       "selectLabel": "Seleccionar profesor",
-      "selectPlaceholder": "Elige un profesor",
       "optionLabel": "{name} ({count} archivos)",
       "noDocuments": "Aún no has subido material para este profesor.",
       "lenses": {
         "digest": "Resumen de la clase",
         "questions": "Preguntas esperadas",
         "examQuestions": "Preguntas de examen"
-      }
+      },
+      "step1": "1. Elige un profesor",
+      "step2": "2. ¿Qué quieres crear?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "Eliminar {fileName}",
     "circuitHint": "Haz clic en el núcleo de IA para analizar los materiales de este profesor",
     "notConfidentYet": "Aún no hay suficiente confianza para evaluar",
-    "analyzeButton": "Analizar a este profesor",
     "notEnoughData": "Aún no hay suficiente material para evaluar con confianza.",
     "teaserTitle": "Sube más materiales para descubrir esto",
     "uploadDirectly": "Subir archivos ahora",
@@ -250,10 +250,6 @@
       "docButton": "Resumir este archivo",
       "docHide": "Ocultar resumen",
       "docLoading": "Resumiendo…"
-    },
-    "generateElsewhere": {
-      "title": "Crear con este material en el chat",
-      "hint": "El resumen, las preguntas esperadas y las preguntas de examen están en la pestaña de chat."
     }
   },
   "monitoring": {

@@ -93,14 +93,15 @@
       "title": "교수님 자료로 만들기",
       "profileApplied": "성향 반영",
       "selectLabel": "교수님 선택",
-      "selectPlaceholder": "교수님을 골라주세요",
       "optionLabel": "{name} (자료 {count}개)",
       "noDocuments": "이 교수님께 올린 자료가 아직 없어요.",
       "lenses": {
         "digest": "강의 요약",
         "questions": "예상 질문",
         "examQuestions": "예상 시험 문제"
-      }
+      },
+      "step1": "1. 교수님을 고르세요",
+      "step2": "2. 무엇을 만들까요?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "{fileName} 삭제",
     "circuitHint": "AI 코어를 클릭하면 이 교수님 자료를 분석해요",
     "notConfidentYet": "아직 확신 있게 판단하지 못했어요",
-    "analyzeButton": "이 교수님 분석",
     "notEnoughData": "아직 확신 있게 판단할 만큼 자료가 쌓이지 않았어요.",
     "teaserTitle": "자료를 더 올리면 이런 걸 알 수 있어요",
     "uploadDirectly": "바로 파일 올리기",
@@ -250,10 +250,6 @@
       "docButton": "이 자료 요약",
       "docHide": "요약 접기",
       "docLoading": "요약 중…"
-    },
-    "generateElsewhere": {
-      "title": "채팅에서 이 자료로 만들기",
-      "hint": "강의 요약·예상 질문·예상 시험 문제를 물어보기 탭에서 뽑을 수 있어요."
     }
   },
   "monitoring": {

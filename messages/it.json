@@ -93,14 +93,15 @@
       "title": "Crea dai materiali del professore",
       "profileApplied": "Stile applicato",
       "selectLabel": "Seleziona un professore",
-      "selectPlaceholder": "Scegli un professore",
       "optionLabel": "{name} ({count} file)",
       "noDocuments": "Non hai ancora caricato materiali per questo professore.",
       "lenses": {
         "digest": "Riassunto della lezione",
         "questions": "Domande previste",
         "examQuestions": "Domande d'esame"
-      }
+      },
+      "step1": "1. Scegli un professore",
+      "step2": "2. Cosa vuoi creare?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "Elimina {fileName}",
     "circuitHint": "Clicca sul nucleo IA per analizzare i materiali di questo professore",
     "notConfidentYet": "Non ancora abbastanza sicuro per valutare",
-    "analyzeButton": "Analizza questo professore",
     "notEnoughData": "Non c'è ancora abbastanza materiale per valutare con sicurezza.",
     "teaserTitle": "Carica altri materiali per sbloccare questo",
     "uploadDirectly": "Carica file ora",
@@ -250,10 +250,6 @@
       "docButton": "Riassumi questo file",
       "docHide": "Nascondi riassunto",
       "docLoading": "Riassunto in corso…"
-    },
-    "generateElsewhere": {
-      "title": "Crea da questi materiali nella chat",
-      "hint": "Riassunto, domande previste e domande d'esame si trovano nella scheda chat."
     }
   },
   "monitoring": {

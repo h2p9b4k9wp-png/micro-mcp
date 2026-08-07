@@ -93,14 +93,15 @@
       "title": "Criar a partir do material do professor",
       "profileApplied": "Estilo aplicado",
       "selectLabel": "Selecionar professor",
-      "selectPlaceholder": "Escolha um professor",
       "optionLabel": "{name} ({count} arquivos)",
       "noDocuments": "Ainda não há material enviado para este professor.",
       "lenses": {
         "digest": "Resumo da aula",
         "questions": "Perguntas esperadas",
         "examQuestions": "Questões de prova"
-      }
+      },
+      "step1": "1. Escolha um professor",
+      "step2": "2. O que você quer criar?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "Excluir {fileName}",
     "circuitHint": "Clique no núcleo de IA para analisar os materiais deste professor",
     "notConfidentYet": "Ainda sem confiança suficiente para avaliar",
-    "analyzeButton": "Analisar este professor",
     "notEnoughData": "Ainda não há material suficiente para avaliar com confiança.",
     "teaserTitle": "Envie mais materiais para desbloquear isto",
     "uploadDirectly": "Enviar arquivos agora",
@@ -250,10 +250,6 @@
       "docButton": "Resumir este ficheiro",
       "docHide": "Ocultar resumo",
       "docLoading": "A resumir…"
-    },
-    "generateElsewhere": {
-      "title": "Criar com este material no chat",
-      "hint": "Resumo, perguntas esperadas e questões de prova estão na aba de chat."
     }
   },
   "monitoring": {

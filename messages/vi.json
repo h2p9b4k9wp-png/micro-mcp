@@ -93,14 +93,15 @@
       "title": "Tạo từ tài liệu của giáo sư",
       "profileApplied": "Đã áp dụng phong cách",
       "selectLabel": "Chọn giáo sư",
-      "selectPlaceholder": "Hãy chọn giáo sư",
       "optionLabel": "{name} ({count} tài liệu)",
       "noDocuments": "Chưa có tài liệu nào được tải lên cho giáo sư này.",
       "lenses": {
         "digest": "Tóm tắt bài giảng",
         "questions": "Câu hỏi dự kiến",
         "examQuestions": "Câu hỏi thi dự kiến"
-      }
+      },
+      "step1": "1. Hãy chọn giảng viên",
+      "step2": "2. Bạn muốn tạo gì?"
     }
   },
   "records": {
@@ -205,7 +206,6 @@
     "deleteDocumentAria": "Xóa {fileName}",
     "circuitHint": "Nhấp vào lõi AI để phân tích tài liệu của giáo sư này",
     "notConfidentYet": "Chưa đủ tự tin để đánh giá",
-    "analyzeButton": "Phân tích giáo sư này",
     "notEnoughData": "Chưa đủ tài liệu để đánh giá một cách tự tin.",
     "teaserTitle": "Tải thêm tài liệu để biết thêm những điều này",
     "uploadDirectly": "Tải tệp lên ngay",
@@ -250,10 +250,6 @@
       "docButton": "Tóm tắt tệp này",
       "docHide": "Ẩn tóm tắt",
       "docLoading": "Đang tóm tắt…"
-    },
-    "generateElsewhere": {
-      "title": "Tạo từ tài liệu này trong chat",
-      "hint": "Tóm tắt, câu hỏi dự kiến và câu hỏi thi có trong tab trò chuyện."
     }
   },
   "monitoring": {
