@@ -13,9 +13,19 @@ export const MAX_PROMPT_TEXT_CHARS = 60_000;
 export const MAX_PROFESSOR_DOC_CHARS = 6_000;
 export const MAX_PROFESSOR_CONTEXT_CHARS = 24_000;
 
+const ELLIPSIS_MARKER = '\n\n...(문서가 너무 길어 가운데 일부가 생략되었습니다)...\n\n';
+
+// 💡 [수정] 반환값이 실제로 maxChars를 넘지 않도록 생략 표시 길이를 예산에서 먼저 뺍니다.
+// 이전에는 앞 70% + 뒤 30%를 합쳐 정확히 maxChars를 남긴 뒤 그 사이에 생략 표시를 끼워 넣어서,
+// 결과가 항상 maxChars + 표시 길이(약 40자)만큼 길었습니다. 호출부가 남은 예산을 계산해
+// 여러 조각을 이어 붙이는 경우(app/api/chat의 교수님 자료 조립)에는 이 초과분이 조각마다
+// 누적되어 상한을 실제로 넘깁니다 — "maxChars 이하"라는 이름값을 지키도록 고쳤습니다.
 export function truncateForPrompt(text: string, maxChars = MAX_PROMPT_TEXT_CHARS): string {
   if (text.length <= maxChars) return text;
-  const headChars = Math.floor(maxChars * 0.7);
-  const tailChars = maxChars - headChars;
-  return `${text.slice(0, headChars)}\n\n...(문서가 너무 길어 가운데 일부가 생략되었습니다)...\n\n${text.slice(-tailChars)}`;
+  // 생략 표시조차 들어갈 수 없을 만큼 예산이 작으면 그냥 잘라냅니다.
+  if (maxChars <= ELLIPSIS_MARKER.length) return text.slice(0, Math.max(0, maxChars));
+  const budget = maxChars - ELLIPSIS_MARKER.length;
+  const headChars = Math.floor(budget * 0.7);
+  const tailChars = budget - headChars;
+  return `${text.slice(0, headChars)}${ELLIPSIS_MARKER}${text.slice(-tailChars)}`;
 }
