@@ -14,6 +14,12 @@
 // aria-label 하나에 의존하지 않습니다. 값이 바뀔 때는 path의 d 속성에만 짧은 transition을
 // 걸어 "짧게 줄어드는" 정도로 제한합니다(토끼가 뛰어가는 진행바 같은 과한 애니메이션 금지 지침).
 
+// 💡 [신규] 잔량 구간에 따라 색이 바뀌도록 색상을 밖에서 받습니다(기본값은 기존 당근색).
+// 토큰 축은 소진 속도를 예측할 수 없어서 경고 없이 갑자기 막히면 당황스럽기 때문에,
+// 호출부가 lib/plan-limits.ts의 getUsageLevel()로 구간을 정해 색을 넘깁니다.
+const DEFAULT_FILL = '#F5A03C';
+const DEFAULT_STROKE = '#D9822B';
+
 const VIEW_W = 132;
 const VIEW_H = 44;
 const TIP_X = 3;
@@ -96,9 +102,12 @@ export interface CarrotGaugeProps {
   /** 스크린리더용 전체 문맥(예: "채팅 체험 2/3 남음"). 생략하면 countText만 읽힙니다. */
   accessibleLabel?: string;
   className?: string;
+  /** 잔량 구간에 따른 색 — 생략하면 기본 당근색. 호출부가 getUsageLevel()로 정합니다. */
+  fill?: string;
+  stroke?: string;
 }
 
-export function CarrotGauge({ ratio, countText, accessibleLabel, className }: CarrotGaugeProps) {
+export function CarrotGauge({ ratio, countText, accessibleLabel, className, fill = DEFAULT_FILL, stroke = DEFAULT_STROKE }: CarrotGaugeProps) {
   const bodyPath = buildCarrotBodyPath(ratio);
 
   return (
@@ -121,7 +130,7 @@ export function CarrotGauge({ ratio, countText, accessibleLabel, className }: Ca
         className="shrink-0"
       >
         {bodyPath && (
-          <path className="carrot-gauge-body" d={bodyPath} fill="#F5A03C" stroke="#D9822B" strokeWidth={1} strokeLinejoin="round" />
+          <path className="carrot-gauge-body" d={bodyPath} fill={fill} stroke={stroke} strokeWidth={1} strokeLinejoin="round" />
         )}
         <g transform={`translate(${LEAF_ANCHOR_X},${LEAF_ANCHOR_Y})`}>
           {LEAVES.map((leaf, i) => (

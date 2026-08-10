@@ -189,7 +189,9 @@
       "departmentPlaceholder": "Institution (obligatoriskt)",
       "schoolDeptHint": "Information om lärosäte/institution hjälper till att tolka ämnesspecifik terminologi och betygssättningskonventioner mer exakt.",
       "chooseFile": "Välj fil",
-      "paperHint": "Att ladda upp deras artiklar hjälper oss att fastställa forskningsintressen och fokus mycket mer exakt."
+      "paperHint": "Att ladda upp deras artiklar hjälper oss att fastställa forskningsintressen och fokus mycket mer exakt.",
+      "createOnly": "Lägg bara till läraren",
+      "createOnlyHint": "Du kan ladda upp material senare."
     },
     "loading": "Laddar...",
     "noneRegistered": "Inga föreläsare eller professorer registrerade än. Ladda upp material ovan för att registrera en.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "Användning denna månad",
-    "chatRemaining": "{remaining}/{total} chattar kvar",
-    "fileRemaining": "{remaining}/{total} filer kvar",
-    "chatLabel": "Chatt",
-    "fileLabel": "Filer"
+    "level": {
+      "ok": "Gott om användning kvar",
+      "warn": "Mer än hälften använt",
+      "low": "Nästan slut",
+      "out": "Månadsgränsen är nådd"
+    }
   },
   "proExpiry": {
     "daysLeft": "{days} dagar kvar med Pro",
@@ -753,8 +757,9 @@
     "endsOn": "Till {date}"
   },
   "societyCodeLimit": {
-    "title": "Du har använt upp den här månadens kod",
-    "body": "Den nollställs nästa månad, då kan du fortsätta.",
-    "close": "OK"
+    "title": "Månadsgränsen är nådd",
+    "body": "Du vet redan vad Pro kan. Med en prenumeration fortsätter du direkt.",
+    "cta": "Prenumerera och fortsätt",
+    "close": "Senare"
   }
 }

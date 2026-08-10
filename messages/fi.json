@@ -189,7 +189,9 @@
       "departmentPlaceholder": "Laitos (pakollinen)",
       "schoolDeptHint": "Koulu-/laitostiedot auttavat tulkitsemaan alakohtaista terminologiaa ja arviointikäytäntöjä tarkemmin.",
       "chooseFile": "Valitse tiedosto",
-      "paperHint": "Heidän julkaisujensa lataaminen auttaa meitä määrittämään tutkimusintressit ja painotukset paljon tarkemmin."
+      "paperHint": "Heidän julkaisujensa lataaminen auttaa meitä määrittämään tutkimusintressit ja painotukset paljon tarkemmin.",
+      "createOnly": "Lisää vain luennoitsija",
+      "createOnlyHint": "Voit ladata aineiston myöhemmin."
     },
     "loading": "Ladataan...",
     "noneRegistered": "Ei vielä rekisteröityjä luennoitsijoita tai professoreita. Lataa materiaaleja yllä rekisteröidäksesi yhden.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "Tämän kuukauden käyttö",
-    "chatRemaining": "{remaining}/{total} keskustelua jäljellä",
-    "fileRemaining": "{remaining}/{total} tiedostoa jäljellä",
-    "chatLabel": "Keskustelu",
-    "fileLabel": "Tiedostot"
+    "level": {
+      "ok": "Käyttöä on runsaasti jäljellä",
+      "warn": "Yli puolet käytetty",
+      "low": "Melkein lopussa",
+      "out": "Kuukauden raja saavutettu"
+    }
   },
   "proExpiry": {
     "daysLeft": "Pro-käyttöä jäljellä {days} päivää",
@@ -753,8 +757,9 @@
     "endsOn": "{date} asti"
   },
   "societyCodeLimit": {
-    "title": "Tämän kuukauden koodikäyttö on käytetty",
-    "body": "Se nollautuu ensi kuussa, jolloin voit jatkaa.",
-    "close": "OK"
+    "title": "Kuukauden raja saavutettu",
+    "body": "Tiedät jo mitä Pro tekee. Tilaamalla jatkat heti.",
+    "cta": "Tilaa ja jatka",
+    "close": "Ehkä myöhemmin"
   }
 }

@@ -189,7 +189,9 @@
       "departmentPlaceholder": "Departamento (obrigatório)",
       "schoolDeptHint": "As informações de instituição/departamento ajudam a interpretar com mais precisão a terminologia da área e as convenções de avaliação.",
       "chooseFile": "Escolher arquivo",
-      "paperHint": "Enviar os artigos do professor ajuda a identificar com muito mais precisão seus interesses de pesquisa e ênfases."
+      "paperHint": "Enviar os artigos do professor ajuda a identificar com muito mais precisão seus interesses de pesquisa e ênfases.",
+      "createOnly": "Adicionar só o professor",
+      "createOnlyHint": "Você pode enviar os materiais depois."
     },
     "loading": "Carregando...",
     "noneRegistered": "Nenhum professor registrado ainda. Envie materiais acima para registrar um.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "Uso este mês",
-    "chatRemaining": "Restam {remaining}/{total} conversas",
-    "fileRemaining": "Restam {remaining}/{total} arquivos",
-    "chatLabel": "Chat",
-    "fileLabel": "Arquivos"
+    "level": {
+      "ok": "Ainda há bastante uso",
+      "warn": "Você já usou mais da metade",
+      "low": "Está quase acabando",
+      "out": "Você atingiu o limite do mês"
+    }
   },
   "proExpiry": {
     "daysLeft": "Faltam {days} dias de Pro",
@@ -753,8 +757,9 @@
     "endsOn": "Até {date}"
   },
   "societyCodeLimit": {
-    "title": "Você usou todo o limite do código deste mês",
-    "body": "Ele é reiniciado no próximo mês e você pode continuar.",
-    "close": "Entendi"
+    "title": "Você atingiu o limite do mês",
+    "body": "Você já viu o que o Pro faz. Assine para continuar sem esperar.",
+    "cta": "Assinar e continuar",
+    "close": "Depois"
   }
 }

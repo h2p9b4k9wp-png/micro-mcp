@@ -1,6 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getSupabaseAdmin } from '@/lib/society-codes';
-import { getMonthStartISOString } from '@/lib/plan-limits';
+import {
+  getMonthStartISOString, getMonthlyTokenLimit, getUsageTier, getUsageLevel,
+  type UsageTier, type UsageLevel,
+} from '@/lib/plan-limits';
 import { sendTokenLimitAlertEmail } from '@/lib/email';
 
 // 💡 [신규] 사용자에게 보이지 않는 내부 토큰 상한 두 가지.
@@ -14,14 +17,17 @@ import { sendTokenLimitAlertEmail } from '@/lib/email';
 // 덧붙이지 마세요. 상세 내용은 서버 로그와 알림 메일에만 남습니다.
 
 /**
- * 사용자 1인당 월 토큰 상한. 횟수 상한 안에서 정상적으로 쓰면 닿지 않는 수준입니다.
- * (무료 등급 기준으로 월 채팅·파일 한도를 모두 소진해도 이 값의 일부만 쓰게 됩니다.)
+ * 💡 [수정] 개인 월 토큰 상한이 "보이지 않는 안전장치"에서 **사용자에게 보이는 유일한
+ * 사용량 한도**로 승격됐습니다. 예전에는 화면에 월 채팅 수·파일 수가 따로 있고 이 값은
+ * 그 뒤의 비상 브레이크였는데, 이제 등급별 한도(lib/plan-limits.ts의 MONTHLY_TOKEN_LIMITS)
+ * 하나로 통일됐습니다.
+ *
+ * 등급별 동작이 다릅니다:
+ *   free / code → 한도에 닿으면 **요청을 막습니다**.
+ *   pro         → **막지 않고 알림 메일만** 보냅니다. 정상 사용자는 절대 닿지 않는 값이라,
+ *                 닿았다면 차단보다 사람이 들여다볼 신호로 쓰는 게 맞습니다(돈을 낸
+ *                 사용자를 자동으로 끊는 것도 위험합니다).
  */
-export const USER_MONTHLY_TOKEN_LIMIT = 2_000_000;
-
-// 사용자에게 보이는 유일한 문구. 왜 막혔는지(개인 상한인지 전체 킬스위치인지)를 구분해
-// 알려주지 않습니다 — 어느 쪽이든 사용자가 할 수 있는 일이 같고, 구분해서 말하는 순간
-// 내부 운영 사정이 드러납니다.
 export const LIMIT_MESSAGE = '이번 달 사용량을 다 쓰셨어요.';
 
 /**
@@ -63,6 +69,8 @@ async function getFreeTierTokenTotal(supabaseAdmin: SupabaseClient, since: strin
 
 export interface TokenSafetyResult {
   ok: boolean;
+  /** 어떤 등급으로 판정했는지 — 호출부가 안내 카드 종류를 고르는 데 씁니다. */
+  tier?: UsageTier;
   /** 사용자에게 그대로 보여줄 문구(토큰이라는 단어 없음). ok가 false일 때만 채워집니다. */
   message?: string;
 }
@@ -78,41 +86,46 @@ export interface TokenSafetyResult {
  * Pro 사용자는 개인 상한을 적용하지 않습니다(돈을 낸 쪽을 내부 안전장치로 막지 않음).
  * 전체 킬스위치도 무료 사용자만 세고 무료 사용자에게만 적용됩니다.
  */
-export async function checkTokenSafetyLimits(userId: string, isPro: boolean): Promise<TokenSafetyResult> {
+export async function checkTokenSafetyLimits(
+  userId: string,
+  isPro: boolean,
+  proSource: 'payment' | 'code' | null = null
+): Promise<TokenSafetyResult> {
   try {
     const supabaseAdmin = getSupabaseAdmin();
     const since = getMonthStartISOString();
+    const tier: UsageTier = getUsageTier(isPro, proSource);
+    const limit = getMonthlyTokenLimit(tier);
 
-    // ① 개인 월 상한
+    // ① 등급별 월 한도
     const { data: userTotalRaw, error: userError } = await supabaseAdmin.rpc('user_monthly_token_total', {
       p_user_id: userId,
       p_since: since,
     });
     if (userError) {
       console.error('[token-safety] 사용자 월 토큰 합계 조회 실패:', userError);
-    } else if (!isPro && Number(userTotalRaw ?? 0) >= USER_MONTHLY_TOKEN_LIMIT) {
+    } else if (Number(userTotalRaw ?? 0) >= limit) {
       const total = Number(userTotalRaw ?? 0);
-      console.warn(
-        `[token-safety] 사용자 월 토큰 상한 도달 — user=${userId}, total=${total}, limit=${USER_MONTHLY_TOKEN_LIMIT}`
-      );
-      await notifyOnce(supabaseAdmin, 'user', userId, since, total, USER_MONTHLY_TOKEN_LIMIT);
-      return { ok: false, message: LIMIT_MESSAGE };
-    }
-
-    // ② 무료 사용자 전체 킬스위치
-    const freeTierLimit = getFreeTierTokenLimit();
-    if (!isPro && freeTierLimit !== null) {
-      const total = await getFreeTierTokenTotal(supabaseAdmin, since);
-      if (total !== null && total >= freeTierLimit) {
-        console.warn(
-          `[token-safety] 무료 등급 전체 킬스위치 발동 — total=${total}, limit=${freeTierLimit}`
-        );
-        await notifyOnce(supabaseAdmin, 'free_tier', null, since, total, freeTierLimit);
-        return { ok: false, message: LIMIT_MESSAGE };
+      console.warn(`[token-safety] 월 한도 도달 — tier=${tier}, user=${userId}, total=${total}, limit=${limit}`);
+      await notifyOnce(supabaseAdmin, 'user', userId, since, total, limit);
+      // pro는 조사 신호일 뿐이라 통과시킵니다(위 상수 주석 참고).
+      if (tier !== 'pro') {
+        return { ok: false, message: LIMIT_MESSAGE, tier };
       }
     }
 
-    return { ok: true };
+    // ② 무료 사용자 전체 킬스위치 — 무료 등급에만 적용됩니다.
+    const freeTierLimit = getFreeTierTokenLimit();
+    if (tier === 'free' && freeTierLimit !== null) {
+      const total = await getFreeTierTokenTotal(supabaseAdmin, since);
+      if (total !== null && total >= freeTierLimit) {
+        console.warn(`[token-safety] 무료 등급 전체 킬스위치 발동 — total=${total}, limit=${freeTierLimit}`);
+        await notifyOnce(supabaseAdmin, 'free_tier', null, since, total, freeTierLimit);
+        return { ok: false, message: LIMIT_MESSAGE, tier };
+      }
+    }
+
+    return { ok: true, tier };
   } catch (error) {
     console.error('[token-safety] 토큰 상한 검사 중 오류:', error);
     return { ok: true };
@@ -151,5 +164,43 @@ async function notifyOnce(
     await sendTokenLimitAlertEmail({ scope, userId, total, limit, periodStart });
   } catch (mailError) {
     console.error('[token-safety] 알림 메일 발송 실패:', mailError);
+  }
+}
+
+// 💡 [신규] 사이드바 게이지가 쓸 "이번 달 남은 비율". 토큰 수도 한도 수도 돌려주지
+// 않습니다 — 화면에 숫자를 노출하지 않는 게 이 기능의 전제라, 애초에 클라이언트로
+// 넘기지 않는 편이 실수로 표시될 여지를 없앱니다.
+//
+// pro 등급은 한도가 차단용이 아니라 조사 신호라(위 주석 참고) 게이지를 그리지 않습니다 —
+// "구독했는데 게이지가 줄어든다"는 인상을 주면 안 됩니다.
+export interface UsageRatioResult {
+  ratio: number;
+  level: UsageLevel;
+}
+
+export async function getUsageRatio(
+  userId: string,
+  isPro: boolean,
+  proSource: 'payment' | 'code' | null
+): Promise<UsageRatioResult | null> {
+  const tier = getUsageTier(isPro, proSource);
+  if (tier === 'pro') return null;
+
+  try {
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data, error } = await supabaseAdmin.rpc('user_monthly_token_total', {
+      p_user_id: userId,
+      p_since: getMonthStartISOString(),
+    });
+    if (error) {
+      console.error('[token-safety] 게이지용 사용량 조회 실패:', error);
+      return null;
+    }
+    const limit = getMonthlyTokenLimit(tier);
+    const ratio = Math.max(0, Math.min(1, (limit - Number(data ?? 0)) / limit));
+    return { ratio, level: getUsageLevel(ratio) };
+  } catch (err) {
+    console.error('[token-safety] 게이지용 사용량 조회 중 오류:', err);
+    return null;
   }
 }

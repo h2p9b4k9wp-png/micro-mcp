@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAiModel } from '@/lib/ai-model';
 import { getSessionSupabase } from '@/lib/auth/session';
-import { getPlanLimits, getMonthStartISOString } from '@/lib/plan-limits';
+import { getUsageRatio } from '@/lib/token-safety';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 //
@@ -18,24 +18,30 @@ export async function GET() {
       return NextResponse.json({ error: '인증이 필요합니다. 로그인 후 다시 시도해주세요.' }, { status: 401 });
     }
 
-    const monthStart = getMonthStartISOString();
-    const [{ data: profile }, { count: chatCount }, { count: fileCount }] = await Promise.all([
+    const [{ data: profile }] = await Promise.all([
       // 💡 [수정] pro_source/pro_expires_at도 함께 읽습니다 — 소사이어티 코드로 얻은 Pro는
       // 기간이 끝나면 cron이 조용히 강등시키는데(app/api/cron/cleanup-logs), 지금까지
       // 화면 어디에서도 만료가 다가온다는 걸 알려주지 않아 사용자 입장에서는 어느 날 갑자기
       // Pro가 꺼집니다. 이 두 값이 그 안내의 유일한 근거입니다.
       supabase.from('profiles').select('is_pro, pro_source, pro_expires_at').eq('id', userId).single(),
-      supabase.from('logs').select('id', { count: 'exact', head: true }).gte('created_at', monthStart),
-      supabase.from('document_uploads').select('id', { count: 'exact', head: true }).gte('created_at', monthStart),
     ]);
 
     const isPro = Boolean(profile?.is_pro);
-    const limits = getPlanLimits(isPro);
+    const proSource = (profile?.pro_source as 'payment' | 'code' | null) ?? null;
+
+    // 💡 [수정] 화면에 내려보내는 사용량이 "채팅 N회 / 파일 N회"에서 **토큰 잔량 비율**
+    // 하나로 바뀌었습니다. 다만 클라이언트에는 비율(0~1)과 구간(level)만 주고 토큰 수도
+    // 한도 수도 보내지 않습니다 — 화면에 "토큰"이라는 단어와 숫자를 절대 노출하지 않기
+    // 위해서입니다. 게이지는 이 ratio 하나만으로 그려집니다(components/carrot-gauge.tsx).
+    //
+    // 합계 조회는 서비스 롤 RPC라 여기서 직접 부르지 않고 lib/token-safety.ts의 조회를
+    // 재사용합니다. 실패하면 usage를 null로 내려보내고, 클라이언트는 게이지를 그리지
+    // 않습니다(0/0으로 "다 썼음"처럼 보이는 것보다 안 보이는 편이 낫습니다).
+    const usage = await getUsageRatio(userId, isPro, proSource);
 
     return NextResponse.json({
       isPro,
-      chat: { used: chatCount ?? 0, limit: limits.chatsPerMonth },
-      file: { used: fileCount ?? 0, limit: limits.filesPerMonth },
+      usage,
       // 💡 [신규] 사이드바 "OpenAI ○○ 연동됨" 배지가 쓸 실제 모델명. 예전에는 번역 파일
       // 12개에 "GPT-4.1 mini"가 문자열로 박혀 있어서, OPENAI_MODEL을 바꾸면 화면 문구만
       // 조용히 거짓이 됐습니다. 모델을 정하는 건 서버 전용 환경변수라 클라이언트가 직접
@@ -46,7 +52,7 @@ export async function GET() {
       // 결제 기반 Pro는 pro_expires_at이 항상 null이라(구독 종료는 Polar 웹훅이 알려줌)
       // 이 값이 채워져 있는 건 코드 기반 Pro뿐입니다. 그래도 클라이언트가 조건을 명시적으로
       // 쓸 수 있도록 pro_source도 함께 내려보냅니다.
-      proSource: (profile?.pro_source as 'payment' | 'code' | null) ?? null,
+      proSource,
       proExpiresAt: (profile?.pro_expires_at as string | null) ?? null,
     });
   } catch (error) {

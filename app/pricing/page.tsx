@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import {
   FREE_LIMITS,
-  PRO_LIMITS,
   PRO_PRICE_LABEL,
   FREE_LOG_RETENTION_DAYS,
   getIsPro,
@@ -84,11 +83,7 @@ export default async function PricingPage() {
             <ul className="flex flex-col gap-3 text-sm text-[#C9C0D6]">
               <li className="flex items-start gap-2">
                 <span className="text-[#6EE7B7] shrink-0">✓</span>
-                {FREE_LIMITS.filesPerMonth} file analyses / month
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#6EE7B7] shrink-0">✓</span>
-                {FREE_LIMITS.chatsPerMonth} chat messages / month
+                Monthly usage allowance for everyday coursework
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-[#6EE7B7] shrink-0">✓</span>
@@ -124,11 +119,7 @@ export default async function PricingPage() {
             <ul className="flex flex-col gap-3 text-sm text-[#C9C0D6]">
               <li className="flex items-start gap-2">
                 <span className="text-[#F4679B] shrink-0">✓</span>
-                {PRO_LIMITS.filesPerMonth} file analyses / month
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#F4679B] shrink-0">✓</span>
-                {PRO_LIMITS.chatsPerMonth} chat messages / month
+                Far higher monthly usage allowance
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-[#F4679B] shrink-0">✓</span>

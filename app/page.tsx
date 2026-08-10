@@ -31,7 +31,7 @@ import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
-import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, logProfileLookupFailure, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, logProfileLookupFailure, PRO_PRICE_LABEL, type UsageLevel } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
 import { detectBrowserLanguageName } from '@/lib/detect-browser-language';
 import { trackFunnelEvent } from '@/lib/funnel-tracking';
@@ -41,6 +41,15 @@ import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { CarrotGauge } from '@/components/carrot-gauge';
+// 💡 [신규] 잔량 구간별 게이지 색. globals.css의 --text-warn/--accent-danger와 같은 계열
+// 값을 SVG fill로 직접 넘겨야 해서(CSS 변수는 이 컴포넌트의 fill 속성에 쓰기 번거로움)
+// 여기 리터럴로 둡니다. ok는 기존 당근색 그대로입니다.
+const USAGE_LEVEL_COLORS: Record<UsageLevel, { fill: string; stroke: string }> = {
+  ok:   { fill: '#F5A03C', stroke: '#D9822B' },
+  warn: { fill: '#E8B54A', stroke: '#B98A2E' },
+  low:  { fill: '#E86A5A', stroke: '#B84A3C' },
+  out:  { fill: '#8A8194', stroke: '#6B6376' },
+};
 import { ProExpiryNotice } from '@/components/pro-expiry-notice';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { AnswerDisclosure } from '@/components/answer-disclosure';
@@ -323,6 +332,7 @@ export default function HomePage() {
   const [isUploadingProfessorDoc, setIsUploadingProfessorDoc] = useState(false);
   const [uploadProfessorChoice, setUploadProfessorChoice] = useState('');
   const [newProfessorName, setNewProfessorName] = useState('');
+  const [isCreatingProfessor, setIsCreatingProfessor] = useState(false);
   const [newProfessorSchool, setNewProfessorSchool] = useState('');
   const [newProfessorDepartment, setNewProfessorDepartment] = useState('');
   // 💡 [신규] 직전에 등록한 교수님의 학교/학과를 기억해뒀다가, 다음 교수님 등록 폼에 기본값으로
@@ -382,8 +392,8 @@ export default function HomePage() {
   // 남았는지"를 보여주기 위한 조회 전용 상태입니다(/api/usage-summary, fetchUsageSummary).
   const [usageSummary, setUsageSummary] = useState<{
     isPro: boolean;
-    chat: { used: number; limit: number };
-    file: { used: number; limit: number };
+    // 💡 [수정] 토큰 잔량 비율과 구간만 받습니다 — 숫자는 애초에 서버가 안 보냅니다.
+    usage: { ratio: number; level: UsageLevel } | null;
     // 💡 [신규] 코드 기반 Pro의 남은 기간 안내(components/pro-expiry-notice.tsx)용.
     // 결제 기반 Pro는 proExpiresAt이 항상 null이라 안내가 뜨지 않습니다.
     proSource: 'payment' | 'code' | null;
@@ -698,8 +708,7 @@ export default function HomePage() {
       const data = await res.json();
       setUsageSummary({
         isPro: Boolean(data.isPro),
-        chat: data.chat,
-        file: data.file,
+        usage: data.usage ?? null,
         proSource: data.proSource ?? null,
         proExpiresAt: data.proExpiresAt ?? null,
       });
@@ -1023,24 +1032,10 @@ export default function HomePage() {
         const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
 
         if (isImage) {
-          // 💡 [신규] 이미지는 /api/extract를 거치지 않아 월간 파일 처리 한도가 적용되지
-          // 않는 구멍이었습니다 — 첨부 직전에 /api/upload-quota로 서버측 한도를 확인합니다.
-          // 이 확인 요청 자체가 실패(네트워크 오류 등)하면 첨부까지 막지는 않고 그냥
-          // 넘어갑니다(부가 기능 하나의 오류로 핵심 첨부 기능이 막히지 않도록).
-          try {
-            const quotaRes = await fetch('/api/upload-quota');
-            const quotaData = await quotaRes.json();
-            if (!quotaRes.ok) {
-              if (quotaData.limitReached) {
-                handleLimitReached(quotaData);
-                break;
-              }
-              alert(quotaData.error || t('workspace.errors.quotaCheckFailed'));
-              continue;
-            }
-          } catch (quotaErr) {
-            console.error('업로드 한도 확인 실패:', quotaErr);
-          }
+          // 💡 [수정] 예전에는 여기서 /api/upload-quota를 불러 "월간 파일 처리 횟수"를
+          // 확인했습니다. 사용량 축이 토큰으로 바뀌면서 그 라우트는 삭제됐습니다 —
+          // 이미지 첨부 자체는 토큰을 쓰지 않고(비전 호출은 /api/chat에서 일어남),
+          // 실제 소비는 그 채팅 요청 시점에 등급별 토큰 한도가 검사합니다.
 
           const resizedDataUrl = await resizeImageDataUrl(dataUrl);
           const resizedMimeType = resizedDataUrl === dataUrl ? file.type : 'image/jpeg';
@@ -1638,6 +1633,30 @@ export default function HomePage() {
 
     if (newlyInserted.length > 0) {
       await recomputeProfessorAnalysisIncremental(professorId, newlyInserted);
+    }
+  };
+
+  // 💡 [신규] 파일 없이 교수님만 먼저 등록합니다. 예전에는 이 패널의 유일한 실행 버튼이
+  // "파일 선택"이라, 교수님을 만들려면 반드시 파일을 하나 골라야 했습니다 — 자료가 아직
+  // 없거나 나중에 올리고 싶은 사람은 교수님 자체를 만들 수 없었습니다.
+  // 자료 0개인 교수님은 분석 결과도 0개라 화면에서는 "아직 파악된 게 없어요" 상태로
+  // 자연스럽게 표시되고, 채팅의 교수님 선택에서도 자료 0개로 그대로 나타납니다.
+  const handleCreateProfessorOnly = async () => {
+    if (!newProfessorName.trim()) {
+      alert(t('professors.errors.nameRequired'));
+      return;
+    }
+    setIsCreatingProfessor(true);
+    try {
+      const createdId = await handleCreateProfessor(newProfessorName, newProfessorSchool, newProfessorDepartment);
+      if (!createdId) return;
+      // 만든 교수님을 바로 선택 상태로 둬서, 이어서 자료를 올리려면 그대로 파일만 고르면 됩니다.
+      setUploadProfessorChoice(createdId);
+      setNewProfessorName('');
+      setNewProfessorSchool('');
+      setNewProfessorDepartment('');
+    } finally {
+      setIsCreatingProfessor(false);
     }
   };
 
@@ -2443,30 +2462,29 @@ export default function HomePage() {
             한도가 사실상 무제한(월 1000회/200회)이라 의미가 없으므로 무료 등급에만 보여줍니다.
             usageSummary가 아직 안 왔으면(로딩 중/조회 실패) 아무것도 그리지 않습니다 — 0/0
             같은 잘못된 값을 잠깐 보여주는 것보다 안전합니다. */}
-        {!isPro && usageSummary && (
+        {/* 💡 [수정] 게이지가 "채팅 N회 / 파일 N회" 두 개에서 **이번 달 이용량** 하나로
+            바뀌었습니다. 계산 기준은 토큰이지만 화면에는 토큰도 숫자도 나오지 않습니다 —
+            서버가 비율(0~1)과 구간만 내려주고(app/api/usage-summary), 문구는 구간별 고정
+            문장입니다. 당근이 갉아먹히는 SVG는 ratio 하나만 보므로 시각적 형태는 그대로입니다.
+            usage가 null이면(Pro이거나 조회 실패) 아무것도 그리지 않습니다. */}
+        {usageSummary?.usage && (
           <div className="px-4 py-3 border-t border-[var(--border-default)] flex flex-col gap-1.5">
             <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wide">
               {t('usage.title')}
             </span>
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-[var(--text-tertiary)]">{t('usage.chatLabel')}</span>
+            {/* 💡 문구가 한 줄에 안 들어가면 당근이 찌그러지므로 좌우 배치 대신 위아래로
+                둡니다 — 게이지 폭(132px)이 고정이라 좁은 사이드바에서는 이쪽이 안전합니다. */}
+            <div className="flex flex-col gap-1">
               <CarrotGauge
-                ratio={Math.max(0, usageSummary.chat.limit - usageSummary.chat.used) / usageSummary.chat.limit}
-                countText={t('usage.chatRemaining', {
-                  remaining: Math.max(0, usageSummary.chat.limit - usageSummary.chat.used),
-                  total: usageSummary.chat.limit,
-                })}
+                ratio={usageSummary.usage.ratio}
+                countText=""
+                accessibleLabel={t(`usage.level.${usageSummary.usage.level}`)}
+                fill={USAGE_LEVEL_COLORS[usageSummary.usage.level].fill}
+                stroke={USAGE_LEVEL_COLORS[usageSummary.usage.level].stroke}
               />
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-[var(--text-tertiary)]">{t('usage.fileLabel')}</span>
-              <CarrotGauge
-                ratio={Math.max(0, usageSummary.file.limit - usageSummary.file.used) / usageSummary.file.limit}
-                countText={t('usage.fileRemaining', {
-                  remaining: Math.max(0, usageSummary.file.limit - usageSummary.file.used),
-                  total: usageSummary.file.limit,
-                })}
-              />
+              <span className="text-[11px] text-[var(--text-tertiary)] leading-snug">
+                {t(`usage.level.${usageSummary.usage.level}`)}
+              </span>
             </div>
           </div>
         )}
@@ -3254,6 +3272,18 @@ export default function HomePage() {
                         className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
                       />
                       <p className="text-[11px] text-[var(--text-muted)]">{t('professors.uploadPanel.schoolDeptHint')}</p>
+                      {/* 💡 [신규] 파일 없이 교수님만 먼저 만드는 버튼. 아래 "파일 선택"은
+                          그대로 두어, 자료가 이미 있으면 한 번에 등록+업로드도 됩니다. */}
+                      <button
+                        type="button"
+                        disabled={isCreatingProfessor || !newProfessorName.trim()}
+                        onClick={handleCreateProfessorOnly}
+                        className="self-start inline-flex items-center gap-2 mt-1 px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-[#F4679B] text-[#F4679B] hover:bg-[var(--bg-accent-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                      >
+                        {isCreatingProfessor ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : null}
+                        {t('professors.uploadPanel.createOnly')}
+                      </button>
+                      <p className="text-[11px] text-[var(--text-muted)]">{t('professors.uploadPanel.createOnlyHint')}</p>
                     </div>
                   )}
 
@@ -3890,10 +3920,24 @@ export default function HomePage() {
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
               {t('societyCodeLimit.body')}
             </p>
+            {/* 💡 [수정] 소사이어티 코드 사용자는 이미 Pro를 써본 사람이라, 무료 사용자에게
+                띄우는 "가입하세요"와 같은 안내를 보여줄 이유가 없습니다. 바로 결제로
+                이어지는 CTA를 1순위로 둡니다. */}
+            {user && (
+              <a
+                href={getPolarCheckoutUrl(user.id, user.email)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsSocietyCodeLimitOpen(false)}
+                className="mt-2 w-full bg-[#F4679B] hover:bg-[#D1477F] text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] text-center"
+              >
+                {t('societyCodeLimit.cta')}
+              </a>
+            )}
             <button
               type="button"
               onClick={() => setIsSocietyCodeLimitOpen(false)}
-              className="mt-2 w-full bg-[#F4679B] hover:bg-[#D1477F] text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
             >
               {t('societyCodeLimit.close')}
             </button>

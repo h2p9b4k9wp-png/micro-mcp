@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getSessionUserEmail } from '@/lib/auth/session';
 import { getMonthStartISOString } from '@/lib/plan-limits';
-import { getSocietyCodeMonthlyTokenTotal, getSupabaseAdmin, SOCIETY_CODE_MONTHLY_ANALYSIS_LIMIT } from '@/lib/society-codes';
+import { getSocietyCodeMonthlyTokenTotal, getSupabaseAdmin } from '@/lib/society-codes';
+import { MONTHLY_TOKEN_LIMITS } from '@/lib/plan-limits';
 import { SocietyCodeAdmin } from '@/components/admin/society-code-admin';
 
 export const metadata = {
@@ -101,7 +102,7 @@ export default async function AdminSocietyCodesPage() {
           </div>
         </div>
         <p className="text-sm text-[#AFA6BD] mb-10">
-          코드로 가입한 계정에는 결제 없이 코드 만료일까지 Pro가 부여됩니다. 1인당 월 분석 {SOCIETY_CODE_MONTHLY_ANALYSIS_LIMIT}회 상한이 자동으로 적용되고,
+          코드로 가입한 계정에는 결제 없이 코드 만료일까지 Pro가 부여됩니다. 1인당 월 {MONTHLY_TOKEN_LIMITS.code.toLocaleString()}토큰 상한이 자동으로 적용되고,
           {tokenLimit ? ` 전체 코드 사용자 월 토큰 합계가 ${tokenLimit.toLocaleString()}을 넘으면 신규 코드 사용이 자동으로 막힙니다.` : ' 킬스위치는 SOCIETY_CODE_MONTHLY_TOKEN_LIMIT 환경변수가 없어 꺼져 있어요.'}
         </p>
 

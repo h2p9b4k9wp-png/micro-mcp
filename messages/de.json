@@ -189,7 +189,9 @@
       "departmentPlaceholder": "Fachbereich (erforderlich)",
       "schoolDeptHint": "Angaben zu Hochschule/Fachbereich helfen, Fachterminologie und Bewertungsgepflogenheiten genauer zu interpretieren.",
       "chooseFile": "Datei auswählen",
-      "paperHint": "Das Hochladen der Paper des Professors hilft, Forschungsinteressen und Schwerpunkte viel genauer zu erfassen."
+      "paperHint": "Das Hochladen der Paper des Professors hilft, Forschungsinteressen und Schwerpunkte viel genauer zu erfassen.",
+      "createOnly": "Nur Professor anlegen",
+      "createOnlyHint": "Materialien kannst du später hochladen."
     },
     "loading": "Wird geladen...",
     "noneRegistered": "Noch keine Professoren registriert. Lade oben Materialien hoch, um einen zu registrieren.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "Nutzung diesen Monat",
-    "chatRemaining": "Noch {remaining}/{total} Chats übrig",
-    "fileRemaining": "Noch {remaining}/{total} Dateien übrig",
-    "chatLabel": "Chat",
-    "fileLabel": "Dateien"
+    "level": {
+      "ok": "Reichlich Nutzung übrig",
+      "warn": "Über die Hälfte verbraucht",
+      "low": "Fast aufgebraucht",
+      "out": "Monatslimit erreicht"
+    }
   },
   "proExpiry": {
     "daysLeft": "Noch {days} Tage Pro",
@@ -753,8 +757,9 @@
     "endsOn": "Bis {date}"
   },
   "societyCodeLimit": {
-    "title": "Dein Code-Kontingent für diesen Monat ist aufgebraucht",
-    "body": "Es wird nächsten Monat zurückgesetzt, dann geht es weiter.",
-    "close": "OK"
+    "title": "Monatslimit erreicht",
+    "body": "Du kennst Pro ja bereits. Mit einem Abo geht es ohne Wartezeit weiter.",
+    "cta": "Abonnieren und weitermachen",
+    "close": "Später"
   }
 }

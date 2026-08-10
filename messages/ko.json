@@ -189,7 +189,9 @@
       "departmentPlaceholder": "학과 (필수)",
       "schoolDeptHint": "학교·학과 정보는 전공 용어와 출제 관행을 더 정확히 해석하는 데 쓰여요.",
       "chooseFile": "파일 선택",
-      "paperHint": "교수님 논문을 올리면 관심 분야와 강조하는 관점을 훨씬 정확히 파악해요."
+      "paperHint": "교수님 논문을 올리면 관심 분야와 강조하는 관점을 훨씬 정확히 파악해요.",
+      "createOnly": "교수님만 먼저 추가",
+      "createOnlyHint": "자료는 나중에 올려도 돼요."
     },
     "loading": "불러오는 중...",
     "noneRegistered": "아직 등록된 교수님이 없어요. 위에서 자료를 올리며 등록해보세요.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "이번 달 남은 사용량",
-    "chatRemaining": "채팅 {remaining}/{total}회 남음",
-    "fileRemaining": "파일 처리 {remaining}/{total}회 남음",
-    "chatLabel": "채팅",
-    "fileLabel": "파일"
+    "level": {
+      "ok": "이번 달 이용량 넉넉해요",
+      "warn": "이번 달 이용량 절반 넘게 썼어요",
+      "low": "이번 달 이용량이 얼마 안 남았어요",
+      "out": "이번 달 이용 한도를 다 쓰셨어요"
+    }
   },
   "proExpiry": {
     "daysLeft": "Pro 이용 {days}일 남았어요",
@@ -753,8 +757,9 @@
     "endsOn": "{date}까지"
   },
   "societyCodeLimit": {
-    "title": "이번 달 코드 사용량을 다 쓰셨어요",
-    "body": "다음 달에 초기화돼요. 그때 다시 이용하실 수 있어요.",
-    "close": "확인"
+    "title": "이번 달 이용 한도를 다 쓰셨어요",
+    "body": "Pro 혜택을 이미 경험해 보셨죠? 계속 쓰시려면 구독으로 이어가실 수 있어요.",
+    "cta": "구독하고 계속 쓰기",
+    "close": "다음에 할게요"
   }
 }

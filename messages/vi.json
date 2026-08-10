@@ -189,7 +189,9 @@
       "departmentPlaceholder": "Khoa (bắt buộc)",
       "schoolDeptHint": "Thông tin trường/khoa giúp diễn giải thuật ngữ chuyên ngành và cách chấm điểm chính xác hơn.",
       "chooseFile": "Chọn tệp",
-      "paperHint": "Tải bài báo nghiên cứu của giáo sư lên giúp xác định chính xác hơn lĩnh vực quan tâm và trọng tâm của họ."
+      "paperHint": "Tải bài báo nghiên cứu của giáo sư lên giúp xác định chính xác hơn lĩnh vực quan tâm và trọng tâm của họ.",
+      "createOnly": "Chỉ thêm giảng viên",
+      "createOnlyHint": "Bạn có thể tải tài liệu lên sau."
     },
     "loading": "Đang tải...",
     "noneRegistered": "Chưa có giáo sư nào được đăng ký. Hãy tải tài liệu lên ở trên để đăng ký.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "Lượt dùng còn lại tháng này",
-    "chatRemaining": "Còn {remaining}/{total} lượt chat",
-    "fileRemaining": "Còn {remaining}/{total} lượt xử lý tệp",
-    "chatLabel": "Trò chuyện",
-    "fileLabel": "Tệp"
+    "level": {
+      "ok": "Còn nhiều lượt dùng",
+      "warn": "Đã dùng hơn một nửa",
+      "low": "Sắp hết lượt dùng",
+      "out": "Bạn đã dùng hết hạn mức tháng này"
+    }
   },
   "proExpiry": {
     "daysLeft": "Còn {days} ngày dùng Pro",
@@ -753,8 +757,9 @@
     "endsOn": "Đến {date}"
   },
   "societyCodeLimit": {
-    "title": "Bạn đã dùng hết lượt của mã trong tháng này",
-    "body": "Sẽ được đặt lại vào tháng sau và bạn có thể dùng tiếp.",
-    "close": "Đã hiểu"
+    "title": "Bạn đã dùng hết hạn mức tháng này",
+    "body": "Bạn đã trải nghiệm Pro rồi. Đăng ký để tiếp tục ngay.",
+    "cta": "Đăng ký và tiếp tục",
+    "close": "Để sau"
   }
 }

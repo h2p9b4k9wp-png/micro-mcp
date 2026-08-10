@@ -189,7 +189,9 @@
       "departmentPlaceholder": "Département (obligatoire)",
       "schoolDeptHint": "Les informations sur l'établissement/le département aident à interpréter plus précisément la terminologie de la matière et les conventions de notation.",
       "chooseFile": "Choisir un fichier",
-      "paperHint": "Importer les articles du professeur permet de cerner bien plus précisément ses centres d'intérêt de recherche et ce qu'il privilégie."
+      "paperHint": "Importer les articles du professeur permet de cerner bien plus précisément ses centres d'intérêt de recherche et ce qu'il privilégie.",
+      "createOnly": "Ajouter seulement le professeur",
+      "createOnlyHint": "Vous pourrez importer les documents plus tard."
     },
     "loading": "Chargement...",
     "noneRegistered": "Aucun professeur enregistré pour l'instant. Importez des documents ci-dessus pour en enregistrer un.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "Utilisation ce mois-ci",
-    "chatRemaining": "Il reste {remaining}/{total} discussions",
-    "fileRemaining": "Il reste {remaining}/{total} fichiers",
-    "chatLabel": "Discussion",
-    "fileLabel": "Fichiers"
+    "level": {
+      "ok": "Il reste beaucoup d'utilisation",
+      "warn": "Plus de la moitié utilisée",
+      "low": "Presque épuisé",
+      "out": "Limite du mois atteinte"
+    }
   },
   "proExpiry": {
     "daysLeft": "Il reste {days} jours de Pro",
@@ -753,8 +757,9 @@
     "endsOn": "Jusqu'au {date}"
   },
   "societyCodeLimit": {
-    "title": "Vous avez épuisé votre quota du mois",
-    "body": "Il est réinitialisé le mois prochain, vous pourrez alors continuer.",
-    "close": "OK"
+    "title": "Limite du mois atteinte",
+    "body": "Vous avez déjà vu ce que Pro permet. Abonnez-vous pour continuer sans attendre.",
+    "cta": "S'abonner et continuer",
+    "close": "Plus tard"
   }
 }

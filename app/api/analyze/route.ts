@@ -5,7 +5,6 @@ import { checkRateLimit } from '@/lib/rate-limit';
 import { getIsPro, getProSource, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
-import { checkSocietyCodeAnalysisQuota } from '@/lib/society-codes';
 import { checkTokenSafetyLimits } from '@/lib/token-safety';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
@@ -63,22 +62,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // 💡 [신규] 소사이어티 코드로 얻은 Pro는 결제 기반 Pro와 같은 filesPerMonth 한도가
-    // 아니라 별도의 넉넉한 월 분석 횟수 상한이 적용됩니다 — lib/society-codes.ts 참고.
+    // 💡 [수정] 소사이어티 코드 "월 100회" 상한을 없앴습니다 — 같은 1회가 182토큰일 수도
+    // 534,676토큰일 수도 있어 횟수로는 실제 부담을 반영하지 못했습니다. 이제 아래 등급별
+    // 월 토큰 한도 하나가 무료·코드·결제 세 등급을 모두 담당합니다.
     if (userId) {
       const proSource = await getProSource(supabase, userId);
-      const quota = await checkSocietyCodeAnalysisQuota(userId, proSource);
-      if (!quota.ok) {
-        return NextResponse.json({ error: quota.error, limitReached: true, limitType: 'societyCode' }, { status: 429 });
-      }
-    }
-
-    // 💡 [신규] 내부 토큰 상한 — 위 횟수·크기 한도와 달리 limitReached를 붙이지 않습니다
-    // (결제 모달을 띄울 성격의 제한이 아님). lib/token-safety.ts 참고.
-    if (userId) {
-      const tokenSafety = await checkTokenSafetyLimits(userId, isPro);
+      const tokenSafety = await checkTokenSafetyLimits(userId, isPro, proSource);
       if (!tokenSafety.ok) {
-        return NextResponse.json({ error: tokenSafety.message }, { status: 429 });
+        return NextResponse.json(
+          { error: tokenSafety.message, limitReached: true, limitType: tokenSafety.tier === 'code' ? 'societyCode' : 'usage' },
+          { status: 429 }
+        );
       }
     }
 

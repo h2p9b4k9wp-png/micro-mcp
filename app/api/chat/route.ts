@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAiModel, buildMaxTokensParam, buildReasoningParam } from '@/lib/ai-model';
 import { checkTokenSafetyLimits } from '@/lib/token-safety';
-import { checkSocietyCodeAnalysisQuota } from '@/lib/society-codes';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
@@ -11,7 +10,6 @@ import { OfficeParser } from 'officeparser'; // 💡 PPT/워드/PDF 텍스트 �
 import { extractFileText, FileExtractError, resolveFileExtension } from '@/lib/file-text-extract'; // 💡 .hwpx(zip 기반) 텍스트 추출 — hwpjs는 .hwp 전용이라 별도 처리
 import { MAX_UPLOAD_BYTES, MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { truncateForPrompt, MAX_PROFESSOR_DOC_CHARS, MAX_PROFESSOR_CONTEXT_CHARS } from '@/lib/truncate-text';
-import { getPlanLimits, getMonthStartISOString, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 // 💡 tesseract.js(이미지 OCR)는 이미지가 실제로 첨부됐을 때만 동적으로 불러옵니다.
 // 파일 상단에서 정적으로 import하면, Vercel 번들에서 워커 스크립트를 못 찾을 경우
 // 이미지 첨부 여부와 무관하게 이 라우트로 오는 모든 요청이 모듈 로드 단계에서 죽어버립니다.
@@ -136,7 +134,7 @@ export async function POST(req: Request) {
 
       // 💡 [신규] 토큰 사용량 기록·내부 상한 검사에 사용자 id가 필요합니다. 별도로 부르면
       // Auth 서버를 한 번 더 왕복하므로 아래 조회들과 함께 병렬로 처리합니다.
-      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, monthlyLogsCountResult, userResult] = await Promise.all([
+      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, userResult] = await Promise.all([
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
@@ -151,10 +149,6 @@ export async function POST(req: Request) {
         // 모든 문서 본문이 매 요청마다 DB에서 서버로 전송되고 있었습니다.
         supabase.from('documents').select('professor_id, file_name'),
         supabase.from('profiles').select('is_pro, pro_source').single(),
-        supabase
-          .from('logs')
-          .select('id', { count: 'exact', head: true })
-          .gte('created_at', getMonthStartISOString()),
         supabase.auth.getUser(),
       ]);
       chatUserId = userResult.data.user?.id ?? null;
@@ -167,50 +161,24 @@ export async function POST(req: Request) {
         );
       }
 
-      // 💡 [신규] 유료 전환 준비 — 월간 채팅 한도(무료/Pro). 결제 시스템은 아직 없고
-      // profiles.is_pro 플래그로만 구분합니다. 위 1분당 속도 제한과는 별개의, 월 단위
-      // 사용량 한도입니다.
-      const limits = getPlanLimits(Boolean(profileResult.data?.is_pro));
-      if (monthlyLogsCountResult.count !== null && monthlyLogsCountResult.count >= limits.chatsPerMonth) {
-        return NextResponse.json(
-          {
-            error: `You've reached this month's chat limit (${limits.chatsPerMonth}). Upgrade to Pro — ${PRO_PRICE_LABEL}`,
-            limitReached: true,
-            limitType: 'chat',
-          },
-          { status: 403 }
-        );
-      }
-
-      // 💡 [신규] 소사이어티 코드로 얻은 Pro의 월 사용 횟수 상한 — 지금까지 /api/analyze와
-      // /api/analyze-professor에만 걸려 있어서, 채팅으로만 쓰면 이 상한을 통째로 우회할 수
-      // 있었습니다(채팅은 Pro 한도인 월 1,000회까지 열려 있음).
-      //
-      // 카운트는 ai_usage_logs를 route 구분 없이 세므로, 여기에 검사를 붙이는 것만으로
-      // analyze/analyze-professor/chat이 하나의 합산 예산을 나눠 쓰게 됩니다(경로별로 따로
-      // 100회가 아닙니다). 채팅 사용량이 그 표에 기록되기 시작한 건 20260819 마이그레이션
-      // 이후이므로, 그게 적용돼 있지 않으면 채팅분은 합산에서 빠집니다.
-      if (chatUserId) {
-        const quota = await checkSocietyCodeAnalysisQuota(
-          chatUserId,
-          (profileResult.data?.pro_source as string | null) ?? null
-        );
-        if (!quota.ok) {
-          return NextResponse.json(
-            { error: quota.error, limitReached: true, limitType: 'societyCode' },
-            { status: 429 }
-          );
-        }
-      }
-
+      // 💡 [수정] 월간 채팅 "횟수" 한도와 소사이어티 코드 "100회" 상한을 모두 없앴습니다.
+      // 같은 1회가 182토큰일 수도 534,676토큰일 수도 있어서 횟수로는 실제 부담을 전혀
+      // 반영하지 못했습니다. 이제 등급별 월 토큰 한도 하나로 통일됩니다(아래).
       // 💡 [신규] 사용자에게 보이지 않는 내부 토큰 상한(lib/token-safety.ts). 위 횟수
       // 한도와 달리 limitReached를 붙이지 않습니다 — 붙이면 클라이언트가 Pro 결제 모달을
       // 띄우는데, 이 상한은 결제로 풀리는 성격이 아니고(전체 킬스위치는 아예 서비스 사정)
       // 그 자리에서 업그레이드를 권하는 게 맞지 않습니다.
       if (chatUserId) {
-        const tokenSafety = await checkTokenSafetyLimits(chatUserId, Boolean(profileResult.data?.is_pro));
+        const tokenSafety = await checkTokenSafetyLimits(
+          chatUserId,
+          Boolean(profileResult.data?.is_pro),
+          (profileResult.data?.pro_source as 'payment' | 'code' | null) ?? null
+        );
         if (!tokenSafety.ok) {
-          return NextResponse.json({ error: tokenSafety.message }, { status: 429 });
+          return NextResponse.json(
+            { error: tokenSafety.message, limitReached: true, limitType: tokenSafety.tier === 'code' ? 'societyCode' : 'usage' },
+            { status: 429 }
+          );
         }
       }
 

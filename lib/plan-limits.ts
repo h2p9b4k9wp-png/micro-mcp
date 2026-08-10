@@ -11,8 +11,13 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 // 이 값을 공유해 검증합니다(자세한 이유는 각 라우트 주석 참고). 위 filesPerMonth(월간 처리
 // "횟수" 한도)와는 별개의, 요청 1건당 크기 한도입니다.
 export const FREE_LIMITS = {
+  // 💡 [수정] filesPerMonth는 더 이상 사용자에게 보이는 한도가 아닙니다 — 아래
+  // MONTHLY_TOKEN_LIMITS로 통합됐습니다. 그런데 /api/extract(파일에서 글자 뽑기)는
+  // OpenAI를 전혀 호출하지 않아 토큰을 1개도 쓰지 않으므로, 토큰 한도로는 막을 수가
+  // 없습니다. PDF·OCR·한글 파싱은 CPU/메모리를 많이 쓰는 작업이라 완전히 열어두면
+  // 그쪽만 노리는 남용 경로가 생깁니다. 그래서 이 값만 "화면에 안 보이는 내부 안전판"
+  // 으로 남깁니다(게이지에는 표시하지 않음).
   filesPerMonth: 10,
-  chatsPerMonth: 50,
   maxProfessors: 1,
   maxDocumentsPerProfessor: 10,
   maxUploadBytes: 5 * 1024 * 1024,
@@ -20,7 +25,6 @@ export const FREE_LIMITS = {
 
 export const PRO_LIMITS = {
   filesPerMonth: 200,
-  chatsPerMonth: 1000,
   maxProfessors: Infinity,
   maxDocumentsPerProfessor: Infinity,
   maxUploadBytes: 20 * 1024 * 1024,
@@ -28,6 +32,51 @@ export const PRO_LIMITS = {
 
 export function getPlanLimits(isPro: boolean) {
   return isPro ? PRO_LIMITS : FREE_LIMITS;
+}
+
+// 💡 [신규] 월 토큰 한도 — 사용자에게 보이는 유일한 사용량 축입니다.
+//
+// 횟수 기준을 버린 이유: 같은 "1회 분석"이 실측에서 182토큰짜리도, 534,676토큰짜리도
+// 있었습니다(약 2,900배 차이). 횟수로는 이 격차를 전혀 잡지 못해, 가벼운 사용자는 과하게
+// 막히고 무거운 사용자는 사실상 무제한이 됩니다.
+//
+// ⚠️ 아래 세 값은 **실측 데이터 없이 정한 잠정치**입니다. 사용자가 쌓이면
+// ai_usage_logs로 사용자별 월 토큰 분포(중앙값·p90·p99)를 뽑아 다시 조정해야 합니다.
+// 특히 free는 p90 근처로 맞추는 게 목표이지 평균이 아닙니다 — 평균에 맞추면 정상
+// 사용자의 절반이 막힙니다.
+//
+// pro(1,500만)는 성격이 다릅니다. 차단이 목적이 아니라 **조사 신호**입니다. 정상
+// 사용자는 절대 닿지 않는 값이고, 닿았다면 그 계정 하나가 구독료를 훨씬 넘는 비용을
+// 내고 있다는 뜻이라 사람이 들여다봐야 합니다. 그래서 이 한도는 요청을 막지 않고
+// 알림 메일만 보냅니다(lib/token-safety.ts 참고).
+export const MONTHLY_TOKEN_LIMITS = {
+  free: 500_000,
+  code: 2_000_000,
+  pro: 15_000_000,
+} as const;
+
+export type UsageTier = keyof typeof MONTHLY_TOKEN_LIMITS;
+
+/** is_pro와 pro_source 조합을 세 등급 중 하나로 정리합니다. */
+export function getUsageTier(isPro: boolean, proSource: 'payment' | 'code' | null): UsageTier {
+  if (!isPro) return 'free';
+  return proSource === 'code' ? 'code' : 'pro';
+}
+
+export function getMonthlyTokenLimit(tier: UsageTier): number {
+  return MONTHLY_TOKEN_LIMITS[tier];
+}
+
+// 💡 [신규] 게이지 색·문구를 정하는 잔량 구간. 토큰 축은 사용자가 소진 속도를 예측할 수
+// 없어서(같은 "1회"가 182일 수도 534,676일 수도 있음) 경고 없이 갑자기 막히면 횟수 기준
+// 보다 훨씬 당황스럽습니다. 그래서 두 단계 미리 알려줍니다.
+export type UsageLevel = 'ok' | 'warn' | 'low' | 'out';
+
+export function getUsageLevel(remainingRatio: number): UsageLevel {
+  if (remainingRatio <= 0) return 'out';
+  if (remainingRatio < 0.15) return 'low';
+  if (remainingRatio < 0.4) return 'warn';
+  return 'ok';
 }
 
 // 💡 [신규] Pro 가격 — /pricing 페이지, 한도 초과 안내(채팅·파일·교수님·자료), 업그레이드
@@ -128,9 +177,12 @@ export async function checkFileQuota(supabase: SupabaseClient, userId: string): 
   const isPro = Boolean(profile?.is_pro);
   const limits = getPlanLimits(isPro);
   if (monthlyCount !== null && monthlyCount >= limits.filesPerMonth) {
+    // 💡 [수정] 이건 화면에 노출되는 한도가 아니라 내부 안전판이므로(위 FREE_LIMITS 주석
+    // 참고), 숫자나 "파일 처리 한도" 같은 내부 기준을 문구에 넣지 않습니다. 클라이언트는
+    // limitType으로 어떤 카드를 띄울지 정하고 문구는 스스로 지역화합니다.
     return {
       ok: false,
-      error: `이번 달 파일 처리 한도(${limits.filesPerMonth}회)에 도달했어요. Upgrade to Pro — ${PRO_PRICE_LABEL}`,
+      error: 'This month\'s usage limit has been reached.',
       limit: limits.filesPerMonth,
       isPro,
     };

@@ -189,7 +189,9 @@
       "departmentPlaceholder": "Afdeling (verplicht)",
       "schoolDeptHint": "School-/afdelingsinformatie helpt bij het nauwkeuriger interpreteren van vakspecifieke terminologie en beoordelingsconventies.",
       "chooseFile": "Bestand kiezen",
-      "paperHint": "Het uploaden van de papers van de docent helpt om onderzoeksinteresses en nadruk veel nauwkeuriger vast te stellen."
+      "paperHint": "Het uploaden van de papers van de docent helpt om onderzoeksinteresses en nadruk veel nauwkeuriger vast te stellen.",
+      "createOnly": "Alleen docent toevoegen",
+      "createOnlyHint": "Je kunt later materiaal uploaden."
     },
     "loading": "Laden...",
     "noneRegistered": "Nog geen docenten geregistreerd. Upload hierboven materiaal om er een te registreren.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "Gebruik deze maand",
-    "chatRemaining": "Nog {remaining}/{total} chats over",
-    "fileRemaining": "Nog {remaining}/{total} bestanden over",
-    "chatLabel": "Chat",
-    "fileLabel": "Bestanden"
+    "level": {
+      "ok": "Nog volop gebruik over",
+      "warn": "Meer dan de helft gebruikt",
+      "low": "Bijna op",
+      "out": "Maandlimiet bereikt"
+    }
   },
   "proExpiry": {
     "daysLeft": "Nog {days} dagen Pro",
@@ -753,8 +757,9 @@
     "endsOn": "Tot {date}"
   },
   "societyCodeLimit": {
-    "title": "Je hebt je codegebruik voor deze maand opgebruikt",
-    "body": "Het wordt volgende maand gereset, dan kun je weer verder.",
-    "close": "OK"
+    "title": "Maandlimiet bereikt",
+    "body": "Je weet al wat Pro kan. Met een abonnement ga je direct verder.",
+    "cta": "Abonneren en doorgaan",
+    "close": "Later"
   }
 }

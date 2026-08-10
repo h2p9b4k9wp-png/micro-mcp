@@ -189,7 +189,9 @@
       "departmentPlaceholder": "Department (required)",
       "schoolDeptHint": "School/department info helps interpret major-specific terminology and grading conventions more accurately.",
       "chooseFile": "Choose File",
-      "paperHint": "Uploading their papers helps us pinpoint research interests and emphasis much more accurately."
+      "paperHint": "Uploading their papers helps us pinpoint research interests and emphasis much more accurately.",
+      "createOnly": "Add professor only",
+      "createOnlyHint": "You can upload materials later."
     },
     "loading": "Loading...",
     "noneRegistered": "No lecturers or professors registered yet. Upload materials above to register one.",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "Usage this month",
-    "chatRemaining": "{remaining}/{total} chats left",
-    "fileRemaining": "{remaining}/{total} files left",
-    "chatLabel": "Chat",
-    "fileLabel": "Files"
+    "level": {
+      "ok": "Plenty of usage left",
+      "warn": "Over half used this month",
+      "low": "Almost out for this month",
+      "out": "You've used up this month's limit"
+    }
   },
   "proExpiry": {
     "daysLeft": "{days} days left on Pro",
@@ -753,8 +757,9 @@
     "endsOn": "Until {date}"
   },
   "societyCodeLimit": {
-    "title": "You've used up this month's code allowance",
-    "body": "It resets next month, and you can pick right back up then.",
-    "close": "OK"
+    "title": "You've used up this month's limit",
+    "body": "You've already seen what Pro can do. Subscribe to keep going without waiting.",
+    "cta": "Subscribe and keep going",
+    "close": "Maybe later"
   }
 }

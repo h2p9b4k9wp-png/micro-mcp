@@ -189,7 +189,9 @@
       "departmentPlaceholder": "学科（必須）",
       "schoolDeptHint": "学校・学科の情報は、専門用語や出題傾向をより正確に解釈するために使われます。",
       "chooseFile": "ファイルを選択",
-      "paperHint": "教授の論文をアップロードすると、研究分野や重視する観点をより正確に把握できます。"
+      "paperHint": "教授の論文をアップロードすると、研究分野や重視する観点をより正確に把握できます。",
+      "createOnly": "教授だけ先に追加",
+      "createOnlyHint": "資料は後からでも追加できます。"
     },
     "loading": "読み込み中...",
     "noneRegistered": "まだ登録された教授がいません。上から資料をアップロードして登録しましょう。",
@@ -742,10 +744,12 @@
   },
   "usage": {
     "title": "今月の残り利用回数",
-    "chatRemaining": "チャット残り{remaining}/{total}回",
-    "fileRemaining": "ファイル処理残り{remaining}/{total}回",
-    "chatLabel": "チャット",
-    "fileLabel": "ファイル"
+    "level": {
+      "ok": "今月の利用量に余裕があります",
+      "warn": "今月の利用量を半分以上使いました",
+      "low": "今月の利用量が残りわずかです",
+      "out": "今月の利用上限に達しました"
+    }
   },
   "proExpiry": {
     "daysLeft": "Pro 利用はあと{days}日です",
@@ -753,8 +757,9 @@
     "endsOn": "{date}まで"
   },
   "societyCodeLimit": {
-    "title": "今月のコード利用分を使い切りました",
-    "body": "来月にリセットされ、そのときまた利用できます。",
-    "close": "確認"
+    "title": "今月の利用上限に達しました",
+    "body": "Proの便利さはもう体験されましたよね。サブスクリプションでそのまま続けられます。",
+    "cta": "登録して続ける",
+    "close": "あとで"
   }
 }
