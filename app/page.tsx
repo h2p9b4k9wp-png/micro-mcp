@@ -1947,7 +1947,11 @@ export default function HomePage() {
           user_id: user.id,
           content: `[Prompt] ${currentCommand}`,
           response: aiAnswer,
-          status: 'SUCCESS'
+          status: 'SUCCESS',
+          // 💡 [신규] 어떤 교수님을 선택한 상태에서 나눈 대화인지 함께 남깁니다(미선택이면 null).
+          // 다음 요청의 "최근 대화 기록"을 이 값으로 좁혀서, 다른 교수님 얘기가 섞여 들어오지
+          // 않게 하는 데 씁니다(app/api/chat/route.ts).
+          professor_id: professorGenProfessorId,
         }])
         .select()
         .single();
