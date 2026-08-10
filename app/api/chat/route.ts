@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import * as XLSX from 'xlsx'; // 💡 엑셀 완벽 분석을 위한 라이브러리
@@ -420,9 +421,10 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
         : promptWithLanguage;
 
     // 💡 [속도 개선] 답변이 완성될 때까지 기다리지 않고, 생성되는 대로 바로바로 흘려보냅니다.
+    const chatModel = getAiModel();
     const stream = await openai.chat.completions.create({
-      model: 'gpt-4.1-mini',
-      max_tokens: 4096,
+      model: chatModel,
+      ...buildMaxTokensParam(chatModel, 4096),
       stream: true,
       messages: [
         { role: 'system', content: systemInstruction },

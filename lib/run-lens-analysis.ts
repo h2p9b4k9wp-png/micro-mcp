@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import { LENSES, detectLens, type LensId } from '@/lib/lenses';
 import { truncateForPrompt } from '@/lib/truncate-text';
+import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
 
 export class LensAnalysisParseError extends Error {}
 
@@ -41,6 +42,10 @@ export interface RunLensAnalysisResult {
   // 그대로 기록합니다(lib/ai-usage-logging.ts). 응답에 usage 필드가 없는 극히 예외적인
   // 경우를 위해 null을 허용합니다(호출부는 null이면 기록을 건너뜁니다).
   usage: LensAnalysisUsage | null;
+  // 💡 [신규] 이 호출에 실제로 쓰인 모델명. 호출부(app/api/analyze)가 ai_usage_logs에
+  // 그대로 기록하도록 함께 돌려줍니다 — 기록 쪽에서 getAiModel()을 따로 부르면 그 사이
+  // 환경변수가 바뀐 경우 호출에 쓴 모델과 기록된 모델이 어긋날 수 있습니다.
+  model: string;
 }
 
 // 💡 [신규] /api/analyze(로그인 사용자)와 /api/public-analyze(로그인 없는 체험용)가
@@ -61,6 +66,7 @@ export async function runLensAnalysis({
   const lensDef = LENSES[lensId];
 
   const openai = new OpenAI({ apiKey, maxRetries: 1 });
+  const model = getAiModel();
 
   // 💡 답변 언어는 lensDef.systemPrompt(COMMON_RULES 포함, 모든 요청에 동일한 고정 문자열
   // — OpenAI가 프롬프트 캐싱하는 부분)에 넣지 않고, 요청마다 어차피 매번 달라지는 user 메시지
@@ -75,8 +81,8 @@ export async function runLensAnalysis({
   const userContent = `${languageDirective}${professorContext || ''}${truncatedText}`;
 
   const completion = await openai.chat.completions.create({
-    model: 'gpt-4.1-mini',
-    max_tokens: 4096,
+    model,
+    ...buildMaxTokensParam(model, 4096),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -100,7 +106,7 @@ export async function runLensAnalysis({
     throw new LensAnalysisParseError('The AI had trouble organizing the analysis result. Please try again.');
   }
 
-  return { lensId, result, usage: extractUsage(completion) };
+  return { lensId, result, usage: extractUsage(completion), model };
 }
 
 export interface RunLensAnalysisOnImageParams {
@@ -124,14 +130,15 @@ export async function runLensAnalysisOnImage({
 }: RunLensAnalysisOnImageParams): Promise<RunLensAnalysisResult> {
   const lensDef = LENSES[lens];
   const openai = new OpenAI({ apiKey, maxRetries: 1 });
+  const model = getAiModel();
 
   const languageDirective = responseLanguage
     ? `Respond entirely in ${responseLanguage}. This overrides the document's language.\n\n`
     : '';
 
   const completion = await openai.chat.completions.create({
-    model: 'gpt-4.1-mini',
-    max_tokens: 4096,
+    model,
+    ...buildMaxTokensParam(model, 4096),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -161,5 +168,5 @@ export async function runLensAnalysisOnImage({
     throw new LensAnalysisParseError('The AI had trouble organizing the analysis result. Please try again.');
   }
 
-  return { lensId: lens, result, usage: extractUsage(completion) };
+  return { lensId: lens, result, usage: extractUsage(completion), model };
 }

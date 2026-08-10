@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
 import OpenAI from 'openai';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -233,9 +234,10 @@ export async function POST(req: Request) {
 
     const openai = new OpenAI({ apiKey, maxRetries: 1 });
 
+    const model = getAiModel();
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4.1-mini',
-      max_tokens: 4096,
+      model,
+      ...buildMaxTokensParam(model, 4096),
       response_format: {
         type: 'json_schema',
         json_schema: {
@@ -268,7 +270,7 @@ export async function POST(req: Request) {
     // lib/run-lens-analysis.ts의 extractUsage와 동일한 필드 매핑).
     const usage = completion.usage;
     if (userId && usage) {
-      await recordAiUsage(supabase, userId, 'analyze-professor', 'gpt-4.1-mini', {
+      await recordAiUsage(supabase, userId, 'analyze-professor', model, {
         promptTokens: usage.prompt_tokens,
         completionTokens: usage.completion_tokens,
         totalTokens: usage.total_tokens,

@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const { lensId, result, usage } = await runLensAnalysis({
+    const { lensId, result, usage, model } = await runLensAnalysis({
       apiKey,
       text,
       fileName,
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     // 누락될 수 있습니다. 기록 자체가 실패해도(네트워크 등) 응답은 그대로 내려줍니다 —
     // recordAiUsage는 실패 시 throw하지 않고 로그만 남깁니다(lib/ai-usage-logging.ts).
     if (userId && usage) {
-      await recordAiUsage(supabase, userId, 'analyze', 'gpt-4.1-mini', usage);
+      await recordAiUsage(supabase, userId, 'analyze', model, usage);
     }
 
     return NextResponse.json({ lens: lensId, result });

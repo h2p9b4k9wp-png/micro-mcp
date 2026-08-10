@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import { truncateForPrompt } from '@/lib/truncate-text';
@@ -228,9 +229,10 @@ This is a login-free trial of the assistant, so you have no access to any saved 
         : userTextContent;
 
     const openai = new OpenAI({ apiKey, maxRetries: 1 });
+    const chatModel = getAiModel();
     const stream = await openai.chat.completions.create({
-      model: 'gpt-4.1-mini',
-      max_tokens: 1024,
+      model: chatModel,
+      ...buildMaxTokensParam(chatModel, 1024),
       stream: true,
       messages: [
         { role: 'system', content: systemInstruction },
