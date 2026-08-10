@@ -104,7 +104,8 @@
       "step1": "1. Kies een docent",
       "step2": "2. Wat wil je maken?",
       "chatHint": "Zolang deze is geselecteerd, gebruiken ook de chatantwoorden hieronder het materiaal van deze docent."
-    }
+    },
+    "scrollToBottom": "Naar beneden"
   },
   "records": {
     "title": "Mijn overzicht",

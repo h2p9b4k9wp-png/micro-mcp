@@ -104,7 +104,8 @@
       "step1": "1. Choisissez un professeur",
       "step2": "2. Que voulez-vous créer ?",
       "chatHint": "Tant qu'il est sélectionné, les réponses du chat s'appuieront aussi sur les documents de cet enseignant."
-    }
+    },
+    "scrollToBottom": "Aller en bas"
   },
   "records": {
     "title": "Mes historiques",

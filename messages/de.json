@@ -104,7 +104,8 @@
       "step1": "1. Professor auswählen",
       "step2": "2. Was soll erstellt werden?",
       "chatHint": "Solange ausgewählt, greifen auch die Chat-Antworten unten auf die Unterlagen dieser Lehrkraft zu."
-    }
+    },
+    "scrollToBottom": "Nach unten"
   },
   "records": {
     "title": "Meine Aufzeichnungen",

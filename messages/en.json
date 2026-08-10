@@ -104,7 +104,8 @@
       "step1": "1. Pick a professor",
       "step2": "2. What should I make?",
       "chatHint": "While selected, chat answers below will also draw on this professor's materials."
-    }
+    },
+    "scrollToBottom": "Scroll to bottom"
   },
   "records": {
     "title": "My Records",

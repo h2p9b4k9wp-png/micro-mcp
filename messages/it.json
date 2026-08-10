@@ -104,7 +104,8 @@
       "step1": "1. Scegli un professore",
       "step2": "2. Cosa vuoi creare?",
       "chatHint": "Finché è selezionato, anche le risposte in chat useranno il materiale di questo docente."
-    }
+    },
+    "scrollToBottom": "Vai in fondo"
   },
   "records": {
     "title": "I miei archivi",

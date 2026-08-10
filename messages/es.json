@@ -104,7 +104,8 @@
       "step1": "1. Elige un profesor",
       "step2": "2. ¿Qué quieres crear?",
       "chatHint": "Mientras esté seleccionado, las respuestas del chat también usarán el material de este profesor."
-    }
+    },
+    "scrollToBottom": "Ir al final"
   },
   "records": {
     "title": "Mis registros",

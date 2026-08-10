@@ -104,7 +104,8 @@
       "step1": "1. Hãy chọn giảng viên",
       "step2": "2. Bạn muốn tạo gì?",
       "chatHint": "Khi đang chọn, phần trả lời trong khung chat bên dưới cũng sẽ dùng tài liệu của giảng viên này."
-    }
+    },
+    "scrollToBottom": "Xuống cuối"
   },
   "records": {
     "title": "Nhật ký của tôi",

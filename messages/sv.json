@@ -104,7 +104,8 @@
       "step1": "1. Välj en lärare",
       "step2": "2. Vad vill du skapa?",
       "chatHint": "Medan den är vald använder även chattsvaren nedan den här lärarens material."
-    }
+    },
+    "scrollToBottom": "Till botten"
   },
   "records": {
     "title": "Mina uppgifter",

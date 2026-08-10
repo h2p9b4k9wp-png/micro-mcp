@@ -104,7 +104,8 @@
       "step1": "1. Valitse luennoitsija",
       "step2": "2. Mitä haluat luoda?",
       "chatHint": "Valittuna ollessaan myös alla olevan chatin vastaukset hyödyntävät tämän luennoitsijan materiaaleja."
-    }
+    },
+    "scrollToBottom": "Siirry alas"
   },
   "records": {
     "title": "Omat tiedot",

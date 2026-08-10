@@ -24,6 +24,7 @@ import {
   X,
   GraduationCap,
   ArrowLeft,
+  ArrowDown,
 } from 'lucide-react';
 import type { NodeId, CircuitGraphState, GraphNode } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
@@ -435,6 +436,25 @@ export default function HomePage() {
 
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
+  // 💡 [신규] 본문 스크롤 컨테이너 — 문서 대신 이 영역만 스크롤합니다(위 루트 주석 참고).
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // 바닥에서 이 거리 이내면 "따라가는 중"으로 봅니다. 너무 작으면 관성 스크롤이 살짝
+  // 튈 때마다 따라가기가 끊기고, 너무 크면 위로 올려도 계속 끌려 내려갑니다.
+  const SCROLL_FOLLOW_THRESHOLD_PX = 100;
+  const [isNearBottom, setIsNearBottom] = useState(true);
+
+  const handleContentScroll = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setIsNearBottom(distanceFromBottom <= SCROLL_FOLLOW_THRESHOLD_PX);
+  };
+
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior });
+  };
   const commandInputRef = useRef<HTMLInputElement>(null);
 
   // 💡 [신규] 그래프 자체는 저장하지 않지만, 다음 그래프를 빠르게 구성할 때 참고할 최소한의 힌트
@@ -800,9 +820,17 @@ export default function HomePage() {
     }
   };
 
+  // 💡 [수정] 예전에는 streamingLog가 바뀔 때마다 무조건 맨 아래로 끌어내렸습니다. 답변을
+  // 읽으려고 위로 올려둬도 다음 글자가 도착하는 순간 다시 바닥으로 튕겨서, 긴 답변은
+  // 사실상 읽을 수가 없었습니다.
+  //
+  // 이제 "사용자가 이미 바닥 근처에 있을 때만" 따라 내려갑니다. 위로 올라가 있으면
+  // 자동 스크롤을 멈추고, 대신 "맨 아래로" 버튼을 띄웁니다. 다시 바닥 근처로 내려오면
+  // isNearBottom이 true가 되면서 자동으로 따라가기가 재개됩니다.
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [streamingLog, logs]);
+    if (!isNearBottom) return;
+    scrollToBottom('smooth');
+  }, [streamingLog, logs, isNearBottom]);
 
   // 💡 [신규] 노드 클릭 시 그래프 자체를 편집하지는 않습니다(더미 그래프 고정 단계). 대신 lens/action
   // 노드를 클릭하면 "마지막에 쓴 렌즈"/"선호 action" 힌트를 갱신합니다 — 실행 로직과는 무관합니다.
@@ -1751,6 +1779,9 @@ export default function HomePage() {
     let aiAnswer = '';
     const header = `${currentCommand}\n\n`;
 
+    // 💡 사용자가 직접 보낸 요청은 위로 올라가 있었더라도 따라가기를 다시 켭니다 —
+    // 자기가 방금 보낸 질문과 그 답이 화면 밖에서 흘러가면 오히려 이상합니다.
+    setIsNearBottom(true);
     setStreamingLog(header);
     setIsAwaitingChatResponse(true);
 
@@ -2332,7 +2363,13 @@ export default function HomePage() {
 
   return (
     <>
-    <div className="min-h-screen bg-[var(--bg-surface)] text-[var(--text-primary)] flex flex-col md:flex-row">
+    {/* 💡 [수정] 예전에는 min-h-screen이라 내용이 길어지면 루트가 통째로 늘어나고 문서
+        전체가 스크롤됐습니다. 그래서 AI 답변이 길어질수록 왼쪽 사이드바까지 같이 위로
+        끌려 올라갔고, 아래 자동 스크롤도 문서를 움직여 화면 전체가 튀었습니다.
+        높이를 화면에 고정하고 스크롤을 각 영역(사이드바/본문) 안으로 넣습니다.
+        100vh 대신 100dvh를 쓰는 이유는 모바일 브라우저의 주소창이 접혔다 펴질 때
+        100vh가 실제 보이는 높이와 어긋나기 때문입니다. */}
+    <div className="h-[100dvh] bg-[var(--bg-surface)] text-[var(--text-primary)] flex flex-col md:flex-row">
       <style jsx global>{`
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
@@ -2379,6 +2416,7 @@ export default function HomePage() {
       <div className={`
         ${isMobileMenuOpen ? 'flex' : 'hidden'} md:flex
         w-full md:w-64 bg-[var(--bg-page)] border-r border-[var(--border-default)] flex-col shrink-0
+        overflow-y-auto
         z-50
       `}>
         {/* 💡 [수정] 예전에는 브랜드 묶음과 LocaleSwitcher가 한 줄에서 justify-between으로
@@ -2564,7 +2602,11 @@ export default function HomePage() {
       </div>
 
       {/* 메인 콘텐츠 영역 */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleContentScroll}
+        className="flex-1 flex flex-col min-w-0 overflow-y-auto"
+      >
         <div className="hidden md:flex h-[68px] border-b border-[var(--border-default)] items-center justify-end px-8 gap-3 bg-[var(--bg-page)]/70 backdrop-blur">
           <div className="flex items-center gap-2 bg-[var(--bg-surface)] px-3.5 py-2 rounded-full border border-[var(--border-default)]">
             <span className="text-xs text-[var(--text-tertiary)] max-w-[220px] truncate">{user?.email}</span>
@@ -3898,6 +3940,22 @@ export default function HomePage() {
         열 수 있는 업그레이드 요청 폼. 결제는 아직 연결하지 않고 이메일/메모만 pro_requests에
         저장합니다. 이 앱에서 처음 쓰는 오버레이 모달이라 좁은 화면에서도 잘리지 않도록
         max-h-[90vh] overflow-y-auto로 감쌉니다. */}
+    {/* 💡 [신규] "맨 아래로" 버튼 — 위로 올라가 자동 따라가기가 멈춘 동안에만 뜹니다.
+        채팅 UI에서 흔한 패턴이고, 자동 스크롤을 껐을 때 "다시 최신으로 가는 길"이 없으면
+        긴 답변에서 바닥까지 손으로 끌어내려야 합니다.
+        z-40은 모달(z-60)보다 아래라, 모달이 열려 있을 땐 그 위로 떠오르지 않습니다. */}
+    {!isNearBottom && (
+      <button
+        type="button"
+        onClick={() => scrollToBottom('smooth')}
+        aria-label={t('workspace.scrollToBottom')}
+        title={t('workspace.scrollToBottom')}
+        className="fixed bottom-6 right-6 z-40 w-10 h-10 rounded-full bg-[var(--bg-page)] border border-[var(--border-strong)] text-[var(--text-secondary)] shadow-lg hover:text-[var(--text-primary)] hover:border-[#F4679B] flex items-center justify-center cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+      >
+        <ArrowDown className="w-4 h-4" strokeWidth={2.5} />
+      </button>
+    )}
+
     {/* 💡 [신규] 소사이어티 코드 월 사용 상한 안내 카드. 예전에는 서버가 돌려준 영어 문구
         하나가 Pro 결제 모달에 그대로 실려 떴는데, (1) 12개 언어를 쓰는 앱에서 이 안내만
         영어였고 (2) 결제로 즉시 풀리는 상한이 아닌데 결제를 권하고 있었습니다. 문구는
