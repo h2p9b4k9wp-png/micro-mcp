@@ -2122,9 +2122,9 @@ export default function HomePage() {
   };
 
   const urgencyStyles: Record<string, string> = {
-    overdue: 'bg-[#262330] text-[var(--text-tertiary)] border-[var(--border-default)]',
+    overdue: 'bg-[var(--surface-chip)] text-[var(--text-tertiary)] border-[var(--border-default)]',
     critical: 'bg-[var(--bg-error-subtle)] text-[var(--text-error)] border-[var(--border-error-subtle)]',
-    high: 'bg-[#362E1A] text-[#FFD97D] border-[#63501F]',
+    high: 'bg-[var(--bg-warn-subtle)] text-[var(--text-warn)] border-[var(--border-warn-subtle)]',
     medium: 'bg-[var(--bg-accent-subtle)] text-[#F4679B] border-[var(--border-accent-subtle)]',
     low: 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)]',
   };
@@ -2486,7 +2486,7 @@ export default function HomePage() {
                 onDragLeave={() => setIsDraggingOverChat(false)}
                 onDrop={handleChatDrop}
                 className={`bg-[var(--bg-page)] rounded-2xl border p-4 sm:p-6 mb-6 shadow-sm transition-colors ${
-                  isDraggingOverChat ? 'border-[#F4679B] bg-[#2A1F26]' : 'border-[var(--border-default)]'
+                  isDraggingOverChat ? 'border-[#F4679B] bg-[var(--bg-accent-subtle)]' : 'border-[var(--border-default)]'
                 }`}
               >
                 <div className="text-sm font-semibold text-[var(--text-primary)] mb-4">
@@ -2680,7 +2680,7 @@ export default function HomePage() {
                     title={isSearchActive ? t('workspace.webSearchOnTitle') : t('workspace.webSearchOffTitle')}
                     className={`shrink-0 flex items-center justify-center gap-1.5 w-11 sm:w-auto sm:px-3.5 h-11 sm:h-auto rounded-lg border transition-colors cursor-pointer ${
                       isSearchActive
-                        ? 'bg-[var(--bg-accent-subtle)] hover:bg-[#3D2733] border-[#F4679B] text-[#F4679B]'
+                        ? 'bg-[var(--bg-accent-subtle)] hover:bg-[var(--bg-accent-subtle-hover)] border-[#F4679B] text-[#F4679B]'
                         : 'bg-[var(--bg-page)] hover:bg-[var(--surface-chip)] border-[var(--border-strong)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                     }`}
                   >
@@ -2718,7 +2718,7 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                <div className="p-4 sm:p-5 text-[14px] leading-[1.8] font-medium text-[#FBE4EE] whitespace-pre-wrap min-h-[150px]">
+                <div className="p-4 sm:p-5 text-[14px] leading-[1.8] font-medium text-[var(--text-ai-response)] whitespace-pre-wrap min-h-[150px]">
                   {streamingLog === IDLE_CONSOLE_SENTINEL ? t('workspace.idleMessage') : streamingLog}
                   {isAwaitingChatResponse && (
                     <span className="text-[var(--text-secondary)] font-normal">
@@ -3728,7 +3728,7 @@ export default function HomePage() {
                           {log.response && (
                             <button
                               onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
-                              className="bg-[var(--bg-accent-subtle)] hover:bg-[#3D2733] text-[#F4679B] border border-[var(--border-accent-subtle)] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                              className="bg-[var(--bg-accent-subtle)] hover:bg-[var(--bg-accent-subtle-hover)] text-[#F4679B] border border-[var(--border-accent-subtle)] text-xs px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                             >
                               {isExpanded ? t('logs.collapseAnswer') : t('logs.viewAnswer')}
                             </button>
@@ -3744,8 +3744,8 @@ export default function HomePage() {
                       </div>
 
                       {isExpanded && log.response && (
-                        <div className="bg-[var(--bg-deep)] p-4 rounded-lg border border-[var(--surface-chip)] text-[14px] font-medium text-[#FBE4EE] leading-[1.8] whitespace-pre-wrap mt-1">
-                          <div className="text-[11px] text-[#8D8499] mb-2">{t('logs.responseRecordLabel')}</div>
+                        <div className="bg-[var(--bg-deep)] p-4 rounded-lg border border-[var(--surface-chip)] text-[14px] font-medium text-[var(--text-ai-response)] leading-[1.8] whitespace-pre-wrap mt-1">
+                          <div className="text-[11px] text-[var(--text-muted)] mb-2">{t('logs.responseRecordLabel')}</div>
                           {log.response}
                         </div>
                       )}

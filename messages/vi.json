@@ -637,7 +637,7 @@
     "backLink": "← Quay lại Carrotly",
     "title": "Chính sách Bảo mật",
     "lastUpdated": "Cập nhật lần cuối: tháng 8 năm 2026",
-    "intro": "Carrotly (&ldquo;chúng tôi&rdquo;, &ldquo;dịch vụ&rdquo;) là trợ lý công việc AI cá nhân. Trang này giải thích những thông tin chúng tôi thu thập khi bạn sử dụng dịch vụ, lý do thu thập, đối tượng chia sẻ, thời gian lưu trữ và các quyền bạn có đối với dữ liệu đó.",
+    "intro": "Carrotly (\"chúng tôi\", \"dịch vụ\") là trợ lý công việc AI cá nhân. Trang này giải thích những thông tin chúng tôi thu thập khi bạn sử dụng dịch vụ, lý do thu thập, đối tượng chia sẻ, thời gian lưu trữ và các quyền bạn có đối với dữ liệu đó.",
     "collect": {
       "heading": "Thông tin chúng tôi thu thập",
       "email": "<b>Địa chỉ email của bạn</b>, dùng để tạo và xác định tài khoản.",
@@ -654,7 +654,7 @@
     "sharing": {
       "heading": "Đối tượng chúng tôi chia sẻ dữ liệu",
       "intro": "Chúng tôi không bán dữ liệu của bạn. Chúng tôi chỉ chia sẻ với các nhà cung cấp dịch vụ giúp Carrotly hoạt động:",
-      "openai": "<b>OpenAI</b> — nhận văn bản từ câu hỏi, tài liệu đính kèm và hình ảnh của bạn để tạo ra phân tích và câu trả lời AI mà bạn yêu cầu. Việc xử lý này diễn ra tại Hoa Kỳ, đồng thời cũng là việc chuyển dữ liệu của bạn ra ngoài EU/EEA — xem mục &ldquo;Chuyển dữ liệu quốc tế&rdquo; bên dưới.",
+      "openai": "<b>OpenAI</b> — nhận văn bản từ câu hỏi, tài liệu đính kèm và hình ảnh của bạn để tạo ra phân tích và câu trả lời AI mà bạn yêu cầu. Việc xử lý này diễn ra tại Hoa Kỳ, đồng thời cũng là việc chuyển dữ liệu của bạn ra ngoài EU/EEA — xem mục \"Chuyển dữ liệu quốc tế\" bên dưới.",
       "supabase": "<b>Supabase</b> — nhà cung cấp cơ sở dữ liệu và xác thực của chúng tôi, dùng để lưu trữ tài khoản, tệp và lịch sử trò chuyện của bạn. Dữ liệu của bạn được lưu trữ tại khu vực <b>{region}</b> của Supabase.",
       "polar": "<b>Polar</b> — đơn vị xử lý thanh toán của chúng tôi, phụ trách thanh toán và lập hóa đơn cho gói Pro. Polar chỉ nhận thông tin cần thiết để xử lý thanh toán (như địa chỉ email của bạn); chúng tôi không gửi tệp hay lịch sử trò chuyện của bạn cho họ.",
       "analytics": "<b>Vercel Analytics</b> — thu thập số liệu thống kê lượt xem trang ẩn danh để giúp chúng tôi hiểu trang nào được truy cập. Không sử dụng cookie và không nhận diện cá nhân."
@@ -674,7 +674,7 @@
     "rights": {
       "heading": "Quyền của bạn",
       "copy": "Bạn có thể yêu cầu bản sao dữ liệu chúng tôi lưu giữ về bạn bất cứ lúc nào bằng cách gửi email đến địa chỉ bên dưới — chúng tôi sẽ phản hồi sớm nhất có thể.",
-      "delete": "Để xóa tài khoản, hãy dùng nút &ldquo;Xóa tài khoản&rdquo; ở cuối thanh bên sau khi đăng nhập — nút này sẽ xóa ngay lập tức và vĩnh viễn các tệp đã tải lên, tài liệu giáo sư, lịch sử trò chuyện, cũng như chính thông tin đăng nhập của bạn (email, thông tin đăng nhập), mà không cần gửi email trước. Nếu bạn muốn chúng tôi làm giúp, hãy gửi email và chúng tôi sẽ xóa thủ công.",
+      "delete": "Để xóa tài khoản, hãy dùng nút \"Xóa tài khoản\" ở cuối thanh bên sau khi đăng nhập — nút này sẽ xóa ngay lập tức và vĩnh viễn các tệp đã tải lên, tài liệu giáo sư, lịch sử trò chuyện, cũng như chính thông tin đăng nhập của bạn (email, thông tin đăng nhập), mà không cần gửi email trước. Nếu bạn muốn chúng tôi làm giúp, hãy gửi email và chúng tôi sẽ xóa thủ công.",
       "proSubscription": "Nếu bạn đang có gói Pro đang hoạt động, việc xóa tài khoản sẽ không hủy gói đó — Polar (đơn vị Merchant of Record của chúng tôi, xem <termslink>Điều khoản Dịch vụ</termslink>) xử lý việc thanh toán độc lập với tài khoản Carrotly của bạn, nên chúng tôi không có cách nào hủy thay bạn. Bạn cần hủy gói đăng ký trước (qua liên kết trong email biên nhận/xác nhận mà Polar đã gửi, hoặc bằng cách liên hệ với chúng tôi) trước khi chúng tôi có thể xóa tài khoản của bạn."
     },
     "contact": {
@@ -689,7 +689,7 @@
     "backLink": "← Quay lại Carrotly",
     "title": "Điều khoản Dịch vụ",
     "lastUpdated": "Cập nhật lần cuối: tháng 8 năm 2026",
-    "intro": "Các điều khoản này áp dụng cho việc bạn sử dụng Carrotly (&ldquo;chúng tôi&rdquo;, &ldquo;dịch vụ&rdquo;), một trợ lý công việc AI cá nhân giúp đọc và sắp xếp các tài liệu bạn tải lên. Khi tạo tài khoản hoặc sử dụng dịch vụ, bạn đồng ý với các điều khoản này. Nếu không đồng ý, vui lòng không sử dụng dịch vụ.",
+    "intro": "Các điều khoản này áp dụng cho việc bạn sử dụng Carrotly (\"chúng tôi\", \"dịch vụ\"), một trợ lý công việc AI cá nhân giúp đọc và sắp xếp các tài liệu bạn tải lên. Khi tạo tài khoản hoặc sử dụng dịch vụ, bạn đồng ý với các điều khoản này. Nếu không đồng ý, vui lòng không sử dụng dịch vụ.",
     "service": {
       "heading": "Về dịch vụ",
       "body": "Carrotly cho phép bạn tải lên tài liệu, ảnh và các tệp khác, đồng thời dùng AI để trích xuất hạn chót, tóm tắt nội dung, dự đoán câu hỏi thi/bài tập có khả năng xuất hiện, và trả lời câu hỏi dựa trên nội dung bạn đã tải lên. Một số tính năng yêu cầu tài khoản; một số tính năng giới hạn có thể dùng thử không cần tài khoản, tuân theo giới hạn sử dụng được nêu trong chính sản phẩm."
@@ -700,8 +700,8 @@
     },
     "subscriptions": {
       "heading": "Gói đăng ký và thanh toán",
-      "intro": "Carrotly cung cấp gói miễn phí và gói trả phí &ldquo;Pro&rdquo; ({price}) với giới hạn sử dụng cao hơn — xem <pricinglink>Pricing</pricinglink> để biết chi tiết hiện tại.",
-      "mor": "<b>Mọi khoản thanh toán đều do Polar Software, Inc. (&ldquo;Polar&rdquo;) xử lý, với tư cách là Merchant of Record (đơn vị bán hàng chính thức) cho giao dịch này.</b> Điều này có nghĩa là Polar — chứ không phải Carrotly — mới là bên bán mà bạn thực sự giao kết hợp đồng cho giao dịch: Polar sẽ hiện tên trên sao kê thẻ/ngân hàng của bạn, thu và nộp thuế bán hàng hoặc VAT áp dụng (nếu có), đồng thời phụ trách việc lập hóa đơn và hỗ trợ khách hàng liên quan đến thanh toán. Yêu cầu hoàn tiền, tranh chấp thanh toán và chargeback được xử lý theo <polarlink>điều khoản riêng của Polar</polarlink>. Chúng tôi chỉ nhận được xác nhận thanh toán thành công (cùng mã tham chiếu gắn với tài khoản của bạn) để nâng cấp bạn lên Pro — chúng tôi không nhận hay lưu trữ đầy đủ thông tin thẻ thanh toán của bạn.",
+      "intro": "Carrotly cung cấp gói miễn phí và gói trả phí \"Pro\" ({price}) với giới hạn sử dụng cao hơn — xem <pricinglink>Pricing</pricinglink> để biết chi tiết hiện tại.",
+      "mor": "<b>Mọi khoản thanh toán đều do Polar Software, Inc. (\"Polar\") xử lý, với tư cách là Merchant of Record (đơn vị bán hàng chính thức) cho giao dịch này.</b> Điều này có nghĩa là Polar — chứ không phải Carrotly — mới là bên bán mà bạn thực sự giao kết hợp đồng cho giao dịch: Polar sẽ hiện tên trên sao kê thẻ/ngân hàng của bạn, thu và nộp thuế bán hàng hoặc VAT áp dụng (nếu có), đồng thời phụ trách việc lập hóa đơn và hỗ trợ khách hàng liên quan đến thanh toán. Yêu cầu hoàn tiền, tranh chấp thanh toán và chargeback được xử lý theo <polarlink>điều khoản riêng của Polar</polarlink>. Chúng tôi chỉ nhận được xác nhận thanh toán thành công (cùng mã tham chiếu gắn với tài khoản của bạn) để nâng cấp bạn lên Pro — chúng tôi không nhận hay lưu trữ đầy đủ thông tin thẻ thanh toán của bạn.",
       "renewal": "Gói đăng ký sẽ tự động gia hạn theo mỗi chu kỳ thanh toán cho đến khi bị hủy. Bạn có thể quản lý hoặc hủy gói đăng ký qua email biên nhận/xác nhận mà Polar gửi sau khi thanh toán, hoặc liên hệ với chúng tôi theo địa chỉ bên dưới — chúng tôi sẽ hỗ trợ bạn liên hệ với Polar."
     },
     "aiContent": {
@@ -723,15 +723,15 @@
     },
     "disclaimer": {
       "heading": "Miễn trừ trách nhiệm và giới hạn trách nhiệm",
-      "body": "Carrotly được cung cấp &ldquo;nguyên trạng&rdquo;, không có bất kỳ bảo đảm nào. Chúng tôi không đảm bảo dịch vụ sẽ hoạt động liên tục, không có lỗi, hoặc kết quả AI sẽ chính xác. Trong phạm vi tối đa được pháp luật cho phép, Carrotly không chịu trách nhiệm cho các thiệt hại gián tiếp, ngẫu nhiên hoặc hệ quả phát sinh từ việc bạn sử dụng dịch vụ — kể cả các quyết định dựa trên nội dung do AI tạo ra."
+      "body": "Carrotly được cung cấp \"nguyên trạng\", không có bất kỳ bảo đảm nào. Chúng tôi không đảm bảo dịch vụ sẽ hoạt động liên tục, không có lỗi, hoặc kết quả AI sẽ chính xác. Trong phạm vi tối đa được pháp luật cho phép, Carrotly không chịu trách nhiệm cho các thiệt hại gián tiếp, ngẫu nhiên hoặc hệ quả phát sinh từ việc bạn sử dụng dịch vụ — kể cả các quyết định dựa trên nội dung do AI tạo ra."
     },
     "changes": {
       "heading": "Thay đổi điều khoản",
-      "body": "Chúng tôi có thể cập nhật các điều khoản này khi dịch vụ thay đổi. Nếu có thay đổi quan trọng, chúng tôi sẽ cập nhật ngày &ldquo;Cập nhật lần cuối&rdquo; ở trên; việc tiếp tục sử dụng dịch vụ sau khi có thay đổi đồng nghĩa với việc bạn chấp nhận các điều khoản đã cập nhật."
+      "body": "Chúng tôi có thể cập nhật các điều khoản này khi dịch vụ thay đổi. Nếu có thay đổi quan trọng, chúng tôi sẽ cập nhật ngày \"Cập nhật lần cuối\" ở trên; việc tiếp tục sử dụng dịch vụ sau khi có thay đổi đồng nghĩa với việc bạn chấp nhận các điều khoản đã cập nhật."
     },
     "governingLaw": {
       "heading": "Luật áp dụng",
-      "body": "[Điền luật áp dụng / thẩm quyền tài phán, ví dụ: &ldquo;pháp luật Đại Hàn Dân Quốc&rdquo;]."
+      "body": "[Điền luật áp dụng / thẩm quyền tài phán, ví dụ: \"pháp luật Đại Hàn Dân Quốc\"]."
     },
     "contact": {
       "heading": "Liên hệ",

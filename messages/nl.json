@@ -637,7 +637,7 @@
     "backLink": "← Terug naar Carrotly",
     "title": "Privacybeleid",
     "lastUpdated": "Laatst bijgewerkt: augustus 2026",
-    "intro": "Carrotly (&ldquo;wij&rdquo;, &ldquo;onze&rdquo;, &ldquo;de dienst&rdquo;) is een persoonlijke AI-werkassistent. Deze pagina legt uit welke informatie we verzamelen wanneer je de dienst gebruikt, waarom we die verzamelen, met wie we die delen, hoe lang we die bewaren en welke rechten je erover hebt.",
+    "intro": "Carrotly (\"wij\", \"onze\", \"de dienst\") is een persoonlijke AI-werkassistent. Deze pagina legt uit welke informatie we verzamelen wanneer je de dienst gebruikt, waarom we die verzamelen, met wie we die delen, hoe lang we die bewaren en welke rechten je erover hebt.",
     "collect": {
       "heading": "Informatie die we verzamelen",
       "email": "<b>Je e-mailadres</b>, gebruikt om je account aan te maken en te identificeren.",
@@ -654,10 +654,10 @@
     "sharing": {
       "heading": "Met wie we die delen",
       "intro": "We verkopen je gegevens niet. We delen ze alleen met de serviceproviders die Carrotly laten werken:",
-      "openai": "<b>OpenAI</b> — ontvangt de tekst van je prompts, bijgevoegde documenten en afbeeldingen om de door jou gevraagde AI-analyse en -antwoorden te genereren. Deze verwerking vindt plaats in de Verenigde Staten, wat ook een doorgifte van je gegevens buiten de EU/EER inhoudt — zie &ldquo;Internationale gegevensdoorgifte&rdquo; hieronder.",
+      "openai": "<b>OpenAI</b> — ontvangt de tekst van je prompts, bijgevoegde documenten en afbeeldingen om de door jou gevraagde AI-analyse en -antwoorden te genereren. Deze verwerking vindt plaats in de Verenigde Staten, wat ook een doorgifte van je gegevens buiten de EU/EER inhoudt — zie \"Internationale gegevensdoorgifte\" hieronder.",
       "supabase": "<b>Supabase</b> — onze database- en authenticatieprovider, gebruikt om je account, bestanden en gespreksgeschiedenis op te slaan. Je gegevens worden gehost in de regio <b>{region}</b> van Supabase.",
       "polar": "<b>Polar</b> — onze betalingsverwerker, gebruikt voor de checkout en facturering van het Pro-abonnement. Polar ontvangt de informatie die nodig is om je betaling te verwerken (zoals je e-mailadres); we sturen ze geen bestanden of gespreksgeschiedenis.",
-      "analytics": "<b>Vercel Analytics</b> — verzamelt anonieme paginaweergavestatistieken om te begrijpen welke pagina&rsquo;s worden bezocht. Gebruikt geen cookies en identificeert geen personen."
+      "analytics": "<b>Vercel Analytics</b> — verzamelt anonieme paginaweergavestatistieken om te begrijpen welke pagina's worden bezocht. Gebruikt geen cookies en identificeert geen personen."
     },
     "retention": {
       "heading": "Hoe lang we ze bewaren",
@@ -674,7 +674,7 @@
     "rights": {
       "heading": "Jouw rechten",
       "copy": "Je kunt op elk moment een kopie opvragen van de gegevens die we over je bewaren door ons een e-mail te sturen naar onderstaand adres — we reageren zo snel mogelijk.",
-      "delete": "Om je account te verwijderen, gebruik je de knop &ldquo;Account verwijderen&rdquo; onderaan de zijbalk zodra je bent ingelogd — dit verwijdert onmiddellijk en permanent je geüploade bestanden, docentmateriaal, gespreksgeschiedenis en je inloggegevens zelf (e-mail, inloginformatie), zonder dat je ons eerst hoeft te mailen. Wil je liever dat wij het voor je doen, mail ons dan en we verwijderen het handmatig.",
+      "delete": "Om je account te verwijderen, gebruik je de knop \"Account verwijderen\" onderaan de zijbalk zodra je bent ingelogd — dit verwijdert onmiddellijk en permanent je geüploade bestanden, docentmateriaal, gespreksgeschiedenis en je inloggegevens zelf (e-mail, inloginformatie), zonder dat je ons eerst hoeft te mailen. Wil je liever dat wij het voor je doen, mail ons dan en we verwijderen het handmatig.",
       "proSubscription": "Als je een actief Pro-abonnement hebt, wordt dit niet automatisch opgezegd wanneer je je account verwijdert — Polar (onze Merchant of Record, zie de <termslink>Servicevoorwaarden</termslink>) verwerkt de facturering los van je Carrotly-account, dus wij kunnen het niet namens jou opzeggen. Je moet je abonnement eerst opzeggen (via de link in de ontvangst-/bevestigingsmail van Polar, of door ons te mailen) voordat we je account kunnen verwijderen."
     },
     "contact": {
@@ -689,10 +689,10 @@
     "backLink": "← Terug naar Carrotly",
     "title": "Servicevoorwaarden",
     "lastUpdated": "Laatst bijgewerkt: augustus 2026",
-    "intro": "Deze voorwaarden zijn van toepassing op je gebruik van Carrotly (&ldquo;wij&rdquo;, &ldquo;onze&rdquo;, &ldquo;de dienst&rdquo;), een persoonlijke AI-werkassistent die door jou geüploade documenten leest en ordent. Door een account aan te maken of de dienst te gebruiken, ga je akkoord met deze voorwaarden. Als je niet akkoord gaat, gebruik de dienst dan niet.",
+    "intro": "Deze voorwaarden zijn van toepassing op je gebruik van Carrotly (\"wij\", \"onze\", \"de dienst\"), een persoonlijke AI-werkassistent die door jou geüploade documenten leest en ordent. Door een account aan te maken of de dienst te gebruiken, ga je akkoord met deze voorwaarden. Als je niet akkoord gaat, gebruik de dienst dan niet.",
     "service": {
       "heading": "De dienst",
-      "body": "Met Carrotly kun je documenten, foto&rsquo;s en andere bestanden uploaden; de dienst gebruikt AI om deadlines te extraheren, inhoud samen te vatten, waarschijnlijke tentamen-/opdrachtvragen te voorspellen en vragen te beantwoorden over wat je hebt geüpload. Sommige functies vereisen een account; een beperkt aantal functies kan zonder account worden uitgeprobeerd, met inachtneming van de gebruikslimieten die in het product zelf worden beschreven."
+      "body": "Met Carrotly kun je documenten, foto's en andere bestanden uploaden; de dienst gebruikt AI om deadlines te extraheren, inhoud samen te vatten, waarschijnlijke tentamen-/opdrachtvragen te voorspellen en vragen te beantwoorden over wat je hebt geüpload. Sommige functies vereisen een account; een beperkt aantal functies kan zonder account worden uitgeprobeerd, met inachtneming van de gebruikslimieten die in het product zelf worden beschreven."
     },
     "account": {
       "heading": "Je account",
@@ -700,8 +700,8 @@
     },
     "subscriptions": {
       "heading": "Abonnementen en betaling",
-      "intro": "Carrotly biedt een gratis abonnement en een betaald &ldquo;Pro&rdquo;-abonnement ({price}) met hogere gebruikslimieten — zie <pricinglink>Pricing</pricinglink> voor de actuele details.",
-      "mor": "<b>Alle betalingen worden verwerkt door Polar Software, Inc. (&ldquo;Polar&rdquo;), dat voor deze aankoop optreedt als Merchant of Record.</b> Dit betekent dat Polar — en niet Carrotly — de verkoper is met wie je voor de daadwerkelijke transactie een overeenkomst aangaat: Polar verschijnt als handelaar op je kaart-/bankafschrift, int en draagt eventuele omzetbelasting of btw af, en verzorgt facturering en betalingsgerelateerde klantenservice. Verzoeken om terugbetaling, geschillen over facturering en chargebacks worden afgehandeld volgens de <polarlink>eigen voorwaarden van Polar</polarlink>. Wij ontvangen alleen de bevestiging dat een betaling is geslaagd (en de referentie die aan je account is gekoppeld) zodat we je naar Pro kunnen upgraden — we ontvangen of bewaren je volledige betaalkaartgegevens niet. Als je als consument in een rechtsgebied woont met een wettelijk herroepingsrecht of bedenktijd voor deze aankoop, oefen je dat recht uit bij Polar, aangezien zij de Merchant of Record van de transactie zijn.",
+      "intro": "Carrotly biedt een gratis abonnement en een betaald \"Pro\"-abonnement ({price}) met hogere gebruikslimieten — zie <pricinglink>Pricing</pricinglink> voor de actuele details.",
+      "mor": "<b>Alle betalingen worden verwerkt door Polar Software, Inc. (\"Polar\"), dat voor deze aankoop optreedt als Merchant of Record.</b> Dit betekent dat Polar — en niet Carrotly — de verkoper is met wie je voor de daadwerkelijke transactie een overeenkomst aangaat: Polar verschijnt als handelaar op je kaart-/bankafschrift, int en draagt eventuele omzetbelasting of btw af, en verzorgt facturering en betalingsgerelateerde klantenservice. Verzoeken om terugbetaling, geschillen over facturering en chargebacks worden afgehandeld volgens de <polarlink>eigen voorwaarden van Polar</polarlink>. Wij ontvangen alleen de bevestiging dat een betaling is geslaagd (en de referentie die aan je account is gekoppeld) zodat we je naar Pro kunnen upgraden — we ontvangen of bewaren je volledige betaalkaartgegevens niet. Als je als consument in een rechtsgebied woont met een wettelijk herroepingsrecht of bedenktijd voor deze aankoop, oefen je dat recht uit bij Polar, aangezien zij de Merchant of Record van de transactie zijn.",
       "renewal": "Abonnementen worden automatisch verlengd bij elke factureringsperiode totdat ze worden opgezegd. Je kunt je abonnement beheren of opzeggen via de ontvangst-/bevestigingsmail die Polar je na aankoop stuurt, of door contact met ons op te nemen via onderstaand adres — wij helpen je dan om Polar te bereiken."
     },
     "aiContent": {
@@ -723,15 +723,15 @@
     },
     "disclaimer": {
       "heading": "Disclaimer en aansprakelijkheidsbeperking",
-      "body": "Carrotly wordt geleverd &ldquo;zoals het is&rdquo;, zonder enige vorm van garantie. We garanderen niet dat de dienst ononderbroken of foutloos zal zijn, of dat AI-output accuraat is. Voor zover wettelijk toegestaan is Carrotly niet aansprakelijk voor indirecte, incidentele of gevolgschade die voortvloeit uit je gebruik van de dienst — inclusief beslissingen die zijn genomen op basis van door AI gegenereerde inhoud."
+      "body": "Carrotly wordt geleverd \"zoals het is\", zonder enige vorm van garantie. We garanderen niet dat de dienst ononderbroken of foutloos zal zijn, of dat AI-output accuraat is. Voor zover wettelijk toegestaan is Carrotly niet aansprakelijk voor indirecte, incidentele of gevolgschade die voortvloeit uit je gebruik van de dienst — inclusief beslissingen die zijn genomen op basis van door AI gegenereerde inhoud."
     },
     "changes": {
       "heading": "Wijzigingen in deze voorwaarden",
-      "body": "We kunnen deze voorwaarden bijwerken naarmate de dienst verandert. Bij ingrijpende wijzigingen werken we de datum &ldquo;Laatst bijgewerkt&rdquo; hierboven bij; voortgezet gebruik van de dienst na een wijziging betekent dat je de bijgewerkte voorwaarden accepteert."
+      "body": "We kunnen deze voorwaarden bijwerken naarmate de dienst verandert. Bij ingrijpende wijzigingen werken we de datum \"Laatst bijgewerkt\" hierboven bij; voortgezet gebruik van de dienst na een wijziging betekent dat je de bijgewerkte voorwaarden accepteert."
     },
     "governingLaw": {
       "heading": "Toepasselijk recht",
-      "body": "[Vul het toepasselijke recht / rechtsgebied in, bijv. &ldquo;het recht van de Republiek Korea&rdquo;]."
+      "body": "[Vul het toepasselijke recht / rechtsgebied in, bijv. \"het recht van de Republiek Korea\"]."
     },
     "contact": {
       "heading": "Contact",

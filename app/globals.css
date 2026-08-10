@@ -61,6 +61,19 @@ html.light {
   --bg-success-subtle: #1b3328;
   --border-success-subtle: #37604d;
   --bg-accent-subtle: #331f29;
+  --bg-accent-subtle-hover: #3d2733;
+
+  /* 💡 [신규] 경고(마감 임박) 칩 — 에러/성공과 같은 서브틀 3종 세트. 브랜드 옐로(#FFD97D)는
+     어두운 배경에서만 읽히므로, --text-error와 똑같은 이유로 이 셋만 라이트 값을 따로 둡니다. */
+  --bg-warn-subtle: #362e1a;
+  --border-warn-subtle: #63501f;
+  --text-warn: #ffd97d;
+
+  /* 💡 [신규] AI 답변 본문 — 다크에서는 기존 색(#FBE4EE, 아주 옅은 핑크빛 흰색)을 그대로
+     유지하고, 라이트에서만 charcoal로 뒤집습니다. --text-primary를 쓰지 않고 별도 변수를 둔
+     이유는 이 영역만 의도적으로 살짝 핑크가 도는 톤이라, 일반 본문색과 합치면 다크 모드의
+     기존 인상이 바뀌기 때문입니다. */
+  --text-ai-response: #fbe4ee;
 }
 
 .light {
@@ -90,6 +103,13 @@ html.light {
   --bg-success-subtle: #e8f7f0;
   --border-success-subtle: #b8e8d2;
   --bg-accent-subtle: #fdebf1;
+  --bg-accent-subtle-hover: #fbd9e4;
+
+  --bg-warn-subtle: #fdf3dd;
+  --border-warn-subtle: #e8cf94;
+  --text-warn: #8a6410;
+
+  --text-ai-response: #1c1922;
 }
 
 @theme inline {
