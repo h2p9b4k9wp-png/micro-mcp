@@ -1,6 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-export type AiUsageRoute = 'analyze' | 'analyze-professor';
+// 💡 [수정] 'chat' 추가 — 지금까지 채팅은 토큰을 전혀 기록하지 않아서, 이 앱에서 토큰을
+// 가장 많이 쓰는 경로가 ai_usage_logs에 통째로 빠져 있었습니다(/admin/ai-usage 금액도 그만큼
+// 과소 계상). 내부 토큰 상한(lib/token-safety.ts)이 의미를 가지려면 이게 먼저 필요합니다.
+// DB의 route 체크 제약도 함께 넓혀야 합니다 — 20260819_token_safety_limits.sql 참고.
+export type AiUsageRoute = 'analyze' | 'analyze-professor' | 'chat';
 
 export interface AiUsage {
   promptTokens: number;

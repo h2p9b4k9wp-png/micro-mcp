@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
+import { checkTokenSafetyLimits } from '@/lib/token-safety';
+import { recordAiUsage } from '@/lib/ai-usage-logging';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import * as XLSX from 'xlsx'; // 💡 엑셀 완벽 분석을 위한 라이브러리
@@ -111,10 +113,15 @@ export async function POST(req: Request) {
     // (RLS로 이미 본인 소유 행만 조회됨). 예전엔 교수님 탭 자료가 이 채팅과 완전히 분리돼 있어서,
     // 여기서 물어보면 AI가 그 자료를 전혀 모른다고 답하는 문제가 있었습니다.
     let professorContext = "";
+    // 💡 [신규] 아래 Promise.all에서 채워집니다. 스트림이 끝난 뒤 토큰 사용량을 기록할 때
+    // 필요해서 블록 밖에 둡니다(token 없이 호출된 경우엔 null로 남고, 기록도 건너뜁니다).
+    let chatUserId: string | null = null;
     if (supabase) {
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
-      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, monthlyLogsCountResult] = await Promise.all([
+      // 💡 [신규] 토큰 사용량 기록·내부 상한 검사에 사용자 id가 필요합니다. 별도로 부르면
+      // Auth 서버를 한 번 더 왕복하므로 아래 조회들과 함께 병렬로 처리합니다.
+      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, monthlyLogsCountResult, userResult] = await Promise.all([
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
@@ -131,7 +138,9 @@ export async function POST(req: Request) {
           .from('logs')
           .select('id', { count: 'exact', head: true })
           .gte('created_at', getMonthStartISOString()),
+        supabase.auth.getUser(),
       ]);
+      chatUserId = userResult.data.user?.id ?? null;
 
       // 💡 간단한 속도 제한 — 1분에 10회 넘게 요청하면 차단 (계정 탈취·자동화 남용 방지)
       if (rateLimitResult.count !== null && rateLimitResult.count >= 10) {
@@ -154,6 +163,17 @@ export async function POST(req: Request) {
           },
           { status: 403 }
         );
+      }
+
+      // 💡 [신규] 사용자에게 보이지 않는 내부 토큰 상한(lib/token-safety.ts). 위 횟수
+      // 한도와 달리 limitReached를 붙이지 않습니다 — 붙이면 클라이언트가 Pro 결제 모달을
+      // 띄우는데, 이 상한은 결제로 풀리는 성격이 아니고(전체 킬스위치는 아예 서비스 사정)
+      // 그 자리에서 업그레이드를 권하는 게 맞지 않습니다.
+      if (chatUserId) {
+        const tokenSafety = await checkTokenSafetyLimits(chatUserId, Boolean(profileResult.data?.is_pro));
+        if (!tokenSafety.ok) {
+          return NextResponse.json({ error: tokenSafety.message }, { status: 429 });
+        }
       }
 
       const recentLogs = recentLogsResult.data;
@@ -426,6 +446,10 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
       model: chatModel,
       ...buildMaxTokensParam(chatModel, 4096),
       stream: true,
+      // 💡 [신규] 스트리밍 응답은 기본적으로 usage를 주지 않습니다 — 이 옵션을 켜야 마지막
+      // 청크에 실려옵니다(그 청크는 choices가 비어 있습니다). 이게 없으면 채팅 토큰을
+      // 기록할 방법이 없고, 내부 토큰 상한이 이 앱에서 가장 큰 소비처를 못 봅니다.
+      stream_options: { include_usage: true },
       messages: [
         { role: 'system', content: systemInstruction },
         { role: 'user', content: userMessageContent },
@@ -436,12 +460,31 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
+          // 💡 usage는 스트림 맨 마지막 청크에만 실려오므로(choices는 빈 배열) 루프를
+          // 돌면서 붙잡아 뒀다가 스트림이 끝난 뒤 기록합니다.
+          let finalUsage: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } | undefined;
           for await (const chunk of stream) {
+            if (chunk.usage) finalUsage = chunk.usage;
             const delta = chunk.choices[0]?.delta?.content || '';
             if (delta) {
               controller.enqueue(encoder.encode(delta));
             }
           }
+
+          // 💡 controller.close() 전에 기록합니다 — 스트림을 닫으면 서버리스 함수가 그대로
+          // 종료될 수 있어서, 닫은 뒤에 남겨두면 인서트가 끝나기 전에 죽을 수 있습니다.
+          // 기록 실패는 이미 사용자에게 다 전달된 답변을 되돌릴 이유가 아니라 삼킵니다
+          // (recordAiUsage 자체도 throw하지 않고 로그만 남깁니다).
+          if (supabase && chatUserId && finalUsage
+              && typeof finalUsage.prompt_tokens === 'number'
+              && typeof finalUsage.completion_tokens === 'number') {
+            await recordAiUsage(supabase, chatUserId, 'chat', chatModel, {
+              promptTokens: finalUsage.prompt_tokens,
+              completionTokens: finalUsage.completion_tokens,
+              totalTokens: finalUsage.total_tokens ?? finalUsage.prompt_tokens + finalUsage.completion_tokens,
+            });
+          }
+
           controller.close();
         } catch (streamErr) {
           console.error('스트리밍 중 오류:', streamErr);

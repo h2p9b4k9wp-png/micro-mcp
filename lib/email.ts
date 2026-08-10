@@ -119,3 +119,72 @@ export async function sendPaymentWebhookAlertEmail({
     throw new Error(`Resend send failed: ${error.message}`);
   }
 }
+
+// 💡 [신규] 내부 토큰 상한(lib/token-safety.ts)에 걸렸을 때 운영자에게 보내는 알림.
+// 사용자에게는 "이번 달 사용량을 다 쓰셨어요"만 나가고 아무 숫자도 보이지 않으므로,
+// 실제로 무슨 일이 있었는지는 이 메일과 서버 로그로만 알 수 있습니다.
+//
+// 위 두 함수와 같은 Resend 경로·같은 수신 주소(DIGEST_EMAIL_TO)를 재사용합니다.
+// 환경변수가 없으면 예외를 던지지 않고 조용히 건너뜁니다 — 알림은 부가 기능이라
+// 미설정 때문에 상한 적용 자체가 흔들리면 안 됩니다(호출부도 실패를 삼킵니다).
+export async function sendTokenLimitAlertEmail({
+  scope,
+  userId,
+  total,
+  limit,
+  periodStart,
+}: {
+  scope: 'user' | 'free_tier';
+  userId: string | null;
+  total: number;
+  limit: number;
+  periodStart: string;
+}): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.DIGEST_EMAIL_TO;
+  const from = process.env.DIGEST_EMAIL_FROM || 'onboarding@resend.dev';
+  if (!apiKey || !to) {
+    console.warn('[email] RESEND_API_KEY 또는 DIGEST_EMAIL_TO 미설정 — 토큰 상한 알림을 건너뜁니다.');
+    return;
+  }
+
+  const isFreeTier = scope === 'free_tier';
+  const title = isFreeTier ? '무료 사용자 전체 토큰 킬스위치 발동' : '사용자 개인 월 토큰 상한 도달';
+  const detail = isFreeTier
+    ? `무료 등급 전체의 이번 달 토큰 합계가 설정된 킬스위치 임계값을 넘었습니다.
+       지금부터 무료 사용자의 AI 요청이 막힙니다(Pro 계정은 계속 동작).`
+    : `한 사용자의 이번 달 토큰 합계가 개인 상한을 넘었습니다.
+       이 계정의 AI 요청만 막히고 다른 사용자에게는 영향이 없습니다.`;
+
+  const html = `<div style="font-family:sans-serif;max-width:640px;margin:0 auto;">
+    <h1 style="font-size:20px;color:#b4232c;">${escapeHtml(title)}</h1>
+    <p style="font-size:14px;color:#5b5566;line-height:1.6;">${escapeHtml(detail)}</p>
+    <table style="font-size:13px;color:#5b5566;border-collapse:collapse;margin-top:12px;">
+      <tr><td style="padding:4px 12px 4px 0;font-weight:700;">대상</td><td>${isFreeTier ? '무료 등급 전체' : `user ${escapeHtml(userId || '(알 수 없음)')}`}</td></tr>
+      <tr><td style="padding:4px 12px 4px 0;font-weight:700;">해당 월</td><td>${escapeHtml(periodStart)}</td></tr>
+      <tr><td style="padding:4px 12px 4px 0;font-weight:700;">사용량</td><td>${total.toLocaleString()} 토큰</td></tr>
+      <tr><td style="padding:4px 12px 4px 0;font-weight:700;">상한</td><td>${limit.toLocaleString()} 토큰</td></tr>
+    </table>
+    <p style="font-size:13px;color:#5b5566;line-height:1.6;margin-top:16px;">
+      확인 순서: ① /admin/ai-usage에서 이번 달 사용량 추이 확인
+      ② 정상 사용인지 남용인지 판단 ${isFreeTier
+        ? '③ 계속 열어두려면 FREE_TIER_MONTHLY_TOKEN_LIMIT을 올리거나 비우세요'
+        : '③ 정상 사용이라면 lib/token-safety.ts의 USER_MONTHLY_TOKEN_LIMIT을 조정하세요'}
+    </p>
+    <p style="font-size:12px;color:#857c93;">
+      이 알림은 해당 월에 대상별로 한 번만 발송됩니다(token_limit_alerts).
+      발생 시각(UTC): ${new Date().toISOString()}
+    </p>
+  </div>`;
+
+  const resend = new Resend(apiKey);
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    subject: `[Carrotly] ${title}`,
+    html,
+  });
+  if (error) {
+    throw new Error(`Resend send failed: ${error.message}`);
+  }
+}

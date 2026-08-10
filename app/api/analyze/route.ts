@@ -6,6 +6,7 @@ import { getIsPro, getProSource, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/pl
 import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
 import { checkSocietyCodeAnalysisQuota } from '@/lib/society-codes';
+import { checkTokenSafetyLimits } from '@/lib/token-safety';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 
@@ -69,6 +70,15 @@ export async function POST(req: Request) {
       const quota = await checkSocietyCodeAnalysisQuota(userId, proSource);
       if (!quota.ok) {
         return NextResponse.json({ error: quota.error, limitReached: true, limitType: 'societyCode' }, { status: 429 });
+      }
+    }
+
+    // 💡 [신규] 내부 토큰 상한 — 위 횟수·크기 한도와 달리 limitReached를 붙이지 않습니다
+    // (결제 모달을 띄울 성격의 제한이 아님). lib/token-safety.ts 참고.
+    if (userId) {
+      const tokenSafety = await checkTokenSafetyLimits(userId, isPro);
+      if (!tokenSafety.ok) {
+        return NextResponse.json({ error: tokenSafety.message }, { status: 429 });
       }
     }
 
