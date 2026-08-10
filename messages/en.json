@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "Lecture summary",
         "questions": "Expected questions",
-        "examQuestions": "Practice exam questions"
+        "examQuestions": "Practice exam questions",
+        "examQuestionsMore": "Get new questions"
       },
       "step1": "1. Pick a professor",
       "step2": "2. What should I make?",

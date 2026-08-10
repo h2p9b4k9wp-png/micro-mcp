@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "Resumen de la clase",
         "questions": "Preguntas esperadas",
-        "examQuestions": "Preguntas de examen"
+        "examQuestions": "Preguntas de examen",
+        "examQuestionsMore": "Generar preguntas nuevas"
       },
       "step1": "1. Elige un profesor",
       "step2": "2. ¿Qué quieres crear?",

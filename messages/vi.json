@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "Tóm tắt bài giảng",
         "questions": "Câu hỏi dự kiến",
-        "examQuestions": "Câu hỏi thi dự kiến"
+        "examQuestions": "Câu hỏi thi dự kiến",
+        "examQuestionsMore": "Nhận câu hỏi mới"
       },
       "step1": "1. Hãy chọn giảng viên",
       "step2": "2. Bạn muốn tạo gì?",

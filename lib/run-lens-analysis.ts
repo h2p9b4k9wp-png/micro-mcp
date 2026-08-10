@@ -27,6 +27,10 @@ export interface RunLensAnalysisParams {
   // 만든 문자열). "교수님 자료로 만들기"에서만 채워지고, 평소 채팅 첨부 분석이나 게스트
   // 체험에서는 undefined입니다.
   professorContext?: string;
+  // 💡 [신규] "예상 시험 문제"를 다시 뽑을 때, 직전까지 이미 낸 문항의 한 줄 요약 목록.
+  // 전문이 아니라 요약만 받는 이유는 토큰 때문입니다 — 중복을 피하는 데는 "무엇을 물었는지"만
+  // 알면 충분하고, 문항 전문·모범답안까지 넣으면 재생성할수록 프롬프트가 눈덩이처럼 커집니다.
+  avoidQuestions?: string[];
 }
 
 export interface LensAnalysisUsage {
@@ -60,6 +64,7 @@ export async function runLensAnalysis({
   lens,
   responseLanguage,
   professorContext,
+  avoidQuestions,
 }: RunLensAnalysisParams): Promise<RunLensAnalysisResult> {
   const truncatedText = truncateForPrompt(text);
   const lensId: LensId = lens && lens in LENSES ? lens : detectLens(truncatedText, fileName);
@@ -78,7 +83,15 @@ export async function runLensAnalysis({
   // 💡 교수님 성향 블록도 같은 이유로 user 메시지에 넣습니다 — 교수님마다 내용이 달라
   // 시스템 프롬프트에 넣으면 교수님 수만큼 캐시가 갈라집니다. 블록 자체가 "[분석 대상 문서]"
   // 머리말로 끝나므로 바로 뒤에 본문을 이어붙이면 됩니다(lib/professor-analysis.ts 참고).
-  const userContent = `${languageDirective}${professorContext || ''}${truncatedText}`;
+  // 💡 [신규] 중복 회피 지시 — languageDirective와 같은 이유로 시스템 프롬프트가 아니라
+  // user 메시지에 붙입니다. 요청마다 달라지는 값이라 시스템 프롬프트에 넣으면
+  // COMMON_RULES 프리픽스의 프롬프트 캐싱이 매번 갈라집니다.
+  const avoidBlock =
+    avoidQuestions && avoidQuestions.length > 0
+      ? `[이전에 이미 출제한 문항 요약]\n${avoidQuestions.map((q) => `- ${q}`).join('\n')}\n\n위 문항들은 이미 사용자에게 보여준 것입니다. 같은 문항이나 표현만 바꾼 매우 비슷한 변형은 만들지 말고, 자료에서 아직 다루지 않은 부분이나 다른 각도로 묻는 새로운 문항을 만드세요. 다만 자료에 근거가 없는 문항을 지어내면서까지 새로움을 억지로 만들지는 마세요 — 새로 낼 만한 것이 부족하면 개수가 적어도 됩니다.\n\n`
+      : '';
+
+  const userContent = `${languageDirective}${avoidBlock}${professorContext || ''}${truncatedText}`;
 
   const completion = await openai.chat.completions.create({
     model,

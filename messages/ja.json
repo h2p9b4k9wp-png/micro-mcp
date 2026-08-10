@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "講義まとめ",
         "questions": "想定質問",
-        "examQuestions": "予想試験問題"
+        "examQuestions": "予想試験問題",
+        "examQuestionsMore": "新しい問題をもらう"
       },
       "step1": "1. 教授を選んでください",
       "step2": "2. 何を作りますか?",

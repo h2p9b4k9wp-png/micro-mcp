@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "Luennon tiivistelmä",
         "questions": "Odotettavat kysymykset",
-        "examQuestions": "Koekysymykset"
+        "examQuestions": "Koekysymykset",
+        "examQuestionsMore": "Uudet kysymykset"
       },
       "step1": "1. Valitse luennoitsija",
       "step2": "2. Mitä haluat luoda?",
