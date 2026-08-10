@@ -522,7 +522,8 @@
       "applyButton": "Anwenden",
       "applying": "Wird angewendet...",
       "success": "Code angewendet! Ihre Pro-Vorteile beginnen sofort.",
-      "genericError": "Der Code konnte nicht angewendet werden. Bitte versuchen Sie es erneut."
+      "genericError": "Der Code konnte nicht angewendet werden. Bitte versuchen Sie es erneut.",
+      "sidebarLink": "Sie haben einen Code?"
     }
   },
   "landing": {

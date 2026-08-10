@@ -522,7 +522,8 @@
       "applyButton": "Toepassen",
       "applying": "Bezig met toepassen...",
       "success": "Code toegepast! Je Pro-voordelen gaan meteen in.",
-      "genericError": "De code kon niet worden toegepast. Probeer het opnieuw."
+      "genericError": "De code kon niet worden toegepast. Probeer het opnieuw.",
+      "sidebarLink": "Heb je een code?"
     }
   },
   "landing": {

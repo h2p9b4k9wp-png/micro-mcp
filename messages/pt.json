@@ -522,7 +522,8 @@
       "applyButton": "Aplicar",
       "applying": "Aplicando...",
       "success": "Código aplicado! Seus benefícios Pro começam agora.",
-      "genericError": "Não foi possível aplicar o código. Tente novamente."
+      "genericError": "Não foi possível aplicar o código. Tente novamente.",
+      "sidebarLink": "Tem um código?"
     }
   },
   "landing": {

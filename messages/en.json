@@ -522,7 +522,8 @@
       "applyButton": "Apply",
       "applying": "Applying...",
       "success": "Code applied! Your Pro benefits start right away.",
-      "genericError": "Couldn't apply that code. Please try again."
+      "genericError": "Couldn't apply that code. Please try again.",
+      "sidebarLink": "Have a code?"
     }
   },
   "landing": {

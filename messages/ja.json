@@ -522,7 +522,8 @@
       "applyButton": "適用",
       "applying": "適用中...",
       "success": "コードが適用されました！Pro特典がすぐに使えます。",
-      "genericError": "コードを適用できませんでした。もう一度お試しください。"
+      "genericError": "コードを適用できませんでした。もう一度お試しください。",
+      "sidebarLink": "コードをお持ちですか？"
     }
   },
   "landing": {

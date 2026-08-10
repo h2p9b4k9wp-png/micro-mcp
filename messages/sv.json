@@ -522,7 +522,8 @@
       "applyButton": "Använd",
       "applying": "Använder...",
       "success": "Koden har använts! Dina Pro-fördelar börjar direkt.",
-      "genericError": "Kunde inte använda koden. Försök igen."
+      "genericError": "Kunde inte använda koden. Försök igen.",
+      "sidebarLink": "Har du en kod?"
     }
   },
   "landing": {
