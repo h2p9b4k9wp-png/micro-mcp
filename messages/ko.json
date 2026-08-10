@@ -504,7 +504,8 @@
       "applyButton": "적용",
       "applying": "적용 중...",
       "success": "코드가 적용됐어요! Pro 혜택이 바로 시작됩니다.",
-      "genericError": "코드를 적용하지 못했어요. 다시 시도해주세요."
+      "genericError": "코드를 적용하지 못했어요. 다시 시도해주세요.",
+      "sidebarLink": "코드가 있으신가요?"
     }
   },
   "landing": {

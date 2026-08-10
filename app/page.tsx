@@ -2331,6 +2331,17 @@ export default function HomePage() {
           Pricing
         </Link>
 
+        {/* 💡 [신규] 소사이어티 코드 안내 — 코드 입력창은 업그레이드 모달 안에만 있어서,
+            동아리에서 코드를 받은 학생이 "Pro 배지를 눌러본다" 말고는 찾아갈 길이 없었습니다.
+            같은 모달을 여는 링크를 한 줄 둬서 경로를 하나 더 만듭니다. */}
+        <button
+          type="button"
+          onClick={() => openUpgradeModal()}
+          className="block w-full text-left px-4 py-3 border-t border-[var(--border-default)] text-xs text-[var(--text-muted)] hover:text-[#F4679B] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] focus-visible:ring-inset"
+        >
+          {t('upgrade.societyCode.sidebarLink')}
+        </button>
+
         {/* 💡 [신규] 계정 삭제 — /privacy 페이지가 약속하는 "삭제 요청" 권리를 이메일 문의 없이
             직접 실행할 수 있는 버튼. 실수로 누르는 걸 막기 위해 다른 사이드바 항목들과
             시각적으로 분리(맨 아래, 위험 색상)해뒀습니다. */}

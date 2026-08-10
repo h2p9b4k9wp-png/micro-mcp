@@ -6,7 +6,8 @@ import { toMarkdown } from '@ohah/hwpjs'; // 💡 HWP(.hwp) 문서 분석을 위
 import { OfficeParser } from 'officeparser'; // 💡 PPT/워드/PDF 텍스트 분석을 위한 라이브러리
 import { extractFileText, FileExtractError, resolveFileExtension } from '@/lib/file-text-extract'; // 💡 .hwpx(zip 기반) 텍스트 추출 — hwpjs는 .hwp 전용이라 별도 처리
 import { MAX_UPLOAD_BYTES, MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
-import { truncateForPrompt } from '@/lib/truncate-text';
+import { truncateForPrompt, MAX_PROFESSOR_DOC_CHARS, MAX_PROFESSOR_CONTEXT_CHARS } from '@/lib/truncate-text';
+import { recordAiUsage } from '@/lib/ai-usage-logging';
 import { getPlanLimits, getMonthStartISOString, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 // 💡 tesseract.js(이미지 OCR)는 이미지가 실제로 첨부됐을 때만 동적으로 불러옵니다.
 // 파일 상단에서 정적으로 import하면, Vercel 번들에서 워커 스크립트를 못 찾을 경우
@@ -31,8 +32,14 @@ interface ProfessorRow {
   school: string | null;
   department: string | null;
 }
+// 💡 [수정] 목록(인덱스)을 만들 때는 content를 아예 조회하지 않습니다 — 아래 professorContext
+// 주석 참고. content는 사용자가 특정 교수님을 지목했을 때만 그 교수님 자료에 한해 따로
+// 조회합니다.
 interface ProfessorDocRow {
   professor_id: string | null;
+  file_name: string;
+}
+interface ProfessorDocContentRow {
   file_name: string;
   content: string;
 }
@@ -106,14 +113,24 @@ export async function POST(req: Request) {
     // 💡 [속도 개선] 속도 제한 체크 + 최근 대화 기록 조회 + 교수님 자료 조회를 순서대로 기다리지
     // 않고 동시에 처리합니다.
     let dbContext = "";
-    // 💡 [신규] "교수님" 탭에서 등록해둔 자료 — 읽기 능력은 토글하지 않으므로 항상 포함합니다
-    // (RLS로 이미 본인 소유 행만 조회됨). 예전엔 교수님 탭 자료가 이 채팅과 완전히 분리돼 있어서,
-    // 여기서 물어보면 AI가 그 자료를 전혀 모른다고 답하는 문제가 있었습니다.
+    // 💡 [수정] "교수님" 탭 자료를 이 채팅의 배경 정보로 싣는 방식을 바꿨습니다.
+    //
+    // 이전: 등록된 **모든** 교수님의 **모든** 문서 본문을 매 요청마다 통째로 실었습니다.
+    // 상한도 없어서, 자료를 많이 모아둔 사용자일수록 "안녕"이라고 한마디 보내는 데도 수십만
+    // 자가 프롬프트에 딸려갔습니다. 비용이 사용량에 비례해 무한정 커질 뿐 아니라, 관계없는
+    // 과목 자료가 잔뜩 섞여 들어가 정작 물어본 것에 대한 답변 품질도 떨어집니다.
+    //
+    // 지금: 기본은 **목록만**입니다 — 교수님 이름·소속과 파일명만(본문 없이) 실어서, AI가
+    // "무슨 자료가 있는지"는 알되 본문 토큰은 쓰지 않습니다. 이 채팅에서 교수님 자료를 아예
+    // 모른다고 답하던 원래 문제는 목록만으로도 해결됩니다. 그리고 사용자가 질문에서 특정
+    // 교수님 이름을 언급했을 때만 그 교수님 자료의 본문을 (상한을 걸어) 함께 싣습니다.
     let professorContext = "";
+    // 토큰 사용량 기록용 — 아래 Promise.all에서 채웁니다.
+    let chatUserId: string | null = null;
     if (supabase) {
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
-      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, monthlyLogsCountResult] = await Promise.all([
+      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, monthlyLogsCountResult, userResult] = await Promise.all([
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
@@ -124,13 +141,20 @@ export async function POST(req: Request) {
           .order('created_at', { ascending: false })
           .limit(3),
         supabase.from('professors').select('id, name, school, department'),
-        supabase.from('documents').select('professor_id, file_name, content'),
+        // content를 빼고 목록에 필요한 컬럼만 — 이 조회 하나만으로도 예전에는 사용자가 쌓아둔
+        // 모든 문서 본문이 매 요청마다 DB에서 서버로 전송되고 있었습니다.
+        supabase.from('documents').select('professor_id, file_name'),
         supabase.from('profiles').select('is_pro').single(),
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
           .gte('created_at', getMonthStartISOString()),
+        // 💡 [신규] 토큰 사용량 기록(ai_usage_logs)에 user_id가 필요해서 함께 조회합니다 —
+        // 이 라우트는 쿠키 세션이 아니라 body의 token으로 클라이언트를 만들기 때문에
+        // lib/auth/session.ts를 쓸 수 없고, 어차피 병렬로 도는 조회라 지연이 늘지 않습니다.
+        supabase.auth.getUser(),
       ]);
+      chatUserId = userResult.data?.user?.id ?? null;
 
       // 💡 간단한 속도 제한 — 1분에 10회 넘게 요청하면 차단 (계정 탈취·자동화 남용 방지)
       if (rateLimitResult.count !== null && rateLimitResult.count >= 10) {
@@ -171,16 +195,64 @@ export async function POST(req: Request) {
           docsByProfessor.get(key)!.push(d);
         });
 
-        const sections: string[] = [];
-        docsByProfessor.forEach((docs, professorId) => {
+        const labelFor = (professorId: string) => {
           const professor = professorById.get(professorId);
-          const affiliation = professor ? [professor.school, professor.department].filter(Boolean).join(' ') : '';
-          const label = professor ? `${professor.name}${affiliation ? ` (${affiliation})` : ''}` : '교수님 미지정';
-          const docsText = docs.map((d) => `- ${d.file_name}:\n${d.content}`).join('\n\n');
-          sections.push(`[교수님: ${label}]\n${docsText}`);
+          if (!professor) return '교수님 미지정';
+          const affiliation = [professor.school, professor.department].filter(Boolean).join(' ');
+          return `${professor.name}${affiliation ? ` (${affiliation})` : ''}`;
+        };
+
+        // (1) 목록 — 항상 포함. 파일명만이라 문서 하나당 수십 자 수준입니다.
+        const indexSections: string[] = [];
+        docsByProfessor.forEach((docs, professorId) => {
+          indexSections.push(`[교수님: ${labelFor(professorId)}] 자료 ${docs.length}개\n` + docs.map((d) => `- ${d.file_name}`).join('\n'));
         });
 
-        professorContext = "[[교수님별로 등록해둔 자료]]\n" + sections.join('\n\n---\n\n') + "\n\n";
+        // (2) 사용자가 질문에서 이름을 언급한 교수님이 있으면 그 교수님 자료만 본문까지.
+        // 이름 그대로 포함되는지만 봅니다(대소문자 무시) — 클라이언트가 "지금 이 교수님"을
+        // 보내주는 필드가 아직 없어서, 서버에서 프롬프트만으로 판단할 수 있는 가장 단순하고
+        // 예측 가능한 방법입니다. 나중에 채팅 UI에 교수님 선택이 생기면 그 값을 우선 쓰도록
+        // 바꾸면 됩니다.
+        const lowerPrompt = typeof prompt === 'string' ? prompt.toLowerCase() : '';
+        const mentioned = (professors || []).filter(
+          (p) => p.name && p.name.trim().length > 0 && lowerPrompt.includes(p.name.trim().toLowerCase())
+        );
+
+        let detailSection = '';
+        if (mentioned.length > 0) {
+          const { data: contentRows } = await supabase
+            .from('documents')
+            .select('professor_id, file_name, content')
+            .in('professor_id', mentioned.map((p) => p.id));
+
+          const rowsByProfessor = new Map<string, ProfessorDocContentRow[]>();
+          ((contentRows ?? []) as (ProfessorDocContentRow & { professor_id: string })[]).forEach((r) => {
+            if (!rowsByProfessor.has(r.professor_id)) rowsByProfessor.set(r.professor_id, []);
+            rowsByProfessor.get(r.professor_id)!.push({ file_name: r.file_name, content: r.content });
+          });
+
+          const detailParts: string[] = [];
+          mentioned.forEach((p) => {
+            const rows = rowsByProfessor.get(p.id) ?? [];
+            if (rows.length === 0) return;
+            const docsText = rows
+              .map((r) => `- ${r.file_name}:\n${truncateForPrompt(r.content || '', MAX_PROFESSOR_DOC_CHARS)}`)
+              .join('\n\n');
+            detailParts.push(`[교수님: ${labelFor(p.id)}]\n${docsText}`);
+          });
+          if (detailParts.length > 0) {
+            detailSection =
+              '\n\n[[질문에서 언급된 교수님의 자료 본문]]\n' +
+              truncateForPrompt(detailParts.join('\n\n---\n\n'), MAX_PROFESSOR_CONTEXT_CHARS);
+          }
+        }
+
+        professorContext =
+          '[[교수님별로 등록해둔 자료 목록]]\n' +
+          '아래는 사용자가 등록해둔 자료의 "목록"입니다(본문은 포함되어 있지 않습니다). 사용자가 특정 자료의 내용을 물어보는데 본문이 아래에 없다면, 지어내지 말고 어느 교수님·어느 자료를 봐야 하는지 되물으세요.\n' +
+          truncateForPrompt(indexSections.join('\n\n'), MAX_PROFESSOR_CONTEXT_CHARS) +
+          detailSection +
+          '\n\n';
       }
     }
 
@@ -420,10 +492,14 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
         : promptWithLanguage;
 
     // 💡 [속도 개선] 답변이 완성될 때까지 기다리지 않고, 생성되는 대로 바로바로 흘려보냅니다.
+    const CHAT_MODEL = 'gpt-4.1-mini';
     const stream = await openai.chat.completions.create({
-      model: 'gpt-4.1-mini',
+      model: CHAT_MODEL,
       max_tokens: 4096,
       stream: true,
+      // 💡 [신규] 스트리밍 응답은 기본적으로 usage를 주지 않습니다 — 이 옵션을 켜야 마지막
+      // 청크에 실려옵니다. /admin/ai-usage에 채팅 토큰이 하나도 안 쌓이던 원인입니다.
+      stream_options: { include_usage: true },
       messages: [
         { role: 'system', content: systemInstruction },
         { role: 'user', content: userMessageContent },
@@ -434,13 +510,26 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
+          let usage: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } | undefined;
           for await (const chunk of stream) {
+            // usage는 choices가 빈 마지막 청크에 실려옵니다.
+            if (chunk.usage) usage = chunk.usage;
             const delta = chunk.choices[0]?.delta?.content || '';
             if (delta) {
               controller.enqueue(encoder.encode(delta));
             }
           }
           controller.close();
+
+          // 💡 [신규] 응답을 다 흘려보낸 뒤에 기록합니다 — 기록이 실패해도 이미 사용자에게
+          // 전달된 답변에는 영향이 없고, recordAiUsage 자체도 throw하지 않습니다.
+          if (supabase && chatUserId && usage?.prompt_tokens != null && usage?.completion_tokens != null) {
+            await recordAiUsage(supabase, chatUserId, 'chat', CHAT_MODEL, {
+              promptTokens: usage.prompt_tokens,
+              completionTokens: usage.completion_tokens,
+              totalTokens: usage.total_tokens ?? usage.prompt_tokens + usage.completion_tokens,
+            });
+          }
         } catch (streamErr) {
           console.error('스트리밍 중 오류:', streamErr);
           controller.error(streamErr);

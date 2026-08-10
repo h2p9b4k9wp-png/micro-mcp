@@ -504,7 +504,8 @@
       "applyButton": "Käytä",
       "applying": "Käytetään...",
       "success": "Koodi käytetty! Pro-etusi alkavat heti.",
-      "genericError": "Koodia ei voitu käyttää. Yritä uudelleen."
+      "genericError": "Koodia ei voitu käyttää. Yritä uudelleen.",
+      "sidebarLink": "Onko sinulla koodi?"
     }
   },
   "landing": {

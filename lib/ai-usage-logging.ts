@@ -1,6 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-export type AiUsageRoute = 'analyze' | 'analyze-professor';
+// 💡 [수정] 'chat' 추가 — /api/chat은 스트리밍이라 usage를 그냥은 못 받는데, 그 이유로
+// 지금까지 /admin/ai-usage에 채팅 토큰이 한 건도 안 쌓이고 있었습니다(호출량은 가장 많은데).
+// stream_options: { include_usage: true }로 마지막 청크에서 받아 여기로 넘깁니다.
+// DB의 route check 제약도 함께 넓혀야 합니다 —
+// supabase/migrations/20260818_allow_chat_route_in_ai_usage_logs.sql
+export type AiUsageRoute = 'analyze' | 'analyze-professor' | 'chat';
 
 export interface AiUsage {
   promptTokens: number;

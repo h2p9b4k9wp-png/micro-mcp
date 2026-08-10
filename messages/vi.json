@@ -504,7 +504,8 @@
       "applyButton": "Áp dụng",
       "applying": "Đang áp dụng...",
       "success": "Đã áp dụng mã! Quyền lợi Pro của bạn bắt đầu ngay.",
-      "genericError": "Không thể áp dụng mã này. Vui lòng thử lại."
+      "genericError": "Không thể áp dụng mã này. Vui lòng thử lại.",
+      "sidebarLink": "Bạn có mã không?"
     }
   },
   "landing": {

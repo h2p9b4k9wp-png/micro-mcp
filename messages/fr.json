@@ -504,7 +504,8 @@
       "applyButton": "Appliquer",
       "applying": "Application en cours...",
       "success": "Code appliqué ! Vos avantages Pro commencent dès maintenant.",
-      "genericError": "Impossible d'appliquer ce code. Veuillez réessayer."
+      "genericError": "Impossible d'appliquer ce code. Veuillez réessayer.",
+      "sidebarLink": "Vous avez un code ?"
     }
   },
   "landing": {
