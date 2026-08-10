@@ -17,7 +17,7 @@
     "sending": "Đang gửi...",
     "delete": "Xóa",
     "create": "Tạo",
-    "aiConnected": "Đã kết nối OpenAI GPT-4.1 mini",
+    "aiConnected": "Đã kết nối OpenAI",
     "close": "Đóng",
     "openMenu": "Mở menu",
     "logout": "Đăng xuất",
@@ -25,7 +25,8 @@
     "responseLanguageLabel": "Ngôn ngữ phản hồi AI",
     "themeLabel": "Giao diện",
     "aiGeneratedNotice": "Nội dung do AI tạo ra, có thể không chính xác hoặc khác với thực tế.",
-    "upgradeToPro": "Nâng cấp lên Pro"
+    "upgradeToPro": "Nâng cấp lên Pro",
+    "aiConnectedWithModel": "Đã kết nối OpenAI {model}"
   },
   "workspace": {
     "subtitle": "AI tạo câu trả lời dựa trên ngữ cảnh cuộc trò chuyện và nội dung tài liệu đã đính kèm.",

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAiModel } from '@/lib/ai-model';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { getPlanLimits, getMonthStartISOString } from '@/lib/plan-limits';
 
@@ -31,6 +32,13 @@ export async function GET() {
       isPro,
       chat: { used: chatCount ?? 0, limit: limits.chatsPerMonth },
       file: { used: fileCount ?? 0, limit: limits.filesPerMonth },
+      // 💡 [신규] 사이드바 "OpenAI ○○ 연동됨" 배지가 쓸 실제 모델명. 예전에는 번역 파일
+      // 12개에 "GPT-4.1 mini"가 문자열로 박혀 있어서, OPENAI_MODEL을 바꾸면 화면 문구만
+      // 조용히 거짓이 됐습니다. 모델을 정하는 건 서버 전용 환경변수라 클라이언트가 직접
+      // 읽을 수 없어(NEXT_PUBLIC_ 접두사가 없음), 이미 초기 로드 때 부르고 있는 이
+      // 조회 전용 라우트에 얹어 내려보냅니다 — 이 값만 보고 배지를 그리면 환경변수를
+      // 바꾸는 즉시 화면도 따라갑니다.
+      model: getAiModel(),
     });
   } catch (error) {
     console.error('[usage-summary] 조회 중 오류 발생:', error);

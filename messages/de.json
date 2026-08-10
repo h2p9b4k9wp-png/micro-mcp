@@ -17,7 +17,7 @@
     "sending": "Wird gesendet...",
     "delete": "Löschen",
     "create": "Erstellen",
-    "aiConnected": "OpenAI GPT-4.1 mini verbunden",
+    "aiConnected": "OpenAI verbunden",
     "close": "Schließen",
     "openMenu": "Menü öffnen",
     "logout": "Abmelden",
@@ -25,7 +25,8 @@
     "responseLanguageLabel": "KI-Antwortsprache",
     "themeLabel": "Design",
     "aiGeneratedNotice": "KI-generierter Inhalt — kann unvollständig oder ungenau sein.",
-    "upgradeToPro": "Auf Pro upgraden"
+    "upgradeToPro": "Auf Pro upgraden",
+    "aiConnectedWithModel": "OpenAI {model} verbunden"
   },
   "workspace": {
     "subtitle": "Die KI erstellt Antworten basierend auf dem Gesprächskontext und dem Inhalt angehängter Dokumente.",

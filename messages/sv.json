@@ -17,7 +17,7 @@
     "sending": "Skickar...",
     "delete": "Ta bort",
     "create": "Skapa",
-    "aiConnected": "OpenAI GPT-4.1 mini ansluten",
+    "aiConnected": "OpenAI ansluten",
     "close": "Stäng",
     "openMenu": "Öppna meny",
     "logout": "Logga ut",
@@ -25,7 +25,8 @@
     "responseLanguageLabel": "AI:ns svarsspråk",
     "themeLabel": "Tema",
     "aiGeneratedNotice": "AI-genererat — kan vara ofullständigt eller felaktigt.",
-    "upgradeToPro": "Uppgradera till Pro"
+    "upgradeToPro": "Uppgradera till Pro",
+    "aiConnectedWithModel": "OpenAI {model} ansluten"
   },
   "workspace": {
     "subtitle": "AI:n genererar svar baserat på konversationskontexten och innehållet i bifogade dokument.",

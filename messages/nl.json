@@ -17,7 +17,7 @@
     "sending": "Versturen...",
     "delete": "Verwijderen",
     "create": "Aanmaken",
-    "aiConnected": "OpenAI GPT-4.1 mini verbonden",
+    "aiConnected": "OpenAI verbonden",
     "close": "Sluiten",
     "openMenu": "Menu openen",
     "logout": "Uitloggen",
@@ -25,7 +25,8 @@
     "responseLanguageLabel": "AI-antwoordtaal",
     "themeLabel": "Thema",
     "aiGeneratedNotice": "Door AI gegenereerde inhoud — kan onvolledig of onnauwkeurig zijn.",
-    "upgradeToPro": "Upgraden naar Pro"
+    "upgradeToPro": "Upgraden naar Pro",
+    "aiConnectedWithModel": "OpenAI {model} verbonden"
   },
   "workspace": {
     "subtitle": "De AI genereert antwoorden op basis van de gesprekscontext en de inhoud van bijgevoegde documenten.",

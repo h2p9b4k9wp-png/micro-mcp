@@ -17,7 +17,7 @@
     "sending": "Enviando...",
     "delete": "Eliminar",
     "create": "Crear",
-    "aiConnected": "OpenAI GPT-4.1 mini conectado",
+    "aiConnected": "OpenAI conectado",
     "close": "Cerrar",
     "openMenu": "Abrir menú",
     "logout": "Cerrar sesión",
@@ -25,7 +25,8 @@
     "responseLanguageLabel": "Idioma de respuesta de la IA",
     "themeLabel": "Tema",
     "aiGeneratedNotice": "Contenido generado por IA; puede ser inexacto o diferir de la realidad.",
-    "upgradeToPro": "Cambiar a Pro"
+    "upgradeToPro": "Cambiar a Pro",
+    "aiConnectedWithModel": "OpenAI {model} conectado"
   },
   "workspace": {
     "subtitle": "La IA genera respuestas basándose en el contexto de la conversación y el contenido de cualquier documento adjunto.",

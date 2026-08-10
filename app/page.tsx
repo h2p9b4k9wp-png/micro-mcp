@@ -371,6 +371,11 @@ export default function HomePage() {
   // 💡 [신규] 유료 전환 준비 — 결제 시스템은 아직 없고 profiles.is_pro만 봅니다(기본 false).
   // "Pro로 업그레이드하기" 배지/한도 도달 시 열리는 요청 폼 공용 상태.
   const [isPro, setIsPro] = useState(false);
+  // 💡 [신규] 서버가 실제로 호출 중인 OpenAI 모델명(/api/usage-summary가 내려줍니다).
+  // 사이드바 연동 배지에만 씁니다. 아직 안 왔거나 조회에 실패하면 null로 남고, 그때는
+  // 모델명 없이 "OpenAI 연동됨"만 표시합니다 — 배지는 연결 상태 표시가 본체이고,
+  // 모델명은 아는 경우에만 덧붙이는 정보라 이 순서가 맞습니다.
+  const [aiModel, setAiModel] = useState<string | null>(null);
   // 💡 [신규] 사이드바 당근 게이지(components/carrot-gauge.tsx)용 — 이번 달 채팅/파일 처리
   // 사용량. 한도에 도달했을 때만 알려주던 기존 openUpgradeModal()과 달리, 평소에도 "몇 회
   // 남았는지"를 보여주기 위한 조회 전용 상태입니다(/api/usage-summary, fetchUsageSummary).
@@ -666,6 +671,8 @@ export default function HomePage() {
       if (!res.ok) return;
       const data = await res.json();
       setUsageSummary({ isPro: Boolean(data.isPro), chat: data.chat, file: data.file });
+      // 💡 서버가 실제로 쓰고 있는 모델명 — 사이드바 연동 배지에 그대로 씁니다.
+      if (typeof data.model === 'string' && data.model) setAiModel(data.model);
     } catch (err) {
       console.error('사용량 조회 실패:', err);
     }
@@ -2343,7 +2350,9 @@ export default function HomePage() {
         <div className="p-4 border-t border-[var(--border-default)] text-xs bg-[var(--bg-page-alt)]">
           <div className="flex items-center gap-2">
             <span className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'connected' ? 'bg-[#6EE7B7] animate-pulse' : 'bg-[var(--accent-danger)]'}`}></span>
-            <span className="font-semibold text-[var(--text-primary)]">{t('common.aiConnected')}</span>
+            <span className="font-semibold text-[var(--text-primary)]">
+              {aiModel ? t('common.aiConnectedWithModel', { model: aiModel }) : t('common.aiConnected')}
+            </span>
           </div>
         </div>
 

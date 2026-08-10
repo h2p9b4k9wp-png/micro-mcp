@@ -17,7 +17,7 @@
     "sending": "送信中...",
     "delete": "削除",
     "create": "作成",
-    "aiConnected": "OpenAI GPT-4.1 mini 連携済み",
+    "aiConnected": "OpenAI 連携済み",
     "close": "閉じる",
     "openMenu": "メニューを開く",
     "logout": "ログアウト",
@@ -25,7 +25,8 @@
     "responseLanguageLabel": "AI回答言語",
     "themeLabel": "画面テーマ",
     "aiGeneratedNotice": "AIが生成した内容のため、実際と異なる場合があります。",
-    "upgradeToPro": "Proにアップグレード"
+    "upgradeToPro": "Proにアップグレード",
+    "aiConnectedWithModel": "OpenAI {model} 連携済み"
   },
   "workspace": {
     "subtitle": "添付されたドキュメントの内容と会話の文脈をもとに、AIが実際の回答を導き出します。",
