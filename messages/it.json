@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "Riassunto della lezione",
         "questions": "Domande previste",
-        "examQuestions": "Domande d'esame"
+        "examQuestions": "Domande d'esame",
+        "examQuestionsMore": "Nuove domande"
       },
       "step1": "1. Scegli un professore",
       "step2": "2. Cosa vuoi creare?",

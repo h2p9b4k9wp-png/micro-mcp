@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "Samenvatting van het college",
         "questions": "Verwachte vragen",
-        "examQuestions": "Examenvragen"
+        "examQuestions": "Examenvragen",
+        "examQuestionsMore": "Nieuwe vragen"
       },
       "step1": "1. Kies een docent",
       "step2": "2. Wat wil je maken?",

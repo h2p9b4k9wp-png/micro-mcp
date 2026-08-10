@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "Föreläsningssammanfattning",
         "questions": "Förväntade frågor",
-        "examQuestions": "Tentafrågor"
+        "examQuestions": "Tentafrågor",
+        "examQuestionsMore": "Nya frågor"
       },
       "step1": "1. Välj en lärare",
       "step2": "2. Vad vill du skapa?",

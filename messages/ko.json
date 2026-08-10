@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "강의 요약",
         "questions": "예상 질문",
-        "examQuestions": "예상 시험 문제"
+        "examQuestions": "예상 시험 문제",
+        "examQuestionsMore": "새 문제 받기"
       },
       "step1": "1. 교수님을 고르세요",
       "step2": "2. 무엇을 만들까요?",

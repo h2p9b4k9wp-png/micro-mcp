@@ -29,3 +29,10 @@ export function truncateForPrompt(text: string, maxChars = MAX_PROMPT_TEXT_CHARS
   const tailChars = budget - headChars;
   return `${text.slice(0, headChars)}${ELLIPSIS_MARKER}${text.slice(-tailChars)}`;
 }
+
+// 💡 [신규] "예상 시험 문제" 재생성 시 프롬프트에 함께 넣는 "이미 출제한 문항 요약"의 상한.
+// 재생성할수록 목록이 길어지므로 개수와 길이를 모두 제한합니다 — 오래된 문항까지 영원히
+// 들고 갈 필요는 없고(최근 것들과 겹치지 않는 게 핵심), 요약 한 줄이 길어질 이유도 없습니다.
+// 클라이언트(app/page.tsx)와 서버(app/api/analyze)가 같은 값을 씁니다.
+export const MAX_AVOID_QUESTIONS = 40;
+export const MAX_AVOID_QUESTION_CHARS = 60;

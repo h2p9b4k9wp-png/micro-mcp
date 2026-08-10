@@ -1,3 +1,4 @@
+import { MAX_AVOID_QUESTIONS, MAX_AVOID_QUESTION_CHARS } from '@/lib/truncate-text';
 import { NextResponse } from 'next/server';
 import type { LensId } from '@/lib/lenses';
 import { getSessionSupabase } from '@/lib/auth/session';
@@ -28,13 +29,24 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { text, fileName, lens, responseLanguage, professorContext } = body as {
+    const { text, fileName, lens, responseLanguage, professorContext, avoidQuestions } = body as {
       text?: string;
       fileName?: string;
       lens?: LensId;
       responseLanguage?: string;
       professorContext?: string;
+      avoidQuestions?: string[];
     };
+
+    // 💡 [신규] 이미 출제한 문항 요약 목록 — 클라이언트가 보내는 값이라 서버에서도 개수·길이를
+    // 다시 자릅니다(클라이언트 쪽 상한은 우회 가능). 요약이라 짧고, 여기서 잘려도 중복 회피가
+    // 조금 느슨해질 뿐 기능이 깨지지는 않습니다.
+    const safeAvoidQuestions = Array.isArray(avoidQuestions)
+      ? avoidQuestions
+          .filter((q): q is string => typeof q === 'string' && q.trim().length > 0)
+          .slice(0, MAX_AVOID_QUESTIONS)
+          .map((q) => q.trim().slice(0, MAX_AVOID_QUESTION_CHARS))
+      : undefined;
 
     if (!text) {
       return NextResponse.json({ error: 'No text to analyze.' }, { status: 400 });
@@ -50,7 +62,9 @@ export async function POST(req: Request) {
     const isPro = userId ? await getIsPro(supabase, userId) : false;
     const maxUploadBytes = getPlanLimits(isPro).maxUploadBytes;
     const textBytes =
-      Buffer.byteLength(text, 'utf-8') + (professorContext ? Buffer.byteLength(professorContext, 'utf-8') : 0);
+      Buffer.byteLength(text, 'utf-8') +
+      (professorContext ? Buffer.byteLength(professorContext, 'utf-8') : 0) +
+      (safeAvoidQuestions ? Buffer.byteLength(safeAvoidQuestions.join(''), 'utf-8') : 0);
     if (textBytes > maxUploadBytes) {
       const maxMB = Math.round(maxUploadBytes / (1024 * 1024));
       return NextResponse.json(
@@ -89,6 +103,7 @@ export async function POST(req: Request) {
       lens,
       responseLanguage,
       professorContext,
+      avoidQuestions: safeAvoidQuestions,
     });
 
     // 💡 [신규] 추정이 아니라 OpenAI가 실제로 돌려준 토큰 수를 그대로 기록합니다. 응답을

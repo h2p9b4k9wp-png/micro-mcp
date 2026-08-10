@@ -99,7 +99,8 @@
       "lenses": {
         "digest": "Vorlesungszusammenfassung",
         "questions": "Erwartete Fragen",
-        "examQuestions": "Übungsprüfungsfragen"
+        "examQuestions": "Übungsprüfungsfragen",
+        "examQuestionsMore": "Neue Fragen holen"
       },
       "step1": "1. Professor auswählen",
       "step2": "2. Was soll erstellt werden?",

@@ -29,6 +29,7 @@ import type { NodeId, CircuitGraphState, GraphNode } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
+import { MAX_AVOID_QUESTIONS, MAX_AVOID_QUESTION_CHARS } from '@/lib/truncate-text';
 import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
 import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, logProfileLookupFailure, PRO_PRICE_LABEL } from '@/lib/plan-limits';
@@ -360,6 +361,14 @@ export default function HomePage() {
   // 묶인 상태 기계라, 첨부가 없어도 동작해야 하는 이 기능을 같은 슬롯에 태우면 미니 전선
   // (chatLensGraph)과 마감 등록 인덱스까지 얽힙니다.
   const [professorGenProfessorId, setProfessorGenProfessorId] = useState<string | null>(null);
+  // 💡 [신규] "예상 시험 문제"를 다시 뽑을 때 같은 문제가 반복되지 않도록, 이미 낸 문항의
+  // 한 줄 요약을 교수님별로 기억합니다. 교수님 id를 키로 쓰기 때문에 다른 교수님으로
+  // 넘어가면 그 교수님의 목록이 따로 관리됩니다(요청대로 "교수님이 바뀌면 초기화").
+  // localStorage에 저장하는 이유: 새로고침 한 번에 기억이 날아가면 같은 문제가 다시 나오는데,
+  // 그게 이 기능을 만든 이유 자체라 메모리에만 두면 반쪽이 됩니다. DB까지 갈 일은 아니라고
+  // 판단했습니다 — 기기가 바뀌면 초기화돼도 실질적인 손해가 없고, 마이그레이션·정리 정책·
+  // 목록 상한 같은 부담만 늘어납니다.
+  const [examQuestionHistory, setExamQuestionHistory] = useState<Record<string, string[]>>({});
   const [professorGenLens, setProfessorGenLens] = useState<LensId | null>(null);
   const [professorGenResult, setProfessorGenResult] = useState<
     DigestResult | QuestionsResult | ExamQuestionsResult | null
@@ -590,6 +599,12 @@ export default function HomePage() {
 
   // 💡 [신규] AI 답변 언어 — 저장해둔 값이 있으면 그걸 쓰고, 없으면(처음 로그인) 브라우저
   // 언어를 감지해 기본값으로 씁니다.
+  useEffect(() => {
+    if (!user) return;
+    const saved = loadUserScopedItem<Record<string, string[]>>(user.id, 'mcp_exam_question_history');
+    if (saved && typeof saved === 'object') setExamQuestionHistory(saved);
+  }, [user]);
+
   useEffect(() => {
     if (!user) return;
     const saved = loadUserScopedItem<string>(user.id, 'mcp_response_language');
@@ -1458,12 +1473,13 @@ export default function HomePage() {
     text: string,
     fileName: string,
     lens: LensId,
-    professorContext?: string
+    professorContext?: string,
+    avoidQuestions?: string[]
   ): Promise<unknown> => {
     const res = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, fileName, lens, responseLanguage, professorContext }),
+      body: JSON.stringify({ text, fileName, lens, responseLanguage, professorContext, avoidQuestions }),
     });
     const data = await res.json();
     if (!res.ok) {
@@ -1505,8 +1521,36 @@ export default function HomePage() {
         school: professor?.school,
         department: professor?.department,
       });
-      const result = await runAnalyzeRequest(combined, professor?.name || 'professor', lens, professorContext);
+      // 💡 [신규] 예상 시험 문제만 "이미 낸 문항"을 함께 보내 중복을 피합니다. 다른 관점
+      // (요약·예상 질문)은 다시 눌렀을 때 같은 결과가 나오는 게 오히려 자연스러워서 그대로 둡니다.
+      const avoidQuestions = lens === 'examQuestions' ? examQuestionHistory[professorId] : undefined;
+      const result = await runAnalyzeRequest(
+        combined,
+        professor?.name || 'professor',
+        lens,
+        professorContext,
+        avoidQuestions
+      );
       setProfessorGenResult(result as DigestResult | QuestionsResult | ExamQuestionsResult);
+
+      // 방금 낸 문항을 기억해둡니다 — 문항 전문이 아니라 한 줄 요약(question 앞부분)만
+      // 담아서, 재생성을 반복해도 프롬프트가 눈덩이처럼 커지지 않게 합니다.
+      if (lens === 'examQuestions') {
+        const items = (result as ExamQuestionsResult)?.items ?? [];
+        const summaries = items
+          .map((it) => (it?.question || '').trim().replace(/\s+/g, ' ').slice(0, MAX_AVOID_QUESTION_CHARS))
+          .filter((q) => q.length > 0);
+        if (summaries.length > 0) {
+          setExamQuestionHistory((prev) => {
+            const merged = [...(prev[professorId] ?? []), ...summaries];
+            // 오래된 것부터 버리고 최근 MAX_AVOID_QUESTIONS개만 유지합니다.
+            const trimmed = merged.slice(-MAX_AVOID_QUESTIONS);
+            const next = { ...prev, [professorId]: trimmed };
+            if (user) saveUserScopedItem(user.id, 'mcp_exam_question_history', next);
+            return next;
+          });
+        }
+      }
     } catch (err) {
       setProfessorGenError(err instanceof Error ? err.message : t('workspace.errors.analyzeErrorFallback'));
     } finally {
@@ -2701,7 +2745,14 @@ export default function HomePage() {
                                     : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
                                 }`}
                               >
-                                {i + 1}. {t(`workspace.professorGen.lenses.${def.key}`)}
+                                {/* 💡 [신규] 이미 문제를 받아본 교수님이면 "예상 시험 문제" 대신
+                                    "새 문제 받기"로 바뀝니다 — 같은 버튼을 다시 눌렀을 때 같은
+                                    결과가 나오는 게 아니라 새 문항이 온다는 걸 알려주기 위함입니다. */}
+                                {i + 1}.{' '}
+                                {def.id === 'examQuestions' &&
+                                (examQuestionHistory[professorGenProfessorId] ?? []).length > 0
+                                  ? t('workspace.professorGen.lenses.examQuestionsMore')
+                                  : t(`workspace.professorGen.lenses.${def.key}`)}
                               </button>
                             ))}
                           </div>
