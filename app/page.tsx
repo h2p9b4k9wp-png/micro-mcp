@@ -22,7 +22,7 @@ import {
   Paperclip,
   ImageIcon,
   X,
-  GraduationCap,
+  GraduationCap, FolderOpen,
   ArrowLeft,
   ArrowDown,
 } from 'lucide-react';
@@ -377,6 +377,13 @@ export default function HomePage() {
   // 묶인 상태 기계라, 첨부가 없어도 동작해야 하는 이 기능을 같은 슬롯에 태우면 미니 전선
   // (chatLensGraph)과 마감 등록 인덱스까지 얽힙니다.
   const [professorGenProfessorId, setProfessorGenProfessorId] = useState<string | null>(null);
+  // 💡 [신규] 채팅에서 선택한 "주제 폴더" — 교수님 선택(professorGenProfessorId)과 완전히
+  // 같은 역할을 폴더 축으로 합니다: 이 값이 있으면 logs에 folder_id로 함께 저장되고,
+  // 다음 요청의 "최근 대화 기록"이 그 폴더 대화로 좁혀집니다. 교수님과 동시에 켜지지
+  // 않습니다(둘 중 하나를 고르면 나머지는 해제 — 어느 맥락을 우선할지 애매해지므로).
+  // "지난 대화" 탭의 폴더 필터(logFolderFilter)와는 별개 상태입니다: 그쪽은 보기 필터,
+  // 이쪽은 대화의 맥락 지정이라 서로 영향을 주면 안 됩니다.
+  const [chatFolderId, setChatFolderId] = useState<string | null>(null);
   // 💡 [신규] "예상 시험 문제"를 다시 뽑을 때 같은 문제가 반복되지 않도록, 이미 낸 문항의
   // 한 줄 요약을 교수님별로 기억합니다. 교수님 id를 키로 쓰기 때문에 다른 교수님으로
   // 넘어가면 그 교수님의 목록이 따로 관리됩니다(요청대로 "교수님이 바뀌면 초기화").
@@ -1882,6 +1889,7 @@ export default function HomePage() {
           // 그 교수님 자료가 실렸음). 이제 선택돼 있으면 이름 언급 여부와 무관하게
           // 그 교수님 자료를 배경 정보로 씁니다.
           professorId: professorGenProfessorId,
+          folderId: chatFolderId,
         }),
       });
 
@@ -1952,6 +1960,9 @@ export default function HomePage() {
           // 다음 요청의 "최근 대화 기록"을 이 값으로 좁혀서, 다른 교수님 얘기가 섞여 들어오지
           // 않게 하는 데 씁니다(app/api/chat/route.ts).
           professor_id: professorGenProfessorId,
+          // 💡 [신규] 선택한 주제 폴더(미선택이면 null). professor_id와 같은 용도입니다 —
+          // 다음 요청의 최근 대화 기록을 이 폴더 대화로 좁히는 데 씁니다.
+          folder_id: chatFolderId,
         }])
         .select()
         .single();
@@ -2795,6 +2806,8 @@ export default function HomePage() {
                               setProfessorGenResult(null);
                               setProfessorGenError(null);
                               setProfessorGenLens(null);
+                              // 교수님과 주제 폴더는 동시에 켜지지 않습니다.
+                              if (next) setChatFolderId(null);
                             }}
                             className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                               isSelected
@@ -2878,6 +2891,66 @@ export default function HomePage() {
                     )}
                   </div>
                 )}
+
+                {/* 💡 [신규] 주제 폴더 고르기 — 위 교수님 선택과 같은 역할을 폴더 축으로 합니다.
+                    고른 폴더는 채팅 저장 시 logs.folder_id로 남고, 다음 요청의 "최근 대화 기록"이
+                    그 폴더 대화로 좁혀집니다. 교수님과 동시에 켜지지 않습니다.
+                    폴더 만들기는 "지난 대화" 탭에 이미 있어서 여기서는 고르기만 합니다 —
+                    교수님 등록이 "교수님" 탭에만 있는 것과 같은 구성입니다. */}
+                <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-3 mb-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FolderOpen className="w-4 h-4 text-[#F4679B] shrink-0" strokeWidth={2} />
+                    <h4 className="text-xs font-bold text-[var(--text-primary)]">
+                      {t('workspace.chatFolder.title')}
+                    </h4>
+                  </div>
+
+                  {conversationFolders.length === 0 ? (
+                    <p className="text-[11px] text-[var(--text-muted)]">
+                      {t('workspace.chatFolder.emptyHint')}
+                    </p>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap gap-1.5" role="group" aria-label={t('workspace.chatFolder.selectLabel')}>
+                        {conversationFolders.map((folder) => {
+                          const isSelected = chatFolderId === folder.id;
+                          return (
+                            <button
+                              key={folder.id}
+                              type="button"
+                              aria-pressed={isSelected}
+                              onClick={() => {
+                                // 같은 폴더를 다시 누르면 선택 해제.
+                                const next = isSelected ? null : folder.id;
+                                setChatFolderId(next);
+                                // 폴더와 교수님은 동시에 켜지지 않습니다 — 교수님 쪽을 끄면서
+                                // 그 화면의 결과도 함께 정리합니다(누구 것인지 헷갈리지 않도록).
+                                if (next) {
+                                  setProfessorGenProfessorId(null);
+                                  setProfessorGenResult(null);
+                                  setProfessorGenError(null);
+                                  setProfessorGenLens(null);
+                                }
+                              }}
+                              className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                                isSelected
+                                  ? 'bg-[#F4679B] text-white border-[#F4679B]'
+                                  : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
+                              }`}
+                            >
+                              {folder.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {chatFolderId && (
+                        <p className="text-[10px] text-[var(--text-faint)] mt-1.5 leading-relaxed">
+                          {t('workspace.chatFolder.chatHint')}
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
 
                 {chatLensGraph && (
                   <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-2 mb-3">

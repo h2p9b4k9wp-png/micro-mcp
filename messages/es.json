@@ -106,7 +106,13 @@
       "step2": "2. ¿Qué quieres crear?",
       "chatHint": "Mientras esté seleccionado, las respuestas del chat también usarán el material de este profesor."
     },
-    "scrollToBottom": "Ir al final"
+    "scrollToBottom": "Ir al final",
+    "chatFolder": {
+      "title": "Carpeta de tema",
+      "selectLabel": "Elegir carpeta de tema",
+      "emptyHint": "Crea una carpeta en la pestaña \"Chats anteriores\" y aparecerá aquí. (p. ej. Búsqueda de empleo, Club, Proyecto personal)",
+      "chatHint": "Los chats se guardan en esta carpeta y las respuestas usan chats anteriores de la misma carpeta."
+    }
   },
   "records": {
     "title": "Mis registros",

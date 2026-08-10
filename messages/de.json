@@ -106,7 +106,13 @@
       "step2": "2. Was soll erstellt werden?",
       "chatHint": "Solange ausgewählt, greifen auch die Chat-Antworten unten auf die Unterlagen dieser Lehrkraft zu."
     },
-    "scrollToBottom": "Nach unten"
+    "scrollToBottom": "Nach unten",
+    "chatFolder": {
+      "title": "Themenordner",
+      "selectLabel": "Themenordner wählen",
+      "emptyHint": "Lege im Tab „Frühere Chats\" einen Ordner an, dann erscheint er hier. (z. B. Jobsuche, Verein, Eigenes Projekt)",
+      "chatHint": "Chats werden in diesem Ordner gespeichert, und Antworten greifen auf frühere Chats desselben Ordners zurück."
+    }
   },
   "records": {
     "title": "Meine Aufzeichnungen",

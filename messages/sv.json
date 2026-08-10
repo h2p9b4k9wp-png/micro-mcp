@@ -106,7 +106,13 @@
       "step2": "2. Vad vill du skapa?",
       "chatHint": "Medan den är vald använder även chattsvaren nedan den här lärarens material."
     },
-    "scrollToBottom": "Till botten"
+    "scrollToBottom": "Till botten",
+    "chatFolder": {
+      "title": "Ämnesmapp",
+      "selectLabel": "Välj ämnesmapp",
+      "emptyHint": "Skapa en mapp under fliken \"Tidigare chattar\" så dyker den upp här. (t.ex. Jobbsök, Förening, Eget projekt)",
+      "chatHint": "Chattar sparas i den här mappen och svaren använder tidigare chattar från samma mapp."
+    }
   },
   "records": {
     "title": "Mina uppgifter",

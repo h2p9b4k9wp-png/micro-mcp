@@ -106,7 +106,13 @@
       "step2": "2. Mitä haluat luoda?",
       "chatHint": "Valittuna ollessaan myös alla olevan chatin vastaukset hyödyntävät tämän luennoitsijan materiaaleja."
     },
-    "scrollToBottom": "Siirry alas"
+    "scrollToBottom": "Siirry alas",
+    "chatFolder": {
+      "title": "Aihekansio",
+      "selectLabel": "Valitse aihekansio",
+      "emptyHint": "Luo kansio \"Aiemmat keskustelut\" -välilehdellä, niin se näkyy täällä. (esim. Työnhaku, Ainejärjestö, Oma projekti)",
+      "chatHint": "Keskustelut tallennetaan tähän kansioon, ja vastauksissa hyödynnetään saman kansion aiempia keskusteluja."
+    }
   },
   "records": {
     "title": "Omat tiedot",

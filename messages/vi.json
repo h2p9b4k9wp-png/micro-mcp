@@ -106,7 +106,13 @@
       "step2": "2. Bạn muốn tạo gì?",
       "chatHint": "Khi đang chọn, phần trả lời trong khung chat bên dưới cũng sẽ dùng tài liệu của giảng viên này."
     },
-    "scrollToBottom": "Xuống cuối"
+    "scrollToBottom": "Xuống cuối",
+    "chatFolder": {
+      "title": "Thư mục chủ đề",
+      "selectLabel": "Chọn thư mục chủ đề",
+      "emptyHint": "Tạo thư mục ở tab \"Trò chuyện trước\" thì sẽ hiện ở đây. (ví dụ: Tìm việc, CLB, Dự án cá nhân)",
+      "chatHint": "Cuộc trò chuyện được lưu vào thư mục này, và câu trả lời sẽ tham khảo các trò chuyện cũ trong cùng thư mục."
+    }
   },
   "records": {
     "title": "Nhật ký của tôi",

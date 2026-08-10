@@ -106,7 +106,13 @@
       "step2": "2. Wat wil je maken?",
       "chatHint": "Zolang deze is geselecteerd, gebruiken ook de chatantwoorden hieronder het materiaal van deze docent."
     },
-    "scrollToBottom": "Naar beneden"
+    "scrollToBottom": "Naar beneden",
+    "chatFolder": {
+      "title": "Onderwerpmap",
+      "selectLabel": "Onderwerpmap kiezen",
+      "emptyHint": "Maak een map aan op het tabblad \"Eerdere gesprekken\" en die verschijnt hier. (bijv. Sollicitaties, Vereniging, Eigen project)",
+      "chatHint": "Gesprekken worden in deze map bewaard en antwoorden gebruiken eerdere gesprekken uit dezelfde map."
+    }
   },
   "records": {
     "title": "Mijn overzicht",

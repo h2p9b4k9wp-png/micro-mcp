@@ -106,7 +106,13 @@
       "step2": "2. What should I make?",
       "chatHint": "While selected, chat answers below will also draw on this professor's materials."
     },
-    "scrollToBottom": "Scroll to bottom"
+    "scrollToBottom": "Scroll to bottom",
+    "chatFolder": {
+      "title": "Topic folder",
+      "selectLabel": "Choose a topic folder",
+      "emptyHint": "Create a folder in the \"Past chats\" tab and it will show up here. (e.g. Job hunting, Club, Side project)",
+      "chatHint": "Chats are saved to this folder, and answers draw on past chats from the same folder."
+    }
   },
   "records": {
     "title": "My Records",

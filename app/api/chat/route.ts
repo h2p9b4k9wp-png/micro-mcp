@@ -142,12 +142,18 @@ export async function POST(req: Request) {
     // 💡 [수정] 화면에서 선택된 교수님 id — 아래에서 두 군데에 씁니다: (a) 최근 대화 기록을
     // 그 교수님 것으로 좁히기, (b) 교수님 자료 본문 싣기. 예전에는 (b)에서만 읽었습니다.
     const requestedProfessorId = typeof body.professorId === 'string' && body.professorId ? body.professorId : null;
+    // 💡 [신규] 화면에서 선택된 주제 폴더 id — 교수님과 완전히 같은 방식으로 최근 대화 기록을
+    // 좁히는 데 씁니다. UI에서는 교수님과 동시에 켜지지 않지만, API를 직접 호출하면 둘 다
+    // 올 수 있습니다. 그 경우 교수님을 우선합니다 — 교수님 쪽은 자료 본문까지 함께 싣는
+    // 더 강한 맥락 지정이라, 둘이 부딪히면 좁은 쪽을 따르는 게 맞습니다.
+    const requestedFolderId =
+      !requestedProfessorId && typeof body.folderId === 'string' && body.folderId ? body.folderId : null;
     if (supabase) {
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
       // 💡 [신규] 토큰 사용량 기록·내부 상한 검사에 사용자 id가 필요합니다. 별도로 부르면
       // Auth 서버를 한 번 더 왕복하므로 아래 조회들과 함께 병렬로 처리합니다.
-      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, userResult, professorLogsResult] = await Promise.all([
+      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, userResult, professorLogsResult, folderLogsResult] = await Promise.all([
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
@@ -171,6 +177,16 @@ export async function POST(req: Request) {
               .from('logs')
               .select('content, response')
               .eq('professor_id', requestedProfessorId)
+              .order('created_at', { ascending: false })
+              .limit(3)
+          : Promise.resolve({ data: null, error: null }),
+        // 💡 [신규] 폴더가 선택돼 있으면 그 폴더로 저장된 대화만 따로 조회합니다(위 교수님
+        // 조회와 같은 이유로 병렬).
+        requestedFolderId
+          ? supabase
+              .from('logs')
+              .select('content, response')
+              .eq('folder_id', requestedFolderId)
               .order('created_at', { ascending: false })
               .limit(3)
           : Promise.resolve({ data: null, error: null }),
@@ -210,9 +226,16 @@ export async function POST(req: Request) {
       // 없으면(방금 고른 교수님이라 기록이 아직 없는 경우 등) 예전처럼 전체 최근 3건으로
       // 되돌아갑니다 — 맥락이 아예 없는 것보다는 낫습니다.
       const professorScopedLogs = (professorLogsResult?.data ?? null) as RecentLogRow[] | null;
+      const folderScopedLogs = (folderLogsResult?.data ?? null) as RecentLogRow[] | null;
       const generalLogs = (recentLogsResult.error ? null : recentLogsResult.data) as RecentLogRow[] | null;
-      const recentLogs =
-        professorScopedLogs && professorScopedLogs.length > 0 ? professorScopedLogs : generalLogs;
+      // 좁은 맥락부터 차례로: 교수님 → 폴더 → 전체. 앞의 것이 비어 있으면 다음으로 넘어갑니다.
+      const scopedLogs =
+        professorScopedLogs && professorScopedLogs.length > 0
+          ? { rows: professorScopedLogs, kind: 'professor' as const }
+          : folderScopedLogs && folderScopedLogs.length > 0
+            ? { rows: folderScopedLogs, kind: 'folder' as const }
+            : null;
+      const recentLogs = scopedLogs ? scopedLogs.rows : generalLogs;
 
       if (recentLogs && recentLogs.length > 0) {
         // 💡 [수정] 예전에는 content(내 질문)만 실어서 AI가 자기가 뭐라고 답했는지 몰랐습니다.
@@ -226,9 +249,12 @@ export async function POST(req: Request) {
               : answer;
           return clipped ? `${l.content}\n[답변] ${clipped}` : l.content;
         });
-        const scopeNote = professorScopedLogs && professorScopedLogs.length > 0
-          ? '(지금 선택된 교수님과 나눈 대화만 추렸습니다)'
-          : '';
+        const scopeNote =
+          scopedLogs?.kind === 'professor'
+            ? '(지금 선택된 교수님과 나눈 대화만 추렸습니다)'
+            : scopedLogs?.kind === 'folder'
+              ? '(지금 선택된 주제 폴더의 대화만 추렸습니다)'
+              : '';
         dbContext = `[[최근 대화 기록]]${scopeNote}\n` + lines.join('\n\n') + "\n\n";
       }
 

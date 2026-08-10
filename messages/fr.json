@@ -106,7 +106,13 @@
       "step2": "2. Que voulez-vous créer ?",
       "chatHint": "Tant qu'il est sélectionné, les réponses du chat s'appuieront aussi sur les documents de cet enseignant."
     },
-    "scrollToBottom": "Aller en bas"
+    "scrollToBottom": "Aller en bas",
+    "chatFolder": {
+      "title": "Dossier thématique",
+      "selectLabel": "Choisir un dossier thématique",
+      "emptyHint": "Créez un dossier dans l'onglet « Conversations passées » et il apparaîtra ici. (ex. Recherche d'emploi, Association, Projet perso)",
+      "chatHint": "Les conversations sont enregistrées dans ce dossier et les réponses s'appuient sur les échanges passés du même dossier."
+    }
   },
   "records": {
     "title": "Mes historiques",

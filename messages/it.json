@@ -106,7 +106,13 @@
       "step2": "2. Cosa vuoi creare?",
       "chatHint": "Finché è selezionato, anche le risposte in chat useranno il materiale di questo docente."
     },
-    "scrollToBottom": "Vai in fondo"
+    "scrollToBottom": "Vai in fondo",
+    "chatFolder": {
+      "title": "Cartella tematica",
+      "selectLabel": "Scegli una cartella tematica",
+      "emptyHint": "Crea una cartella nella scheda «Chat precedenti» e comparirà qui. (es. Ricerca lavoro, Associazione, Progetto personale)",
+      "chatHint": "Le chat vengono salvate in questa cartella e le risposte usano le chat precedenti della stessa cartella."
+    }
   },
   "records": {
     "title": "I miei archivi",
