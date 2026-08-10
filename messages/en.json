@@ -745,5 +745,10 @@
     "fileRemaining": "{remaining}/{total} files left",
     "chatLabel": "Chat",
     "fileLabel": "Files"
+  },
+  "proExpiry": {
+    "daysLeft": "{days} days left on Pro",
+    "endsToday": "Your Pro access ends today",
+    "endsOn": "Until {date}"
   }
 }

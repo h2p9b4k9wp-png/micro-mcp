@@ -745,5 +745,10 @@
     "fileRemaining": "Noch {remaining}/{total} Dateien übrig",
     "chatLabel": "Chat",
     "fileLabel": "Dateien"
+  },
+  "proExpiry": {
+    "daysLeft": "Noch {days} Tage Pro",
+    "endsToday": "Pro endet heute",
+    "endsOn": "Bis {date}"
   }
 }

@@ -41,6 +41,7 @@ import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { CarrotGauge } from '@/components/carrot-gauge';
+import { ProExpiryNotice } from '@/components/pro-expiry-notice';
 import { renderTrialResult } from '@/components/trial-result-view';
 import { AnswerDisclosure } from '@/components/answer-disclosure';
 import { useTranslations, useLocale } from 'next-intl';
@@ -383,6 +384,10 @@ export default function HomePage() {
     isPro: boolean;
     chat: { used: number; limit: number };
     file: { used: number; limit: number };
+    // 💡 [신규] 코드 기반 Pro의 남은 기간 안내(components/pro-expiry-notice.tsx)용.
+    // 결제 기반 Pro는 proExpiresAt이 항상 null이라 안내가 뜨지 않습니다.
+    proSource: 'payment' | 'code' | null;
+    proExpiresAt: string | null;
   } | null>(null);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [upgradeContext, setUpgradeContext] = useState<string | null>(null);
@@ -670,7 +675,13 @@ export default function HomePage() {
       const res = await fetch('/api/usage-summary');
       if (!res.ok) return;
       const data = await res.json();
-      setUsageSummary({ isPro: Boolean(data.isPro), chat: data.chat, file: data.file });
+      setUsageSummary({
+        isPro: Boolean(data.isPro),
+        chat: data.chat,
+        file: data.file,
+        proSource: data.proSource ?? null,
+        proExpiresAt: data.proExpiresAt ?? null,
+      });
       // 💡 서버가 실제로 쓰고 있는 모델명 — 사이드바 연동 배지에 그대로 씁니다.
       if (typeof data.model === 'string' && data.model) setAiModel(data.model);
     } catch (err) {
@@ -2359,6 +2370,19 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+
+        {/* 💡 [신규] 코드 기반 Pro의 남은 기간 안내 — 무료 사용자의 당근 게이지가 있던
+            자리와 같은 구역(사이드바 하단, 연결 배지 바로 위)에 둡니다. 두 대상이 겹치지
+            않아서(게이지는 무료, 이쪽은 코드 Pro) 같은 자리를 나눠 쓸 수 있습니다.
+            결제 Pro와 무료 사용자에게는 컴포넌트가 스스로 null을 반환해 아무것도 그리지
+            않습니다. */}
+        {usageSummary && (
+          <ProExpiryNotice
+            proSource={usageSummary.proSource}
+            proExpiresAt={usageSummary.proExpiresAt}
+            t={t}
+          />
+        )}
 
         {/* 좌측 하단 MCP 연결 상태 배지 UI */}
         <div className="p-4 border-t border-[var(--border-default)] text-xs bg-[var(--bg-page-alt)]">

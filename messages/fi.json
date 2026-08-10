@@ -745,5 +745,10 @@
     "fileRemaining": "{remaining}/{total} tiedostoa jäljellä",
     "chatLabel": "Keskustelu",
     "fileLabel": "Tiedostot"
+  },
+  "proExpiry": {
+    "daysLeft": "Pro-käyttöä jäljellä {days} päivää",
+    "endsToday": "Pro-käyttösi päättyy tänään",
+    "endsOn": "{date} asti"
   }
 }

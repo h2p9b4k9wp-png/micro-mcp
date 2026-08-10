@@ -745,5 +745,10 @@
     "fileRemaining": "파일 처리 {remaining}/{total}회 남음",
     "chatLabel": "채팅",
     "fileLabel": "파일"
+  },
+  "proExpiry": {
+    "daysLeft": "Pro 이용 {days}일 남았어요",
+    "endsToday": "오늘 Pro 이용이 끝나요",
+    "endsOn": "{date}까지"
   }
 }

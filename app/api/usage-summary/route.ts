@@ -20,7 +20,11 @@ export async function GET() {
 
     const monthStart = getMonthStartISOString();
     const [{ data: profile }, { count: chatCount }, { count: fileCount }] = await Promise.all([
-      supabase.from('profiles').select('is_pro').eq('id', userId).single(),
+      // 💡 [수정] pro_source/pro_expires_at도 함께 읽습니다 — 소사이어티 코드로 얻은 Pro는
+      // 기간이 끝나면 cron이 조용히 강등시키는데(app/api/cron/cleanup-logs), 지금까지
+      // 화면 어디에서도 만료가 다가온다는 걸 알려주지 않아 사용자 입장에서는 어느 날 갑자기
+      // Pro가 꺼집니다. 이 두 값이 그 안내의 유일한 근거입니다.
+      supabase.from('profiles').select('is_pro, pro_source, pro_expires_at').eq('id', userId).single(),
       supabase.from('logs').select('id', { count: 'exact', head: true }).gte('created_at', monthStart),
       supabase.from('document_uploads').select('id', { count: 'exact', head: true }).gte('created_at', monthStart),
     ]);
@@ -39,6 +43,11 @@ export async function GET() {
       // 조회 전용 라우트에 얹어 내려보냅니다 — 이 값만 보고 배지를 그리면 환경변수를
       // 바꾸는 즉시 화면도 따라갑니다.
       model: getAiModel(),
+      // 결제 기반 Pro는 pro_expires_at이 항상 null이라(구독 종료는 Polar 웹훅이 알려줌)
+      // 이 값이 채워져 있는 건 코드 기반 Pro뿐입니다. 그래도 클라이언트가 조건을 명시적으로
+      // 쓸 수 있도록 pro_source도 함께 내려보냅니다.
+      proSource: (profile?.pro_source as 'payment' | 'code' | null) ?? null,
+      proExpiresAt: (profile?.pro_expires_at as string | null) ?? null,
     });
   } catch (error) {
     console.error('[usage-summary] 조회 중 오류 발생:', error);

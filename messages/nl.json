@@ -745,5 +745,10 @@
     "fileRemaining": "Nog {remaining}/{total} bestanden over",
     "chatLabel": "Chat",
     "fileLabel": "Bestanden"
+  },
+  "proExpiry": {
+    "daysLeft": "Nog {days} dagen Pro",
+    "endsToday": "Je Pro-toegang stopt vandaag",
+    "endsOn": "Tot {date}"
   }
 }
