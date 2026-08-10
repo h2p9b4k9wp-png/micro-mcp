@@ -619,7 +619,7 @@
     "backLink": "← Zurück zu Carrotly",
     "title": "Datenschutzerklärung",
     "lastUpdated": "Zuletzt aktualisiert: August 2026",
-    "intro": "Carrotly (&bdquo;wir&ldquo;, &bdquo;uns&ldquo;, &bdquo;der Dienst&ldquo;) ist ein persönlicher KI-Arbeitsassistent. Diese Seite erklärt, welche Informationen wir bei der Nutzung des Dienstes erheben, warum wir sie erheben, mit wem wir sie teilen, wie lange wir sie speichern und welche Rechte Sie in Bezug darauf haben.",
+    "intro": "Carrotly („wir“, „uns“, „der Dienst“) ist ein persönlicher KI-Arbeitsassistent. Diese Seite erklärt, welche Informationen wir bei der Nutzung des Dienstes erheben, warum wir sie erheben, mit wem wir sie teilen, wie lange wir sie speichern und welche Rechte Sie in Bezug darauf haben.",
     "collect": {
       "heading": "Informationen, die wir erheben",
       "email": "<b>Ihre E-Mail-Adresse</b>, verwendet zur Erstellung und Identifizierung Ihres Kontos.",
@@ -636,7 +636,7 @@
     "sharing": {
       "heading": "Mit wem wir sie teilen",
       "intro": "Wir verkaufen Ihre Daten nicht. Wir teilen sie nur mit den Dienstleistern, die Carrotly zum Laufen bringen:",
-      "openai": "<b>OpenAI</b> — erhält den Text Ihrer Eingaben, angehängten Dokumente und Bilder, um die von Ihnen angeforderte KI-Analyse und -Antworten zu erstellen. Diese Verarbeitung erfolgt in den USA, was auch eine Übermittlung Ihrer Daten außerhalb der EU/des EWR darstellt — siehe &bdquo;Internationale Datenübermittlungen&ldquo; unten.",
+      "openai": "<b>OpenAI</b> — erhält den Text Ihrer Eingaben, angehängten Dokumente und Bilder, um die von Ihnen angeforderte KI-Analyse und -Antworten zu erstellen. Diese Verarbeitung erfolgt in den USA, was auch eine Übermittlung Ihrer Daten außerhalb der EU/des EWR darstellt — siehe „Internationale Datenübermittlungen“ unten.",
       "supabase": "<b>Supabase</b> — unser Datenbank- und Authentifizierungsanbieter, der zur Speicherung Ihres Kontos, Ihrer Dateien und Ihres Gesprächsverlaufs verwendet wird. Ihre Daten werden in der Region <b>{region}</b> von Supabase gehostet.",
       "polar": "<b>Polar</b> — unser Zahlungsdienstleister, der Checkout und Abrechnung des Pro-Abonnements übernimmt. Polar erhält die für die Zahlungsabwicklung erforderlichen Informationen (z. B. Ihre E-Mail-Adresse); wir übermitteln weder Ihre Dateien noch Ihren Gesprächsverlauf.",
       "analytics": "<b>Vercel Analytics</b> — erfasst anonyme Seitenaufruf-Statistiken, um zu verstehen, welche Seiten besucht werden. Verwendet keine Cookies und identifiziert keine Personen."
@@ -656,7 +656,7 @@
     "rights": {
       "heading": "Ihre Rechte",
       "copy": "Sie können jederzeit eine Kopie der über Sie gespeicherten Daten anfordern, indem Sie uns unter der unten stehenden Adresse eine E-Mail senden — wir antworten so schnell wie möglich.",
-      "delete": "Um Ihr Konto zu löschen, verwenden Sie nach der Anmeldung die Schaltfläche &bdquo;Konto löschen&ldquo; unten in der Seitenleiste — sie löscht sofort und dauerhaft Ihre hochgeladenen Dateien, Dozentenmaterialien, den Gesprächsverlauf sowie Ihre Anmeldedaten (E-Mail, Anmeldeinformationen) selbst, ohne dass Sie uns vorher kontaktieren müssen. Wenn Sie möchten, dass wir das für Sie erledigen, schreiben Sie uns, und wir löschen es manuell.",
+      "delete": "Um Ihr Konto zu löschen, verwenden Sie nach der Anmeldung die Schaltfläche „Konto löschen“ unten in der Seitenleiste — sie löscht sofort und dauerhaft Ihre hochgeladenen Dateien, Dozentenmaterialien, den Gesprächsverlauf sowie Ihre Anmeldedaten (E-Mail, Anmeldeinformationen) selbst, ohne dass Sie uns vorher kontaktieren müssen. Wenn Sie möchten, dass wir das für Sie erledigen, schreiben Sie uns, und wir löschen es manuell.",
       "proSubscription": "Wenn Sie ein aktives Pro-Abonnement haben, wird dieses beim Löschen Ihres Kontos nicht automatisch gekündigt — Polar (unser Merchant of Record, siehe <termslink>Nutzungsbedingungen</termslink>) wickelt die Abrechnung unabhängig von Ihrem Carrotly-Konto ab, sodass wir es nicht in Ihrem Namen kündigen können. Sie müssen Ihr Abonnement zuerst kündigen (über den Link in der Quittungs-/Bestätigungs-E-Mail von Polar oder indem Sie uns schreiben), bevor wir Ihr Konto löschen können."
     },
     "contact": {
@@ -671,7 +671,7 @@
     "backLink": "← Zurück zu Carrotly",
     "title": "Nutzungsbedingungen",
     "lastUpdated": "Zuletzt aktualisiert: August 2026",
-    "intro": "Diese Bedingungen regeln Ihre Nutzung von Carrotly (&bdquo;wir&ldquo;, &bdquo;uns&ldquo;, &bdquo;der Dienst&ldquo;), einem persönlichen KI-Arbeitsassistenten, der von Ihnen hochgeladene Dokumente liest und organisiert. Durch die Erstellung eines Kontos oder die Nutzung des Dienstes stimmen Sie diesen Bedingungen zu. Wenn Sie nicht einverstanden sind, nutzen Sie den Dienst bitte nicht.",
+    "intro": "Diese Bedingungen regeln Ihre Nutzung von Carrotly („wir“, „uns“, „der Dienst“), einem persönlichen KI-Arbeitsassistenten, der von Ihnen hochgeladene Dokumente liest und organisiert. Durch die Erstellung eines Kontos oder die Nutzung des Dienstes stimmen Sie diesen Bedingungen zu. Wenn Sie nicht einverstanden sind, nutzen Sie den Dienst bitte nicht.",
     "service": {
       "heading": "Der Dienst",
       "body": "Mit Carrotly können Sie Dokumente, Fotos und andere Dateien hochladen; der Dienst nutzt KI, um Fristen zu extrahieren, Inhalte zusammenzufassen, wahrscheinliche Prüfungs-/Aufgabenfragen vorherzusagen und Fragen zu Ihren hochgeladenen Inhalten zu beantworten. Einige Funktionen erfordern ein Konto; ein begrenzter Funktionsumfang kann ohne Konto getestet werden, vorbehaltlich der im Produkt selbst beschriebenen Nutzungsgrenzen."
@@ -682,8 +682,8 @@
     },
     "subscriptions": {
       "heading": "Abonnements und Zahlung",
-      "intro": "Carrotly bietet einen kostenlosen Tarif sowie einen kostenpflichtigen &bdquo;Pro&ldquo;-Tarif ({price}) mit höheren Nutzungsgrenzen — aktuelle Details finden Sie unter <pricinglink>Pricing</pricinglink>.",
-      "mor": "<b>Alle Zahlungen werden von Polar Software, Inc. (&bdquo;Polar&ldquo;) abgewickelt, das für diesen Kauf als Merchant of Record (Vertragspartner des Zahlungsvorgangs) auftritt.</b> Das bedeutet, dass Polar — und nicht Carrotly — der Verkäufer ist, mit dem Sie für die eigentliche Transaktion einen Vertrag eingehen: Polar erscheint als Händler auf Ihrer Karten-/Kontoabrechnung, erhebt und führt die anfallende Umsatzsteuer bzw. Mehrwertsteuer ab und übernimmt Abrechnung, Rechnungsstellung und den zahlungsbezogenen Kundensupport. Rückerstattungsanfragen, Abrechnungsstreitigkeiten und Rückbuchungen werden gemäß den <polarlink>eigenen Bedingungen von Polar</polarlink> bearbeitet. Wir erhalten lediglich die Bestätigung, dass eine Zahlung erfolgreich war (sowie die mit Ihrem Konto verknüpfte Referenz), um Sie auf Pro hochzustufen — wir erhalten oder speichern nicht Ihre vollständigen Zahlungskartendaten. Sofern Ihnen als Verbraucher in Ihrer Rechtsordnung für diesen Kauf ein gesetzliches Widerrufsrecht zusteht, üben Sie dieses gegenüber Polar aus, da Polar der Merchant of Record der Transaktion ist.",
+      "intro": "Carrotly bietet einen kostenlosen Tarif sowie einen kostenpflichtigen „Pro“-Tarif ({price}) mit höheren Nutzungsgrenzen — aktuelle Details finden Sie unter <pricinglink>Pricing</pricinglink>.",
+      "mor": "<b>Alle Zahlungen werden von Polar Software, Inc. („Polar“) abgewickelt, das für diesen Kauf als Merchant of Record (Vertragspartner des Zahlungsvorgangs) auftritt.</b> Das bedeutet, dass Polar — und nicht Carrotly — der Verkäufer ist, mit dem Sie für die eigentliche Transaktion einen Vertrag eingehen: Polar erscheint als Händler auf Ihrer Karten-/Kontoabrechnung, erhebt und führt die anfallende Umsatzsteuer bzw. Mehrwertsteuer ab und übernimmt Abrechnung, Rechnungsstellung und den zahlungsbezogenen Kundensupport. Rückerstattungsanfragen, Abrechnungsstreitigkeiten und Rückbuchungen werden gemäß den <polarlink>eigenen Bedingungen von Polar</polarlink> bearbeitet. Wir erhalten lediglich die Bestätigung, dass eine Zahlung erfolgreich war (sowie die mit Ihrem Konto verknüpfte Referenz), um Sie auf Pro hochzustufen — wir erhalten oder speichern nicht Ihre vollständigen Zahlungskartendaten. Sofern Ihnen als Verbraucher in Ihrer Rechtsordnung für diesen Kauf ein gesetzliches Widerrufsrecht zusteht, üben Sie dieses gegenüber Polar aus, da Polar der Merchant of Record der Transaktion ist.",
       "renewal": "Abonnements verlängern sich automatisch mit jedem Abrechnungszeitraum, bis sie gekündigt werden. Sie können Ihr Abonnement über die Quittungs-/Bestätigungs-E-Mail verwalten oder kündigen, die Polar Ihnen nach dem Kauf zusendet, oder uns unter der unten angegebenen Adresse kontaktieren — wir helfen Ihnen dann, Polar zu erreichen."
     },
     "aiContent": {
@@ -705,15 +705,15 @@
     },
     "disclaimer": {
       "heading": "Haftungsausschluss und Haftungsbeschränkung",
-      "body": "Carrotly wird &bdquo;wie besehen&ldquo; ohne jegliche Gewährleistung bereitgestellt. Wir garantieren nicht, dass der Dienst unterbrechungsfrei oder fehlerfrei ist oder dass die KI-Ausgaben korrekt sind. Im gesetzlich zulässigen Höchstmaß haftet Carrotly nicht für indirekte, beiläufige oder Folgeschäden, die aus Ihrer Nutzung des Dienstes entstehen — einschließlich Entscheidungen, die auf Grundlage KI-generierter Inhalte getroffen wurden."
+      "body": "Carrotly wird „wie besehen“ ohne jegliche Gewährleistung bereitgestellt. Wir garantieren nicht, dass der Dienst unterbrechungsfrei oder fehlerfrei ist oder dass die KI-Ausgaben korrekt sind. Im gesetzlich zulässigen Höchstmaß haftet Carrotly nicht für indirekte, beiläufige oder Folgeschäden, die aus Ihrer Nutzung des Dienstes entstehen — einschließlich Entscheidungen, die auf Grundlage KI-generierter Inhalte getroffen wurden."
     },
     "changes": {
       "heading": "Änderungen dieser Bedingungen",
-      "body": "Wir können diese Bedingungen im Zuge von Änderungen am Dienst aktualisieren. Bei wesentlichen Änderungen aktualisieren wir das oben genannte Datum &bdquo;Zuletzt aktualisiert&ldquo;; die weitere Nutzung des Dienstes nach einer Änderung gilt als Zustimmung zu den aktualisierten Bedingungen."
+      "body": "Wir können diese Bedingungen im Zuge von Änderungen am Dienst aktualisieren. Bei wesentlichen Änderungen aktualisieren wir das oben genannte Datum „Zuletzt aktualisiert“; die weitere Nutzung des Dienstes nach einer Änderung gilt als Zustimmung zu den aktualisierten Bedingungen."
     },
     "governingLaw": {
       "heading": "Anwendbares Recht",
-      "body": "[Bitte anwendbares Recht / Gerichtsstand eintragen, z. B. &bdquo;das Recht der Republik Korea&ldquo;]."
+      "body": "[Bitte anwendbares Recht / Gerichtsstand eintragen, z. B. „das Recht der Republik Korea“]."
     },
     "contact": {
       "heading": "Kontakt",

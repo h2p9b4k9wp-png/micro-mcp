@@ -619,7 +619,7 @@
     "backLink": "← Retour à Carrotly",
     "title": "Politique de confidentialité",
     "lastUpdated": "Dernière mise à jour : août 2026",
-    "intro": "Carrotly (&laquo;&nbsp;nous&nbsp;&raquo;, &laquo;&nbsp;notre&nbsp;&raquo;, &laquo;&nbsp;le service&nbsp;&raquo;) est un assistant de travail personnel basé sur l&rsquo;IA. Cette page explique quelles informations nous collectons lorsque vous utilisez le service, pourquoi nous les collectons, avec qui nous les partageons, combien de temps nous les conservons et quels droits vous avez sur elles.",
+    "intro": "Carrotly (« nous », « notre », « le service ») est un assistant de travail personnel basé sur l'IA. Cette page explique quelles informations nous collectons lorsque vous utilisez le service, pourquoi nous les collectons, avec qui nous les partageons, combien de temps nous les conservons et quels droits vous avez sur elles.",
     "collect": {
       "heading": "Informations que nous collectons",
       "email": "<b>Votre adresse e-mail</b>, utilisée pour créer et identifier votre compte.",
@@ -636,32 +636,32 @@
     "sharing": {
       "heading": "Avec qui nous les partageons",
       "intro": "Nous ne vendons pas vos données. Nous les partageons uniquement avec les prestataires de services qui font fonctionner Carrotly :",
-      "openai": "<b>OpenAI</b> — reçoit le texte de vos messages, documents joints et images afin de générer les analyses et réponses par IA que vous demandez. Ce traitement a lieu aux États-Unis, ce qui constitue également un transfert de vos données hors UE/EEE — voir &laquo;&nbsp;Transferts internationaux de données&nbsp;&raquo; ci-dessous.",
-      "supabase": "<b>Supabase</b> — notre fournisseur de base de données et d&rsquo;authentification, utilisé pour stocker votre compte, vos fichiers et votre historique de conversations. Vos données sont hébergées dans la région <b>{region}</b> de Supabase.",
-      "polar": "<b>Polar</b> — notre prestataire de paiement, utilisé pour gérer le paiement et la facturation de l&rsquo;abonnement Pro. Polar reçoit les informations nécessaires au traitement de votre paiement (comme votre adresse e-mail) ; nous ne lui transmettons ni vos fichiers ni votre historique de conversations.",
-      "analytics": "<b>Vercel Analytics</b> — collecte des statistiques anonymes de pages vues pour nous aider à comprendre quelles pages sont consultées. N&rsquo;utilise pas de cookies et n&rsquo;identifie pas les personnes."
+      "openai": "<b>OpenAI</b> — reçoit le texte de vos messages, documents joints et images afin de générer les analyses et réponses par IA que vous demandez. Ce traitement a lieu aux États-Unis, ce qui constitue également un transfert de vos données hors UE/EEE — voir « Transferts internationaux de données » ci-dessous.",
+      "supabase": "<b>Supabase</b> — notre fournisseur de base de données et d'authentification, utilisé pour stocker votre compte, vos fichiers et votre historique de conversations. Vos données sont hébergées dans la région <b>{region}</b> de Supabase.",
+      "polar": "<b>Polar</b> — notre prestataire de paiement, utilisé pour gérer le paiement et la facturation de l'abonnement Pro. Polar reçoit les informations nécessaires au traitement de votre paiement (comme votre adresse e-mail) ; nous ne lui transmettons ni vos fichiers ni votre historique de conversations.",
+      "analytics": "<b>Vercel Analytics</b> — collecte des statistiques anonymes de pages vues pour nous aider à comprendre quelles pages sont consultées. N'utilise pas de cookies et n'identifie pas les personnes."
     },
     "retention": {
       "heading": "Durée de conservation",
-      "account": "Les données de votre compte (e-mail, fichiers, échéances) sont conservées jusqu&rsquo;à la suppression de votre compte.",
-      "logs": "Dans l&rsquo;offre gratuite, l&rsquo;historique des conversations est conservé 30 jours puis supprimé automatiquement. Les comptes Pro n&rsquo;ont pas de suppression automatique — l&rsquo;historique est conservé jusqu&rsquo;à la suppression du compte, comme le reste des données.",
+      "account": "Les données de votre compte (e-mail, fichiers, échéances) sont conservées jusqu'à la suppression de votre compte.",
+      "logs": "Dans l'offre gratuite, l'historique des conversations est conservé 30 jours puis supprimé automatiquement. Les comptes Pro n'ont pas de suppression automatique — l'historique est conservé jusqu'à la suppression du compte, comme le reste des données.",
       "ip": "Les adresses IP collectées pour la prévention des abus lors de l'essai sans connexion sont automatiquement supprimées après {days} jours."
     },
     "transfers": {
       "heading": "Transferts internationaux de données",
-      "body1": "Vos données sont stockées et traitées en Corée du Sud (Séoul), où Supabase héberge notre base de données — ce qui se situe hors UE/Espace économique européen (EEE). Si vous êtes situé dans l&rsquo;UE/EEE, cela signifie que vos données personnelles sont transférées vers un pays tiers.",
+      "body1": "Vos données sont stockées et traitées en Corée du Sud (Séoul), où Supabase héberge notre base de données — ce qui se situe hors UE/Espace économique européen (EEE). Si vous êtes situé dans l'UE/EEE, cela signifie que vos données personnelles sont transférées vers un pays tiers.",
       "body2": "Nous nous appuyons sur les clauses contractuelles types (Standard Contractual Clauses, SCC) incluses dans notre accord de traitement des données (DPA) avec Supabase comme base juridique de ce transfert. Il en va de même pour le transfert vers OpenAI (voir ci-dessus), qui traite les données aux États-Unis.",
-      "body3": "Pour toute question sur ces transferts, contactez-nous à l&rsquo;adresse ci-dessous."
+      "body3": "Pour toute question sur ces transferts, contactez-nous à l'adresse ci-dessous."
     },
     "rights": {
       "heading": "Vos droits",
-      "copy": "Vous pouvez demander à tout moment une copie des données que nous détenons à votre sujet en nous écrivant à l&rsquo;adresse ci-dessous — nous vous répondrons dès que possible.",
-      "delete": "Pour supprimer votre compte, utilisez le bouton &laquo;&nbsp;Supprimer le compte&nbsp;&raquo; en bas de la barre latérale une fois connecté — il supprime immédiatement et définitivement vos fichiers téléversés, documents de professeurs, historique de conversations, ainsi que vos identifiants de connexion (e-mail, informations de connexion), sans que vous ayez besoin de nous contacter au préalable. Si vous préférez que nous le fassions pour vous, écrivez-nous et nous le supprimerons manuellement.",
-      "proSubscription": "Si vous avez un abonnement Pro actif, la suppression de votre compte ne l&rsquo;annule pas — Polar (notre Merchant of Record, voir les <termslink>Conditions d&rsquo;utilisation</termslink>) gère la facturation indépendamment de votre compte Carrotly, nous ne pouvons donc pas l&rsquo;annuler à votre place. Vous devrez d&rsquo;abord annuler votre abonnement (via le lien dans l&rsquo;e-mail de reçu/confirmation envoyé par Polar, ou en nous écrivant) avant que nous puissions supprimer votre compte."
+      "copy": "Vous pouvez demander à tout moment une copie des données que nous détenons à votre sujet en nous écrivant à l'adresse ci-dessous — nous vous répondrons dès que possible.",
+      "delete": "Pour supprimer votre compte, utilisez le bouton « Supprimer le compte » en bas de la barre latérale une fois connecté — il supprime immédiatement et définitivement vos fichiers téléversés, documents de professeurs, historique de conversations, ainsi que vos identifiants de connexion (e-mail, informations de connexion), sans que vous ayez besoin de nous contacter au préalable. Si vous préférez que nous le fassions pour vous, écrivez-nous et nous le supprimerons manuellement.",
+      "proSubscription": "Si vous avez un abonnement Pro actif, la suppression de votre compte ne l'annule pas — Polar (notre Merchant of Record, voir les <termslink>Conditions d'utilisation</termslink>) gère la facturation indépendamment de votre compte Carrotly, nous ne pouvons donc pas l'annuler à votre place. Vous devrez d'abord annuler votre abonnement (via le lien dans l'e-mail de reçu/confirmation envoyé par Polar, ou en nous écrivant) avant que nous puissions supprimer votre compte."
     },
     "contact": {
       "heading": "Contact",
-      "body": "Les questions concernant cette politique, ou les demandes d&rsquo;accès ou de suppression de vos données, peuvent être envoyées à <mailto>kcw022@naver.com</mailto>."
+      "body": "Les questions concernant cette politique, ou les demandes d'accès ou de suppression de vos données, peuvent être envoyées à <mailto>kcw022@naver.com</mailto>."
     },
     "region": "Asie du Nord-Est (Séoul), Corée du Sud"
   },
@@ -671,10 +671,10 @@
     "backLink": "← Retour à Carrotly",
     "title": "Conditions d'utilisation",
     "lastUpdated": "Dernière mise à jour : août 2026",
-    "intro": "Les présentes conditions régissent votre utilisation de Carrotly (&laquo;&nbsp;nous&nbsp;&raquo;, &laquo;&nbsp;notre&nbsp;&raquo;, &laquo;&nbsp;le service&nbsp;&raquo;), un assistant de travail personnel basé sur l&rsquo;IA qui lit et organise les documents que vous téléversez. En créant un compte ou en utilisant le service, vous acceptez ces conditions. Si vous n&rsquo;êtes pas d&rsquo;accord, veuillez ne pas utiliser le service.",
+    "intro": "Les présentes conditions régissent votre utilisation de Carrotly (« nous », « notre », « le service »), un assistant de travail personnel basé sur l'IA qui lit et organise les documents que vous téléversez. En créant un compte ou en utilisant le service, vous acceptez ces conditions. Si vous n'êtes pas d'accord, veuillez ne pas utiliser le service.",
     "service": {
       "heading": "Le service",
-      "body": "Carrotly vous permet de téléverser des documents, photos et autres fichiers, et utilise l&rsquo;IA pour extraire des échéances, résumer du contenu, prédire des questions probables d&rsquo;examen/de devoir, et répondre à des questions sur ce que vous avez téléversé. Certaines fonctionnalités nécessitent un compte ; un nombre limité de fonctionnalités peut être testé sans compte, sous réserve des limites d&rsquo;utilisation décrites dans le produit lui-même."
+      "body": "Carrotly vous permet de téléverser des documents, photos et autres fichiers, et utilise l'IA pour extraire des échéances, résumer du contenu, prédire des questions probables d'examen/de devoir, et répondre à des questions sur ce que vous avez téléversé. Certaines fonctionnalités nécessitent un compte ; un nombre limité de fonctionnalités peut être testé sans compte, sous réserve des limites d'utilisation décrites dans le produit lui-même."
     },
     "account": {
       "heading": "Votre compte",
@@ -682,38 +682,38 @@
     },
     "subscriptions": {
       "heading": "Abonnements et paiement",
-      "intro": "Carrotly propose une offre gratuite et une offre payante &laquo;&nbsp;Pro&nbsp;&raquo; ({price}) avec des limites d&rsquo;utilisation plus élevées — voir <pricinglink>Pricing</pricinglink> pour les détails actuels.",
-      "mor": "<b>Tous les paiements sont traités par Polar Software, Inc. (&laquo;&nbsp;Polar&nbsp;&raquo;), agissant en tant que Merchant of Record pour cet achat.</b> Cela signifie que Polar — et non Carrotly — est le vendeur avec lequel vous contractez pour la transaction elle-même : Polar apparaît comme le marchand sur votre relevé de carte/bancaire, perçoit et reverse la taxe de vente ou TVA applicable, et gère la facturation ainsi que le support client lié aux paiements. Les demandes de remboursement, litiges de facturation et rétrofacturations sont traités selon les <polarlink>conditions propres à Polar</polarlink>. Nous recevons uniquement la confirmation que le paiement a abouti (et la référence liée à votre compte) afin de vous faire passer en Pro — nous ne recevons ni ne conservons vos coordonnées bancaires complètes. Si vous êtes un consommateur dans une juridiction disposant d&rsquo;un droit de rétractation légal ou d&rsquo;un délai de réflexion pour cet achat, ce droit s&rsquo;exerce auprès de Polar, celui-ci étant le Merchant of Record de la transaction.",
-      "renewal": "Les abonnements se renouvellent automatiquement à chaque période de facturation jusqu&rsquo;à leur résiliation. Vous pouvez gérer ou résilier votre abonnement via l&rsquo;e-mail de reçu/confirmation que Polar vous envoie après l&rsquo;achat, ou en nous contactant à l&rsquo;adresse ci-dessous, et nous vous aiderons à joindre Polar."
+      "intro": "Carrotly propose une offre gratuite et une offre payante « Pro » ({price}) avec des limites d'utilisation plus élevées — voir <pricinglink>Pricing</pricinglink> pour les détails actuels.",
+      "mor": "<b>Tous les paiements sont traités par Polar Software, Inc. (« Polar »), agissant en tant que Merchant of Record pour cet achat.</b> Cela signifie que Polar — et non Carrotly — est le vendeur avec lequel vous contractez pour la transaction elle-même : Polar apparaît comme le marchand sur votre relevé de carte/bancaire, perçoit et reverse la taxe de vente ou TVA applicable, et gère la facturation ainsi que le support client lié aux paiements. Les demandes de remboursement, litiges de facturation et rétrofacturations sont traités selon les <polarlink>conditions propres à Polar</polarlink>. Nous recevons uniquement la confirmation que le paiement a abouti (et la référence liée à votre compte) afin de vous faire passer en Pro — nous ne recevons ni ne conservons vos coordonnées bancaires complètes. Si vous êtes un consommateur dans une juridiction disposant d'un droit de rétractation légal ou d'un délai de réflexion pour cet achat, ce droit s'exerce auprès de Polar, celui-ci étant le Merchant of Record de la transaction.",
+      "renewal": "Les abonnements se renouvellent automatiquement à chaque période de facturation jusqu'à leur résiliation. Vous pouvez gérer ou résilier votre abonnement via l'e-mail de reçu/confirmation que Polar vous envoie après l'achat, ou en nous contactant à l'adresse ci-dessous, et nous vous aiderons à joindre Polar."
     },
     "aiContent": {
       "heading": "Contenu généré par l'IA",
-      "body": "Les résumés, questions probables, échéances et réponses sont générés par des modèles d&rsquo;IA et peuvent être incomplets, obsolètes ou erronés. Carrotly est une aide à l&rsquo;étude/au travail, pas un substitut à la lecture de votre document source réel ou à la vérification par vous-même des dates et exigences importantes. Ne vous fiez pas uniquement aux résultats de l&rsquo;IA pour tout ce qui a des conséquences réelles (dates d&rsquo;examen, exigences de devoirs, décisions juridiques ou médicales, etc.)."
+      "body": "Les résumés, questions probables, échéances et réponses sont générés par des modèles d'IA et peuvent être incomplets, obsolètes ou erronés. Carrotly est une aide à l'étude/au travail, pas un substitut à la lecture de votre document source réel ou à la vérification par vous-même des dates et exigences importantes. Ne vous fiez pas uniquement aux résultats de l'IA pour tout ce qui a des conséquences réelles (dates d'examen, exigences de devoirs, décisions juridiques ou médicales, etc.)."
     },
     "content": {
       "heading": "Votre contenu",
-      "body": "Vous conservez la propriété de tout ce que vous téléversez. Vous êtes responsable d&rsquo;avoir le droit de le téléverser, et de ne pas téléverser de contenu illégal ou portant atteinte aux droits d&rsquo;autrui. Nous n&rsquo;utilisons votre contenu que pour vous fournir le service (voir <privacylink>notre Politique de confidentialité</privacylink> pour savoir exactement avec qui il est partagé et pourquoi) — nous n&rsquo;en revendiquons pas la propriété et ne l&rsquo;utilisons pas pour entraîner des modèles d&rsquo;IA."
+      "body": "Vous conservez la propriété de tout ce que vous téléversez. Vous êtes responsable d'avoir le droit de le téléverser, et de ne pas téléverser de contenu illégal ou portant atteinte aux droits d'autrui. Nous n'utilisons votre contenu que pour vous fournir le service (voir <privacylink>notre Politique de confidentialité</privacylink> pour savoir exactement avec qui il est partagé et pourquoi) — nous n'en revendiquons pas la propriété et ne l'utilisons pas pour entraîner des modèles d'IA."
     },
     "acceptableUse": {
       "heading": "Utilisation acceptable",
       "intro": "Merci de ne pas utiliser Carrotly pour :",
-      "item1": "Enfreindre la loi, ou téléverser du contenu que vous n&rsquo;avez pas le droit de partager.",
+      "item1": "Enfreindre la loi, ou téléverser du contenu que vous n'avez pas le droit de partager.",
       "item2": "Tenter de perturber, surcharger ou accéder de façon non autorisée au service.",
       "item3": "Revendre ou fournir le service à des tiers sans notre accord.",
-      "item4": "Contourner les limites d&rsquo;utilisation (par ex. les plafonds des offres gratuite/Pro) par abus ou automatisation.",
+      "item4": "Contourner les limites d'utilisation (par ex. les plafonds des offres gratuite/Pro) par abus ou automatisation.",
       "outro": "Nous pouvons suspendre ou résilier les comptes qui enfreignent ces conditions."
     },
     "disclaimer": {
       "heading": "Avertissement et limitation de responsabilité",
-      "body": "Carrotly est fourni &laquo;&nbsp;en l&rsquo;état&nbsp;&raquo;, sans garantie d&rsquo;aucune sorte. Nous ne garantissons pas que le service sera ininterrompu, exempt d&rsquo;erreurs, ou que les résultats de l&rsquo;IA seront exacts. Dans toute la mesure permise par la loi, Carrotly ne saurait être tenu responsable des dommages indirects, accessoires ou consécutifs résultant de votre utilisation du service — y compris les décisions prises sur la base de contenu généré par l&rsquo;IA."
+      "body": "Carrotly est fourni « en l'état », sans garantie d'aucune sorte. Nous ne garantissons pas que le service sera ininterrompu, exempt d'erreurs, ou que les résultats de l'IA seront exacts. Dans toute la mesure permise par la loi, Carrotly ne saurait être tenu responsable des dommages indirects, accessoires ou consécutifs résultant de votre utilisation du service — y compris les décisions prises sur la base de contenu généré par l'IA."
     },
     "changes": {
       "heading": "Modifications des présentes conditions",
-      "body": "Nous pouvons mettre à jour ces conditions à mesure que le service évolue. En cas de changement important, nous mettrons à jour la date de &laquo;&nbsp;Dernière mise à jour&nbsp;&raquo; ci-dessus ; la poursuite de l&rsquo;utilisation du service après un changement vaut acceptation des conditions mises à jour."
+      "body": "Nous pouvons mettre à jour ces conditions à mesure que le service évolue. En cas de changement important, nous mettrons à jour la date de « Dernière mise à jour » ci-dessus ; la poursuite de l'utilisation du service après un changement vaut acceptation des conditions mises à jour."
     },
     "governingLaw": {
       "heading": "Droit applicable",
-      "body": "[Insérez le droit applicable / la juridiction, par exemple &laquo;&nbsp;le droit de la République de Corée&nbsp;&raquo;]."
+      "body": "[Insérez le droit applicable / la juridiction, par exemple « le droit de la République de Corée »]."
     },
     "contact": {
       "heading": "Contact",

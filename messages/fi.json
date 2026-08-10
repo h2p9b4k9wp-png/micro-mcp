@@ -619,7 +619,7 @@
     "backLink": "← Takaisin Carrotlyyn",
     "title": "Tietosuojakäytäntö",
     "lastUpdated": "Viimeksi päivitetty: elokuu 2026",
-    "intro": "Carrotly (&ldquo;me&rdquo;, &ldquo;palvelu&rdquo;) on henkilökohtainen tekoälyavusteinen työavustaja. Tämä sivu selittää, mitä tietoja keräämme käyttäessäsi sitä, miksi keräämme niitä, kenen kanssa jaamme niitä, kuinka kauan säilytämme niitä ja mitä oikeuksia sinulla on niihin.",
+    "intro": "Carrotly (\"me\", \"palvelu\") on henkilökohtainen tekoälyavusteinen työavustaja. Tämä sivu selittää, mitä tietoja keräämme käyttäessäsi sitä, miksi keräämme niitä, kenen kanssa jaamme niitä, kuinka kauan säilytämme niitä ja mitä oikeuksia sinulla on niihin.",
     "collect": {
       "heading": "Keräämämme tiedot",
       "email": "<b>Sähköpostiosoitteesi</b>, jota käytetään tilisi luomiseen ja tunnistamiseen.",
@@ -636,7 +636,7 @@
     "sharing": {
       "heading": "Kenen kanssa jaamme niitä",
       "intro": "Emme myy tietojasi. Jaamme niitä vain niiden palveluntarjoajien kanssa, jotka saavat Carrotlyn toimimaan:",
-      "openai": "<b>OpenAI</b> — vastaanottaa kehotteidesi, liitettyjen asiakirjojen ja kuvien tekstin voidakseen luoda pyytämäsi tekoälyanalyysin ja vastaukset. Tämä käsittely tapahtuu Yhdysvalloissa, mikä on myös tietojesi siirto EU:n/ETA:n ulkopuolelle — katso alta &ldquo;Kansainväliset tiedonsiirrot&rdquo;.",
+      "openai": "<b>OpenAI</b> — vastaanottaa kehotteidesi, liitettyjen asiakirjojen ja kuvien tekstin voidakseen luoda pyytämäsi tekoälyanalyysin ja vastaukset. Tämä käsittely tapahtuu Yhdysvalloissa, mikä on myös tietojesi siirto EU:n/ETA:n ulkopuolelle — katso alta \"Kansainväliset tiedonsiirrot\".",
       "supabase": "<b>Supabase</b> — tietokanta- ja tunnistautumispalveluntarjoajamme, jota käytetään tilisi, tiedostojesi ja keskusteluhistoriasi tallentamiseen. Tietosi säilytetään Supabasen <b>{region}</b>-alueella.",
       "polar": "<b>Polar</b> — maksunkäsittelijämme, jota käytetään Pro-tilauksen kassan ja laskutuksen hoitamiseen. Polar vastaanottaa maksusi käsittelyyn tarvittavat tiedot (kuten sähköpostiosoitteesi); emme lähetä sille tiedostojasi tai keskusteluhistoriaasi.",
       "analytics": "<b>Vercel Analytics</b> — kerää anonyymejä sivunkatselutilastoja, jotka auttavat meitä ymmärtämään, mitä sivuja käydään. Se ei käytä evästeitä eikä tunnista yksittäisiä henkilöitä."
@@ -656,7 +656,7 @@
     "rights": {
       "heading": "Oikeutesi",
       "copy": "Voit milloin tahansa pyytää kopion hallussamme olevista tiedoistasi lähettämällä sähköpostia alla olevaan osoitteeseen — vastaamme mahdollisimman pian.",
-      "delete": "Poistaaksesi tilisi käytä sivupalkin alareunassa olevaa &ldquo;Poista tili&rdquo; -painiketta kirjauduttuasi sisään — se poistaa välittömästi ja pysyvästi lataamasi tiedostot, luennoitsija- tai professorimateriaalit, keskusteluhistorian sekä itse kirjautumistietosi (sähköposti, kirjautumistiedot) ilman, että sinun tarvitsee ensin ottaa meihin yhteyttä sähköpostitse. Jos haluat mieluummin, että me teemme sen puolestasi, lähetä meille sähköpostia, niin poistamme sen manuaalisesti.",
+      "delete": "Poistaaksesi tilisi käytä sivupalkin alareunassa olevaa \"Poista tili\" -painiketta kirjauduttuasi sisään — se poistaa välittömästi ja pysyvästi lataamasi tiedostot, luennoitsija- tai professorimateriaalit, keskusteluhistorian sekä itse kirjautumistietosi (sähköposti, kirjautumistiedot) ilman, että sinun tarvitsee ensin ottaa meihin yhteyttä sähköpostitse. Jos haluat mieluummin, että me teemme sen puolestasi, lähetä meille sähköpostia, niin poistamme sen manuaalisesti.",
       "proSubscription": "Jos sinulla on aktiivinen Pro-tilaus, tilisi poistaminen ei peruuta sitä — Polar (kaupallisena myyjänä toimiva Merchant of Record, katso <termslink>käyttöehdot</termslink>) hoitaa laskutuksen erillään Carrotly-kirjautumisestasi, joten emme voi peruuttaa sitä puolestasi. Sinun täytyy peruuttaa tilauksesi ensin (Polarin lähettämän kuitti-/vahvistussähköpostin linkin kautta tai ottamalla meihin yhteyttä), ennen kuin voimme poistaa tilisi."
     },
     "contact": {
@@ -671,7 +671,7 @@
     "backLink": "← Takaisin Carrotlyyn",
     "title": "Käyttöehdot",
     "lastUpdated": "Viimeksi päivitetty: elokuu 2026",
-    "intro": "Nämä ehdot koskevat Carrotlyn (&ldquo;me&rdquo;, &ldquo;palvelu&rdquo;) käyttöäsi — henkilökohtaista tekoälyavusteista työavustajaa, joka lukee ja järjestää lataamiasi asiakirjoja. Luomalla tilin tai käyttämällä palvelua hyväksyt nämä ehdot. Jos et hyväksy niitä, älä käytä palvelua.",
+    "intro": "Nämä ehdot koskevat Carrotlyn (\"me\", \"palvelu\") käyttöäsi — henkilökohtaista tekoälyavusteista työavustajaa, joka lukee ja järjestää lataamiasi asiakirjoja. Luomalla tilin tai käyttämällä palvelua hyväksyt nämä ehdot. Jos et hyväksy niitä, älä käytä palvelua.",
     "service": {
       "heading": "Palvelu",
       "body": "Carrotlyn avulla voit ladata asiakirjoja, kuvia ja muita tiedostoja, ja se käyttää tekoälyä määräaikojen poimimiseen, sisällön tiivistämiseen, todennäköisten tentti-/tehtäväkysymysten ennustamiseen ja kysymyksiin vastaamiseen lataamastasi materiaalista. Osa ominaisuuksista vaatii tilin; rajoitettua ominaisuusvalikoimaa voi kokeilla ilman tiliä, tuotteessa kuvattujen käyttörajojen mukaisesti."
@@ -682,8 +682,8 @@
     },
     "subscriptions": {
       "heading": "Tilaukset ja maksut",
-      "intro": "Carrotly tarjoaa ilmaisen version ja maksullisen &ldquo;Pro&rdquo;-version ({price}) korkeammilla käyttörajoilla — katso ajantasaiset tiedot kohdasta <pricinglink>Hinnoittelu</pricinglink>.",
-      "mor": "<b>Kaikki maksut käsittelee Polar Software, Inc. (&ldquo;Polar&rdquo;), joka toimii tämän ostoksen Merchant of Recordina (kaupallisena myyjänä).</b> Tämä tarkoittaa, että Polar — ei Carrotly — on myyjä, jonka kanssa teet sopimuksen itse liiketoimesta: Polar näkyy kortti-/pankkitiliotteessasi kauppiaana, kerää ja tilittää sovellettavan myyntiveron tai ALV:n, ja hoitaa laskutuksen ja maksuihin liittyvän asiakastuen. Palautuspyynnöt, laskutusriidat ja maksupalautukset (chargeback) käsitellään <polarlink>Polarin omien ehtojen</polarlink> mukaisesti. Saamme vain vahvistuksen siitä, että maksu onnistui (ja tiliisi liittyvän viitteen), jotta voimme päivittää sinut Pro-versioon — emme vastaanota tai säilytä täydellisiä maksukorttitietojasi. Jos olet kuluttaja lainkäyttöalueella, jossa on lakisääteinen peruuttamisoikeus tai harkinta-aika tälle ostokselle, tämä oikeus käytetään Polarin kautta, koska se on liiketoimen Merchant of Record.",
+      "intro": "Carrotly tarjoaa ilmaisen version ja maksullisen \"Pro\"-version ({price}) korkeammilla käyttörajoilla — katso ajantasaiset tiedot kohdasta <pricinglink>Hinnoittelu</pricinglink>.",
+      "mor": "<b>Kaikki maksut käsittelee Polar Software, Inc. (\"Polar\"), joka toimii tämän ostoksen Merchant of Recordina (kaupallisena myyjänä).</b> Tämä tarkoittaa, että Polar — ei Carrotly — on myyjä, jonka kanssa teet sopimuksen itse liiketoimesta: Polar näkyy kortti-/pankkitiliotteessasi kauppiaana, kerää ja tilittää sovellettavan myyntiveron tai ALV:n, ja hoitaa laskutuksen ja maksuihin liittyvän asiakastuen. Palautuspyynnöt, laskutusriidat ja maksupalautukset (chargeback) käsitellään <polarlink>Polarin omien ehtojen</polarlink> mukaisesti. Saamme vain vahvistuksen siitä, että maksu onnistui (ja tiliisi liittyvän viitteen), jotta voimme päivittää sinut Pro-versioon — emme vastaanota tai säilytä täydellisiä maksukorttitietojasi. Jos olet kuluttaja lainkäyttöalueella, jossa on lakisääteinen peruuttamisoikeus tai harkinta-aika tälle ostokselle, tämä oikeus käytetään Polarin kautta, koska se on liiketoimen Merchant of Record.",
       "renewal": "Tilaukset uusiutuvat automaattisesti jokaisen laskutuskauden yhteydessä, kunnes ne peruutetaan. Voit hallita tai peruuttaa tilauksesi Polarin ostoksen jälkeen lähettämän kuitti-/vahvistussähköpostin kautta, tai ottamalla meihin yhteyttä alla olevaan sähköpostiosoitteeseen, niin autamme sinua tavoittamaan Polarin."
     },
     "aiContent": {
@@ -705,15 +705,15 @@
     },
     "disclaimer": {
       "heading": "Vastuuvapauslauseke ja vastuunrajoitus",
-      "body": "Carrotly tarjotaan &ldquo;sellaisenaan&rdquo;, ilman minkäänlaisia takuita. Emme takaa, että palvelu on keskeytymätön, virheetön tai että tekoälyn tuottama sisältö on tarkkaa. Lain sallimissa laajimmissa rajoissa Carrotly ei ole vastuussa välillisistä, satunnaisista tai seurannaisvahingoista, jotka johtuvat palvelun käytöstäsi — mukaan lukien tekoälyn tuottamaan sisältöön perustuvat päätökset."
+      "body": "Carrotly tarjotaan \"sellaisenaan\", ilman minkäänlaisia takuita. Emme takaa, että palvelu on keskeytymätön, virheetön tai että tekoälyn tuottama sisältö on tarkkaa. Lain sallimissa laajimmissa rajoissa Carrotly ei ole vastuussa välillisistä, satunnaisista tai seurannaisvahingoista, jotka johtuvat palvelun käytöstäsi — mukaan lukien tekoälyn tuottamaan sisältöön perustuvat päätökset."
     },
     "changes": {
       "heading": "Muutokset näihin ehtoihin",
-      "body": "Voimme päivittää näitä ehtoja palvelun muuttuessa. Jos teemme olennaisia muutoksia, päivitämme yllä olevan &ldquo;Viimeksi päivitetty&rdquo; -päivämäärän; palvelun jatkuva käyttö muutoksen jälkeen tarkoittaa, että hyväksyt päivitetyt ehdot."
+      "body": "Voimme päivittää näitä ehtoja palvelun muuttuessa. Jos teemme olennaisia muutoksia, päivitämme yllä olevan \"Viimeksi päivitetty\" -päivämäärän; palvelun jatkuva käyttö muutoksen jälkeen tarkoittaa, että hyväksyt päivitetyt ehdot."
     },
     "governingLaw": {
       "heading": "Sovellettava laki",
-      "body": "[Lisää sovellettava laki / lainkäyttöalue, esim. &ldquo;Korean tasavallan lait&rdquo;]."
+      "body": "[Lisää sovellettava laki / lainkäyttöalue, esim. \"Korean tasavallan lait\"]."
     },
     "contact": {
       "heading": "Yhteystiedot",

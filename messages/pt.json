@@ -619,7 +619,7 @@
     "backLink": "← Voltar para a Carrotly",
     "title": "Política de Privacidade",
     "lastUpdated": "Última atualização: agosto de 2026",
-    "intro": "A Carrotly (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo;, &ldquo;o serviço&rdquo;) é um assistente pessoal de trabalho com IA. Esta página explica quais informações coletamos quando você usa o serviço, por que as coletamos, com quem as compartilhamos, por quanto tempo as mantemos e quais direitos você tem sobre elas.",
+    "intro": "A Carrotly (\"nós\", \"nosso\", \"o serviço\") é um assistente pessoal de trabalho com IA. Esta página explica quais informações coletamos quando você usa o serviço, por que as coletamos, com quem as compartilhamos, por quanto tempo as mantemos e quais direitos você tem sobre elas.",
     "collect": {
       "heading": "Informações que coletamos",
       "email": "<b>Seu endereço de e-mail</b>, usado para criar e identificar sua conta.",
@@ -636,7 +636,7 @@
     "sharing": {
       "heading": "Com quem compartilhamos",
       "intro": "Não vendemos seus dados. Nós os compartilhamos apenas com os provedores de serviço que fazem a Carrotly funcionar:",
-      "openai": "<b>OpenAI</b> — recebe o texto das suas mensagens, documentos anexados e imagens para gerar a análise e as respostas de IA que você solicita. Esse processamento ocorre nos Estados Unidos, o que também constitui uma transferência dos seus dados para fora da UE/EEE — veja &ldquo;Transferências internacionais de dados&rdquo; abaixo.",
+      "openai": "<b>OpenAI</b> — recebe o texto das suas mensagens, documentos anexados e imagens para gerar a análise e as respostas de IA que você solicita. Esse processamento ocorre nos Estados Unidos, o que também constitui uma transferência dos seus dados para fora da UE/EEE — veja \"Transferências internacionais de dados\" abaixo.",
       "supabase": "<b>Supabase</b> — nosso provedor de banco de dados e autenticação, usado para armazenar sua conta, arquivos e histórico de conversas. Seus dados são hospedados na região <b>{region}</b> da Supabase.",
       "polar": "<b>Polar</b> — nosso processador de pagamentos, usado para gerenciar o checkout e a cobrança da assinatura Pro. A Polar recebe as informações necessárias para processar seu pagamento (como seu e-mail); não enviamos a ela seus arquivos nem seu histórico de conversas.",
       "analytics": "<b>Vercel Analytics</b> — coleta estatísticas anônimas de visualizações de página para nos ajudar a entender quais páginas são visitadas. Não usa cookies e não identifica indivíduos."
@@ -656,7 +656,7 @@
     "rights": {
       "heading": "Seus direitos",
       "copy": "Você pode solicitar uma cópia dos dados que mantemos sobre você a qualquer momento, enviando um e-mail para o endereço abaixo — responderemos o mais rápido possível.",
-      "delete": "Para excluir sua conta, use o botão &ldquo;Excluir conta&rdquo; na parte inferior da barra lateral depois de fazer login — isso exclui imediata e permanentemente seus arquivos enviados, materiais de professores, histórico de conversas e suas próprias credenciais de login (e-mail, dados de acesso), sem necessidade de nos contatar antes. Se preferir que façamos isso por você, envie um e-mail e faremos a exclusão manualmente.",
+      "delete": "Para excluir sua conta, use o botão \"Excluir conta\" na parte inferior da barra lateral depois de fazer login — isso exclui imediata e permanentemente seus arquivos enviados, materiais de professores, histórico de conversas e suas próprias credenciais de login (e-mail, dados de acesso), sem necessidade de nos contatar antes. Se preferir que façamos isso por você, envie um e-mail e faremos a exclusão manualmente.",
       "proSubscription": "Se você tiver uma assinatura Pro ativa, excluir sua conta não a cancela — a Polar (nosso Merchant of Record, veja os <termslink>Termos de Serviço</termslink>) gerencia a cobrança de forma independente da sua conta Carrotly, então não temos como cancelá-la em seu nome. Você precisará cancelar sua assinatura primeiro (pelo link no e-mail de recibo/confirmação enviado pela Polar, ou entrando em contato conosco) antes que possamos excluir sua conta."
     },
     "contact": {
@@ -671,7 +671,7 @@
     "backLink": "← Voltar para a Carrotly",
     "title": "Termos de Serviço",
     "lastUpdated": "Última atualização: agosto de 2026",
-    "intro": "Estes termos regem o uso que você faz da Carrotly (&ldquo;nós&rdquo;, &ldquo;nosso&rdquo;, &ldquo;o serviço&rdquo;), um assistente pessoal de trabalho com IA que lê e organiza os documentos que você envia. Ao criar uma conta ou usar o serviço, você concorda com estes termos. Se você não concordar, não utilize o serviço.",
+    "intro": "Estes termos regem o uso que você faz da Carrotly (\"nós\", \"nosso\", \"o serviço\"), um assistente pessoal de trabalho com IA que lê e organiza os documentos que você envia. Ao criar uma conta ou usar o serviço, você concorda com estes termos. Se você não concordar, não utilize o serviço.",
     "service": {
       "heading": "O serviço",
       "body": "A Carrotly permite que você envie documentos, fotos e outros arquivos, e usa IA para extrair prazos, resumir conteúdo, prever possíveis questões de prova/tarefa e responder a perguntas sobre o que você enviou. Alguns recursos exigem uma conta; um conjunto limitado de recursos pode ser testado sem uma, sujeito aos limites de uso descritos no próprio produto."
@@ -682,8 +682,8 @@
     },
     "subscriptions": {
       "heading": "Assinaturas e pagamento",
-      "intro": "A Carrotly oferece um plano gratuito e um plano &ldquo;Pro&rdquo; pago ({price}) com limites de uso mais altos — veja <pricinglink>Pricing</pricinglink> para os detalhes atuais.",
-      "mor": "<b>Todos os pagamentos são processados pela Polar Software, Inc. (&ldquo;Polar&rdquo;), que atua como Merchant of Record desta compra.</b> Isso significa que a Polar — e não a Carrotly — é a vendedora com quem você contrata a transação em si: a Polar aparece como o estabelecimento comercial no extrato do seu cartão/banco, coleta e repassa o imposto sobre vendas ou IVA aplicável, e cuida da cobrança, faturamento e suporte ao cliente relacionado a pagamentos. Solicitações de reembolso, disputas de cobrança e estornos são tratados conforme os <polarlink>termos próprios da Polar</polarlink>. Nós recebemos apenas a confirmação de que o pagamento foi concluído (e a referência vinculada à sua conta) para atualizá-lo para Pro — não recebemos nem armazenamos os dados completos do seu cartão de pagamento. Se você for consumidor em uma jurisdição com direito legal de arrependimento ou período de reflexão para esta compra, esse direito é exercido junto à Polar, já que ela é a Merchant of Record da transação.",
+      "intro": "A Carrotly oferece um plano gratuito e um plano \"Pro\" pago ({price}) com limites de uso mais altos — veja <pricinglink>Pricing</pricinglink> para os detalhes atuais.",
+      "mor": "<b>Todos os pagamentos são processados pela Polar Software, Inc. (\"Polar\"), que atua como Merchant of Record desta compra.</b> Isso significa que a Polar — e não a Carrotly — é a vendedora com quem você contrata a transação em si: a Polar aparece como o estabelecimento comercial no extrato do seu cartão/banco, coleta e repassa o imposto sobre vendas ou IVA aplicável, e cuida da cobrança, faturamento e suporte ao cliente relacionado a pagamentos. Solicitações de reembolso, disputas de cobrança e estornos são tratados conforme os <polarlink>termos próprios da Polar</polarlink>. Nós recebemos apenas a confirmação de que o pagamento foi concluído (e a referência vinculada à sua conta) para atualizá-lo para Pro — não recebemos nem armazenamos os dados completos do seu cartão de pagamento. Se você for consumidor em uma jurisdição com direito legal de arrependimento ou período de reflexão para esta compra, esse direito é exercido junto à Polar, já que ela é a Merchant of Record da transação.",
       "renewal": "As assinaturas são renovadas automaticamente a cada período de cobrança até serem canceladas. Você pode gerenciar ou cancelar sua assinatura pelo e-mail de recibo/confirmação que a Polar envia após a compra, ou entrando em contato conosco pelo endereço abaixo — ajudaremos você a contatar a Polar."
     },
     "aiContent": {
@@ -705,15 +705,15 @@
     },
     "disclaimer": {
       "heading": "Isenção de responsabilidade e limitação de responsabilidade",
-      "body": "A Carrotly é fornecida &ldquo;como está&rdquo;, sem garantias de qualquer tipo. Não garantimos que o serviço será ininterrupto, livre de erros, ou que os resultados da IA serão precisos. Na máxima extensão permitida por lei, a Carrotly não será responsável por danos indiretos, incidentais ou consequenciais decorrentes do uso do serviço — incluindo decisões tomadas com base em conteúdo gerado por IA."
+      "body": "A Carrotly é fornecida \"como está\", sem garantias de qualquer tipo. Não garantimos que o serviço será ininterrupto, livre de erros, ou que os resultados da IA serão precisos. Na máxima extensão permitida por lei, a Carrotly não será responsável por danos indiretos, incidentais ou consequenciais decorrentes do uso do serviço — incluindo decisões tomadas com base em conteúdo gerado por IA."
     },
     "changes": {
       "heading": "Alterações a estes termos",
-      "body": "Podemos atualizar estes termos conforme o serviço evolui. Se fizermos alterações relevantes, atualizaremos a data de &ldquo;Última atualização&rdquo; acima; o uso continuado do serviço após uma alteração significa que você aceita os termos atualizados."
+      "body": "Podemos atualizar estes termos conforme o serviço evolui. Se fizermos alterações relevantes, atualizaremos a data de \"Última atualização\" acima; o uso continuado do serviço após uma alteração significa que você aceita os termos atualizados."
     },
     "governingLaw": {
       "heading": "Lei aplicável",
-      "body": "[Insira a lei aplicável / jurisdição, por exemplo, &ldquo;as leis da República da Coreia&rdquo;]."
+      "body": "[Insira a lei aplicável / jurisdição, por exemplo, \"as leis da República da Coreia\"]."
     },
     "contact": {
       "heading": "Contato",

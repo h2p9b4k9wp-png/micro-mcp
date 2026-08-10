@@ -619,7 +619,7 @@
     "backLink": "← Volver a Carrotly",
     "title": "Política de Privacidad",
     "lastUpdated": "Última actualización: agosto de 2026",
-    "intro": "Carrotly (&ldquo;nosotros&rdquo;, &ldquo;nuestro&rdquo;, &ldquo;el servicio&rdquo;) es un asistente de trabajo personal con IA. Esta página explica qué información recopilamos cuando usas el servicio, por qué la recopilamos, con quién la compartimos, cuánto tiempo la conservamos y qué derechos tienes sobre ella.",
+    "intro": "Carrotly (\"nosotros\", \"nuestro\", \"el servicio\") es un asistente de trabajo personal con IA. Esta página explica qué información recopilamos cuando usas el servicio, por qué la recopilamos, con quién la compartimos, cuánto tiempo la conservamos y qué derechos tienes sobre ella.",
     "collect": {
       "heading": "Información que recopilamos",
       "email": "<b>Tu dirección de correo electrónico</b>, usada para crear e identificar tu cuenta.",
@@ -636,7 +636,7 @@
     "sharing": {
       "heading": "Con quién la compartimos",
       "intro": "No vendemos tus datos. Solo los compartimos con los proveedores de servicios que hacen posible Carrotly:",
-      "openai": "<b>OpenAI</b> — recibe el texto de tus instrucciones, documentos adjuntos e imágenes para generar el análisis y las respuestas de IA que solicitas. Este procesamiento ocurre en Estados Unidos, lo que también constituye una transferencia de tus datos fuera de la UE/EEE — consulta &ldquo;Transferencias internacionales de datos&rdquo; más abajo.",
+      "openai": "<b>OpenAI</b> — recibe el texto de tus instrucciones, documentos adjuntos e imágenes para generar el análisis y las respuestas de IA que solicitas. Este procesamiento ocurre en Estados Unidos, lo que también constituye una transferencia de tus datos fuera de la UE/EEE — consulta \"Transferencias internacionales de datos\" más abajo.",
       "supabase": "<b>Supabase</b> — nuestro proveedor de base de datos y autenticación, usado para almacenar tu cuenta, archivos e historial de conversaciones. Tus datos se alojan en la región <b>{region}</b> de Supabase.",
       "polar": "<b>Polar</b> — nuestro procesador de pagos, usado para gestionar el pago y la facturación de la suscripción Pro. Polar recibe la información necesaria para procesar tu pago (como tu correo electrónico); no le enviamos tus archivos ni tu historial de conversaciones.",
       "analytics": "<b>Vercel Analytics</b> — recopila estadísticas anónimas de visitas a las páginas para ayudarnos a entender qué páginas se visitan. No usa cookies ni identifica a personas."
@@ -656,7 +656,7 @@
     "rights": {
       "heading": "Tus derechos",
       "copy": "Puedes solicitar una copia de los datos que tenemos sobre ti en cualquier momento escribiéndonos a la dirección de abajo — te responderemos lo antes posible.",
-      "delete": "Para eliminar tu cuenta, usa el botón &ldquo;Eliminar cuenta&rdquo; al final de la barra lateral una vez que hayas iniciado sesión — elimina de inmediato y de forma permanente tus archivos subidos, materiales de profesores, historial de conversaciones y tus propias credenciales de acceso (correo, datos de inicio de sesión), sin necesidad de escribirnos antes. Si prefieres que lo hagamos por ti, escríbenos y la eliminaremos manualmente.",
+      "delete": "Para eliminar tu cuenta, usa el botón \"Eliminar cuenta\" al final de la barra lateral una vez que hayas iniciado sesión — elimina de inmediato y de forma permanente tus archivos subidos, materiales de profesores, historial de conversaciones y tus propias credenciales de acceso (correo, datos de inicio de sesión), sin necesidad de escribirnos antes. Si prefieres que lo hagamos por ti, escríbenos y la eliminaremos manualmente.",
       "proSubscription": "Si tienes una suscripción Pro activa, eliminar tu cuenta no la cancela — Polar (nuestro Merchant of Record, consulta los <termslink>Términos del Servicio</termslink>) gestiona la facturación de forma independiente a tu cuenta de Carrotly, por lo que no podemos cancelarla en tu nombre. Deberás cancelar tu suscripción primero (mediante el enlace del correo de recibo/confirmación que te envió Polar, o escribiéndonos) antes de que podamos eliminar tu cuenta."
     },
     "contact": {
@@ -671,7 +671,7 @@
     "backLink": "← Volver a Carrotly",
     "title": "Términos del Servicio",
     "lastUpdated": "Última actualización: agosto de 2026",
-    "intro": "Estos términos rigen tu uso de Carrotly (&ldquo;nosotros&rdquo;, &ldquo;nuestro&rdquo;, &ldquo;el servicio&rdquo;), un asistente de trabajo personal con IA que lee y organiza los documentos que subes. Al crear una cuenta o usar el servicio, aceptas estos términos. Si no estás de acuerdo, no utilices el servicio.",
+    "intro": "Estos términos rigen tu uso de Carrotly (\"nosotros\", \"nuestro\", \"el servicio\"), un asistente de trabajo personal con IA que lee y organiza los documentos que subes. Al crear una cuenta o usar el servicio, aceptas estos términos. Si no estás de acuerdo, no utilices el servicio.",
     "service": {
       "heading": "El servicio",
       "body": "Carrotly te permite subir documentos, fotos y otros archivos, y usa IA para extraer plazos, resumir contenido, predecir posibles preguntas de examen/tarea y responder preguntas sobre lo que has subido. Algunas funciones requieren una cuenta; un conjunto limitado de funciones puede probarse sin una, sujeto a los límites de uso descritos en el propio producto."
@@ -682,8 +682,8 @@
     },
     "subscriptions": {
       "heading": "Suscripciones y pagos",
-      "intro": "Carrotly ofrece un plan gratuito y un plan &ldquo;Pro&rdquo; de pago ({price}) con límites de uso más altos — consulta <pricinglink>Pricing</pricinglink> para los detalles actuales.",
-      "mor": "<b>Todos los pagos son procesados por Polar Software, Inc. (&ldquo;Polar&rdquo;), que actúa como Merchant of Record de esta compra.</b> Esto significa que Polar — y no Carrotly — es el vendedor con quien contratas la transacción en sí: Polar aparece como comerciante en tu extracto de tarjeta/banco, recauda y remite el impuesto sobre ventas o IVA aplicable, y gestiona la facturación y la atención al cliente relacionada con los pagos. Las solicitudes de reembolso, disputas de facturación y contracargos se gestionan conforme a los <polarlink>términos propios de Polar</polarlink>. Nosotros solo recibimos la confirmación de que el pago se realizó correctamente (y la referencia vinculada a tu cuenta) para poder actualizarte a Pro — no recibimos ni almacenamos los datos completos de tu tarjeta de pago. Si eres consumidor en una jurisdicción con derecho legal de desistimiento o período de reflexión para esta compra, ese derecho se ejerce a través de Polar, ya que es el Merchant of Record de la transacción.",
+      "intro": "Carrotly ofrece un plan gratuito y un plan \"Pro\" de pago ({price}) con límites de uso más altos — consulta <pricinglink>Pricing</pricinglink> para los detalles actuales.",
+      "mor": "<b>Todos los pagos son procesados por Polar Software, Inc. (\"Polar\"), que actúa como Merchant of Record de esta compra.</b> Esto significa que Polar — y no Carrotly — es el vendedor con quien contratas la transacción en sí: Polar aparece como comerciante en tu extracto de tarjeta/banco, recauda y remite el impuesto sobre ventas o IVA aplicable, y gestiona la facturación y la atención al cliente relacionada con los pagos. Las solicitudes de reembolso, disputas de facturación y contracargos se gestionan conforme a los <polarlink>términos propios de Polar</polarlink>. Nosotros solo recibimos la confirmación de que el pago se realizó correctamente (y la referencia vinculada a tu cuenta) para poder actualizarte a Pro — no recibimos ni almacenamos los datos completos de tu tarjeta de pago. Si eres consumidor en una jurisdicción con derecho legal de desistimiento o período de reflexión para esta compra, ese derecho se ejerce a través de Polar, ya que es el Merchant of Record de la transacción.",
       "renewal": "Las suscripciones se renuevan automáticamente en cada periodo de facturación hasta que se cancelen. Puedes gestionar o cancelar tu suscripción a través del correo de recibo/confirmación que Polar te envía tras la compra, o contactándonos en la dirección de abajo, y te ayudaremos a contactar con Polar."
     },
     "aiContent": {
@@ -705,15 +705,15 @@
     },
     "disclaimer": {
       "heading": "Exención de responsabilidad y limitación de responsabilidad",
-      "body": "Carrotly se proporciona &ldquo;tal cual&rdquo;, sin garantías de ningún tipo. No garantizamos que el servicio sea ininterrumpido, esté libre de errores, o que el resultado de la IA sea preciso. En la máxima medida permitida por la ley, Carrotly no será responsable de daños indirectos, incidentales o consecuentes derivados del uso del servicio — incluidas las decisiones tomadas con base en contenido generado por IA."
+      "body": "Carrotly se proporciona \"tal cual\", sin garantías de ningún tipo. No garantizamos que el servicio sea ininterrumpido, esté libre de errores, o que el resultado de la IA sea preciso. En la máxima medida permitida por la ley, Carrotly no será responsable de daños indirectos, incidentales o consecuentes derivados del uso del servicio — incluidas las decisiones tomadas con base en contenido generado por IA."
     },
     "changes": {
       "heading": "Cambios en estos términos",
-      "body": "Podemos actualizar estos términos a medida que el servicio cambia. Si realizamos cambios importantes, actualizaremos la fecha de &ldquo;Última actualización&rdquo; anterior; el uso continuado del servicio tras un cambio implica la aceptación de los términos actualizados."
+      "body": "Podemos actualizar estos términos a medida que el servicio cambia. Si realizamos cambios importantes, actualizaremos la fecha de \"Última actualización\" anterior; el uso continuado del servicio tras un cambio implica la aceptación de los términos actualizados."
     },
     "governingLaw": {
       "heading": "Ley aplicable",
-      "body": "[Inserta la ley aplicable / jurisdicción, por ejemplo, &ldquo;las leyes de la República de Corea&rdquo;]."
+      "body": "[Inserta la ley aplicable / jurisdicción, por ejemplo, \"las leyes de la República de Corea\"]."
     },
     "contact": {
       "heading": "Contacto",

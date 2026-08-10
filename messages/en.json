@@ -619,7 +619,7 @@
     "backLink": "← Back to Carrotly",
     "title": "Privacy Policy",
     "lastUpdated": "Last updated: August 2026",
-    "intro": "Carrotly (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the service&rdquo;) is a personal AI work assistant. This page explains what information we collect when you use it, why we collect it, who we share it with, how long we keep it, and what rights you have over it.",
+    "intro": "Carrotly (\"we\", \"our\", \"the service\") is a personal AI work assistant. This page explains what information we collect when you use it, why we collect it, who we share it with, how long we keep it, and what rights you have over it.",
     "collect": {
       "heading": "Information we collect",
       "email": "<b>Your email address</b>, used to create and identify your account.",
@@ -636,10 +636,10 @@
     "sharing": {
       "heading": "Who we share it with",
       "intro": "We do not sell your data. We share it only with the service providers that make Carrotly work:",
-      "openai": "<b>OpenAI</b> — receives the text of your prompts, attached documents, and images so it can generate the AI analysis and responses you ask for. This processing happens in the United States, which is also a transfer of your data outside the EU/EEA — see &ldquo;International data transfers&rdquo; below.",
-      "supabase": "<b>Supabase</b> — our database and authentication provider, used to store your account, files, and conversation history. Your data is hosted in Supabase&rsquo;s <b>{region}</b> region.",
+      "openai": "<b>OpenAI</b> — receives the text of your prompts, attached documents, and images so it can generate the AI analysis and responses you ask for. This processing happens in the United States, which is also a transfer of your data outside the EU/EEA — see \"International data transfers\" below.",
+      "supabase": "<b>Supabase</b> — our database and authentication provider, used to store your account, files, and conversation history. Your data is hosted in Supabase's <b>{region}</b> region.",
       "polar": "<b>Polar</b> — our payment processor, used to handle Pro subscription checkout and billing. Polar receives the information needed to process your payment (such as your email address); we do not send them your files or conversation history.",
-      "analytics": "<b>Vercel Analytics</b> — collects anonymous page-view statistics to help us understand which pages are visited. It doesn&rsquo;t use cookies and doesn&rsquo;t identify individuals."
+      "analytics": "<b>Vercel Analytics</b> — collects anonymous page-view statistics to help us understand which pages are visited. It doesn't use cookies and doesn't identify individuals."
     },
     "retention": {
       "heading": "How long we keep it",
@@ -649,15 +649,15 @@
     },
     "transfers": {
       "heading": "International data transfers",
-      "body1": "Your data is stored and processed in South Korea (Seoul), where Supabase hosts our database — this is outside the EU/European Economic Area (EEA). If you&rsquo;re located in the EU/EEA, this means your personal data is transferred to a third country.",
+      "body1": "Your data is stored and processed in South Korea (Seoul), where Supabase hosts our database — this is outside the EU/European Economic Area (EEA). If you're located in the EU/EEA, this means your personal data is transferred to a third country.",
       "body2": "We rely on the Standard Contractual Clauses (SCCs) included in our Data Processing Agreement (DPA) with Supabase as the legal basis for this transfer. The same applies to the transfer to OpenAI (see above), which processes data in the United States.",
       "body3": "If you have questions about these transfers, contact us at the address below."
     },
     "rights": {
       "heading": "Your rights",
-      "copy": "You can request a copy of the data we hold about you at any time by emailing us at the address below — we&rsquo;ll respond as soon as we can.",
-      "delete": "To delete your account, use the &ldquo;Delete Account&rdquo; button at the bottom of the sidebar once you&rsquo;re logged in — it immediately and permanently deletes your uploaded files, lecturer or professor materials, conversation history, and your login credentials (email, sign-in info) themselves, with no need to email us first. If you&rsquo;d rather have us do it for you, email us and we&rsquo;ll delete it manually.",
-      "proSubscription": "If you have an active Pro subscription, deleting your account does not cancel it — Polar (our Merchant of Record, see <termslink>Terms of Service</termslink>) handles billing independently of your Carrotly login, so we have no way to cancel it on your behalf. You&rsquo;ll need to cancel your subscription first (via the link in the receipt/confirmation email Polar sent you, or by emailing us) before we can delete your account."
+      "copy": "You can request a copy of the data we hold about you at any time by emailing us at the address below — we'll respond as soon as we can.",
+      "delete": "To delete your account, use the \"Delete Account\" button at the bottom of the sidebar once you're logged in — it immediately and permanently deletes your uploaded files, lecturer or professor materials, conversation history, and your login credentials (email, sign-in info) themselves, with no need to email us first. If you'd rather have us do it for you, email us and we'll delete it manually.",
+      "proSubscription": "If you have an active Pro subscription, deleting your account does not cancel it — Polar (our Merchant of Record, see <termslink>Terms of Service</termslink>) handles billing independently of your Carrotly login, so we have no way to cancel it on your behalf. You'll need to cancel your subscription first (via the link in the receipt/confirmation email Polar sent you, or by emailing us) before we can delete your account."
     },
     "contact": {
       "heading": "Contact",
@@ -671,33 +671,33 @@
     "backLink": "← Back to Carrotly",
     "title": "Terms of Service",
     "lastUpdated": "Last updated: August 2026",
-    "intro": "These terms govern your use of Carrotly (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;the service&rdquo;), a personal AI work assistant that reads and organizes documents you upload. By creating an account or using the service, you agree to these terms. If you don&rsquo;t agree, please don&rsquo;t use the service.",
+    "intro": "These terms govern your use of Carrotly (\"we\", \"our\", \"the service\"), a personal AI work assistant that reads and organizes documents you upload. By creating an account or using the service, you agree to these terms. If you don't agree, please don't use the service.",
     "service": {
       "heading": "The service",
-      "body": "Carrotly lets you upload documents, photos, and other files and uses AI to extract deadlines, summarize content, predict likely exam/assignment questions, and answer questions about what you&rsquo;ve uploaded. Some features require an account; a limited set of features can be tried without one, subject to usage limits described in the product itself."
+      "body": "Carrotly lets you upload documents, photos, and other files and uses AI to extract deadlines, summarize content, predict likely exam/assignment questions, and answer questions about what you've uploaded. Some features require an account; a limited set of features can be tried without one, subject to usage limits described in the product itself."
     },
     "account": {
       "heading": "Your account",
-      "body": "You&rsquo;re responsible for keeping your login credentials secure and for all activity under your account. You must provide a valid email address and are responsible for its accuracy. You can delete your account at any time — see <privacylink>our Privacy Policy</privacylink> for how."
+      "body": "You're responsible for keeping your login credentials secure and for all activity under your account. You must provide a valid email address and are responsible for its accuracy. You can delete your account at any time — see <privacylink>our Privacy Policy</privacylink> for how."
     },
     "subscriptions": {
       "heading": "Subscriptions & payment",
-      "intro": "Carrotly offers a free plan and a paid &ldquo;Pro&rdquo; plan ({price}) with higher usage limits — see <pricinglink>Pricing</pricinglink> for the current details.",
-      "mor": "<b>All payments are processed by Polar Software, Inc. (&ldquo;Polar&rdquo;), acting as the Merchant of Record for this purchase.</b> This means Polar — not Carrotly — is the seller you&rsquo;re contracting with for the transaction itself: Polar appears as the merchant on your card/bank statement, collects and remits any applicable sales tax or VAT, and handles billing, invoicing, and payment-related customer support. Refund requests, billing disputes, and chargebacks are handled under <polarlink>Polar&rsquo;s own terms</polarlink>. We receive confirmation that a payment succeeded (and the reference tied to your account) so we can upgrade you to Pro — we don&rsquo;t receive or store your full payment card details. If you&rsquo;re a consumer in a jurisdiction with a statutory right of withdrawal or cooling-off period for this purchase, that right is exercised through Polar, since they are the Merchant of Record for the transaction.",
-      "renewal": "Subscriptions renew automatically each billing period until cancelled. You can manage or cancel your subscription through the receipt/confirmation email Polar sends you after checkout, or by contacting us at the email below and we&rsquo;ll help you reach Polar."
+      "intro": "Carrotly offers a free plan and a paid \"Pro\" plan ({price}) with higher usage limits — see <pricinglink>Pricing</pricinglink> for the current details.",
+      "mor": "<b>All payments are processed by Polar Software, Inc. (\"Polar\"), acting as the Merchant of Record for this purchase.</b> This means Polar — not Carrotly — is the seller you're contracting with for the transaction itself: Polar appears as the merchant on your card/bank statement, collects and remits any applicable sales tax or VAT, and handles billing, invoicing, and payment-related customer support. Refund requests, billing disputes, and chargebacks are handled under <polarlink>Polar's own terms</polarlink>. We receive confirmation that a payment succeeded (and the reference tied to your account) so we can upgrade you to Pro — we don't receive or store your full payment card details. If you're a consumer in a jurisdiction with a statutory right of withdrawal or cooling-off period for this purchase, that right is exercised through Polar, since they are the Merchant of Record for the transaction.",
+      "renewal": "Subscriptions renew automatically each billing period until cancelled. You can manage or cancel your subscription through the receipt/confirmation email Polar sends you after checkout, or by contacting us at the email below and we'll help you reach Polar."
     },
     "aiContent": {
       "heading": "AI-generated content",
-      "body": "Summaries, predicted questions, deadlines, and answers are generated by AI models and can be incomplete, outdated, or wrong. Carrotly is a study/work aid, not a substitute for reading your actual source material or verifying important dates and requirements yourself. Don&rsquo;t rely on AI output alone for anything with real consequences (exam dates, assignment requirements, legal or medical decisions, etc.)."
+      "body": "Summaries, predicted questions, deadlines, and answers are generated by AI models and can be incomplete, outdated, or wrong. Carrotly is a study/work aid, not a substitute for reading your actual source material or verifying important dates and requirements yourself. Don't rely on AI output alone for anything with real consequences (exam dates, assignment requirements, legal or medical decisions, etc.)."
     },
     "content": {
       "heading": "Your content",
-      "body": "You keep ownership of whatever you upload. You&rsquo;re responsible for having the right to upload it, and for not uploading anything illegal, or content that infringes someone else&rsquo;s rights. We only use your content to provide the service to you (see <privacylink>our Privacy Policy</privacylink> for exactly who it&rsquo;s shared with and why) — we don&rsquo;t claim ownership of it and don&rsquo;t use it to train AI models."
+      "body": "You keep ownership of whatever you upload. You're responsible for having the right to upload it, and for not uploading anything illegal, or content that infringes someone else's rights. We only use your content to provide the service to you (see <privacylink>our Privacy Policy</privacylink> for exactly who it's shared with and why) — we don't claim ownership of it and don't use it to train AI models."
     },
     "acceptableUse": {
       "heading": "Acceptable use",
-      "intro": "Please don&rsquo;t use Carrotly to:",
-      "item1": "Break the law, or upload content you don&rsquo;t have the right to share.",
+      "intro": "Please don't use Carrotly to:",
+      "item1": "Break the law, or upload content you don't have the right to share.",
       "item2": "Attempt to disrupt, overload, or gain unauthorized access to the service.",
       "item3": "Resell or provide the service to others without our agreement.",
       "item4": "Circumvent usage limits (e.g. free/Pro plan caps) through abuse or automation.",
@@ -705,15 +705,15 @@
     },
     "disclaimer": {
       "heading": "Disclaimer & limitation of liability",
-      "body": "Carrotly is provided &ldquo;as is&rdquo;, without warranties of any kind. We don&rsquo;t guarantee the service will be uninterrupted, error-free, or that AI output will be accurate. To the maximum extent permitted by law, Carrotly is not liable for indirect, incidental, or consequential damages arising from your use of the service — including decisions made based on AI-generated content."
+      "body": "Carrotly is provided \"as is\", without warranties of any kind. We don't guarantee the service will be uninterrupted, error-free, or that AI output will be accurate. To the maximum extent permitted by law, Carrotly is not liable for indirect, incidental, or consequential damages arising from your use of the service — including decisions made based on AI-generated content."
     },
     "changes": {
       "heading": "Changes to these terms",
-      "body": "We may update these terms as the service changes. If we make material changes, we&rsquo;ll update the &ldquo;Last updated&rdquo; date above; continued use of the service after a change means you accept the updated terms."
+      "body": "We may update these terms as the service changes. If we make material changes, we'll update the \"Last updated\" date above; continued use of the service after a change means you accept the updated terms."
     },
     "governingLaw": {
       "heading": "Governing law",
-      "body": "[Insert governing law / jurisdiction, e.g. &ldquo;the laws of the Republic of Korea&rdquo;]."
+      "body": "[Insert governing law / jurisdiction, e.g. \"the laws of the Republic of Korea\"]."
     },
     "contact": {
       "heading": "Contact",

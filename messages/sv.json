@@ -619,7 +619,7 @@
     "backLink": "← Tillbaka till Carrotly",
     "title": "Integritetspolicy",
     "lastUpdated": "Senast uppdaterad: augusti 2026",
-    "intro": "Carrotly (&ldquo;vi&rdquo;, &ldquo;tjänsten&rdquo;) är en personlig AI-arbetsassistent. Den här sidan förklarar vilken information vi samlar in när du använder den, varför vi samlar in den, vem vi delar den med, hur länge vi behåller den och vilka rättigheter du har över den.",
+    "intro": "Carrotly (\"vi\", \"tjänsten\") är en personlig AI-arbetsassistent. Den här sidan förklarar vilken information vi samlar in när du använder den, varför vi samlar in den, vem vi delar den med, hur länge vi behåller den och vilka rättigheter du har över den.",
     "collect": {
       "heading": "Information vi samlar in",
       "email": "<b>Din e-postadress</b>, som används för att skapa och identifiera ditt konto.",
@@ -636,7 +636,7 @@
     "sharing": {
       "heading": "Vem vi delar den med",
       "intro": "Vi säljer inte dina uppgifter. Vi delar dem endast med de tjänsteleverantörer som får Carrotly att fungera:",
-      "openai": "<b>OpenAI</b> — mottar texten i dina frågor, bifogade dokument och bilder för att kunna generera den AI-analys och de svar du begär. Denna behandling sker i USA, vilket också innebär en överföring av dina uppgifter utanför EU/EES — se &ldquo;Internationella dataöverföringar&rdquo; nedan.",
+      "openai": "<b>OpenAI</b> — mottar texten i dina frågor, bifogade dokument och bilder för att kunna generera den AI-analys och de svar du begär. Denna behandling sker i USA, vilket också innebär en överföring av dina uppgifter utanför EU/EES — se \"Internationella dataöverföringar\" nedan.",
       "supabase": "<b>Supabase</b> — vår leverantör av databas och autentisering, som används för att lagra ditt konto, dina filer och din konversationshistorik. Dina uppgifter lagras i Supabases <b>{region}</b>-region.",
       "polar": "<b>Polar</b> — vår betalningsleverantör, som används för att hantera kassa och fakturering för Pro-prenumerationen. Polar mottar den information som behövs för att behandla din betalning (till exempel din e-postadress); vi skickar inte dina filer eller din konversationshistorik till dem.",
       "analytics": "<b>Vercel Analytics</b> — samlar in anonym sidvisningsstatistik för att hjälpa oss förstå vilka sidor som besöks. Den använder inte cookies och identifierar inte enskilda personer."
@@ -656,7 +656,7 @@
     "rights": {
       "heading": "Dina rättigheter",
       "copy": "Du kan när som helst begära en kopia av de uppgifter vi har om dig genom att mejla oss på adressen nedan — vi svarar så snart vi kan.",
-      "delete": "För att ta bort ditt konto, använd knappen &ldquo;Ta bort konto&rdquo; längst ner i sidopanelen när du är inloggad — det tar omedelbart och permanent bort dina uppladdade filer, material från föreläsare eller professorer, konversationshistorik och dina inloggningsuppgifter (e-post, inloggningsinformation), utan att du behöver mejla oss först. Om du hellre vill att vi gör det åt dig, mejla oss så tar vi bort det manuellt.",
+      "delete": "För att ta bort ditt konto, använd knappen \"Ta bort konto\" längst ner i sidopanelen när du är inloggad — det tar omedelbart och permanent bort dina uppladdade filer, material från föreläsare eller professorer, konversationshistorik och dina inloggningsuppgifter (e-post, inloggningsinformation), utan att du behöver mejla oss först. Om du hellre vill att vi gör det åt dig, mejla oss så tar vi bort det manuellt.",
       "proSubscription": "Om du har en aktiv Pro-prenumeration avbryter inte borttagning av ditt konto den — Polar (vår Merchant of Record, se <termslink>användarvillkoren</termslink>) hanterar faktureringen oberoende av din Carrotly-inloggning, så vi har inget sätt att avbryta den å dina vägnar. Du måste avbryta din prenumeration först (via länken i kvitto-/bekräftelsemejlet Polar skickade dig, eller genom att mejla oss) innan vi kan ta bort ditt konto."
     },
     "contact": {
@@ -671,7 +671,7 @@
     "backLink": "← Tillbaka till Carrotly",
     "title": "Användarvillkor",
     "lastUpdated": "Senast uppdaterad: augusti 2026",
-    "intro": "Dessa villkor reglerar din användning av Carrotly (&ldquo;vi&rdquo;, &ldquo;tjänsten&rdquo;), en personlig AI-arbetsassistent som läser och organiserar dokument du laddar upp. Genom att skapa ett konto eller använda tjänsten godkänner du dessa villkor. Om du inte godkänner dem, använd inte tjänsten.",
+    "intro": "Dessa villkor reglerar din användning av Carrotly (\"vi\", \"tjänsten\"), en personlig AI-arbetsassistent som läser och organiserar dokument du laddar upp. Genom att skapa ett konto eller använda tjänsten godkänner du dessa villkor. Om du inte godkänner dem, använd inte tjänsten.",
     "service": {
       "heading": "Tjänsten",
       "body": "Med Carrotly kan du ladda upp dokument, foton och andra filer, och tjänsten använder AI för att extrahera deadlines, sammanfatta innehåll, förutsäga sannolika tenta-/uppgiftsfrågor och besvara frågor om det du har laddat upp. Vissa funktioner kräver ett konto; ett begränsat antal funktioner kan provas utan ett, med förbehåll för de användningsgränser som beskrivs i produkten."
@@ -682,8 +682,8 @@
     },
     "subscriptions": {
       "heading": "Prenumerationer och betalning",
-      "intro": "Carrotly erbjuder en gratisplan och en betald &ldquo;Pro&rdquo;-plan ({price}) med högre användningsgränser — se <pricinglink>Priser</pricinglink> för aktuella detaljer.",
-      "mor": "<b>Alla betalningar behandlas av Polar Software, Inc. (&ldquo;Polar&rdquo;), som agerar som Merchant of Record för detta köp.</b> Detta innebär att Polar — inte Carrotly — är säljaren du ingår avtal med för själva transaktionen: Polar visas som handlaren på ditt kort-/kontoutdrag, tar ut och redovisar eventuell tillämplig moms, och sköter fakturering och betalningsrelaterad kundsupport. Återbetalningsförfrågningar, faktureringstvister och återköp (chargebacks) hanteras enligt <polarlink>Polars egna villkor</polarlink>. Vi får endast bekräftelse på att en betalning lyckades (och referensen kopplad till ditt konto) så att vi kan uppgradera dig till Pro — vi mottar eller lagrar inte dina fullständiga betalkortsuppgifter. Om du är konsument i en jurisdiktion med en lagstadgad ångerrätt eller betänketid för detta köp, utövas den rätten genom Polar, eftersom de är Merchant of Record för transaktionen.",
+      "intro": "Carrotly erbjuder en gratisplan och en betald \"Pro\"-plan ({price}) med högre användningsgränser — se <pricinglink>Priser</pricinglink> för aktuella detaljer.",
+      "mor": "<b>Alla betalningar behandlas av Polar Software, Inc. (\"Polar\"), som agerar som Merchant of Record för detta köp.</b> Detta innebär att Polar — inte Carrotly — är säljaren du ingår avtal med för själva transaktionen: Polar visas som handlaren på ditt kort-/kontoutdrag, tar ut och redovisar eventuell tillämplig moms, och sköter fakturering och betalningsrelaterad kundsupport. Återbetalningsförfrågningar, faktureringstvister och återköp (chargebacks) hanteras enligt <polarlink>Polars egna villkor</polarlink>. Vi får endast bekräftelse på att en betalning lyckades (och referensen kopplad till ditt konto) så att vi kan uppgradera dig till Pro — vi mottar eller lagrar inte dina fullständiga betalkortsuppgifter. Om du är konsument i en jurisdiktion med en lagstadgad ångerrätt eller betänketid för detta köp, utövas den rätten genom Polar, eftersom de är Merchant of Record för transaktionen.",
       "renewal": "Prenumerationer förnyas automatiskt varje faktureringsperiod tills de avbryts. Du kan hantera eller avbryta din prenumeration via kvitto-/bekräftelsemejlet Polar skickar dig efter köpet, eller genom att kontakta oss på e-postadressen nedan så hjälper vi dig att nå Polar."
     },
     "aiContent": {
@@ -705,15 +705,15 @@
     },
     "disclaimer": {
       "heading": "Ansvarsfriskrivning och ansvarsbegränsning",
-      "body": "Carrotly tillhandahålls &ldquo;i befintligt skick&rdquo;, utan några som helst garantier. Vi garanterar inte att tjänsten kommer att vara oavbruten, felfri, eller att AI-resultatet kommer att vara korrekt. I den utsträckning lagen tillåter är Carrotly inte ansvarigt för indirekta, tillfälliga eller följdskador som uppstår från din användning av tjänsten — inklusive beslut som fattas baserat på AI-genererat innehåll."
+      "body": "Carrotly tillhandahålls \"i befintligt skick\", utan några som helst garantier. Vi garanterar inte att tjänsten kommer att vara oavbruten, felfri, eller att AI-resultatet kommer att vara korrekt. I den utsträckning lagen tillåter är Carrotly inte ansvarigt för indirekta, tillfälliga eller följdskador som uppstår från din användning av tjänsten — inklusive beslut som fattas baserat på AI-genererat innehåll."
     },
     "changes": {
       "heading": "Ändringar av dessa villkor",
-      "body": "Vi kan uppdatera dessa villkor allteftersom tjänsten förändras. Om vi gör väsentliga ändringar uppdaterar vi datumet &ldquo;Senast uppdaterad&rdquo; ovan; fortsatt användning av tjänsten efter en ändring innebär att du godkänner de uppdaterade villkoren."
+      "body": "Vi kan uppdatera dessa villkor allteftersom tjänsten förändras. Om vi gör väsentliga ändringar uppdaterar vi datumet \"Senast uppdaterad\" ovan; fortsatt användning av tjänsten efter en ändring innebär att du godkänner de uppdaterade villkoren."
     },
     "governingLaw": {
       "heading": "Tillämplig lag",
-      "body": "[Ange tillämplig lag/jurisdiktion, t.ex. &ldquo;Republiken Koreas lagar&rdquo;]."
+      "body": "[Ange tillämplig lag/jurisdiktion, t.ex. \"Republiken Koreas lagar\"]."
     },
     "contact": {
       "heading": "Kontakt",
