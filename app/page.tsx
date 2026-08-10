@@ -2279,7 +2279,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => openUpgradeModal()}
-              className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+              className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
             >
               PRO
             </button>
@@ -2306,26 +2306,40 @@ export default function HomePage() {
         w-full md:w-64 bg-[var(--bg-page)] border-r border-[var(--border-default)] flex-col shrink-0
         z-50
       `}>
-        <div className="hidden md:flex px-6 py-6 items-center justify-between border-b border-[var(--border-default)]">
-          <div className="flex items-center gap-2.5 text-[#F4679B]">
+        {/* 💡 [수정] 예전에는 브랜드 묶음과 LocaleSwitcher가 한 줄에서 justify-between으로
+            마주보고 있었는데, 사이드바 폭(w-64 = 256px, px-6을 빼면 208px)에 다 들어가지
+            않았습니다. 언어 선택 <select>는 가장 긴 옵션에 맞춰 폭이 정해져서(한국어가
+            아니라 "Nederlands" 기준 104px) 로고+워드마크+PRO 배지와 합치면 223px —
+            PRO 사용자에게만 15px 넘쳐서 드롭다운 오른쪽이 사이드바 밖으로 삐져나왔습니다.
+            무료 사용자는 배지가 없어 1px 차이로 겨우 들어가 있던 상태라, 같은 줄을 유지하는
+            한 언제 깨져도 이상하지 않았습니다.
+
+            셀렉트 폭을 고정해 같은 줄에 욱여넣는 안도 재봤지만, 그러면 "Nederlands"·
+            "Português" 같은 긴 언어명이 잘리거나 워드마크가 "Carr…"로 잘립니다. 언어 선택기를
+            아래 줄로 내려 오른쪽 정렬하면 셀렉트가 원래 폭을 그대로 쓰면서 어떤 언어를 골라도
+            잘리지 않고, 앞으로 언어가 더 늘어도 이 줄이 다시 깨지지 않습니다. */}
+        <div className="hidden md:flex px-6 py-5 flex-col gap-3 border-b border-[var(--border-default)]">
+          <div className="flex items-center gap-2.5 text-[#F4679B] min-w-0">
             {/* 💡 로그인 화면 큰 마스코트와 동일한 흰색 원형 배경 패턴 — 이 사이드바도
                 bg-[var(--bg-page)] 어두운 배경이라 같은 처리를 적용합니다. */}
-            <div className="w-7 h-7 rounded-full bg-white border border-[var(--border-default)] p-1 flex items-center justify-center">
+            <div className="shrink-0 w-7 h-7 rounded-full bg-white border border-[var(--border-default)] p-1 flex items-center justify-center">
               <Logomark className="w-full h-full" />
             </div>
-            <span className="text-[16px] font-extrabold text-[var(--text-primary)] tracking-tight">Carrotly</span>
+            <span className="shrink-0 text-[16px] font-extrabold text-[var(--text-primary)] tracking-tight">Carrotly</span>
             {/* 💡 [수정] 모바일 상단 바와 같은 이유로 Pro일 때만 렌더링합니다 — 위 주석 참고. */}
             {isPro && (
               <button
                 type="button"
                 onClick={() => openUpgradeModal()}
-                className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#F4679B]/50 text-[#F4679B] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
               >
                 PRO
               </button>
             )}
           </div>
-          <LocaleSwitcher />
+          <div className="flex justify-end">
+            <LocaleSwitcher />
+          </div>
         </div>
         <div className="p-3 flex flex-col gap-1 flex-1">
           {NAV_ITEMS.map(item => (
