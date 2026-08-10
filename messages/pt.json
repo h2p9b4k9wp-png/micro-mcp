@@ -102,7 +102,8 @@
         "examQuestions": "Questões de prova"
       },
       "step1": "1. Escolha um professor",
-      "step2": "2. O que você quer criar?"
+      "step2": "2. O que você quer criar?",
+      "chatHint": "Enquanto estiver selecionado, as respostas do chat também usarão o material deste professor."
     }
   },
   "records": {

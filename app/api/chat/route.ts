@@ -221,22 +221,43 @@ export async function POST(req: Request) {
           indexSections.push(`[교수님: ${labelFor(professorId)}] 자료 ${docs.length}개\n` + docs.map((d) => `- ${d.file_name}`).join('\n'));
         });
 
-        // (2) 사용자가 질문에서 이름을 언급한 교수님이 있으면 그 교수님 자료만 본문까지.
-        // 이름 그대로 포함되는지만 봅니다(대소문자 무시) — 클라이언트가 "지금 이 교수님"을
-        // 보내주는 필드가 아직 없어서, 서버에서 프롬프트만으로 판단할 수 있는 가장 단순하고
-        // 예측 가능한 방법입니다. 나중에 채팅 UI에 교수님 선택이 생기면 그 값을 우선 쓰도록
-        // 바꾸면 됩니다.
+        // (2) 본문까지 실을 교수님 고르기 — 우선순위가 있는 순서 있는 목록입니다.
+        //
+        // (a) 화면에서 선택된 교수님(요청 body의 professorId)이 있으면 **항상, 그리고 맨 먼저**.
+        //     사용자가 눈에 보이는 버튼을 눌러 명시적으로 지정한 상태라, 프롬프트에 이름을
+        //     적었는지와 무관하게 존중해야 합니다.
+        // (b) 그 다음, 질문 텍스트에 이름이 언급된 다른 교수님들(폴백). 선택을 안 한
+        //     일반 채팅에서도 "김철수 교수님 시험 어떻게 나와?"가 동작하도록 남겨둡니다.
+        //
+        // 선택된 교수님 + 다른 교수님 언급이 동시에 일어나면 **둘 다 싣되 선택된 쪽을 먼저**
+        // 넣습니다. 하나만 고르지 않는 이유는 "김 교수님이랑 이 교수님 출제 스타일 차이가
+        // 뭐야?" 같은 질문이 자연스럽게 나오기 때문이고, 순서를 정해두는 이유는 아래에서
+        // 예산(MAX_PROFESSOR_CONTEXT_CHARS)이 모자랄 때 **선택된 교수님 자료가 먼저 들어가
+        // 살아남도록** 보장하기 위해서입니다.
+        const requestedProfessorId = typeof body.professorId === 'string' ? body.professorId : null;
+        // 다른 사용자의 id나 이미 지워진 id가 넘어오는 경우를 걸러냅니다. professors 조회는
+        // RLS로 이미 본인 소유만 돌아오므로, 그 목록에 있는지만 보면 충분합니다.
+        const selected = requestedProfessorId
+          ? (professors || []).find((p) => p.id === requestedProfessorId) || null
+          : null;
+
         const lowerPrompt = typeof prompt === 'string' ? prompt.toLowerCase() : '';
         const mentioned = (professors || []).filter(
-          (p) => p.name && p.name.trim().length > 0 && lowerPrompt.includes(p.name.trim().toLowerCase())
+          (p) =>
+            p.id !== selected?.id &&
+            p.name &&
+            p.name.trim().length > 0 &&
+            lowerPrompt.includes(p.name.trim().toLowerCase())
         );
 
+        const targets = [...(selected ? [selected] : []), ...mentioned];
+
         let detailSection = '';
-        if (mentioned.length > 0) {
+        if (targets.length > 0) {
           const { data: contentRows } = await supabase
             .from('documents')
             .select('professor_id, file_name, content')
-            .in('professor_id', mentioned.map((p) => p.id));
+            .in('professor_id', targets.map((p) => p.id));
 
           const rowsByProfessor = new Map<string, ProfessorDocContentRow[]>();
           ((contentRows ?? []) as (ProfessorDocContentRow & { professor_id: string })[]).forEach((r) => {
@@ -244,24 +265,40 @@ export async function POST(req: Request) {
             rowsByProfessor.get(r.professor_id)!.push({ file_name: r.file_name, content: r.content });
           });
 
+          // 예산을 순서대로 배분합니다 — 합쳐놓고 한 번에 자르면(truncateForPrompt는 앞 70%
+          // + 뒤 30%를 남깁니다) 뒤쪽 교수님 자료가 중간에서 잘려 들어가, 정작 선택한
+          // 교수님 자료가 온전히 남는다는 보장이 없습니다.
           const detailParts: string[] = [];
-          mentioned.forEach((p) => {
+          let remaining = MAX_PROFESSOR_CONTEXT_CHARS;
+          for (const p of targets) {
+            if (remaining <= 0) break;
             const rows = rowsByProfessor.get(p.id) ?? [];
-            if (rows.length === 0) return;
+            if (rows.length === 0) continue;
             const docsText = rows
               .map((r) => `- ${r.file_name}:\n${truncateForPrompt(r.content || '', MAX_PROFESSOR_DOC_CHARS)}`)
               .join('\n\n');
-            detailParts.push(`[교수님: ${labelFor(p.id)}]\n${docsText}`);
-          });
+            const isSelected = p.id === selected?.id;
+            const section = `[교수님: ${labelFor(p.id)}${isSelected ? ' — 사용자가 화면에서 선택한 교수님' : ''}]\n${docsText}`;
+            const fitted = section.length <= remaining ? section : truncateForPrompt(section, remaining);
+            detailParts.push(fitted);
+            remaining -= fitted.length;
+          }
+
           if (detailParts.length > 0) {
-            detailSection =
-              '\n\n[[질문에서 언급된 교수님의 자료 본문]]\n' +
-              truncateForPrompt(detailParts.join('\n\n---\n\n'), MAX_PROFESSOR_CONTEXT_CHARS);
+            const heading = selected
+              ? '[[지금 참고할 교수님의 자료 본문]]'
+              : '[[질문에서 언급된 교수님의 자료 본문]]';
+            detailSection = '\n\n' + heading + '\n' + detailParts.join('\n\n---\n\n');
           }
         }
 
+        const selectionNote = selected
+          ? `사용자는 지금 화면에서 "${selected.name}" 교수님을 선택해 둔 상태입니다. 특별히 다른 교수님을 지목하지 않는 한 이 교수님의 자료를 기준으로 답하세요.\n`
+          : '';
+
         professorContext =
           '[[교수님별로 등록해둔 자료 목록]]\n' +
+          selectionNote +
           '아래는 사용자가 등록해둔 자료의 "목록"입니다(본문은 포함되어 있지 않습니다). 사용자가 특정 자료의 내용을 물어보는데 본문이 아래에 없다면, 지어내지 말고 어느 교수님·어느 자료를 봐야 하는지 되물으세요.\n' +
           truncateForPrompt(indexSections.join('\n\n'), MAX_PROFESSOR_CONTEXT_CHARS) +
           detailSection +

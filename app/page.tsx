@@ -1698,7 +1698,13 @@ export default function HomePage() {
           deadlines,
           chatAttachments,
           token,
-          responseLanguage
+          responseLanguage,
+          // 💡 [신규] "교수님 자료로 만들기"에서 고른 교수님을 채팅에도 함께 보냅니다.
+          // 예전엔 이 선택이 /api/analyze 경로에만 쓰여서, 교수님을 골라둔 채로 채팅에
+          // 질문하면 서버는 그 사실을 전혀 몰랐습니다(프롬프트에 이름을 직접 적어야만
+          // 그 교수님 자료가 실렸음). 이제 선택돼 있으면 이름 언급 여부와 무관하게
+          // 그 교수님 자료를 배경 정보로 씁니다.
+          professorId: professorGenProfessorId,
         }),
       });
 
@@ -2597,6 +2603,15 @@ export default function HomePage() {
                         );
                       })}
                     </div>
+
+                    {/* 💡 [신규] 이 선택이 아래 채팅에도 영향을 준다는 안내 — 선택 상태가
+                        /api/chat 요청에 함께 실려가면서 생긴 동작이라, 알려주지 않으면
+                        "왜 갑자기 이 교수님 얘기를 하지?"가 됩니다. */}
+                    {professorGenProfessorId && (
+                      <p className="text-[10px] text-[var(--text-faint)] mt-1.5 leading-relaxed">
+                        {t('workspace.professorGen.chatHint')}
+                      </p>
+                    )}
 
                     {/* 2단계 — 교수님을 고른 뒤에만 나타납니다. 고르기 전부터 비활성 버튼
                         세 개가 떠 있으면 뭘 먼저 해야 하는지가 흐려집니다. */}
