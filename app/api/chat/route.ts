@@ -10,7 +10,12 @@ import { toMarkdown } from '@ohah/hwpjs'; // 💡 HWP(.hwp) 문서 분석을 위
 import { OfficeParser } from 'officeparser'; // 💡 PPT/워드/PDF 텍스트 분석을 위한 라이브러리
 import { extractFileText, FileExtractError, resolveFileExtension } from '@/lib/file-text-extract'; // 💡 .hwpx(zip 기반) 텍스트 추출 — hwpjs는 .hwp 전용이라 별도 처리
 import { MAX_UPLOAD_BYTES, MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
-import { truncateForPrompt, MAX_PROFESSOR_DOC_CHARS, MAX_PROFESSOR_CONTEXT_CHARS } from '@/lib/truncate-text';
+import {
+  truncateForPrompt,
+  MAX_PROFESSOR_DOC_CHARS,
+  MAX_PROFESSOR_CONTEXT_CHARS,
+  MAX_RECENT_LOG_RESPONSE_CHARS,
+} from '@/lib/truncate-text';
 import { getPlanLimits, getMonthStartISOString, PRO_PRICE_LABEL } from '@/lib/plan-limits';
 // 💡 tesseract.js(이미지 OCR)는 이미지가 실제로 첨부됐을 때만 동적으로 불러옵니다.
 // 파일 상단에서 정적으로 import하면, Vercel 번들에서 워커 스크립트를 못 찾을 경우
@@ -45,6 +50,11 @@ interface ProfessorDocRow {
 interface ProfessorDocContentRow {
   file_name: string;
   content: string;
+}
+// 💡 [신규] 최근 대화 기록으로 싣는 logs 행 — 예전에는 content만 조회했습니다.
+interface RecentLogRow {
+  content: string;
+  response: string | null;
 }
 
 export async function POST(req: Request) {
@@ -131,19 +141,22 @@ export async function POST(req: Request) {
     // 💡 [신규] 아래 Promise.all에서 채워집니다. 스트림이 끝난 뒤 토큰 사용량을 기록할 때
     // 필요해서 블록 밖에 둡니다(token 없이 호출된 경우엔 null로 남고, 기록도 건너뜁니다).
     let chatUserId: string | null = null;
+    // 💡 [수정] 화면에서 선택된 교수님 id — 아래에서 두 군데에 씁니다: (a) 최근 대화 기록을
+    // 그 교수님 것으로 좁히기, (b) 교수님 자료 본문 싣기. 예전에는 (b)에서만 읽었습니다.
+    const requestedProfessorId = typeof body.professorId === 'string' && body.professorId ? body.professorId : null;
     if (supabase) {
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
       // 💡 [신규] 토큰 사용량 기록·내부 상한 검사에 사용자 id가 필요합니다. 별도로 부르면
       // Auth 서버를 한 번 더 왕복하므로 아래 조회들과 함께 병렬로 처리합니다.
-      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, monthlyLogsCountResult, userResult] = await Promise.all([
+      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, monthlyLogsCountResult, userResult, professorLogsResult] = await Promise.all([
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
           .gte('created_at', oneMinuteAgo),
         supabase
           .from('logs')
-          .select('content')
+          .select('content, response')
           .order('created_at', { ascending: false })
           .limit(3),
         supabase.from('professors').select('id, name, school, department'),
@@ -156,6 +169,17 @@ export async function POST(req: Request) {
           .select('id', { count: 'exact', head: true })
           .gte('created_at', getMonthStartISOString()),
         supabase.auth.getUser(),
+        // 💡 [신규] 교수님이 선택돼 있으면 그 교수님과 나눈 대화만 따로 조회합니다. 위의
+        // 전체 최근 3건과 함께 병렬로 받아두고 아래에서 하나를 고릅니다 — 먼저 조회해보고
+        // 비었을 때 다시 조회하는 순차 방식이면 왕복이 한 번 더 늘어납니다.
+        requestedProfessorId
+          ? supabase
+              .from('logs')
+              .select('content, response')
+              .eq('professor_id', requestedProfessorId)
+              .order('created_at', { ascending: false })
+              .limit(3)
+          : Promise.resolve({ data: null, error: null }),
       ]);
       chatUserId = userResult.data.user?.id ?? null;
 
@@ -214,9 +238,30 @@ export async function POST(req: Request) {
         }
       }
 
-      const recentLogs = recentLogsResult.data;
-      if (!recentLogsResult.error && recentLogs && recentLogs.length > 0) {
-        dbContext = "[[최근 대화 기록]]\n" + recentLogs.map(l => l.content).join('\n') + "\n\n";
+      // 💡 [수정] 교수님이 선택돼 있고 그 교수님과 나눈 대화가 있으면 그것만 씁니다.
+      // 없으면(방금 고른 교수님이라 기록이 아직 없는 경우 등) 예전처럼 전체 최근 3건으로
+      // 되돌아갑니다 — 맥락이 아예 없는 것보다는 낫습니다.
+      const professorScopedLogs = (professorLogsResult?.data ?? null) as RecentLogRow[] | null;
+      const generalLogs = (recentLogsResult.error ? null : recentLogsResult.data) as RecentLogRow[] | null;
+      const recentLogs =
+        professorScopedLogs && professorScopedLogs.length > 0 ? professorScopedLogs : generalLogs;
+
+      if (recentLogs && recentLogs.length > 0) {
+        // 💡 [수정] 예전에는 content(내 질문)만 실어서 AI가 자기가 뭐라고 답했는지 몰랐습니다.
+        // 이제 답변도 함께 싣되 앞부분만 잘라 넣습니다(MAX_RECENT_LOG_RESPONSE_CHARS).
+        // 오래된 것이 위로 오도록 뒤집어서, 시간 순서대로 읽히게 합니다.
+        const lines = [...recentLogs].reverse().map((l) => {
+          const answer = (l.response || '').trim().replace(/\s+/g, ' ');
+          const clipped =
+            answer.length > MAX_RECENT_LOG_RESPONSE_CHARS
+              ? `${answer.slice(0, MAX_RECENT_LOG_RESPONSE_CHARS)}…(이하 생략)`
+              : answer;
+          return clipped ? `${l.content}\n[답변] ${clipped}` : l.content;
+        });
+        const scopeNote = professorScopedLogs && professorScopedLogs.length > 0
+          ? '(지금 선택된 교수님과 나눈 대화만 추렸습니다)'
+          : '';
+        dbContext = `[[최근 대화 기록]]${scopeNote}\n` + lines.join('\n\n') + "\n\n";
       }
 
       const professors = professorsResult.data as ProfessorRow[] | null;
@@ -256,7 +301,6 @@ export async function POST(req: Request) {
         // 뭐야?" 같은 질문이 자연스럽게 나오기 때문이고, 순서를 정해두는 이유는 아래에서
         // 예산(MAX_PROFESSOR_CONTEXT_CHARS)이 모자랄 때 **선택된 교수님 자료가 먼저 들어가
         // 살아남도록** 보장하기 위해서입니다.
-        const requestedProfessorId = typeof body.professorId === 'string' ? body.professorId : null;
         // 다른 사용자의 id나 이미 지워진 id가 넘어오는 경우를 걸러냅니다. professors 조회는
         // RLS로 이미 본인 소유만 돌아오므로, 그 목록에 있는지만 보면 충분합니다.
         const selected = requestedProfessorId

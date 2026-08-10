@@ -36,3 +36,10 @@ export function truncateForPrompt(text: string, maxChars = MAX_PROMPT_TEXT_CHARS
 // 클라이언트(app/page.tsx)와 서버(app/api/analyze)가 같은 값을 씁니다.
 export const MAX_AVOID_QUESTIONS = 40;
 export const MAX_AVOID_QUESTION_CHARS = 60;
+
+// 💡 [신규] /api/chat이 "최근 대화 기록"으로 싣는 지난 AI 답변의 길이 상한.
+// 예전에는 내 질문(content)만 싣고 답변(response)은 아예 읽지 않아서, "아까 네가 말한 그거"
+// 같은 후속 질문이 이어지지 않았습니다. 이제 답변도 함께 싣되 전문이 아니라 앞부분만
+// 넣습니다 — 답변은 질문보다 훨씬 길어서(수천 자) 전문을 3건 실으면 배경 정보 대부분이
+// 지난 답변으로 채워집니다. 맥락을 잇는 데는 무엇을 답했는지의 요지면 충분합니다.
+export const MAX_RECENT_LOG_RESPONSE_CHARS = 200;
