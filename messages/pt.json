@@ -763,5 +763,23 @@
     "body": "Você já viu o que o Pro faz. Assine para continuar sem esperar.",
     "cta": "Assinar e continuar",
     "close": "Depois"
+  },
+  "onboarding": {
+    "title": "Três passos e pronto",
+    "start": "Começar",
+    "steps": {
+      "1": {
+        "title": "Adicione um professor",
+        "desc": "Só o nome já basta para começar"
+      },
+      "2": {
+        "title": "Envie o material da disciplina",
+        "desc": "PDF, slides, fotos — qualquer coisa serve"
+      },
+      "3": {
+        "title": "Receba questões e resumos",
+        "desc": "Quanto mais material, mais preciso"
+      }
+    }
   }
 }

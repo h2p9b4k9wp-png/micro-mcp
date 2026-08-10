@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -43,6 +43,7 @@ import { CircuitBoard } from '@/components/circuit/circuit-board';
 import { LoadingText } from '@/components/loading-text';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { CarrotGauge } from '@/components/carrot-gauge';
+import { OnboardingModal } from '@/components/onboarding-modal';
 // 💡 [신규] 잔량 구간별 게이지 색. globals.css의 --text-warn/--accent-danger와 같은 계열
 // 값을 SVG fill로 직접 넘겨야 해서(CSS 변수는 이 컴포넌트의 fill 속성에 쓰기 번거로움)
 // 여기 리터럴로 둡니다. ok는 기존 당근색 그대로입니다.
@@ -329,6 +330,10 @@ export default function HomePage() {
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [professorDocuments, setProfessorDocuments] = useState<ProfessorDocument[]>([]);
   const [isProfessorsLoaded, setIsProfessorsLoaded] = useState(false);
+  // 💡 [신규] logs 조회 완료 여부. fetchLogs는 결과가 0건이면 setLogs를 아예 부르지 않아서
+  // logs가 []인 상태만으로는 "아직 로딩 중"과 "정말 대화가 없음"을 구분할 수 없습니다.
+  // 온보딩 표시 조건이 바로 그 구분에 의존하므로 플래그를 따로 둡니다.
+  const [isLogsLoaded, setIsLogsLoaded] = useState(false);
   const [selectedProfessorId, setSelectedProfessorId] = useState<string | null>(null);
 
   const [isUploadingProfessorDoc, setIsUploadingProfessorDoc] = useState(false);
@@ -472,6 +477,33 @@ export default function HomePage() {
   const [isGraphPreferencesLoaded, setIsGraphPreferencesLoaded] = useState(false);
 
   const [logs, setLogs] = useState<LogItem[]>([]);
+
+  // 💡 [신규] 가입 직후 딱 한 번 뜨는 3단계 안내(components/onboarding-modal.tsx).
+  //
+  // "봤는지"는 계정별 localStorage에 기록합니다(mcp_onboarding_seen:{userId}) — 기기마다
+  // 한 번씩 더 뜰 수 있지만 실질적 피해가 없고, DB 컬럼을 추가하려면 마이그레이션과
+  // profiles UPDATE 권한 확장(20260818이 좁혀둠)이 함께 필요해 비용이 큽니다.
+  //
+  // 기록만으로 판단하지 않고 "정말 아무것도 안 한 계정"인지도 함께 봅니다. localStorage를
+  // 지웠거나 새 기기로 접속한 기존 사용자에게 "1. 교수님 추가하기"가 다시 뜨면 어색합니다.
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const hasSeenOnboarding = useMemo(
+    () => (user ? loadUserScopedItem<boolean>(user.id, 'mcp_onboarding_seen') === true : true),
+    [user]
+  );
+  const showOnboarding =
+    !onboardingDismissed &&
+    !hasSeenOnboarding &&
+    isProfessorsLoaded &&
+    isLogsLoaded &&
+    professors.length === 0 &&
+    logs.length === 0;
+
+  const dismissOnboarding = () => {
+    setOnboardingDismissed(true);
+    if (user) saveUserScopedItem(user.id, 'mcp_onboarding_seen', true);
+  };
+
   // 💡 [신규] 대화 폴더 — "전체"/"미분류"/각 폴더 이름으로 지난 대화를 걸러 봅니다.
   const [conversationFolders, setConversationFolders] = useState<ConversationFolder[]>([]);
   const [logFolderFilter, setLogFolderFilter] = useState<'all' | 'unfiled' | string>('all');
@@ -712,6 +744,7 @@ export default function HomePage() {
     if (data && data.length > 0) {
       setLogs(data);
     }
+    setIsLogsLoaded(true);
   };
 
   // 💡 [신규] 유료 전환 준비 — profiles.is_pro 조회. 프로필 행이 아직 없거나(가입 직후 등)
@@ -4005,6 +4038,17 @@ export default function HomePage() {
       >
         <ArrowDown className="w-4 h-4" strokeWidth={2.5} />
       </button>
+    )}
+
+    {showOnboarding && (
+      <OnboardingModal
+        t={t}
+        onClose={dismissOnboarding}
+        onSelectStep={(target) => {
+          dismissOnboarding();
+          setActiveTab(target);
+        }}
+      />
     )}
 
     {/* 💡 [신규] 소사이어티 코드 월 사용 상한 안내 카드. 예전에는 서버가 돌려준 영어 문구

@@ -763,5 +763,23 @@
     "body": "Hai già visto cosa può fare Pro. Abbonati per continuare senza aspettare.",
     "cta": "Abbonati e continua",
     "close": "Più tardi"
+  },
+  "onboarding": {
+    "title": "Tre passaggi e sei pronto",
+    "start": "Inizia",
+    "steps": {
+      "1": {
+        "title": "Aggiungi un professore",
+        "desc": "Basta il nome per cominciare"
+      },
+      "2": {
+        "title": "Carica i materiali del corso",
+        "desc": "PDF, slide, foto — va bene tutto"
+      },
+      "3": {
+        "title": "Ricevi domande e riassunti",
+        "desc": "Più materiali carichi, più è preciso"
+      }
+    }
   }
 }

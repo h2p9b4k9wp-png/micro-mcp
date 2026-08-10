@@ -763,5 +763,23 @@
     "body": "Du kennst Pro ja bereits. Mit einem Abo geht es ohne Wartezeit weiter.",
     "cta": "Abonnieren und weitermachen",
     "close": "Später"
+  },
+  "onboarding": {
+    "title": "In drei Schritten startklar",
+    "start": "Los geht's",
+    "steps": {
+      "1": {
+        "title": "Professor hinzufügen",
+        "desc": "Ein Name genügt für den Anfang"
+      },
+      "2": {
+        "title": "Kursmaterial hochladen",
+        "desc": "PDF, Folien, Fotos — alles geht"
+      },
+      "3": {
+        "title": "Übungsfragen und Zusammenfassungen",
+        "desc": "Je mehr Material, desto genauer"
+      }
+    }
   }
 }

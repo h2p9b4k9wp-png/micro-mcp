@@ -763,5 +763,23 @@
     "body": "Ya has visto lo que Pro puede hacer. Suscríbete para seguir sin esperar.",
     "cta": "Suscribirme y continuar",
     "close": "Quizá más tarde"
+  },
+  "onboarding": {
+    "title": "Tres pasos y listo",
+    "start": "Empezar",
+    "steps": {
+      "1": {
+        "title": "Añade un profesor",
+        "desc": "Con solo el nombre ya puedes empezar"
+      },
+      "2": {
+        "title": "Sube material del curso",
+        "desc": "PDF, diapositivas, fotos: lo que sea"
+      },
+      "3": {
+        "title": "Recibe preguntas y resúmenes",
+        "desc": "Cuanto más material, más preciso"
+      }
+    }
   }
 }

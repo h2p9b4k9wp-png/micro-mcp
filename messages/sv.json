@@ -763,5 +763,23 @@
     "body": "Du vet redan vad Pro kan. Med en prenumeration fortsätter du direkt.",
     "cta": "Prenumerera och fortsätt",
     "close": "Senare"
+  },
+  "onboarding": {
+    "title": "Tre steg så är du igång",
+    "start": "Kom igång",
+    "steps": {
+      "1": {
+        "title": "Lägg till en lärare",
+        "desc": "Bara namnet räcker för att börja"
+      },
+      "2": {
+        "title": "Ladda upp kursmaterial",
+        "desc": "PDF, bilder, foton — allt fungerar"
+      },
+      "3": {
+        "title": "Få övningsfrågor och sammanfattningar",
+        "desc": "Ju mer material, desto träffsäkrare"
+      }
+    }
   }
 }

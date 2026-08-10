@@ -763,5 +763,23 @@
     "body": "Bạn đã trải nghiệm Pro rồi. Đăng ký để tiếp tục ngay.",
     "cta": "Đăng ký và tiếp tục",
     "close": "Để sau"
+  },
+  "onboarding": {
+    "title": "Ba bước là xong",
+    "start": "Bắt đầu",
+    "steps": {
+      "1": {
+        "title": "Thêm giảng viên",
+        "desc": "Chỉ cần tên là bắt đầu được"
+      },
+      "2": {
+        "title": "Tải tài liệu môn học lên",
+        "desc": "PDF, slide, ảnh — gì cũng được"
+      },
+      "3": {
+        "title": "Nhận câu hỏi và tóm tắt",
+        "desc": "Càng nhiều tài liệu càng chính xác"
+      }
+    }
   }
 }

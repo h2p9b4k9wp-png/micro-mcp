@@ -763,5 +763,23 @@
     "body": "Tiedät jo mitä Pro tekee. Tilaamalla jatkat heti.",
     "cta": "Tilaa ja jatka",
     "close": "Ehkä myöhemmin"
+  },
+  "onboarding": {
+    "title": "Kolme askelta ja olet valmis",
+    "start": "Aloita",
+    "steps": {
+      "1": {
+        "title": "Lisää luennoitsija",
+        "desc": "Pelkkä nimi riittää alkuun"
+      },
+      "2": {
+        "title": "Lataa kurssiaineisto",
+        "desc": "PDF, diat, valokuvat — mikä vain käy"
+      },
+      "3": {
+        "title": "Saa harjoituskysymyksiä ja tiivistelmiä",
+        "desc": "Mitä enemmän aineistoa, sitä tarkempaa"
+      }
+    }
   }
 }

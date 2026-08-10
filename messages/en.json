@@ -763,5 +763,23 @@
     "body": "You've already seen what Pro can do. Subscribe to keep going without waiting.",
     "cta": "Subscribe and keep going",
     "close": "Maybe later"
+  },
+  "onboarding": {
+    "title": "Three steps and you're set",
+    "start": "Get started",
+    "steps": {
+      "1": {
+        "title": "Add a professor",
+        "desc": "A name alone is enough to begin"
+      },
+      "2": {
+        "title": "Upload course materials",
+        "desc": "PDF, slides, photos — anything works"
+      },
+      "3": {
+        "title": "Get practice questions and summaries",
+        "desc": "The more materials, the sharper it gets"
+      }
+    }
   }
 }

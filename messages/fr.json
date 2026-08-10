@@ -763,5 +763,23 @@
     "body": "Vous avez déjà vu ce que Pro permet. Abonnez-vous pour continuer sans attendre.",
     "cta": "S'abonner et continuer",
     "close": "Plus tard"
+  },
+  "onboarding": {
+    "title": "Trois étapes et c'est prêt",
+    "start": "Commencer",
+    "steps": {
+      "1": {
+        "title": "Ajouter un professeur",
+        "desc": "Un nom suffit pour commencer"
+      },
+      "2": {
+        "title": "Importer les documents de cours",
+        "desc": "PDF, diapos, photos — tout convient"
+      },
+      "3": {
+        "title": "Recevoir questions et résumés",
+        "desc": "Plus il y a de documents, plus c'est précis"
+      }
+    }
   }
 }

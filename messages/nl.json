@@ -763,5 +763,23 @@
     "body": "Je weet al wat Pro kan. Met een abonnement ga je direct verder.",
     "cta": "Abonneren en doorgaan",
     "close": "Later"
+  },
+  "onboarding": {
+    "title": "In drie stappen klaar",
+    "start": "Beginnen",
+    "steps": {
+      "1": {
+        "title": "Voeg een docent toe",
+        "desc": "Alleen een naam is al genoeg"
+      },
+      "2": {
+        "title": "Upload cursusmateriaal",
+        "desc": "PDF, slides, foto's — alles kan"
+      },
+      "3": {
+        "title": "Krijg oefenvragen en samenvattingen",
+        "desc": "Hoe meer materiaal, hoe nauwkeuriger"
+      }
+    }
   }
 }
