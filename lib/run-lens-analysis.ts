@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
-import { LENSES, detectLens, type LensId } from '@/lib/lenses';
+import { LENSES, detectLens, capLensResult, type LensId } from '@/lib/lenses';
 import { truncateForPrompt } from '@/lib/truncate-text';
-import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
+import { getAiModel, buildMaxTokensParam, buildReasoningParam } from '@/lib/ai-model';
 
 export class LensAnalysisParseError extends Error {}
 
@@ -82,7 +82,8 @@ export async function runLensAnalysis({
 
   const completion = await openai.chat.completions.create({
     model,
-    ...buildMaxTokensParam(model, 4096),
+    ...buildMaxTokensParam(model, 4096, 16384),
+    ...buildReasoningParam(model),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -106,7 +107,7 @@ export async function runLensAnalysis({
     throw new LensAnalysisParseError('The AI had trouble organizing the analysis result. Please try again.');
   }
 
-  return { lensId, result, usage: extractUsage(completion), model };
+  return { lensId, result: capLensResult(lensId, result), usage: extractUsage(completion), model };
 }
 
 export interface RunLensAnalysisOnImageParams {
@@ -138,7 +139,8 @@ export async function runLensAnalysisOnImage({
 
   const completion = await openai.chat.completions.create({
     model,
-    ...buildMaxTokensParam(model, 4096),
+    ...buildMaxTokensParam(model, 4096, 16384),
+    ...buildReasoningParam(model),
     response_format: {
       type: 'json_schema',
       json_schema: {
@@ -168,5 +170,5 @@ export async function runLensAnalysisOnImage({
     throw new LensAnalysisParseError('The AI had trouble organizing the analysis result. Please try again.');
   }
 
-  return { lensId: lens, result, usage: extractUsage(completion), model };
+  return { lensId: lens, result: capLensResult(lens, result), usage: extractUsage(completion), model };
 }

@@ -290,6 +290,50 @@ export const LENSES: Record<LensId, LensDefinition> = {
   },
 };
 
+// 💡 [신규] 렌즈 결과의 항목 개수 상한.
+//
+// ⚠️ 이걸 JSON 스키마의 maxItems로 넣을 수는 없습니다 — OpenAI Structured Outputs의
+// strict 모드는 JSON Schema의 부분집합만 지원하고, 배열의 minItems/maxItems는 그 밖입니다
+// (minimum/maximum/minLength/pattern 등도 마찬가지). 스키마에 넣으면 요청 자체가
+// "Invalid schema for response_format" 400으로 거절돼서 렌즈 기능이 전부 멎습니다.
+//
+// 그래서 스키마 대신 파싱 직후 잘라냅니다. 프롬프트에 "최대 N개"라고 쓰는 것보다 확실하고
+// (모델이 지키든 말든 결과는 항상 N개 이하), 스키마 제약과 달리 초과했다고 요청이 실패하지도
+// 않습니다. 프롬프트의 개수 문구는 그대로 두는 게 맞습니다 — 그건 "적게 내도 된다"는
+// 신호이기도 해서, 지우면 근거 없는 항목을 채워 넣는 쪽으로 되돌아갑니다(questions 렌즈
+// 주석 참고).
+//
+// 개수는 화면에서 실제로 쓸모 있는 선을 기준으로 잡았습니다: deadlines는 강의계획서 한
+// 학기치가 통째로 들어올 수 있어 넉넉하게(진짜 마감을 잘라내면 손해가 큼), questions·
+// examQuestions는 프롬프트가 이미 최대 8개라고 말하고 있어 같은 값, digest의 keyPoints도
+// 프롬프트와 같은 7개, terms는 용어 나열이라 12개면 충분합니다.
+export const LENS_ITEM_CAPS = {
+  deadlines: { items: 30 },
+  questions: { items: 8 },
+  examQuestions: { items: 8 },
+  digest: { keyPoints: 7, terms: 12 },
+} as const;
+
+/**
+ * 파싱된 렌즈 결과를 위 상한에 맞춰 잘라냅니다. 모양이 예상과 다르면(모델이 이상한 걸
+ * 돌려준 경우) 아무것도 하지 않고 그대로 돌려줍니다 — 여기서 던지면 정상 결과까지
+ * 날아가므로, 상한 적용은 어디까지나 "되면 좋은" 처리입니다.
+ */
+export function capLensResult(lensId: LensId, result: unknown): unknown {
+  if (!result || typeof result !== 'object') return result;
+  const r = result as Record<string, unknown>;
+
+  if (lensId === 'digest') {
+    if (Array.isArray(r.keyPoints)) r.keyPoints = r.keyPoints.slice(0, LENS_ITEM_CAPS.digest.keyPoints);
+    if (Array.isArray(r.terms)) r.terms = r.terms.slice(0, LENS_ITEM_CAPS.digest.terms);
+    return r;
+  }
+
+  const cap = LENS_ITEM_CAPS[lensId as 'deadlines' | 'questions' | 'examQuestions'];
+  if (cap && Array.isArray(r.items)) r.items = r.items.slice(0, cap.items);
+  return r;
+}
+
 const DEADLINE_KEYWORDS = ['강의계획서', '주차별', '제출기한', '제출 기한', '과제', '시험'];
 const QUESTION_KEYWORDS = ['발표', '제안서', '기획안'];
 

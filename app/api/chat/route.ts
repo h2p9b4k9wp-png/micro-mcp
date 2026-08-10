@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
+import { getAiModel, buildMaxTokensParam, buildReasoningParam } from '@/lib/ai-model';
 import { checkTokenSafetyLimits } from '@/lib/token-safety';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
 import OpenAI from 'openai';
@@ -444,7 +444,8 @@ ${dbContext}${deadlineContext}${professorContext}${truncateForPrompt(fileTextSum
     const chatModel = getAiModel();
     const stream = await openai.chat.completions.create({
       model: chatModel,
-      ...buildMaxTokensParam(chatModel, 4096),
+      ...buildMaxTokensParam(chatModel, 4096, 16384),
+      ...buildReasoningParam(chatModel),
       stream: true,
       // 💡 [신규] 스트리밍 응답은 기본적으로 usage를 주지 않습니다 — 이 옵션을 켜야 마지막
       // 청크에 실려옵니다(그 청크는 choices가 비어 있습니다). 이게 없으면 채팅 토큰을

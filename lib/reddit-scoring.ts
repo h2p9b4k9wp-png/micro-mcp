@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
+import { getAiModel, buildMaxTokensParam, buildReasoningParam } from '@/lib/ai-model';
 
 // 💡 [신규] lib/run-lens-analysis.ts와 완전히 같은 패턴(OpenAI 클라이언트 생성, Structured
 // Outputs `response_format: {type:'json_schema', strict:true}`) — 이 저장소가 이미 정한
@@ -49,7 +49,8 @@ export async function scoreRedditPost({
   const model = getAiModel();
   const completion = await openai.chat.completions.create({
     model,
-    ...buildMaxTokensParam(model, 100),
+    ...buildMaxTokensParam(model, 100, 2048),
+    ...buildReasoningParam(model),
     response_format: {
       type: 'json_schema',
       json_schema: { name: 'reddit_post_score', schema: SCORE_SCHEMA, strict: true },
@@ -116,7 +117,8 @@ export async function draftReplyForRedditPost({
   const model = getAiModel();
   const completion = await openai.chat.completions.create({
     model,
-    ...buildMaxTokensParam(model, 1024),
+    ...buildMaxTokensParam(model, 1024, 4096),
+    ...buildReasoningParam(model),
     response_format: {
       type: 'json_schema',
       json_schema: { name: 'reddit_post_draft', schema: DRAFT_SCHEMA, strict: true },

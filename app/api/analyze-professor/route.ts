@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAiModel, buildMaxTokensParam } from '@/lib/ai-model';
+import { getAiModel, buildMaxTokensParam, buildReasoningParam } from '@/lib/ai-model';
 import OpenAI from 'openai';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -131,6 +131,31 @@ const INCREMENTAL_SYSTEM_PROMPT = `당신은 한 교수님에 대해 이미 만�
 
 ${CATEGORY_INSTRUCTIONS}`;
 
+// 💡 [신규] 카테고리별 items 개수 상한 — 위 CATEGORY_INSTRUCTIONS가 프롬프트로 말하는
+// 숫자와 같은 값입니다(topics만 8개, 나머지는 6개). 스키마로 강제할 수 없어서 파싱 후
+// 잘라내는 이유는 호출부 주석 참고.
+const CATEGORY_ITEM_CAPS: Record<string, number> = {
+  topics: 8,
+  examStyle: 6,
+  assignmentStyle: 6,
+  examQuestionTypes: 6,
+  gradingStrictness: 6,
+  researchInterests: 6,
+};
+
+function capProfessorAnalysis(result: unknown): unknown {
+  if (!result || typeof result !== 'object') return result;
+  const r = result as Record<string, unknown>;
+  for (const [key, cap] of Object.entries(CATEGORY_ITEM_CAPS)) {
+    const category = r[key];
+    if (category && typeof category === 'object') {
+      const c = category as Record<string, unknown>;
+      if (Array.isArray(c.items)) c.items = c.items.slice(0, cap);
+    }
+  }
+  return r;
+}
+
 type DocPayload = { fileName: string; text: string; docType?: string };
 
 function formatDocuments(documents: DocPayload[]): string {
@@ -244,7 +269,8 @@ export async function POST(req: Request) {
     const model = getAiModel();
     const completion = await openai.chat.completions.create({
       model,
-      ...buildMaxTokensParam(model, 4096),
+      ...buildMaxTokensParam(model, 4096, 16384),
+      ...buildReasoningParam(model),
       response_format: {
         type: 'json_schema',
         json_schema: {
@@ -271,6 +297,13 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    // 💡 [신규] 카테고리별 항목 개수 상한. CATEGORY_INSTRUCTIONS가 이미 "최대 8개/6개"라고
+    // 말하고 있지만 그건 지켜주기를 바라는 것일 뿐이고, JSON 스키마의 maxItems로 강제할
+    // 수는 없습니다 — Structured Outputs strict 모드가 배열의 minItems/maxItems를 지원하지
+    // 않아서 스키마에 넣으면 요청이 400으로 거절됩니다(lib/lenses.ts의 LENS_ITEM_CAPS 주석
+    // 참고). 그래서 파싱 직후 잘라냅니다. 값은 위 프롬프트가 말하는 숫자와 맞췄습니다.
+    result = capProfessorAnalysis(result);
 
     // 💡 [신규] 추정이 아니라 OpenAI가 실제로 돌려준 토큰 수를 그대로 기록합니다 —
     // app/api/analyze와 같은 이유로 응답 전에 await합니다(lib/ai-usage-logging.ts,
