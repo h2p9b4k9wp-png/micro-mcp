@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { sendProExpiryEmail } from '@/lib/email';
 import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'crypto';
 import { FREE_LOG_RETENTION_DAYS } from '@/lib/plan-limits';
@@ -39,6 +41,70 @@ function timingSafeEqualStrings(a: string, b: string): boolean {
 // (middleware.ts가 /api/cron/*를 세션 검증에서 제외하는 이유) — 특정 사용자 대신이 아니라
 // 앱 전체를 대상으로 지우는 유지보수 작업이라 서비스 롤 키로 RLS를 우회해야 하고, 그만큼
 // 아무나 호출할 수 없게 반드시 CRON_SECRET을 확인합니다.
+
+// 💡 [신규] 만료가 3일 이내로 다가온 소사이어티 코드 Pro 사용자에게 사전 안내 메일을
+// 보냅니다. 사용자 본인 주소로 가고, 문구는 그 사람의 화면 언어(profiles.locale)를 따릅니다.
+//
+// 중복 방지: 이 cron은 매일 돌기 때문에 만료 3일 전부터는 같은 사람이 매일 조회에 걸립니다.
+// pro_expiry_notifications에 (user_id, expires_at) unique로 먼저 기록해보고, 실제로 새로
+// 기록된 경우에만 메일을 보냅니다 — 중복은 DB가 막으므로 동시 실행에도 한 통만 나갑니다.
+// 만료 시각까지 키에 넣은 덕분에, 나중에 새 코드로 기간이 연장되면 그때 다시 한 번 알립니다.
+//
+// 메일 발송이 실패해도 cron 전체를 실패시키지 않습니다 — 로그 정리·강등이 이 안내 때문에
+// 멈추면 안 됩니다. 실패한 사용자는 이미 기록이 남아 다음 날 재시도되지 않으므로, 실패
+// 로그를 반드시 남깁니다.
+const PRO_EXPIRY_NOTICE_DAYS = 3;
+
+async function notifyUpcomingProExpiry(supabaseAdmin: SupabaseClient): Promise<number> {
+  const now = new Date();
+  const until = new Date(now.getTime() + PRO_EXPIRY_NOTICE_DAYS * 86_400_000);
+
+  const { data: soon, error } = await supabaseAdmin
+    .from('profiles')
+    .select('id, locale, pro_expires_at')
+    .eq('pro_source', 'code')
+    .gt('pro_expires_at', now.toISOString())
+    .lte('pro_expires_at', until.toISOString());
+  if (error) {
+    console.error('[cleanup-logs] 만료 임박 사용자 조회 실패:', error);
+    return 0;
+  }
+  if (!soon || soon.length === 0) return 0;
+
+  let sent = 0;
+  for (const row of soon) {
+    const userId = row.id as string;
+    const expiresAt = row.pro_expires_at as string;
+
+    const { error: markError } = await supabaseAdmin
+      .from('pro_expiry_notifications')
+      .insert({ user_id: userId, expires_at: expiresAt });
+    if (markError) {
+      // 23505 = unique 위반 = 이 만료 시각 건은 이미 알림. 정상 경로이므로 조용히 건너뜁니다.
+      if (markError.code !== '23505') {
+        console.error(`[cleanup-logs] 만료 안내 기록 실패 (user ${userId}):`, markError);
+      }
+      continue;
+    }
+
+    try {
+      const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId);
+      const email = userData?.user?.email;
+      if (userError || !email) {
+        console.error(`[cleanup-logs] 만료 안내 대상의 이메일을 찾지 못했습니다 (user ${userId}):`, userError);
+        continue;
+      }
+      await sendProExpiryEmail({ to: email, locale: (row.locale as string | null) ?? null, expiresAt });
+      sent += 1;
+    } catch (mailError) {
+      console.error(`[cleanup-logs] 만료 안내 메일 발송 실패 (user ${userId}):`, mailError);
+    }
+  }
+
+  console.log(`[cleanup-logs] Pro 만료 사전 안내 ${sent}건 발송`);
+  return sent;
+}
+
 export async function GET(req: Request) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
@@ -120,11 +186,18 @@ export async function GET(req: Request) {
 
     console.log(`[cleanup-logs] 소사이어티 코드 만료로 무료 등급 강등 ${expiredCodeProCount}건`);
 
+    // 💡 [신규] 만료 3일 전 사전 안내 메일. 위 강등 로직과 같은 라우트에 둔 이유는 바로
+    // 위 주석과 같습니다 — 대상 테이블도, 판단 기준(pro_expires_at)도, 필요한 주기(하루
+    // 한 번)도 완전히 같은 일이라 cron을 따로 만들 이유가 없습니다. 강등보다 뒤에 두어,
+    // 이미 만료돼 방금 강등된 계정에는 "곧 끝납니다" 메일이 가지 않게 합니다.
+    const proExpiryNotified = await notifyUpcomingProExpiry(supabaseAdmin);
+
     return NextResponse.json({
       ok: true,
       deletedLogs: count ?? 0,
       deletedAnonymousUsage: anonymousUsageDeletedCount ?? 0,
       expiredCodePro: expiredCodeProCount,
+      proExpiryNotified,
     });
   } catch (error) {
     console.error('[cleanup-logs] 정리 작업 중 오류 발생:', error);

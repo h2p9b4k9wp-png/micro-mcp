@@ -751,5 +751,10 @@
     "daysLeft": "Pro 利用はあと{days}日です",
     "endsToday": "本日でPro利用が終了します",
     "endsOn": "{date}まで"
+  },
+  "societyCodeLimit": {
+    "title": "今月のコード利用分を使い切りました",
+    "body": "来月にリセットされ、そのときまた利用できます。",
+    "close": "確認"
   }
 }

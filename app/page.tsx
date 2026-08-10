@@ -390,6 +390,10 @@ export default function HomePage() {
     proExpiresAt: string | null;
   } | null>(null);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  // 💡 [신규] 소사이어티 코드 월 사용 상한 도달 안내. 일반 한도와 달리 Pro 결제 모달을
+  // 띄우지 않습니다 — 이 상한은 결제로 즉시 풀리는 성격이 아니라 "다음 달에 초기화되는"
+  // 것이라, 그 자리에서 결제를 권하면 안내가 아니라 판매가 됩니다.
+  const [isSocietyCodeLimitOpen, setIsSocietyCodeLimitOpen] = useState(false);
   const [upgradeContext, setUpgradeContext] = useState<string | null>(null);
   const [upgradeEmail, setUpgradeEmail] = useState('');
   const [upgradeMemo, setUpgradeMemo] = useState('');
@@ -474,6 +478,21 @@ export default function HomePage() {
   );
 
   // 💡 [신규] PWA 서비스워커 등록 (홈 화면에 앱으로 설치 가능하게 해줍니다)
+  // 💡 [신규] 화면 언어를 profiles.locale에 적어둡니다. 언어 설정은 브라우저 쿠키에만
+  // 있어서, 사용자가 접속하지 않은 상태에서 도는 cron(만료 안내 메일)은 이 사람이 어떤
+  // 언어를 쓰는지 알 방법이 없습니다. 값이 이미 같으면 쓰지 않아 불필요한 UPDATE가 매
+  // 로드마다 나가지 않습니다. 실패해도 조용히 넘어갑니다 — 메일 언어가 기본값으로
+  // 떨어질 뿐이라 화면 동작을 막을 이유가 아닙니다.
+  const syncLocaleToProfile = async (userId: string) => {
+    try {
+      const { data } = await supabase.from('profiles').select('locale').eq('id', userId).single();
+      if (data?.locale === locale) return;
+      await supabase.from('profiles').update({ locale }).eq('id', userId);
+    } catch (err) {
+      console.error('화면 언어 저장 실패:', err);
+    }
+  };
+
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch((err) => {
@@ -619,6 +638,7 @@ export default function HomePage() {
         fetchConversationFolders(retrySession.user.id);
         fetchIsPro(retrySession.user.id);
         fetchUsageSummary();
+        syncLocaleToProfile(retrySession.user.id);
       } else {
         setUser(session.user);
         fetchLogs(session.user.id);
@@ -627,6 +647,7 @@ export default function HomePage() {
         fetchConversationFolders(session.user.id);
         fetchIsPro(session.user.id);
         fetchUsageSummary();
+        syncLocaleToProfile(session.user.id);
       }
 
       setLoading(false);
@@ -1011,7 +1032,7 @@ export default function HomePage() {
             const quotaData = await quotaRes.json();
             if (!quotaRes.ok) {
               if (quotaData.limitReached) {
-                openUpgradeModal(quotaData.error);
+                handleLimitReached(quotaData);
                 break;
               }
               alert(quotaData.error || t('workspace.errors.quotaCheckFailed'));
@@ -1044,7 +1065,7 @@ export default function HomePage() {
           const data = await res.json();
           if (!res.ok) {
             if (data.limitReached) {
-              openUpgradeModal(data.error);
+              handleLimitReached(data);
               break;
             }
             alert(t('workspace.errors.extractFailed', { fileName: file.name, error: data.error }));
@@ -1104,6 +1125,16 @@ export default function HomePage() {
   // /api/society-code/redeem이 처리합니다(app/api/society-code/redeem/route.ts,
   // lib/society-codes.ts). 성공하면 이 클라이언트의 isPro 상태도 즉시 true로 반영해
   // 새로고침 없이 사이드바 Pro 배지 등이 바로 갱신되게 합니다.
+  // 💡 [신규] 한도 응답(limitReached) 처리를 한 곳으로 모읍니다 — 소사이어티 코드 상한만
+  // 다른 안내를 띄워야 하는데, 호출부가 5곳이라 각자 분기하면 한 군데씩 빠뜨리기 쉽습니다.
+  const handleLimitReached = (data: { error?: string; limitType?: string }) => {
+    if (data.limitType === 'societyCode') {
+      setIsSocietyCodeLimitOpen(true);
+      return;
+    }
+    openUpgradeModal(data.error);
+  };
+
   const handleRedeemSocietyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!societyCode.trim() || isRedeemingSocietyCode) return;
@@ -1122,6 +1153,14 @@ export default function HomePage() {
       }
       setSocietyCodeRedeemed(true);
       setIsPro(true);
+      // 💡 [신규] 응답의 expiresAt을 그대로 받아 사이드바 "코드 기간 D-N" 안내에 즉시
+      // 반영합니다 — 예전에는 이 값을 버려서, 코드를 막 등록한 사람이 기간을 확인하려면
+      // 다음 새로고침까지 기다려야 했습니다.
+      if (typeof data.expiresAt === 'string' && data.expiresAt) {
+        setUsageSummary((prev) =>
+          prev ? { ...prev, proSource: 'code', proExpiresAt: data.expiresAt } : prev
+        );
+      }
     } catch {
       setSocietyCodeError(t('upgrade.societyCode.genericError'));
     } finally {
@@ -1428,7 +1467,7 @@ export default function HomePage() {
     });
     const data = await res.json();
     if (!res.ok) {
-      if (data.limitReached) openUpgradeModal(data.error);
+      if (data.limitReached) handleLimitReached(data);
       throw new Error(data.error || t('workspace.errors.analyzeFailed'));
     }
     return data.result;
@@ -1554,7 +1593,7 @@ export default function HomePage() {
           const data = await res.json();
           if (!res.ok) {
             if (data.limitReached) {
-              openUpgradeModal(data.error);
+              handleLimitReached(data);
               break;
             }
             alert(t('workspace.errors.extractFailed', { fileName: file.name, error: data.error }));
@@ -1728,7 +1767,7 @@ export default function HomePage() {
         // 💡 [신규] 유료 전환 준비 — 월간 채팅 한도 도달은 그냥 막지 않고 업그레이드 요청
         // 폼을 바로 띄웁니다.
         if (errData.limitReached) {
-          openUpgradeModal(errData.error);
+          handleLimitReached(errData);
         }
       } else if (res.body) {
         // 💡 [속도 개선] 답변을 다 기다리지 않고, 도착하는 대로 바로바로 화면에 이어붙입니다.
@@ -3829,6 +3868,40 @@ export default function HomePage() {
         열 수 있는 업그레이드 요청 폼. 결제는 아직 연결하지 않고 이메일/메모만 pro_requests에
         저장합니다. 이 앱에서 처음 쓰는 오버레이 모달이라 좁은 화면에서도 잘리지 않도록
         max-h-[90vh] overflow-y-auto로 감쌉니다. */}
+    {/* 💡 [신규] 소사이어티 코드 월 사용 상한 안내 카드. 예전에는 서버가 돌려준 영어 문구
+        하나가 Pro 결제 모달에 그대로 실려 떴는데, (1) 12개 언어를 쓰는 앱에서 이 안내만
+        영어였고 (2) 결제로 즉시 풀리는 상한이 아닌데 결제를 권하고 있었습니다. 문구는
+        여기서 지역화하고(서버는 사용자의 화면 언어를 모릅니다), 결제 유도 없이 "다음 달에
+        초기화된다"는 사실만 전합니다. */}
+    {isSocietyCodeLimitOpen && (
+      <div
+        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+        onClick={() => setIsSocietyCodeLimitOpen(false)}
+      >
+        <div
+          className="bg-[var(--bg-page)] border border-[var(--border-default)] rounded-2xl p-6 w-full max-w-sm shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex flex-col items-center text-center gap-3">
+            <span className="text-3xl">🥕</span>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">
+              {t('societyCodeLimit.title')}
+            </h3>
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+              {t('societyCodeLimit.body')}
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsSocietyCodeLimitOpen(false)}
+              className="mt-2 w-full bg-[#F4679B] hover:bg-[#D1477F] text-white px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+            >
+              {t('societyCodeLimit.close')}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
     {isUpgradeModalOpen && (
       <div
         className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"

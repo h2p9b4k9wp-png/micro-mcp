@@ -751,5 +751,10 @@
     "daysLeft": "Il reste {days} jours de Pro",
     "endsToday": "Votre accès Pro se termine aujourd'hui",
     "endsOn": "Jusqu'au {date}"
+  },
+  "societyCodeLimit": {
+    "title": "Vous avez épuisé votre quota du mois",
+    "body": "Il est réinitialisé le mois prochain, vous pourrez alors continuer.",
+    "close": "OK"
   }
 }

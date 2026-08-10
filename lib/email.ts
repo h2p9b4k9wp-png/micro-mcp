@@ -188,3 +188,85 @@ export async function sendTokenLimitAlertEmail({
     throw new Error(`Resend send failed: ${error.message}`);
   }
 }
+
+// 💡 [신규] 소사이어티 코드 Pro가 곧 끝난다는 사전 안내 — 위 두 함수와 달리 운영자가
+// 아니라 **사용자 본인** 주소로 갑니다(DIGEST_EMAIL_TO를 쓰지 않습니다). 그래서 수신
+// 주소를 인자로 받고, 문구도 그 사람의 화면 언어(profiles.locale)로 씁니다.
+//
+// 앱 UI 번역(messages/*.json)을 재사용하지 않고 여기에 문구를 따로 둔 이유: 그쪽은
+// next-intl이 React 렌더링 중에 읽는 구조라 cron(서버, 요청 컨텍스트 없음)에서 꺼내
+// 쓰려면 별도 로더가 필요합니다. 메일 문구는 3줄뿐이라 여기 두는 편이 단순합니다.
+const PRO_EXPIRY_COPY: Record<string, { subject: string; heading: string; body: (d: string) => string; note: string }> = {
+  ko: { subject: 'Pro 혜택 종료 안내', heading: 'Pro 혜택이 곧 종료됩니다',
+        body: (d) => `소사이어티 코드로 받은 Pro 혜택이 ${d}에 종료됩니다.`,
+        note: '종료 후에는 무료 등급으로 전환되며, 지금까지 올린 자료와 기록은 그대로 남습니다.' },
+  en: { subject: 'Your Pro access is ending soon', heading: 'Your Pro access is ending soon',
+        body: (d) => `The Pro access from your society code ends on ${d}.`,
+        note: 'After that your account returns to the free plan. Everything you have uploaded stays where it is.' },
+  ja: { subject: 'Pro特典終了のお知らせ', heading: 'Pro特典がまもなく終了します',
+        body: (d) => `ソサエティコードで受け取ったPro特典は${d}に終了します。`,
+        note: '終了後は無料プランに戻ります。これまでにアップロードした資料と履歴はそのまま残ります。' },
+  de: { subject: 'Dein Pro-Zugang endet bald', heading: 'Dein Pro-Zugang endet bald',
+        body: (d) => `Der Pro-Zugang aus deinem Society-Code endet am ${d}.`,
+        note: 'Danach wechselt dein Konto zurück zum kostenlosen Tarif. Alle hochgeladenen Materialien bleiben erhalten.' },
+  es: { subject: 'Tu acceso Pro termina pronto', heading: 'Tu acceso Pro termina pronto',
+        body: (d) => `El acceso Pro de tu código de sociedad termina el ${d}.`,
+        note: 'Después tu cuenta vuelve al plan gratuito. Todo lo que has subido se conserva.' },
+  fr: { subject: 'Votre accès Pro se termine bientôt', heading: 'Votre accès Pro se termine bientôt',
+        body: (d) => `L'accès Pro obtenu avec votre code se termine le ${d}.`,
+        note: 'Ensuite votre compte repasse à l’offre gratuite. Tout ce que vous avez importé est conservé.' },
+  it: { subject: 'Il tuo accesso Pro sta per finire', heading: 'Il tuo accesso Pro sta per finire',
+        body: (d) => `L'accesso Pro del tuo codice termina il ${d}.`,
+        note: 'Dopo, il tuo account torna al piano gratuito. Tutto ciò che hai caricato resta al suo posto.' },
+  nl: { subject: 'Je Pro-toegang stopt binnenkort', heading: 'Je Pro-toegang stopt binnenkort',
+        body: (d) => `De Pro-toegang van je society-code stopt op ${d}.`,
+        note: 'Daarna gaat je account terug naar het gratis plan. Alles wat je hebt geüpload blijft staan.' },
+  pt: { subject: 'Seu acesso Pro termina em breve', heading: 'Seu acesso Pro termina em breve',
+        body: (d) => `O acesso Pro do seu código termina em ${d}.`,
+        note: 'Depois disso sua conta volta ao plano gratuito. Tudo o que você enviou continua lá.' },
+  sv: { subject: 'Din Pro-åtkomst tar snart slut', heading: 'Din Pro-åtkomst tar snart slut',
+        body: (d) => `Pro-åtkomsten från din society-kod slutar ${d}.`,
+        note: 'Därefter går kontot tillbaka till gratisplanen. Allt du har laddat upp finns kvar.' },
+  fi: { subject: 'Pro-käyttösi päättyy pian', heading: 'Pro-käyttösi päättyy pian',
+        body: (d) => `Society-koodilla saatu Pro-käyttö päättyy ${d}.`,
+        note: 'Sen jälkeen tili palaa ilmaiseen tasoon. Kaikki lataamasi aineisto säilyy.' },
+  vi: { subject: 'Quyền Pro của bạn sắp kết thúc', heading: 'Quyền Pro của bạn sắp kết thúc',
+        body: (d) => `Quyền Pro từ mã society của bạn kết thúc vào ${d}.`,
+        note: 'Sau đó tài khoản trở lại gói miễn phí. Mọi tài liệu bạn đã tải lên vẫn được giữ nguyên.' },
+};
+
+export async function sendProExpiryEmail({
+  to,
+  locale,
+  expiresAt,
+}: {
+  to: string;
+  locale: string | null;
+  expiresAt: string;
+}): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.DIGEST_EMAIL_FROM || 'onboarding@resend.dev';
+  if (!apiKey) {
+    console.warn('[email] RESEND_API_KEY 미설정 — Pro 만료 안내 메일을 건너뜁니다.');
+    return;
+  }
+
+  // 모르는 로케일(또는 null)은 앱 기본 언어로 떨어뜨립니다.
+  const key = locale && PRO_EXPIRY_COPY[locale] ? locale : 'ko';
+  const copy = PRO_EXPIRY_COPY[key];
+  // 날짜도 같은 로케일로 씁니다 — 문구는 한국어인데 날짜만 미국식이면 어색합니다.
+  const dateText = new Intl.DateTimeFormat(key, { dateStyle: 'long' }).format(new Date(expiresAt));
+
+  const html = `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;">
+    <h1 style="font-size:20px;color:#1c1922;">${escapeHtml(copy.heading)}</h1>
+    <p style="font-size:15px;color:#3d3648;line-height:1.6;">${escapeHtml(copy.body(dateText))}</p>
+    <p style="font-size:13px;color:#5b5566;line-height:1.6;">${escapeHtml(copy.note)}</p>
+    <p style="font-size:12px;color:#857c93;margin-top:24px;">Carrotly</p>
+  </div>`;
+
+  const resend = new Resend(apiKey);
+  const { error } = await resend.emails.send({ from, to, subject: copy.subject, html });
+  if (error) {
+    throw new Error(`Resend send failed: ${error.message}`);
+  }
+}

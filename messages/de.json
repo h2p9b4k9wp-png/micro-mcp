@@ -751,5 +751,10 @@
     "daysLeft": "Noch {days} Tage Pro",
     "endsToday": "Pro endet heute",
     "endsOn": "Bis {date}"
+  },
+  "societyCodeLimit": {
+    "title": "Dein Code-Kontingent für diesen Monat ist aufgebraucht",
+    "body": "Es wird nächsten Monat zurückgesetzt, dann geht es weiter.",
+    "close": "OK"
   }
 }

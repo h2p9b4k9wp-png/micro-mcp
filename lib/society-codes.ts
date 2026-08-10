@@ -106,9 +106,14 @@ export async function checkSocietyCodeAnalysisQuota(userId: string, proSource: s
       return { ok: true };
     }
     if ((count ?? 0) >= SOCIETY_CODE_MONTHLY_ANALYSIS_LIMIT) {
+      // 💡 이 문구는 폴백입니다. 실제로 사용자가 보는 안내는 클라이언트가 limitType
+      // === 'societyCode'를 보고 t('societyCodeLimit.*')로 지역화해 카드로 그립니다
+      // (app/page.tsx). 서버는 사용자의 화면 언어를 모르므로(로케일은 쿠키에만 있고
+      // 이 검사는 서버 라우트에서 돕니다) 여기서 번역하지 않습니다 — 클라이언트가
+      // 이 문자열을 무시하지 못하는 경우에만 노출됩니다.
       return {
         ok: false,
-        error: `Society-code accounts are limited to ${SOCIETY_CODE_MONTHLY_ANALYSIS_LIMIT} analyses per month. This resets next month.`,
+        error: `Society-code accounts are limited to ${SOCIETY_CODE_MONTHLY_ANALYSIS_LIMIT} uses per month. This resets next month.`,
       };
     }
     return { ok: true };

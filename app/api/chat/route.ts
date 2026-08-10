@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAiModel, buildMaxTokensParam, buildReasoningParam } from '@/lib/ai-model';
 import { checkTokenSafetyLimits } from '@/lib/token-safety';
+import { checkSocietyCodeAnalysisQuota } from '@/lib/society-codes';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
@@ -149,7 +150,7 @@ export async function POST(req: Request) {
         // content를 빼고 목록에 필요한 컬럼만 — 이 조회 하나만으로도 예전에는 사용자가 쌓아둔
         // 모든 문서 본문이 매 요청마다 DB에서 서버로 전송되고 있었습니다.
         supabase.from('documents').select('professor_id, file_name'),
-        supabase.from('profiles').select('is_pro').single(),
+        supabase.from('profiles').select('is_pro, pro_source').single(),
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
@@ -179,6 +180,27 @@ export async function POST(req: Request) {
           },
           { status: 403 }
         );
+      }
+
+      // 💡 [신규] 소사이어티 코드로 얻은 Pro의 월 사용 횟수 상한 — 지금까지 /api/analyze와
+      // /api/analyze-professor에만 걸려 있어서, 채팅으로만 쓰면 이 상한을 통째로 우회할 수
+      // 있었습니다(채팅은 Pro 한도인 월 1,000회까지 열려 있음).
+      //
+      // 카운트는 ai_usage_logs를 route 구분 없이 세므로, 여기에 검사를 붙이는 것만으로
+      // analyze/analyze-professor/chat이 하나의 합산 예산을 나눠 쓰게 됩니다(경로별로 따로
+      // 100회가 아닙니다). 채팅 사용량이 그 표에 기록되기 시작한 건 20260819 마이그레이션
+      // 이후이므로, 그게 적용돼 있지 않으면 채팅분은 합산에서 빠집니다.
+      if (chatUserId) {
+        const quota = await checkSocietyCodeAnalysisQuota(
+          chatUserId,
+          (profileResult.data?.pro_source as string | null) ?? null
+        );
+        if (!quota.ok) {
+          return NextResponse.json(
+            { error: quota.error, limitReached: true, limitType: 'societyCode' },
+            { status: 429 }
+          );
+        }
       }
 
       // 💡 [신규] 사용자에게 보이지 않는 내부 토큰 상한(lib/token-safety.ts). 위 횟수
