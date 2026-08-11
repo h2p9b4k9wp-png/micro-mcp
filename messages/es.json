@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "\"{fileName}\" se rechazó antes de llegar al servidor por ser demasiado grande. El límite es {max}: prueba a dividir las diapositivas o reducir las imágenes.",
       "timeout": "Se agotó el tiempo al procesar \"{fileName}\". Ocurre con archivos grandes o complejos: divídelo en partes más pequeñas.",
-      "httpStatus": "No se pudo subir \"{fileName}\" (error {status}). Inténtalo de nuevo en un momento."
+      "httpStatus": "No se pudo subir \"{fileName}\" (error {status}). Inténtalo de nuevo en un momento.",
+      "storageUploadFailed": "No se pudo subir \"{fileName}\". Comprueba tu conexión e inténtalo de nuevo.",
+      "storageMissing": "Parece que la subida de \"{fileName}\" se interrumpió. Vuelve a subirlo."
     }
   }
 }

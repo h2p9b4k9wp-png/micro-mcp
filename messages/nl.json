@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "\"{fileName}\" is geweigerd voordat het de server bereikte omdat het te groot is. De limiet is {max} — splits de dia's of verklein de afbeeldingen.",
       "timeout": "Het verwerken van \"{fileName}\" duurde te lang. Dit gebeurt bij grote of complexe bestanden — splits het op in kleinere delen.",
-      "httpStatus": "Kon \"{fileName}\" niet uploaden (fout {status}). Probeer het zo opnieuw."
+      "httpStatus": "Kon \"{fileName}\" niet uploaden (fout {status}). Probeer het zo opnieuw.",
+      "storageUploadFailed": "\"{fileName}\" kon niet worden geüpload. Controleer je verbinding en probeer het opnieuw.",
+      "storageMissing": "Het uploaden van \"{fileName}\" lijkt onderbroken. Upload het opnieuw."
     }
   }
 }

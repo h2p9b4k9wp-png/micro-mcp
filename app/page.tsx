@@ -30,9 +30,10 @@ import type { NodeId, CircuitGraphState, GraphNode } from '@/types/blocks';
 import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
-import { MAX_AVOID_QUESTIONS, MAX_AVOID_QUESTION_CHARS } from '@/lib/truncate-text';
+import { MAX_AVOID_QUESTIONS, MAX_AVOID_QUESTION_CHARS, MAX_PROFESSOR_ANALYSIS_DOC_CHARS, truncateForPrompt } from '@/lib/truncate-text';
 import { buildUploadFailureMessage, formatBytes, readUploadResponse } from '@/lib/upload-failure-message';
 import { MAX_CHAT_ATTACHMENTS, MAX_REQUEST_FILE_BYTES, getEffectiveUploadLimitBytes } from '@/lib/upload-limits';
+import { uploadFileToStorage, StorageUploadError } from '@/lib/storage-upload';
 import { PRO_LIMITS } from '@/lib/plan-limits';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
 import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, logProfileLookupFailure, PRO_PRICE_LABEL, type UsageLevel } from '@/lib/plan-limits';
@@ -933,13 +934,16 @@ export default function HomePage() {
   // 💡 [신규] 등급별 파일 크기 상한(무료 5MB / Pro 20MB) — 서버(/api/extract)가 실제로 쓰는
   // 값과 같은 소스(lib/plan-limits.ts)에서 가져옵니다. 예전엔 클라이언트가 10MB로 하드코딩돼
   // 있어서 무료 사용자에게 "여기선 통과, 서버에서 거절"이 생겼습니다.
-  // 💡 [수정] 등급 상한과 플랫폼(Vercel) 요청 본문 상한 중 작은 쪽입니다. 예전엔 등급
-  // 상한(무료 5MB)만 봤는데, base64로 부풀린 요청 본문이 플랫폼 상한(4.5MB)을 넘으면 우리
-  // 코드가 실행되기도 전에 HTML 413이 돌아옵니다 — 3.3~5MB 파일은 안내 한 줄 없이 항상
-  // 실패하고 있었습니다.
-  const uploadLimitBytes = getEffectiveUploadLimitBytes(getPlanLimits(isPro).maxUploadBytes);
+  // 💡 [수정] 문서 업로드는 이제 브라우저 → Supabase Storage 직접 업로드라(lib/storage-upload.ts)
+  // 플랫폼(Vercel) 요청 본문 상한을 타지 않습니다 — 서버에 가는 건 파일이 아니라 경로 문자열
+  // 하나뿐이라서요. 그래서 등급 상한(무료 30MB / Pro 100MB)이 그대로 실효 상한이 됩니다.
+  // 예전에는 두 값 중 작은 쪽(≈3.2MB)이 실효 상한이라 등급 상한이 사실상 무의미했습니다.
+  const uploadLimitBytes = getEffectiveUploadLimitBytes(getPlanLimits(isPro).maxUploadBytes, true);
   // Pro로 올렸을 때의 실효 상한 — 업그레이드 안내를 붙일지 판단하는 데만 씁니다.
-  const proUploadLimitBytes = getEffectiveUploadLimitBytes(PRO_LIMITS.maxUploadBytes);
+  const proUploadLimitBytes = getEffectiveUploadLimitBytes(PRO_LIMITS.maxUploadBytes, true);
+  // 사진(채팅 첨부)만은 여전히 요청 본문에 base64로 실어야 하므로 별도 상한을 씁니다 —
+  // 비전 API가 이미지 URL이 아니라 base64를 받기 때문에 Storage를 거쳐도 결국 본문에 들어갑니다.
+  const imageLimitBytes = Math.min(uploadLimitBytes, MAX_REQUEST_FILE_BYTES);
   // 업로드 화면에 미리 보여줄 안내 문구(올리기 전에 상한과 지원 형식을 알 수 있게).
   const uploadLimitHint = t('upload.hint', {
     max: formatBytes(uploadLimitBytes),
@@ -1111,42 +1115,40 @@ export default function HomePage() {
     setIsAttachingChatFile(true);
     try {
       for (const file of filesToAttach) {
-        // 💡 [수정] 예전엔 10MB로 하드코딩돼 있었습니다. 실제 서버 상한은 등급별로
-        // 무료 5MB / Pro 20MB라, 무료 사용자가 7MB 파일을 올리면 여기선 통과하고
-        // 서버에서 거절당했습니다 — 사용자 입장에선 이유 없이 실패한 것처럼 보였습니다.
-        if (file.size > uploadLimitBytes) {
+        const isImage = file.type.startsWith('image/');
+
+        // 💡 [수정] 사진과 문서의 상한이 다릅니다. 문서는 Storage로 직접 올라가 등급 상한
+        // (무료 30MB / Pro 100MB)이 그대로 적용되지만, 사진은 비전 API에 base64로 실어야 해서
+        // 여전히 요청 본문 상한을 탑니다.
+        const limitForFile = isImage ? imageLimitBytes : uploadLimitBytes;
+        if (file.size > limitForFile) {
           alert(
             buildUploadFailureMessage(t, file.name, {
               code: 'too_large',
               sizeBytes: file.size,
-              maxBytes: uploadLimitBytes,
+              maxBytes: limitForFile,
               isPro,
             }, MAX_REQUEST_FILE_BYTES, proUploadLimitBytes)
           );
           continue;
         }
 
-        const isImage = file.type.startsWith('image/');
-        if (isImage && !SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
-          alert(t('workspace.errors.unsupportedImage', { fileName: file.name, mimeType: file.type || t('workspace.errors.unknownFormat') }));
-          continue;
-        }
-
-        const dataUrl: string = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject(new Error(t('workspace.errors.fileReadFailed')));
-          reader.readAsDataURL(file);
-        });
-
-        const commaIndex = dataUrl.indexOf(',');
-        const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
-
         if (isImage) {
+          if (!SUPPORTED_CHAT_IMAGE_MIME_TYPES.includes(file.type)) {
+            alert(t('workspace.errors.unsupportedImage', { fileName: file.name, mimeType: file.type || t('workspace.errors.unknownFormat') }));
+            continue;
+          }
+
           // 💡 [수정] 예전에는 여기서 /api/upload-quota를 불러 "월간 파일 처리 횟수"를
           // 확인했습니다. 사용량 축이 토큰으로 바뀌면서 그 라우트는 삭제됐습니다 —
           // 이미지 첨부 자체는 토큰을 쓰지 않고(비전 호출은 /api/chat에서 일어남),
           // 실제 소비는 그 채팅 요청 시점에 등급별 토큰 한도가 검사합니다.
+          const dataUrl: string = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(new Error(t('workspace.errors.fileReadFailed')));
+            reader.readAsDataURL(file);
+          });
 
           const resizedDataUrl = await resizeImageDataUrl(dataUrl);
           const resizedMimeType = resizedDataUrl === dataUrl ? file.type : 'image/jpeg';
@@ -1158,14 +1160,20 @@ export default function HomePage() {
           continue;
         }
 
+        if (!user) continue;
+
         try {
+          // 💡 [수정] 파일 바이트를 요청 본문에 base64로 싣지 않고, 브라우저에서 Storage로
+          // 바로 올린 뒤 경로만 보냅니다 — 그래야 Vercel의 4.5MB 본문 상한을 아예 안 탑니다.
+          // 서버는 추출이 끝나면 원본을 지웁니다(app/api/extract).
+          const storagePath = await uploadFileToStorage(supabase, user.id, file);
           const res = await fetch('/api/extract', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               fileName: file.name,
               mimeType: file.type || 'application/octet-stream',
-              content: base64Content,
+              storagePath,
             }),
           });
           // 💡 [수정] 상태·content-type을 먼저 확인합니다. 곧바로 res.json()을 부르면
@@ -1185,7 +1193,13 @@ export default function HomePage() {
           ]);
           recordDocumentUpload(file.name, file.type);
         } catch (err: any) {
-          alert(t('workspace.errors.attachProcessingFailed', { fileName: file.name, error: err.message || err }));
+          // 💡 Storage 업로드 자체가 실패한 경우는 원인이 다릅니다(용량 정책·네트워크 끊김 등).
+          // 서버 응답 실패와 같은 문구로 뭉개면 사용자가 어디서 막혔는지 알 수 없습니다.
+          if (err instanceof StorageUploadError) {
+            alert(buildUploadFailureMessage(t, file.name, { code: 'storage_upload_failed' }, MAX_REQUEST_FILE_BYTES, proUploadLimitBytes));
+          } else {
+            alert(t('workspace.errors.attachProcessingFailed', { fileName: file.name, error: err.message || err }));
+          }
         }
       }
     } finally {
@@ -1459,13 +1473,29 @@ export default function HomePage() {
     setIsAnalyzingProfessor(true);
     setProfessorAnalysisError(null);
 
+    // 💡 [신규] 문서별 글자 수를 여기서 한 번에 자릅니다. 호출부가 세 곳(증분·전체·수동)이라
+    // 각자 자르게 하면 언젠가 한 곳이 빠집니다. 왜 잘라야 하는지는
+    // MAX_PROFESSOR_ANALYSIS_DOC_CHARS 주석 참고 — 자르지 않으면 전체 재분석 요청 본문이
+    // 플랫폼 상한을 넘겨 우리 코드가 실행되기도 전에 실패합니다.
+    const trimmedBody = { ...requestBody };
+    for (const key of ['documents', 'newDocuments'] as const) {
+      const docs = trimmedBody[key];
+      if (!Array.isArray(docs)) continue;
+      trimmedBody[key] = docs.map((doc) => {
+        const d = doc as { text?: string };
+        return typeof d.text === 'string'
+          ? { ...d, text: truncateForPrompt(d.text, MAX_PROFESSOR_ANALYSIS_DOC_CHARS) }
+          : doc;
+      });
+    }
+
     let lastErrorMessage: string | null = null;
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
         const res = await fetch('/api/analyze-professor', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(trimmedBody),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || t('professors.errors.updateFailed'));
@@ -1715,23 +1745,18 @@ export default function HomePage() {
           continue;
         }
 
-        const dataUrl: string = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject(new Error(t('workspace.errors.fileReadFailed')));
-          reader.readAsDataURL(file);
-        });
-        const commaIndex = dataUrl.indexOf(',');
-        const base64Content = commaIndex !== -1 ? dataUrl.substring(commaIndex + 1) : dataUrl;
-
         try {
+          // 💡 [수정] 채팅 첨부와 같은 이유로 Storage 직접 업로드로 바꿨습니다 — 강의자료는
+          // 채팅에 붙이는 파일보다 크기가 큰 경우가 많아, 예전 방식에서는 여기가 가장 자주
+          // 막히는 지점이었습니다(등급 상한과 무관하게 3.2MB 남짓에서 실패).
+          const storagePath = await uploadFileToStorage(supabase, user.id, file);
           const res = await fetch('/api/extract', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               fileName: file.name,
               mimeType: file.type || 'application/octet-stream',
-              content: base64Content,
+              storagePath,
             }),
           });
           // 💡 [수정] 상태·content-type을 먼저 확인합니다. 곧바로 res.json()을 부르면
@@ -1774,6 +1799,10 @@ export default function HomePage() {
             if (chunkError) console.error('doc_chunks 저장 실패:', chunkError);
           }
         } catch (err) {
+          if (err instanceof StorageUploadError) {
+            alert(buildUploadFailureMessage(t, file.name, { code: 'storage_upload_failed' }, MAX_REQUEST_FILE_BYTES, proUploadLimitBytes));
+            continue;
+          }
           const message = err instanceof Error ? err.message : String(err);
           alert(t('workspace.errors.attachProcessingFailed', { fileName: file.name, error: message }));
         }

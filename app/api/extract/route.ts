@@ -1,11 +1,27 @@
 import { NextResponse } from 'next/server';
-import { extractFileText, FileExtractError, resolveFileExtension } from '@/lib/file-text-extract';
+import {
+  extractFileText,
+  extractFileTextFromBuffer,
+  FileExtractError,
+  resolveFileExtension,
+} from '@/lib/file-text-extract';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { checkFileQuota, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { UPLOAD_BUCKET, isOwnedStoragePath } from '@/lib/storage-upload';
 
 // 이 라우트는 middleware.ts에서 이미 로그인 여부를 검증하므로 별도 인증 체크를 하지 않습니다.
 // 파일 하나를 받아 텍스트만 뽑아 돌려줍니다. 실제 파일 판별·파싱은 lib/file-text-extract.ts를 씁니다.
+//
+// 💡 [수정] 파일을 받는 방법이 두 가지입니다.
+//   (1) storagePath — 로그인 사용자의 기본 경로. 브라우저가 Supabase Storage에 직접 올린 뒤
+//       경로만 보냅니다. 요청 본문이 수백 바이트라 Vercel의 4.5MB 본문 상한과 무관합니다.
+//   (2) content(base64) — 예전 방식. 아직 남겨두는 이유는 배포 중 잠깐 옛 클라이언트가 살아있는
+//       구간이 있기 때문입니다. 이 경로는 여전히 본문 상한을 타므로 3.2MB 남짓이 한계입니다.
+//
+// 큰 PDF는 파싱에 수십 초·1GB 이상이 들 수 있어(23MB PDF ≈ 950MB/20초, 55MB PDF ≈ 1.9GB/50초
+// 실측) 실행 시간을 늘려 잡습니다. 메모리는 코드로 지정할 수 없어 vercel.json에서 올립니다.
+export const maxDuration = 300;
 
 // 💡 [신규] 실패 원인을 기계가 읽을 수 있는 code로도 함께 돌려줍니다. 클라이언트가 이 code로
 // 사용자 언어에 맞는 안내를 조립합니다 — 예전엔 서버가 만든 한국어 문장 하나만 내려줘서
@@ -16,6 +32,9 @@ export type ExtractFailureCode =
   | 'quota_exceeded'
   | 'too_large'
   | 'no_content'
+  // Storage에 올렸다는 경로를 받았는데 실제로 내려받지 못한 경우(경로가 남의 것이거나,
+  // 업로드가 끝나기 전이거나, 이미 지워졌거나).
+  | 'storage_missing'
   | 'parse_failed'
   | 'empty_text'
   | 'server_error';
@@ -80,34 +99,32 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { fileName, mimeType, content } = body as {
+    const { fileName, mimeType, content, storagePath } = body as {
       fileName?: string;
       mimeType?: string;
-      content?: string; // base64
+      content?: string; // base64 (구 방식)
+      storagePath?: string; // Storage 객체 경로 (기본 방식)
     };
 
     logFileName = fileName;
     logMimeType = mimeType;
 
-    if (!content || !fileName) {
+    if (!fileName || (!content && !storagePath)) {
       logExtractFailure('no_content', { fileName, mimeType });
       return NextResponse.json({ error: '파일 내용이 없습니다.', code: 'no_content' }, { status: 400 });
     }
 
-    // 💡 [신규] 클라이언트는(app/page.tsx) 첨부 시점에 파일 크기를 안내하지만, 이 API를 직접
-    // 호출하면 그 안내가 적용되지 않습니다. base64 길이로 대략적인 바이트 수를 먼저 확인해
-    // 무료 5MB/Pro 20MB 상한을 넘는 페이로드는 굳이 파싱을 시도하지 않고 빠르게 거절합니다.
     const maxUploadBytes = getPlanLimits(isPro).maxUploadBytes;
-    const approxBytes = (content.length * 3) / 4;
-    logBytes = approxBytes;
-    if (approxBytes > maxUploadBytes) {
+
+    // 크기 초과 응답은 두 경로가 완전히 같아야 하므로 한 곳에서 만듭니다.
+    const tooLargeResponse = (approxBytes: number) => {
       const maxMB = Math.round(maxUploadBytes / (1024 * 1024));
       logExtractFailure('too_large', { fileName, mimeType, approxBytes, isPro });
       return NextResponse.json(
         {
           error: `파일이 너무 큽니다 (${maxMB}MB 초과). 더 작은 파일로 시도해주세요.${isPro ? '' : ` Upgrade to Pro — ${PRO_PRICE_LABEL}`}`,
           code: 'too_large',
-          // 숫자를 그대로 내려서 클라이언트가 "이 파일은 12.3MB인데 최대 5MB까지예요"처럼
+          // 숫자를 그대로 내려서 클라이언트가 "이 파일은 12.3MB인데 최대 30MB까지예요"처럼
           // 실제 크기와 함께 안내할 수 있게 합니다.
           sizeBytes: Math.round(approxBytes),
           maxBytes: maxUploadBytes,
@@ -117,16 +134,75 @@ export async function POST(req: Request) {
         },
         { status: 413 }
       );
-    }
+    };
 
-    const text = await extractFileText(fileName, mimeType, content);
+    let text: string;
+
+    if (storagePath) {
+      // 💡 남의 경로를 넘겨도 아래 download는 RLS 정책 때문에 어차피 실패하지만, 형태를 먼저
+      // 확인해두면 "권한 문제로 실패했다"는 사실이 로그에 명확히 남습니다.
+      if (!userId || !isOwnedStoragePath(storagePath, userId)) {
+        logExtractFailure('storage_missing', { fileName, mimeType, isPro, detail: 'path not owned' });
+        return NextResponse.json(
+          { error: '업로드한 파일을 찾지 못했어요. 다시 시도해주세요.', code: 'storage_missing' },
+          { status: 400 }
+        );
+      }
+
+      const { data: blob, error: downloadError } = await supabase.storage
+        .from(UPLOAD_BUCKET)
+        .download(storagePath);
+
+      if (downloadError || !blob) {
+        logExtractFailure('storage_missing', {
+          fileName,
+          mimeType,
+          isPro,
+          detail: downloadError?.message?.slice(0, 120) || 'no blob',
+        });
+        return NextResponse.json(
+          { error: '업로드한 파일을 찾지 못했어요. 다시 시도해주세요.', code: 'storage_missing' },
+          { status: 404 }
+        );
+      }
+
+      try {
+        // Storage의 file_size_limit이 이미 100MB에서 막지만, 등급별 상한(무료 30MB)은 앱만
+        // 알고 있으므로 여기서 한 번 더 봅니다. blob.size는 실제 바이트라 base64 추정보다 정확합니다.
+        logBytes = blob.size;
+        if (blob.size > maxUploadBytes) return tooLargeResponse(blob.size);
+
+        const buffer = Buffer.from(await blob.arrayBuffer());
+        text = await extractFileTextFromBuffer(fileName, mimeType, buffer, maxUploadBytes);
+      } finally {
+        // 💡 원본은 여기서 끝입니다 — 추출에 성공했든 실패했든 남겨둘 이유가 없습니다.
+        // 앱이 이후에 쓰는 건 뽑아낸 글자뿐이고(교수님 자료는 documents.content에 따로 저장,
+        // 채팅 첨부는 브라우저 상태로만 존재), 원본을 계속 들고 있으면 보관비가 매달 쌓이고
+        // 강의자료·시험지가 계속 남는 개인정보 부담까지 생깁니다.
+        //
+        // finally에 둔 이유: 파싱 실패로 빠져나가는 경로가 더 흔한데, 그때 안 지우면 실패한
+        // 파일만 영원히 쌓입니다. 삭제 실패는 요청을 망치지 않고 로그만 남깁니다 — 그런 객체는
+        // 하루 한 번 크론(app/api/cron/cleanup-uploads)이 치웁니다.
+        const { error: removeError } = await supabase.storage.from(UPLOAD_BUCKET).remove([storagePath]);
+        if (removeError) {
+          console.warn(`[extract] 원본 삭제 실패 path=${storagePath} detail=${removeError.message}`);
+        }
+      }
+    } else {
+      // 구 방식(base64 본문). 문자열 길이로 대략적인 바이트 수를 먼저 확인해, 상한을 넘는
+      // 페이로드는 굳이 디코딩·파싱을 시도하지 않고 빠르게 거절합니다.
+      const approxBytes = (content!.length * 3) / 4;
+      logBytes = approxBytes;
+      if (approxBytes > maxUploadBytes) return tooLargeResponse(approxBytes);
+      text = await extractFileText(fileName, mimeType, content!, maxUploadBytes);
+    }
 
     // 💡 [신규] 파싱은 성공했는데 글자가 하나도 안 나온 경우. 예전에는 빈 문자열을 그대로
     // 200으로 돌려줘서, 클라이언트가 내용 없는 첨부를 조용히 붙이고 사용자는 "왜 아무것도
     // 모르지?"만 겪었습니다. 이미지로만 이뤄진 PPTX·스캔 PDF가 대표적입니다.
     if (!text || !text.trim()) {
       const ext = resolveFileExtension(fileName, mimeType);
-      logExtractFailure('empty_text', { fileName, mimeType, approxBytes, isPro });
+      logExtractFailure('empty_text', { fileName, mimeType, approxBytes: logBytes, isPro });
       return NextResponse.json(
         {
           error: '파일에서 글자를 찾지 못했어요. 이미지로만 이뤄진 슬라이드나 스캔 문서는 아직 글자를 읽지 못합니다.',

@@ -127,6 +127,13 @@ export function buildUploadFailureMessage(
 
   if (code === 'timeout') return t('upload.errors.timeout', { fileName });
 
+  // 💡 [신규] 브라우저 → Storage 업로드 자체가 실패한 경우(네트워크 끊김, 버킷 정책 등).
+  // 서버는 이 파일을 본 적조차 없으므로 "처리 실패"와는 다른 안내가 필요합니다.
+  if (code === 'storage_upload_failed') return t('upload.errors.storageUploadFailed', { fileName });
+
+  // 서버가 경로를 받았는데 그 객체를 못 찾은 경우 — 업로드가 중간에 끊겼을 때 주로 납니다.
+  if (code === 'storage_missing') return t('upload.errors.storageMissing', { fileName });
+
   if (code === 'http_status') {
     return t('upload.errors.httpStatus', { fileName, status: payload.status ?? 0 });
   }

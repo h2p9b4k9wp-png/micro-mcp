@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "\"{fileName}\" was rejected before it reached the server because it's too large. The limit is {max} — try splitting the slides or shrinking the images.",
       "timeout": "Processing \"{fileName}\" timed out. This happens with large or complex files — try splitting it into smaller parts.",
-      "httpStatus": "Couldn't upload \"{fileName}\" (error {status}). Please try again shortly."
+      "httpStatus": "Couldn't upload \"{fileName}\" (error {status}). Please try again shortly.",
+      "storageUploadFailed": "Could not upload \"{fileName}\". Check your connection and try again.",
+      "storageMissing": "The upload of \"{fileName}\" seems to have been interrupted. Please upload it again."
     }
   }
 }

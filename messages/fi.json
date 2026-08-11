@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "\"{fileName}\" hylättiin jo ennen palvelinta, koska se on liian suuri. Raja on {max} — jaa diat osiin tai pienennä kuvia.",
       "timeout": "Tiedoston \"{fileName}\" käsittely aikakatkaistiin. Näin käy suurilla tai monimutkaisilla tiedostoilla — jaa se pienempiin osiin.",
-      "httpStatus": "Tiedostoa \"{fileName}\" ei voitu ladata (virhe {status}). Yritä hetken kuluttua uudelleen."
+      "httpStatus": "Tiedostoa \"{fileName}\" ei voitu ladata (virhe {status}). Yritä hetken kuluttua uudelleen.",
+      "storageUploadFailed": "Tiedoston \"{fileName}\" lähetys epäonnistui. Tarkista yhteys ja yritä uudelleen.",
+      "storageMissing": "Tiedoston \"{fileName}\" lähetys näyttää keskeytyneen. Lähetä se uudelleen."
     }
   }
 }

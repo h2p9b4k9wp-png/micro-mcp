@@ -4,6 +4,7 @@ import type { LensId } from '@/lib/lenses';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { getIsPro, getProSource, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { getEffectiveUploadLimitBytes } from '@/lib/upload-limits';
 import { runLensAnalysis, LensAnalysisParseError } from '@/lib/run-lens-analysis';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
 import { checkTokenSafetyLimits } from '@/lib/token-safety';
@@ -58,8 +59,14 @@ export async function POST(req: Request) {
     // 💡 professorContext도 클라이언트가 만들어 보내는 문자열이라 크기 검증에 함께
     // 포함해야 합니다 — text만 재면 본문을 작게 쪼개고 참고자료 쪽에 거대한 문자열을
     // 실어 보내는 식으로 상한을 그대로 우회할 수 있습니다.
+    // 💡 [수정] 등급 상한을 그대로 쓰지 않고 "요청 본문에 실제로 담길 수 있는 크기"로 낮춥니다.
+    // 파일 업로드는 Storage 직접 업로드로 옮겨가 등급 상한(무료 30MB / Pro 100MB)이 그대로
+    // 적용되지만, 이 라우트는 여전히 *텍스트*를 본문으로 받습니다 — 30MB 텍스트를 보내면
+    // 플랫폼이 우리 코드 실행 전에 413을 돌려주므로, 여기서 30MB라고 검사해봐야 도달할 수 없는
+    // 숫자입니다. 추출된 텍스트는 어차피 MAX_EXTRACTED_TEXT_CHARS(30만 자)로 잘려 있어
+    // 이 상한에 정상 사용이 걸릴 일은 없습니다.
     const isPro = userId ? await getIsPro(supabase, userId) : false;
-    const maxUploadBytes = getPlanLimits(isPro).maxUploadBytes;
+    const maxUploadBytes = getEffectiveUploadLimitBytes(getPlanLimits(isPro).maxUploadBytes);
     const textBytes =
       Buffer.byteLength(text, 'utf-8') +
       (professorContext ? Buffer.byteLength(professorContext, 'utf-8') : 0) +

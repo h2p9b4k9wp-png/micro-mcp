@@ -38,6 +38,20 @@ export const MAX_REQUEST_FILE_BYTES = Math.floor((PLATFORM_BODY_LIMIT_BYTES * 0.
 
 // 등급 상한과 플랫폼 상한 중 더 작은 값이 실제 상한입니다. 화면 안내와 사전 검사 모두
 // 이 값을 써야 "안내한 크기는 되는데 실제로는 실패"가 생기지 않습니다.
-export function getEffectiveUploadLimitBytes(planMaxBytes: number): number {
-  return Math.min(planMaxBytes, MAX_REQUEST_FILE_BYTES);
+//
+// 💡 [수정] viaStorage=true면 플랫폼 상한을 빼고 등급 상한을 그대로 씁니다.
+//
+// 로그인 사용자의 문서 업로드는 이제 브라우저 → Supabase Storage로 직접 올라가고, 서버에는
+// 파일이 아니라 경로 문자열 하나(`{uid}/{uuid}.pdf`)만 보냅니다. 그 요청 본문은 몇 백 바이트라
+// 4.5MB 상한과 아무 상관이 없습니다 — 서버가 파일을 만나는 건 Storage에서 *내려받을* 때인데,
+// 그건 함수가 받는 응답이지 요청 본문이 아니라 이 상한의 대상이 아닙니다.
+//
+// 반대로 viaStorage=false로 남는 경로는 여전히 본문에 base64를 싣습니다:
+//   - 게스트 라우트(public-analyze/public-chat/public-guided-trial) — 로그인이 없어
+//     auth.uid()로 범위를 좁힌 Storage 정책을 쓸 수 없습니다. 익명에게 쓰기를 열면 무료
+//     파일 호스팅이 되므로, 게스트는 의도적으로 예전 방식·낮은 상한(3MB) 그대로 둡니다.
+//   - 채팅 첨부 "사진" — 비전 API에 base64로 그대로 실어야 해서 Storage를 거쳐도 결국
+//     본문에 들어갑니다. 대신 보내기 전에 크기를 줄입니다(lib/image-constraints.ts).
+export function getEffectiveUploadLimitBytes(planMaxBytes: number, viaStorage = false): number {
+  return viaStorage ? planMaxBytes : Math.min(planMaxBytes, MAX_REQUEST_FILE_BYTES);
 }

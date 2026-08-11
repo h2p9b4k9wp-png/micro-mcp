@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { getSessionSupabase } from '@/lib/auth/session';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { getIsPro, getProSource, getPlanLimits, PRO_PRICE_LABEL } from '@/lib/plan-limits';
+import { getEffectiveUploadLimitBytes } from '@/lib/upload-limits';
 import { truncateForPrompt } from '@/lib/truncate-text';
 import { recordAiUsage } from '@/lib/ai-usage-logging';
 import { checkTokenSafetyLimits } from '@/lib/token-safety';
@@ -211,11 +212,15 @@ export async function POST(req: Request) {
     }
 
     // 💡 [신규] 이 라우트도 /api/analyze와 같은 이유로 이번 호출에 실려 온 문서 텍스트의 총
-    // 바이트 수를 /api/extract와 같은 상한(무료 5MB/Pro 20MB)으로 검증합니다 — 파일 하나하나는
-    // /api/extract를 거쳐 이미 그 상한을 통과했더라도, 여러 파일을 한 번에(documents/
-    // newDocuments 배열) 보내면 합산 크기가 우회될 수 있어서입니다.
+    // 바이트 수를 검증합니다 — 파일 하나하나는 /api/extract를 거쳐 이미 상한을 통과했더라도,
+    // 여러 파일을 한 번에(documents/newDocuments 배열) 보내면 합산 크기가 우회될 수 있어서입니다.
+    //
+    // 💡 [수정] 기준은 등급 상한이 아니라 "요청 본문에 실제로 담길 수 있는 크기"입니다.
+    // 문서는 Storage로 올라가지만 이 라우트가 받는 건 추출된 *텍스트*라 본문 상한을 그대로 탑니다.
+    // 클라이언트도 문서당 MAX_PROFESSOR_ANALYSIS_DOC_CHARS로 잘라 보내므로(app/page.tsx의
+    // runProfessorAnalysis) 정상 사용은 여기 걸리지 않습니다.
     const isPro = userId ? await getIsPro(supabase, userId) : false;
-    const maxUploadBytes = getPlanLimits(isPro).maxUploadBytes;
+    const maxUploadBytes = getEffectiveUploadLimitBytes(getPlanLimits(isPro).maxUploadBytes);
     const totalBytes = docsForCap.reduce((sum, doc) => sum + Buffer.byteLength(doc.text || '', 'utf-8'), 0);
     if (totalBytes > maxUploadBytes) {
       const maxMB = Math.round(maxUploadBytes / (1024 * 1024));

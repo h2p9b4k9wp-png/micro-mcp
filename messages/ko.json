@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "\"{fileName}\"이(가) 너무 커서 서버가 받기 전에 거절했어요. 최대 {max}까지 올릴 수 있어요 — 슬라이드를 나누거나 이미지를 줄여서 다시 시도해주세요.",
       "timeout": "\"{fileName}\" 처리 시간이 초과됐어요. 파일이 크거나 복잡할 때 생깁니다 — 더 작게 나눠서 올려주세요.",
-      "httpStatus": "\"{fileName}\"을(를) 올리지 못했어요 (오류 코드 {status}). 잠시 후 다시 시도해주세요."
+      "httpStatus": "\"{fileName}\"을(를) 올리지 못했어요 (오류 코드 {status}). 잠시 후 다시 시도해주세요.",
+      "storageUploadFailed": "\"{fileName}\"을(를) 올리지 못했어요. 인터넷 연결을 확인하고 다시 시도해주세요.",
+      "storageMissing": "\"{fileName}\" 업로드가 끝나기 전에 끊긴 것 같아요. 다시 올려주세요."
     }
   }
 }

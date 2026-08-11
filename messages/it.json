@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "«{fileName}» è stato rifiutato prima di arrivare al server perché troppo grande. Il limite è {max}: prova a dividere le slide o a ridurre le immagini.",
       "timeout": "L'elaborazione di «{fileName}» è scaduta. Succede con file grandi o complessi: prova a dividerlo in parti più piccole.",
-      "httpStatus": "Impossibile caricare «{fileName}» (errore {status}). Riprova tra poco."
+      "httpStatus": "Impossibile caricare «{fileName}» (errore {status}). Riprova tra poco.",
+      "storageUploadFailed": "Impossibile caricare «{fileName}». Controlla la connessione e riprova.",
+      "storageMissing": "Il caricamento di «{fileName}» sembra essersi interrotto. Caricalo di nuovo."
     }
   }
 }

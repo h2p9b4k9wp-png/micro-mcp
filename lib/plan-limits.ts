@@ -6,10 +6,25 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 // 개수/자료 개수 한도는 클라이언트(app/page.tsx)에서 검사합니다 — 후자는
 // professors/documents 테이블에 클라이언트가 직접(Supabase RLS로) insert하는 구조라
 // 서버 라우트를 거치지 않기 때문입니다.
-// 💡 [신규] 파일 하나(또는 /api/analyze·analyze-professor로 직접 보내는 텍스트 한 뭉치)의
-// 크기 상한 — 무료 5MB, Pro 20MB. app/api/extract·app/api/analyze·app/api/analyze-professor가
-// 이 값을 공유해 검증합니다(자세한 이유는 각 라우트 주석 참고). 위 filesPerMonth(월간 처리
-// "횟수" 한도)와는 별개의, 요청 1건당 크기 한도입니다.
+// 💡 [수정] 파일 하나의 크기 상한 — 무료 30MB, Pro 100MB.
+//
+// 예전 값(무료 5MB / Pro 20MB)은 어차피 아무도 도달하지 못하는 숫자였습니다. 파일을 base64로
+// 감싸 요청 본문에 실어 보내던 구조라, 플랫폼(Vercel) 요청 본문 상한 4.5MB에 먼저 걸려
+// 실제 통과 크기는 두 등급 모두 약 3.2MB였습니다. 이제 파일은 브라우저에서 Supabase Storage로
+// 직접 올라가고 서버는 그걸 내려받으므로(lib/storage-upload.ts, app/api/extract), 요청 본문
+// 상한을 전혀 타지 않고 이 숫자가 그대로 실효 상한이 됩니다.
+//
+// 새 숫자의 근거는 실측입니다. 진짜 부담은 파일 크기가 아니라 "글자가 빽빽한 PDF"입니다 —
+// 같은 서버리스 함수에서 23MB PDF는 약 950MB·20초, 55MB PDF는 약 1.9GB·50초가 들었습니다
+// (반면 76MB PPTX는 슬라이드 XML만 읽으므로 225MB·0.4초). 그래서 Pro 상한은 파서의 기술적
+// 한계선(MAX_EXTRACT_FILE_BYTES, 100MB)과 같은 값으로 두고, 그보다 큰 파일은 등급과 무관하게
+// 막습니다. 실제 강의자료(PDF 슬라이드·PPTX·한글 파일)는 이 상한에 사실상 닿지 않습니다.
+//
+// ⚠️ 이 상한이 의미를 가지려면 /api/extract 함수의 메모리·실행시간이 함께 올라가야 합니다
+// (vercel.json의 functions 설정 참고). 메모리가 기본값이면 큰 PDF는 상한 안이어도 실패합니다.
+//
+// app/api/extract·app/api/analyze·app/api/analyze-professor가 이 값을 공유해 검증합니다.
+// 위 filesPerMonth(월간 처리 "횟수" 한도)와는 별개의, 요청 1건당 크기 한도입니다.
 export const FREE_LIMITS = {
   // 💡 [수정] filesPerMonth는 더 이상 사용자에게 보이는 한도가 아닙니다 — 아래
   // MONTHLY_TOKEN_LIMITS로 통합됐습니다. 그런데 /api/extract(파일에서 글자 뽑기)는
@@ -20,14 +35,14 @@ export const FREE_LIMITS = {
   filesPerMonth: 10,
   maxProfessors: 1,
   maxDocumentsPerProfessor: 10,
-  maxUploadBytes: 5 * 1024 * 1024,
+  maxUploadBytes: 30 * 1024 * 1024,
 };
 
 export const PRO_LIMITS = {
   filesPerMonth: 200,
   maxProfessors: Infinity,
   maxDocumentsPerProfessor: Infinity,
-  maxUploadBytes: 20 * 1024 * 1024,
+  maxUploadBytes: 100 * 1024 * 1024,
 };
 
 export function getPlanLimits(isPro: boolean) {

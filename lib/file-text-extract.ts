@@ -1,11 +1,30 @@
 import * as XLSX from 'xlsx';
 import * as CFB from 'cfb';
 import { inflateRaw } from 'pako';
+import { truncateForPrompt } from '@/lib/truncate-text';
 
 // 문서 파일(base64)에서 순수 텍스트만 뽑아내는 공용 함수입니다. /api/extract가 사용합니다.
 // (더 풍부한 처리가 필요한 /api/chat의 파일 분석 블록(OCR, HWP 등)은 이 함수와 별도로 유지됩니다.)
 
-export const MAX_EXTRACT_FILE_BYTES = 20 * 1024 * 1024;
+// 💡 [수정] 파서가 한 파일에 대해 절대 넘지 않는 기술적 상한. 예전 값은 20MB였는데, 그건
+// "요청 본문에 base64로 실어 보낸다"는 옛 구조 때문에 어차피 도달할 수 없는 숫자였습니다
+// (플랫폼 본문 상한 4.5MB → 실제 3.2MB). 이제 파일은 Storage로 직접 올라가고 서버가
+// 내려받으므로, 이 값이 진짜로 "서버리스 함수가 감당할 수 있는가"를 정하는 유일한 상한입니다.
+//
+// 이 값은 추측이 아니라 실측으로 정했습니다(.bench 결과는 커밋 메시지 참고): 압축 포맷은
+// 풀었을 때가 진짜 부담이라 원본 크기의 몇 배까지 메모리를 씁니다. 등급별 상한(lib/plan-limits.ts)이
+// 이보다 작으면 그쪽이 먼저 걸리고, 이 값은 "어떤 등급이라도 여기서 멈춘다"는 마지막 방어선입니다.
+export const MAX_EXTRACT_FILE_BYTES = 100 * 1024 * 1024;
+
+// 💡 [신규] 뽑아낸 글자 수 상한. 파일 크기와 글자 수는 비례하지 않습니다 — 이미지가 대부분인
+// 80MB PPTX는 글자가 몇 만 자뿐이지만, 25MB짜리 엑셀 한 장은 수천만 자가 나옵니다. 그 문자열이
+// 그대로 응답에 실리고 documents.content 한 행에 저장되므로, 파일 크기 상한만으로는 이쪽이
+// 전혀 막히지 않습니다.
+//
+// 프롬프트에 실제로 들어가는 양은 어차피 6만 자(MAX_PROMPT_TEXT_CHARS)라 이 상한이 답변
+// 품질을 깎지 않습니다 — 그보다 5배 여유를 둔 값이라, "나중에 다른 용도로 다시 쓸 때를 위해
+// 원문을 넉넉히 남긴다"와 "한 행이 수십 MB가 되지 않게 한다" 사이의 절충입니다.
+export const MAX_EXTRACTED_TEXT_CHARS = 300_000;
 
 // 💡 [수정] 실패 사유를 기계가 읽을 수 있는 code로도 함께 실어 보냅니다. message는 예전처럼
 // 한국어 문장이라 서버 로그와 게스트 라우트에서 그대로 쓰이지만, 로그인 사용자 화면은
@@ -246,27 +265,60 @@ function extractParaTextRecords(buffer: Buffer): string {
   return paragraphs.join('\n'); // 문단 끝은 줄바꿈으로
 }
 
+function tooLargeError(maxBytes: number): FileExtractError {
+  const mb = Math.round(maxBytes / (1024 * 1024));
+  return new FileExtractError(`파일이 너무 큽니다 (${mb}MB 초과).`, 'too_large');
+}
+
 /**
  * 파일(base64)에서 순수 텍스트를 뽑아 돌려줍니다.
  * 지원하지 않는 형식이거나 파일이 손상된 경우 FileExtractError(한국어 메시지)를 던집니다.
+ *
+ * 💡 base64를 받는 이 형태는 이제 게스트 라우트(public-analyze/public-chat/public-guided-trial)
+ * 전용입니다 — 게스트는 로그인이 없어 Storage에 안전하게 쓸 수가 없어서 예전처럼 요청 본문으로
+ * 받습니다(상한도 3MB로 낮아 본문 상한에 걸리지 않습니다). 로그인 사용자의 업로드는
+ * extractFileTextFromBuffer 쪽으로 갑니다.
  */
 export async function extractFileText(
   fileName: string,
   mimeType: string | undefined,
-  base64Content: string
+  base64Content: string,
+  maxBytes: number = MAX_EXTRACT_FILE_BYTES
 ): Promise<string> {
   // base64 문자열 길이만으로 대략적인 바이트 수를 먼저 걸러냅니다 — 과도하게 큰 페이로드를
   // 굳이 전부 디코딩하지 않고 빠르게 거부하기 위함입니다.
   const approxBytes = (base64Content.length * 3) / 4;
-  if (approxBytes > MAX_EXTRACT_FILE_BYTES) {
-    throw new FileExtractError('파일이 너무 큽니다 (20MB 초과).', 'too_large');
-  }
+  if (approxBytes > maxBytes) throw tooLargeError(maxBytes);
 
-  const buffer = Buffer.from(base64Content, 'base64');
-  if (buffer.length > MAX_EXTRACT_FILE_BYTES) {
-    throw new FileExtractError('파일이 너무 큽니다 (20MB 초과).', 'too_large');
-  }
+  return extractFileTextFromBuffer(fileName, mimeType, Buffer.from(base64Content, 'base64'), maxBytes);
+}
 
+/**
+ * 파일(Buffer)에서 순수 텍스트를 뽑아 돌려줍니다.
+ *
+ * 💡 [신규] Supabase Storage에서 내려받은 파일은 이미 Buffer라, base64로 다시 감쌌다가 푸는
+ * 왕복이 순수한 낭비입니다 — 큰 파일일수록 그 왕복 자체가 메모리 피크를 1.4배 가까이 키웁니다.
+ * (base64 문자열은 원본의 4/3 크기인데, JS 문자열은 UTF-16이라 실제 힙 점유는 그 2배입니다.)
+ */
+export async function extractFileTextFromBuffer(
+  fileName: string,
+  mimeType: string | undefined,
+  buffer: Buffer,
+  maxBytes: number = MAX_EXTRACT_FILE_BYTES
+): Promise<string> {
+  if (buffer.length > maxBytes) throw tooLargeError(maxBytes);
+  const text = await extractRawText(fileName, mimeType, buffer);
+  // 💡 [신규] 글자 수 상한은 형식별 분기 바깥에서 한 번만 겁니다 — 분기마다 걸면 새 형식을
+  // 추가할 때 빠뜨리기 쉽습니다. 잘릴 때 가운데를 생략하는 건 truncateForPrompt와 같은 이유로,
+  // 문서 뒷부분(결론·마감일)이 통째로 사라지지 않게 하기 위함입니다.
+  return text.length > MAX_EXTRACTED_TEXT_CHARS ? truncateForPrompt(text, MAX_EXTRACTED_TEXT_CHARS) : text;
+}
+
+async function extractRawText(
+  fileName: string,
+  mimeType: string | undefined,
+  buffer: Buffer
+): Promise<string> {
   const ext = resolveFileExtension(fileName, mimeType);
 
   try {

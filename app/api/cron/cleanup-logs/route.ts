@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'crypto';
 import { FREE_LOG_RETENTION_DAYS } from '@/lib/plan-limits';
 import { ANONYMOUS_USAGE_RETENTION_DAYS } from '@/lib/anonymous-usage';
+import { UPLOAD_BUCKET } from '@/lib/storage-upload';
 
 // 💡 [신규] CRON_SECRET 비교를 타이밍 세이프하게 — 기존 `authHeader !== \`Bearer ${cronSecret}\``는
 // 문자열을 앞에서부터 순서대로 비교하다 첫 불일치 지점에서 바로 반환하는 일반적인 JS 문자열
@@ -105,6 +106,57 @@ async function notifyUpcomingProExpiry(supabaseAdmin: SupabaseClient): Promise<n
   return sent;
 }
 
+// 💡 [신규] uploads 버킷의 고아 객체 청소.
+//
+// 정상 흐름에서는 /api/extract가 텍스트를 뽑은 직후(성공·실패 무관) 원본을 지웁니다. 그런데
+// 브라우저가 Storage에 올리는 것과 서버에 추출을 요청하는 것은 별개의 두 단계라, 그 사이에
+// 탭을 닫거나 네트워크가 끊기면 아무도 지우지 않는 객체가 남습니다. 그런 객체가 쌓이면
+// 보관비($0.023/GB·월)가 계속 늘고, 강의자료·시험지 원본이 무기한 남는 문제도 생깁니다.
+//
+// 24시간이면 진행 중인 업로드와 버려진 업로드를 구분하기에 충분합니다 — 정상 객체의 수명은
+// 보통 몇 초이고, 아무리 큰 파일이라도 추출까지 몇 분을 넘지 않습니다.
+const ORPHAN_UPLOAD_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+async function cleanupOrphanUploads(supabaseAdmin: SupabaseClient): Promise<number> {
+  const cutoff = Date.now() - ORPHAN_UPLOAD_MAX_AGE_MS;
+  const bucket = supabaseAdmin.storage.from(UPLOAD_BUCKET);
+
+  // 최상위는 사용자 폴더(`{uid}/`)뿐입니다. 폴더 목록을 먼저 받고 폴더별로 파일을 봅니다 —
+  // Storage의 list는 재귀 조회를 지원하지 않아 이 2단계가 유일한 방법입니다.
+  const { data: folders, error: folderError } = await bucket.list('', { limit: 1000 });
+  if (folderError) {
+    console.error('[cleanup-logs] uploads 폴더 목록 조회 실패:', folderError);
+    return 0;
+  }
+
+  let removed = 0;
+  for (const folder of folders ?? []) {
+    // 파일이 아니라 폴더만 대상입니다. Storage는 폴더를 id가 없는 항목으로 돌려줍니다.
+    if (folder.id) continue;
+
+    const { data: objects, error: listError } = await bucket.list(folder.name, { limit: 1000 });
+    if (listError) {
+      console.error(`[cleanup-logs] uploads/${folder.name} 목록 조회 실패:`, listError);
+      continue;
+    }
+
+    const stale = (objects ?? [])
+      .filter((o) => o.created_at && new Date(o.created_at).getTime() < cutoff)
+      .map((o) => `${folder.name}/${o.name}`);
+    if (stale.length === 0) continue;
+
+    const { error: removeError } = await bucket.remove(stale);
+    if (removeError) {
+      console.error(`[cleanup-logs] uploads/${folder.name} 삭제 실패:`, removeError);
+      continue;
+    }
+    removed += stale.length;
+  }
+
+  console.log(`[cleanup-logs] 버려진 업로드 원본 ${removed}건 삭제`);
+  return removed;
+}
+
 export async function GET(req: Request) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
@@ -192,12 +244,23 @@ export async function GET(req: Request) {
     // 이미 만료돼 방금 강등된 계정에는 "곧 끝납니다" 메일이 가지 않게 합니다.
     const proExpiryNotified = await notifyUpcomingProExpiry(supabaseAdmin);
 
+    // 💡 [신규] 버려진 업로드 원본 청소. 위 두 정리 작업과 같은 성격(매일 한 번, 오래된 것을
+    // 지움)이라 같은 라우트에 얹었습니다. 실패해도 나머지 결과는 그대로 돌려줍니다 —
+    // 보관비 청소가 대화 기록 정리를 실패로 만들 이유가 없습니다.
+    let deletedOrphanUploads = 0;
+    try {
+      deletedOrphanUploads = await cleanupOrphanUploads(supabaseAdmin);
+    } catch (uploadError) {
+      console.error('[cleanup-logs] 업로드 원본 정리 실패:', uploadError);
+    }
+
     return NextResponse.json({
       ok: true,
       deletedLogs: count ?? 0,
       deletedAnonymousUsage: anonymousUsageDeletedCount ?? 0,
       expiredCodePro: expiredCodeProCount,
       proExpiryNotified,
+      deletedOrphanUploads,
     });
   } catch (error) {
     console.error('[cleanup-logs] 정리 작업 중 오류 발생:', error);

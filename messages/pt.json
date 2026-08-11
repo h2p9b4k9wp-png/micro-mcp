@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "\"{fileName}\" foi recusado antes de chegar ao servidor por ser grande demais. O limite é {max} — tente dividir os slides ou reduzir as imagens.",
       "timeout": "O processamento de \"{fileName}\" excedeu o tempo. Isso acontece com arquivos grandes ou complexos — divida em partes menores.",
-      "httpStatus": "Não foi possível enviar \"{fileName}\" (erro {status}). Tente novamente em instantes."
+      "httpStatus": "Não foi possível enviar \"{fileName}\" (erro {status}). Tente novamente em instantes.",
+      "storageUploadFailed": "Não foi possível enviar \"{fileName}\". Verifique sua conexão e tente novamente.",
+      "storageMissing": "O envio de \"{fileName}\" parece ter sido interrompido. Envie novamente."
     }
   }
 }

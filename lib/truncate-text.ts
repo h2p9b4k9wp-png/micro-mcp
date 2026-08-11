@@ -13,6 +13,22 @@ export const MAX_PROMPT_TEXT_CHARS = 60_000;
 export const MAX_PROFESSOR_DOC_CHARS = 6_000;
 export const MAX_PROFESSOR_CONTEXT_CHARS = 24_000;
 
+// 💡 [신규] "이 교수님 분석"(/api/analyze-professor)에 문서 하나당 실어 보내는 글자 수 상한.
+//
+// 위 MAX_PROFESSOR_DOC_CHARS(6,000)와 다른 값인 이유: 저건 채팅에 매번 딸려가는 *배경* 정보라
+// 짜게 잡은 값이고, 이쪽은 사용자가 "이 자료들을 분석해줘"라고 명시적으로 요청한 본문입니다.
+//
+// 이 상한이 필요해진 이유는 업로드 구조가 바뀌면서입니다. 파일 상한이 사실상 3.2MB이던 시절엔
+// documents.content도 자연히 작았지만, 이제 문서 하나가 MAX_EXTRACTED_TEXT_CHARS(300,000자)까지
+// 커질 수 있습니다. 전체 재분석은 문서를 최대 30개까지 한 요청에 담으므로 900만 자 = 약 27MB가
+// 되어, 요청 본문이 플랫폼 상한에 걸려 우리 코드가 실행되기도 전에 실패합니다.
+//
+// 20,000자 × 30개 = 600,000자(한국어 기준 약 1.8MB)로 본문 상한 안에 안전하게 들어옵니다.
+// 서버가 어차피 전체를 60,000자로 다시 자르므로(truncateForPrompt) 분석 품질에는 영향이 없고,
+// 오히려 문서별로 고르게 잘리는 쪽이 낫습니다 — 자르지 않고 보내면 앞쪽 문서 몇 개가 예산을
+// 다 먹고 뒤쪽 문서는 통째로 사라집니다.
+export const MAX_PROFESSOR_ANALYSIS_DOC_CHARS = 20_000;
+
 const ELLIPSIS_MARKER = '\n\n...(문서가 너무 길어 가운데 일부가 생략되었습니다)...\n\n';
 
 // 💡 [수정] 반환값이 실제로 maxChars를 넘지 않도록 생략 표시 길이를 예산에서 먼저 뺍니다.

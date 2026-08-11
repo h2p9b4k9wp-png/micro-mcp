@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "« {fileName} » a été refusé avant d'atteindre le serveur car trop volumineux. La limite est de {max} — divisez les diapositives ou allégez les images.",
       "timeout": "Le traitement de « {fileName} » a expiré. Cela arrive avec des fichiers volumineux ou complexes — découpez-le en parties plus petites.",
-      "httpStatus": "Impossible d'envoyer « {fileName} » (erreur {status}). Réessayez dans un instant."
+      "httpStatus": "Impossible d'envoyer « {fileName} » (erreur {status}). Réessayez dans un instant.",
+      "storageUploadFailed": "Impossible d’envoyer « {fileName} ». Vérifiez votre connexion et réessayez.",
+      "storageMissing": "L’envoi de « {fileName} » semble avoir été interrompu. Merci de le renvoyer."
     }
   }
 }

@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "\"{fileName}\" avvisades innan den nådde servern eftersom den är för stor. Gränsen är {max} — dela upp bilderna eller minska bildernas storlek.",
       "timeout": "Bearbetningen av \"{fileName}\" tog för lång tid. Det händer med stora eller komplexa filer — dela upp den i mindre delar.",
-      "httpStatus": "Kunde inte ladda upp \"{fileName}\" (fel {status}). Försök igen strax."
+      "httpStatus": "Kunde inte ladda upp \"{fileName}\" (fel {status}). Försök igen strax.",
+      "storageUploadFailed": "Kunde inte ladda upp \"{fileName}\". Kontrollera anslutningen och försök igen.",
+      "storageMissing": "Uppladdningen av \"{fileName}\" verkar ha avbrutits. Ladda upp den igen."
     }
   }
 }

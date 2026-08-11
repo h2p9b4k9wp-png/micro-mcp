@@ -810,7 +810,9 @@
       },
       "platformTooLarge": "„{fileName}\" wurde schon vor dem Server abgelehnt, weil die Datei zu groß ist. Das Limit liegt bei {max} — teile die Folien auf oder verkleinere die Bilder.",
       "timeout": "Die Verarbeitung von „{fileName}\" hat zu lange gedauert. Das passiert bei großen oder komplexen Dateien — bitte in kleinere Teile aufteilen.",
-      "httpStatus": "„{fileName}\" konnte nicht hochgeladen werden (Fehler {status}). Bitte gleich noch einmal versuchen."
+      "httpStatus": "„{fileName}\" konnte nicht hochgeladen werden (Fehler {status}). Bitte gleich noch einmal versuchen.",
+      "storageUploadFailed": "„{fileName}\" konnte nicht hochgeladen werden. Bitte Verbindung prüfen und erneut versuchen.",
+      "storageMissing": "Der Upload von „{fileName}\" wurde offenbar unterbrochen. Bitte erneut hochladen."
     }
   }
 }
