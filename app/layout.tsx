@@ -6,6 +6,7 @@ import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import { SiteFooter } from "@/components/site-footer";
 import { SITE_URL } from "@/lib/site-config";
+import { BUILD_INFO } from "@/lib/build-info";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,6 +54,12 @@ export async function generateMetadata(): Promise<Metadata> {
       url: `${SITE_URL}/`,
       siteName: 'Carrotly',
       type: 'website',
+    },
+    // 💡 [신규] 지금 서비스 중인 커밋·브랜치·환경을 <meta>로 내보냅니다(lib/build-info.ts).
+    // 모든 페이지가 이 루트 레이아웃을 거치므로 로그인 전 화면에서도 소스 보기로 확인됩니다 —
+    // "코드는 고쳤는데 화면이 그대로"일 때 캐시 문제인지 배포 문제인지 바로 갈립니다.
+    other: {
+      'build-commit': BUILD_INFO,
     },
   };
 }
