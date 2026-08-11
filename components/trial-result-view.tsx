@@ -17,6 +17,55 @@ import type {
 // 합니다. 원래 app/login/page.tsx에만 있었는데, 게스트 가이드 체험
 // (components/guest-guided-trial.tsx)도 questions/digest 렌즈 결과를 똑같은 모양으로
 // 렌더링해야 해서 공용 파일로 뺐습니다.
+// 💡 [신규] 출처·확신도 표시. "AI가 지어낸 거 아냐?"에 답하기 위한 UI입니다.
+//
+// 세 가지를 보여줍니다:
+//  - 출처: 어느 파일 어디에서 나왔는지("3주차_강의노트.pdf · 12페이지"). 위치는 추출
+//    단계에서 본문에 심어둔 실제 표시를 모델이 옮겨 적은 값이라, 모델이 지어낸 페이지
+//    번호가 아닙니다(lib/file-text-extract.ts 참고).
+//  - 자료 밖 내용 표시: grounded가 false면 "일반 지식" 배지를 답니다.
+//  - 확신도: 값과 함께 "왜 그렇게 봤는지"를 자료 근거로 한 줄 붙입니다. 숫자만 있으면
+//    그 숫자 자체를 못 믿기 때문에, 이유가 없는 확신도는 아예 표시하지 않습니다.
+function SourceBadges({
+  item,
+  t,
+}: {
+  item: { sourceFile?: string; sourceLocation?: string; grounded?: boolean; confidence?: number; confidenceReason?: string };
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const where = [item.sourceFile, item.sourceLocation].filter((v) => v && v.trim()).join(' · ');
+  const showConfidence = typeof item.confidence === 'number' && !!item.confidenceReason?.trim();
+  if (!where && item.grounded !== false && !showConfidence) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+      {where && (
+        <span className="text-[10px] text-[var(--text-muted)] bg-[var(--surface-chip)] px-1.5 py-0.5 rounded">
+          📄 {t('workspace.lens.sourceFrom', { where })}
+        </span>
+      )}
+      {item.grounded === false && (
+        <span className="text-[10px] font-semibold text-[var(--text-warn)] bg-[var(--bg-warn-subtle)] border border-[var(--border-warn-subtle)] px-1.5 py-0.5 rounded">
+          {t('workspace.lens.notFromMaterial')}
+        </span>
+      )}
+      {showConfidence && (
+        <span className="text-[10px] text-[var(--text-muted)]">
+          {t(
+            item.confidence! >= 0.7
+              ? 'workspace.lens.confidenceHigh'
+              : item.confidence! >= 0.4
+                ? 'workspace.lens.confidenceMedium'
+                : 'workspace.lens.confidenceLow'
+          )}
+          {' · '}
+          {item.confidenceReason}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function renderTrialResult(
   lens: LensId,
   result: DeadlinesResult | QuestionsResult | DigestResult | ExamQuestionsResult,
@@ -61,6 +110,7 @@ export function renderTrialResult(
       </ul>
     );
   }
+  
   // 💡 [신규] 예상 시험 문제 — questions와 비슷한 카드지만 문항 유형 배지와 모범답안을
   // 함께 보여줍니다("A."가 답변 초안이 아니라 모범답안이라는 점이 다릅니다).
   if (lens === 'examQuestions') {
@@ -83,6 +133,7 @@ export function renderTrialResult(
               showLabel={t('workspace.lens.showModelAnswer')}
               hideLabel={t('workspace.lens.hideModelAnswer')}
             />
+            <SourceBadges item={item} t={t} />
           </li>
         ))}
       </ul>
@@ -128,6 +179,8 @@ function DigestTypewriterView({
               <li key={i} className="text-xs text-[var(--text-oncard)] list-disc list-inside ml-1">
                 {parts[i + 1]}
                 {typingIndex === i + 1 && caret}
+                {/* 타이핑이 끝난 항목에만 출처를 답니다 — 타이핑 중에 배지가 먼저 뜨면 산만합니다. */}
+                {typingIndex > i + 1 && <SourceBadges item={p} t={t} />}
               </li>
             );
           })}

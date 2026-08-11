@@ -70,7 +70,12 @@
       "hideModelAnswer": "Hide model answer",
       "showDraftAnswer": "Show draft answer",
       "hideDraftAnswer": "Hide draft answer",
-      "skipTyping": "Show all now"
+      "skipTyping": "Show all now",
+      "sourceFrom": "from {where}",
+      "notFromMaterial": "Not in your material · general knowledge",
+      "confidenceHigh": "Likely to be tested",
+      "confidenceMedium": "Possibly tested",
+      "confidenceLow": "Less likely tested"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" is too large (over 10MB). Please try a smaller file.",

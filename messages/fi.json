@@ -70,7 +70,12 @@
       "hideModelAnswer": "Piilota mallivastaus",
       "showDraftAnswer": "Näytä vastausluonnos",
       "hideDraftAnswer": "Piilota vastausluonnos",
-      "skipTyping": "Näytä kaikki heti"
+      "skipTyping": "Näytä kaikki heti",
+      "sourceFrom": "lähde: {where}",
+      "notFromMaterial": "Ei materiaalissasi · yleistietoa",
+      "confidenceHigh": "Todennäköisesti tentissä",
+      "confidenceMedium": "Mahdollisesti tentissä",
+      "confidenceLow": "Epätodennäköisesti tentissä"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" on liian suuri (yli 10 Mt). Kokeile pienempää tiedostoa.",

@@ -127,9 +127,24 @@ function numericAwareCompare(a: string, b: string): number {
 }
 
 // zip 안에서 조건에 맞는 XML 항목들을 찾아 텍스트만 이어붙입니다. pptx(ppt/slides)와 hwpx(Contents)가 공유합니다.
+// 💡 [신규] 추출한 텍스트 안에 "이 부분이 원문 어디였는지"를 남기는 표시입니다.
+//
+// 예전에는 페이지·슬라이드 구분이 전부 사라진 한 덩어리 문자열만 남아서, AI에게 출처를
+// 물어봐도 답할 근거 자체가 없었습니다(물어보면 지어낼 수밖에 없음 — 정확히 피하려던 것).
+// 파일 구조에서 실제로 알 수 있는 위치만 표시합니다: PDF는 페이지, PPTX는 슬라이드.
+// 그 외 형식(워드·한글·엑셀)은 페이지 개념을 신뢰성 있게 뽑을 수 없어 표시하지 않습니다 —
+// 없는 위치를 만들어내는 것보다 "위치 없음"이 정직합니다.
+export const LOCATION_MARKER_PREFIX = '[[위치:';
+
+function locationMarker(label: string): string {
+  return `${LOCATION_MARKER_PREFIX} ${label}]]`;
+}
+
 async function extractTextFromZipXml(
   buffer: Buffer,
-  entryFilter: (path: string) => boolean
+  entryFilter: (path: string) => boolean,
+  // 항목마다 위치 표시를 붙일 때 쓰는 라벨 생성기(1부터 시작하는 순번). 없으면 표시 없음.
+  labelFor?: (index: number) => string
 ): Promise<string> {
   const JSZip = (await import('jszip')).default;
   const zip = await JSZip.loadAsync(buffer);
@@ -139,10 +154,14 @@ async function extractTextFromZipXml(
     .sort(numericAwareCompare);
 
   const parts: string[] = [];
+  let index = 0;
   for (const path of paths) {
     const xml = await zip.files[path].async('string');
     const text = extractTextFromXml(xml);
-    if (text) parts.push(text);
+    index += 1;
+    // 빈 슬라이드도 번호는 소비해야 뒤 슬라이드 번호가 밀리지 않습니다 — 표시된 번호가
+    // 실제 파일에서 몇 번째인지와 어긋나면 출처 표시의 의미가 없어집니다.
+    if (text) parts.push(labelFor ? `${locationMarker(labelFor(index))}\n${text}` : text);
   }
   return parts.join('\n\n');
 }
@@ -340,8 +359,17 @@ async function extractRawText(
 
     if (ext === 'pdf') {
       const { extractText } = await import('unpdf');
-      const { text } = await extractText(new Uint8Array(buffer), { mergePages: true });
-      return text;
+      // 💡 [수정] mergePages: false로 바꿔 페이지별 텍스트를 받아, 각 페이지 앞에 위치 표시를
+      // 답니다. 예전에는 true라 페이지 경계가 통째로 사라져 "몇 페이지" 출처가 불가능했습니다.
+      const { text } = await extractText(new Uint8Array(buffer), { mergePages: false });
+      const pages = Array.isArray(text) ? text : [String(text)];
+      return pages
+        .map((pageText, i) => {
+          const trimmed = (pageText || '').trim();
+          return trimmed ? `${locationMarker(`${i + 1}페이지`)}\n${trimmed}` : '';
+        })
+        .filter(Boolean)
+        .join('\n\n');
     }
 
     if (ext === 'docx') {
@@ -351,7 +379,11 @@ async function extractRawText(
     }
 
     if (ext === 'pptx') {
-      return await extractTextFromZipXml(buffer, (path) => /^ppt\/slides\/slide\d+\.xml$/i.test(path));
+      return await extractTextFromZipXml(
+        buffer,
+        (path) => /^ppt\/slides\/slide\d+\.xml$/i.test(path),
+        (i) => `슬라이드 ${i}`
+      );
     }
 
     if (ext === 'hwpx') {

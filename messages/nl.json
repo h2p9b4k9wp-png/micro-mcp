@@ -70,7 +70,12 @@
       "hideModelAnswer": "Modelantwoord verbergen",
       "showDraftAnswer": "Conceptantwoord tonen",
       "hideDraftAnswer": "Conceptantwoord verbergen",
-      "skipTyping": "Alles direct tonen"
+      "skipTyping": "Alles direct tonen",
+      "sourceFrom": "uit {where}",
+      "notFromMaterial": "Niet in je materiaal · algemene kennis",
+      "confidenceHigh": "Waarschijnlijk op het tentamen",
+      "confidenceMedium": "Mogelijk op het tentamen",
+      "confidenceLow": "Minder waarschijnlijk op het tentamen"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" is te groot (meer dan 10 MB). Probeer een kleiner bestand.",

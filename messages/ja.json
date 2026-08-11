@@ -70,7 +70,12 @@
       "hideModelAnswer": "模範解答を隠す",
       "showDraftAnswer": "回答案を見る",
       "hideDraftAnswer": "回答案を隠す",
-      "skipTyping": "すぐに表示"
+      "skipTyping": "すぐに表示",
+      "sourceFrom": "{where} より",
+      "notFromMaterial": "資料になし・一般知識",
+      "confidenceHigh": "出題可能性 高",
+      "confidenceMedium": "出題可能性 中",
+      "confidenceLow": "出題可能性 低"
     },
     "errors": {
       "fileTooLarge": "「{fileName}」は大きすぎます（10MB超）。より小さいファイルでお試しください。",

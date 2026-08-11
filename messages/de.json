@@ -70,7 +70,12 @@
       "hideModelAnswer": "Musterlösung ausblenden",
       "showDraftAnswer": "Antwortentwurf anzeigen",
       "hideDraftAnswer": "Antwortentwurf ausblenden",
-      "skipTyping": "Sofort anzeigen"
+      "skipTyping": "Sofort anzeigen",
+      "sourceFrom": "laut {where}",
+      "notFromMaterial": "Nicht in deinen Unterlagen · Allgemeinwissen",
+      "confidenceHigh": "Wahrscheinlich prüfungsrelevant",
+      "confidenceMedium": "Möglicherweise prüfungsrelevant",
+      "confidenceLow": "Eher nicht prüfungsrelevant"
     },
     "errors": {
       "fileTooLarge": "„{fileName}“ ist zu groß (über 10 MB). Bitte versuche es mit einer kleineren Datei.",
