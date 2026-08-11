@@ -111,7 +111,12 @@
       "title": "Aihekansio",
       "selectLabel": "Valitse aihekansio",
       "emptyHint": "Luo kansio \"Aiemmat keskustelut\" -välilehdellä, niin se näkyy täällä. (esim. Työnhaku, Ainejärjestö, Oma projekti)",
-      "chatHint": "Keskustelut tallennetaan tähän kansioon, ja vastauksissa hyödynnetään saman kansion aiempia keskusteluja."
+      "chatHint": "Keskustelut tallennetaan tähän kansioon, ja vastauksissa hyödynnetään sen aiempia keskusteluja.",
+      "chatHintEmpty": "Keskustelut tallennetaan tähän kansioon. Aiempia ei vielä ole, joten niitä hyödynnetään kun niitä kertyy."
+    },
+    "logSaveFailed": {
+      "title": "Keskustelua ei tallennettu",
+      "body": "Vastaus tuli normaalisti, mutta tätä keskustelua ei tallennettu. Se katoaa päivityksessä eikä kerry kansion tai professorin kontekstiin."
     }
   },
   "records": {

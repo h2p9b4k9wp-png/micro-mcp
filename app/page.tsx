@@ -387,6 +387,11 @@ export default function HomePage() {
   // "지난 대화" 탭의 폴더 필터(logFolderFilter)와는 별개 상태입니다: 그쪽은 보기 필터,
   // 이쪽은 대화의 맥락 지정이라 서로 영향을 주면 안 됩니다.
   const [chatFolderId, setChatFolderId] = useState<string | null>(null);
+  // 💡 [신규] 대화 저장(logs insert)이 실패했을 때의 메시지. 예전에는 이 실패를 코드가
+  // 그냥 버려서, DB 스키마가 어긋난 동안 모든 대화가 저장되지 않는데도 화면에는 아무
+  // 표시가 없었습니다(handleExecute의 저장 부분 주석 참고). alert이 아니라 화면 안 배너로
+  // 두는 이유는, 답변 자체는 정상적으로 나온 상황이라 흐름을 끊을 일은 아니기 때문입니다.
+  const [logSaveError, setLogSaveError] = useState<string | null>(null);
   // 💡 [신규] "예상 시험 문제"를 다시 뽑을 때 같은 문제가 반복되지 않도록, 이미 낸 문항의
   // 한 줄 요약을 교수님별로 기억합니다. 교수님 id를 키로 쓰기 때문에 다른 교수님으로
   // 넘어가면 그 교수님의 목록이 따로 관리됩니다(요청대로 "교수님이 바뀌면 초기화").
@@ -2035,12 +2040,26 @@ export default function HomePage() {
         .select()
         .single();
 
-      if (!error && data) {
+      // 💡 [수정] 저장 실패를 조용히 버리지 않습니다.
+      //
+      // 이전 코드는 `if (!error && data)`로 성공만 처리하고 error를 그대로 흘려보냈습니다.
+      // 그래서 logs 테이블에 professor_id 컬럼이 없던 기간 동안 **모든 대화 저장이 실패하고
+      // 있었는데도** 화면에는 아무 표시가 없었습니다. 답변은 정상적으로 스트리밍돼 보이니
+      // 사용자는 저장된 줄 알았고, 폴더 기능이 동작하지 않는 걸 보고서야 알아챘습니다.
+      //
+      // 저장 실패는 사용자가 알아야 하는 일입니다 — 이 대화는 새로고침하면 사라지고,
+      // 폴더·교수님 맥락에도 쌓이지 않습니다.
+      if (error || !data) {
+        console.error('대화 저장 실패:', error);
+        setLogSaveError(error?.message || t('common.unknownError'));
+      } else {
+        setLogSaveError(null);
         setLogs(prev => [data, ...prev]);
         fetchUsageSummary();
       }
     } catch (dbErr) {
       console.error('로그 저장 중 오류 발생:', dbErr);
+      setLogSaveError(dbErr instanceof Error ? dbErr.message : String(dbErr));
     }
   };
 
@@ -2881,8 +2900,10 @@ export default function HomePage() {
                               setProfessorGenResult(null);
                               setProfessorGenError(null);
                               setProfessorGenLens(null);
-                              // 교수님과 주제 폴더는 동시에 켜지지 않습니다.
-                              if (next) setChatFolderId(null);
+                              // 💡 [수정] 주제 폴더 선택을 더 이상 해제하지 않습니다. 둘은
+                              // 경쟁하는 축이 아닙니다 — 교수님은 "무슨 자료를 볼까",
+                              // 폴더는 "어떤 대화 맥락에서 볼까"라, 함께 켜두는 게
+                              // 자연스러운 조합입니다(서버가 교집합으로 좁힙니다).
                             }}
                             className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                               isSelected
@@ -2998,14 +3019,8 @@ export default function HomePage() {
                                 // 같은 폴더를 다시 누르면 선택 해제.
                                 const next = isSelected ? null : folder.id;
                                 setChatFolderId(next);
-                                // 폴더와 교수님은 동시에 켜지지 않습니다 — 교수님 쪽을 끄면서
-                                // 그 화면의 결과도 함께 정리합니다(누구 것인지 헷갈리지 않도록).
-                                if (next) {
-                                  setProfessorGenProfessorId(null);
-                                  setProfessorGenResult(null);
-                                  setProfessorGenError(null);
-                                  setProfessorGenLens(null);
-                                }
+                                // 💡 [수정] 교수님 선택을 더 이상 해제하지 않습니다
+                                // (위 교수님 버튼 쪽 주석과 같은 이유).
                               }}
                               className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
                                 isSelected
@@ -3020,7 +3035,11 @@ export default function HomePage() {
                       </div>
                       {chatFolderId && (
                         <p className="text-[10px] text-[var(--text-faint)] mt-1.5 leading-relaxed">
-                          {t('workspace.chatFolder.chatHint')}
+                          {/* 💡 [수정] 폴더에 지난 대화가 아직 없으면 "지난 대화를 참고해요"는
+                              사실이 아닙니다. 실제 건수를 보고 문구를 갈라 씁니다. */}
+                          {logs.some((l) => l.folder_id === chatFolderId)
+                            ? t('workspace.chatFolder.chatHint')
+                            : t('workspace.chatFolder.chatHintEmpty')}
                         </p>
                       )}
                     </>
@@ -3111,6 +3130,22 @@ export default function HomePage() {
                     한도를 알게 되는 게 가장 나쁜 순서입니다. 등급에 따라 숫자가 바뀝니다. */}
                 <p className="text-[10px] text-[var(--text-faint)] mt-1">{uploadLimitHint}</p>
               </div>
+
+              {/* 💡 [신규] 대화 저장 실패 배너 — 예전에는 이 실패를 코드가 조용히 버려서,
+                  DB 스키마가 어긋난 동안 모든 대화가 저장되지 않는데도 사용자는 전혀 몰랐습니다.
+                  답변 자체는 정상이라 alert으로 흐름을 끊지 않고, 답변 패널 위에 눈에 띄게
+                  띄웁니다. 원인 문자열(error.message)까지 보여줘야 실제로 고칠 수 있습니다. */}
+              {logSaveError && (
+                <div className="mb-3 rounded-xl border border-[var(--accent-danger)] bg-[var(--bg-panel)] px-4 py-3">
+                  <p className="text-[12px] font-semibold text-[var(--accent-danger)]">
+                    {t('workspace.logSaveFailed.title')}
+                  </p>
+                  <p className="text-[11px] text-[var(--text-tertiary)] mt-1 leading-relaxed">
+                    {t('workspace.logSaveFailed.body')}
+                  </p>
+                  <p className="text-[10px] text-[var(--text-muted)] mt-1.5 break-all">{logSaveError}</p>
+                </div>
+              )}
 
               <div className="bg-[var(--bg-deep)] rounded-2xl border border-[var(--surface-chip)] overflow-hidden shadow-sm">
                 <div className="bg-[var(--bg-panel)] px-4 py-3 flex items-center gap-2 border-b border-[var(--surface-chip)]">

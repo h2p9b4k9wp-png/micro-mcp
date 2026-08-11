@@ -111,7 +111,12 @@
       "title": "Pasta de tema",
       "selectLabel": "Escolher pasta de tema",
       "emptyHint": "Crie uma pasta na aba \"Conversas anteriores\" e ela aparecerá aqui. (ex.: Busca de emprego, Clube, Projeto pessoal)",
-      "chatHint": "As conversas são salvas nesta pasta e as respostas usam conversas anteriores da mesma pasta."
+      "chatHint": "As conversas são salvas nesta pasta, e as respostas levam em conta as anteriores dela.",
+      "chatHintEmpty": "As conversas serão salvas nesta pasta. Ainda não há anteriores, então serão consideradas quando se acumularem."
+    },
+    "logSaveFailed": {
+      "title": "Esta conversa não foi salva",
+      "body": "A resposta saiu normalmente, mas esta conversa não foi registrada. Ela sumirá ao recarregar e não somará ao contexto de pasta ou professor."
     }
   },
   "records": {

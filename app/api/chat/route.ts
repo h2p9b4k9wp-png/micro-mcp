@@ -14,6 +14,7 @@ import {
   MAX_PROFESSOR_DOC_CHARS,
   MAX_PROFESSOR_CONTEXT_CHARS,
   MAX_RECENT_LOG_RESPONSE_CHARS,
+  SCOPED_RECENT_LOG_LIMIT,
 } from '@/lib/truncate-text';
 // 💡 tesseract.js(이미지 OCR)는 이미지가 실제로 첨부됐을 때만 동적으로 불러옵니다.
 // 파일 상단에서 정적으로 import하면, Vercel 번들에서 워커 스크립트를 못 찾을 경우
@@ -142,18 +143,29 @@ export async function POST(req: Request) {
     // 💡 [수정] 화면에서 선택된 교수님 id — 아래에서 두 군데에 씁니다: (a) 최근 대화 기록을
     // 그 교수님 것으로 좁히기, (b) 교수님 자료 본문 싣기. 예전에는 (b)에서만 읽었습니다.
     const requestedProfessorId = typeof body.professorId === 'string' && body.professorId ? body.professorId : null;
-    // 💡 [신규] 화면에서 선택된 주제 폴더 id — 교수님과 완전히 같은 방식으로 최근 대화 기록을
-    // 좁히는 데 씁니다. UI에서는 교수님과 동시에 켜지지 않지만, API를 직접 호출하면 둘 다
-    // 올 수 있습니다. 그 경우 교수님을 우선합니다 — 교수님 쪽은 자료 본문까지 함께 싣는
-    // 더 강한 맥락 지정이라, 둘이 부딪히면 좁은 쪽을 따르는 게 맞습니다.
-    const requestedFolderId =
-      !requestedProfessorId && typeof body.folderId === 'string' && body.folderId ? body.folderId : null;
+    // 💡 [수정] 화면에서 선택된 주제 폴더 id. 예전에는 교수님이 선택돼 있으면 이 값을 무조건
+    // 버렸습니다("둘 중 하나만"). 그건 두 값을 경쟁 관계로 본 잘못된 전제였습니다 — 교수님은
+    // "무슨 자료를 볼까"이고 폴더는 "어떤 대화 맥락에서 볼까"라, `"공부" 폴더에서 김 교수님
+    // 자료 얘기 중`은 완벽히 말이 되는 조합입니다. 이제 둘 다 살리고, 둘 다 켜져 있으면
+    // 대화 기록을 교집합(그 교수님 + 그 폴더)으로 좁힙니다.
+    const requestedFolderId = typeof body.folderId === 'string' && body.folderId ? body.folderId : null;
     if (supabase) {
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
+      // 💡 [수정] 교수님·폴더 조회를 따로 두지 않고 하나의 "좁힌 조회"로 합칩니다. 예전에는
+      // 쿼리를 둘로 나눠두고 결과 중 하나를 골랐는데, 둘 다 선택된 경우를 표현할 수 없었습니다.
+      // 조건을 조립하는 방식이면 교집합(그 교수님 + 그 폴더)이 자연스럽게 나옵니다.
+      const scopedLogsQuery = (() => {
+        if (!requestedProfessorId && !requestedFolderId) return Promise.resolve({ data: null, error: null });
+        let q = supabase.from('logs').select('content, response');
+        if (requestedProfessorId) q = q.eq('professor_id', requestedProfessorId);
+        if (requestedFolderId) q = q.eq('folder_id', requestedFolderId);
+        return q.order('created_at', { ascending: false }).limit(SCOPED_RECENT_LOG_LIMIT);
+      })();
+
       // 💡 [신규] 토큰 사용량 기록·내부 상한 검사에 사용자 id가 필요합니다. 별도로 부르면
       // Auth 서버를 한 번 더 왕복하므로 아래 조회들과 함께 병렬로 처리합니다.
-      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, userResult, professorLogsResult, folderLogsResult] = await Promise.all([
+      const [rateLimitResult, recentLogsResult, professorsResult, professorDocsResult, profileResult, userResult, scopedLogsResult] = await Promise.all([
         supabase
           .from('logs')
           .select('id', { count: 'exact', head: true })
@@ -169,27 +181,9 @@ export async function POST(req: Request) {
         supabase.from('documents').select('professor_id, file_name'),
         supabase.from('profiles').select('is_pro, pro_source').single(),
         supabase.auth.getUser(),
-        // 💡 [신규] 교수님이 선택돼 있으면 그 교수님과 나눈 대화만 따로 조회합니다. 위의
-        // 전체 최근 3건과 함께 병렬로 받아두고 아래에서 하나를 고릅니다 — 먼저 조회해보고
-        // 비었을 때 다시 조회하는 순차 방식이면 왕복이 한 번 더 늘어납니다.
-        requestedProfessorId
-          ? supabase
-              .from('logs')
-              .select('content, response')
-              .eq('professor_id', requestedProfessorId)
-              .order('created_at', { ascending: false })
-              .limit(3)
-          : Promise.resolve({ data: null, error: null }),
-        // 💡 [신규] 폴더가 선택돼 있으면 그 폴더로 저장된 대화만 따로 조회합니다(위 교수님
-        // 조회와 같은 이유로 병렬).
-        requestedFolderId
-          ? supabase
-              .from('logs')
-              .select('content, response')
-              .eq('folder_id', requestedFolderId)
-              .order('created_at', { ascending: false })
-              .limit(3)
-          : Promise.resolve({ data: null, error: null }),
+        // 위에서 조립한 "좁힌 조회". 전체 최근 대화와 함께 병렬로 받아두고 아래에서 고릅니다 —
+        // 먼저 조회해보고 비었을 때 다시 조회하는 순차 방식이면 왕복이 한 번 더 늘어납니다.
+        scopedLogsQuery,
       ]);
       chatUserId = userResult.data.user?.id ?? null;
 
@@ -222,22 +216,37 @@ export async function POST(req: Request) {
         }
       }
 
-      // 💡 [수정] 교수님이 선택돼 있고 그 교수님과 나눈 대화가 있으면 그것만 씁니다.
-      // 없으면(방금 고른 교수님이라 기록이 아직 없는 경우 등) 예전처럼 전체 최근 3건으로
-      // 되돌아갑니다 — 맥락이 아예 없는 것보다는 낫습니다.
-      const professorScopedLogs = (professorLogsResult?.data ?? null) as RecentLogRow[] | null;
-      const folderScopedLogs = (folderLogsResult?.data ?? null) as RecentLogRow[] | null;
+      // 💡 [수정] 좁힌 맥락이 비었을 때 전체 최근 대화로 조용히 되돌아가던 동작을 없앴습니다.
+      //
+      // 그 폴백이 실제로 만든 문제: 사용자가 "공부" 폴더를 고르고 "요약해줘"라고 물었는데,
+      // 그 폴더에 대화가 없어서 전체 최근 3건(마침 다른 교수님 자료 얘기)이 실려 들어갔고,
+      // 모델은 그걸 요약했습니다. 화면은 "같은 폴더의 지난 대화를 참고해요"라고 안내하고
+      // 있었으니 사용자에게는 안내가 거짓말이 된 셈입니다.
+      //
+      // 맥락을 명시적으로 지정했는데 거기 아무것도 없다면, 무관한 대화를 대신 넣는 것보다
+      // "없다"고 알려주는 쪽이 낫습니다 — 모델이 엉뚱한 대상을 잡는 것보다 되묻는 게 낫습니다.
+      const scopedRows = (scopedLogsResult?.data ?? null) as RecentLogRow[] | null;
       const generalLogs = (recentLogsResult.error ? null : recentLogsResult.data) as RecentLogRow[] | null;
-      // 좁은 맥락부터 차례로: 교수님 → 폴더 → 전체. 앞의 것이 비어 있으면 다음으로 넘어갑니다.
-      const scopedLogs =
-        professorScopedLogs && professorScopedLogs.length > 0
-          ? { rows: professorScopedLogs, kind: 'professor' as const }
-          : folderScopedLogs && folderScopedLogs.length > 0
-            ? { rows: folderScopedLogs, kind: 'folder' as const }
-            : null;
-      const recentLogs = scopedLogs ? scopedLogs.rows : generalLogs;
+      const hasScope = Boolean(requestedProfessorId || requestedFolderId);
+      const recentLogs = hasScope ? scopedRows : generalLogs;
 
-      if (recentLogs && recentLogs.length > 0) {
+      // 어떤 맥락으로 좁혔는지 프롬프트에 명시할 문구. 둘 다 켜져 있으면 둘 다 밝힙니다.
+      const scopeNote = !hasScope
+        ? ''
+        : requestedProfessorId && requestedFolderId
+          ? '(지금 선택된 교수님과 주제 폴더 양쪽에 해당하는 대화만 추렸습니다)'
+          : requestedProfessorId
+            ? '(지금 선택된 교수님과 나눈 대화만 추렸습니다)'
+            : '(지금 선택된 주제 폴더의 대화만 추렸습니다)';
+
+      if (hasScope && (!recentLogs || recentLogs.length === 0)) {
+        // 지정된 맥락에 대화가 하나도 없는 경우. 조용히 넘어가면 모델이 다른 배경 정보
+        // (특히 교수님 자료 목록)를 대상으로 착각하므로, 없다는 사실을 분명히 적습니다.
+        dbContext =
+          `[[최근 대화 기록]]${scopeNote}\n` +
+          '해당하는 지난 대화가 아직 없습니다. 다른 대화나 자료를 지난 대화인 것처럼 대신 참고하지 마세요. ' +
+          '사용자가 "지난 대화"나 대상이 분명하지 않은 것(예: 그냥 "요약해줘")을 물으면, 참고할 지난 대화가 아직 없다고 알리고 무엇을 말하는지 되물으세요.\n\n';
+      } else if (recentLogs && recentLogs.length > 0) {
         // 💡 [수정] 예전에는 content(내 질문)만 실어서 AI가 자기가 뭐라고 답했는지 몰랐습니다.
         // 이제 답변도 함께 싣되 앞부분만 잘라 넣습니다(MAX_RECENT_LOG_RESPONSE_CHARS).
         // 오래된 것이 위로 오도록 뒤집어서, 시간 순서대로 읽히게 합니다.
@@ -249,12 +258,6 @@ export async function POST(req: Request) {
               : answer;
           return clipped ? `${l.content}\n[답변] ${clipped}` : l.content;
         });
-        const scopeNote =
-          scopedLogs?.kind === 'professor'
-            ? '(지금 선택된 교수님과 나눈 대화만 추렸습니다)'
-            : scopedLogs?.kind === 'folder'
-              ? '(지금 선택된 주제 폴더의 대화만 추렸습니다)'
-              : '';
         dbContext = `[[최근 대화 기록]]${scopeNote}\n` + lines.join('\n\n') + "\n\n";
       }
 
@@ -356,9 +359,24 @@ export async function POST(req: Request) {
           ? `사용자는 지금 화면에서 "${selected.name}" 교수님을 선택해 둔 상태입니다. 특별히 다른 교수님을 지목하지 않는 한 이 교수님의 자료를 기준으로 답하세요.\n`
           : '';
 
+        // 💡 [신규] 이 목록 블록이 대상 없는 질문을 가로채지 않도록 못을 박습니다.
+        //
+        // 실제로 일어난 일: 사용자가 주제 폴더를 고르고 "요약해줘"라고만 물었는데, 모델이
+        // 폴더의 지난 대화가 아니라 이 목록(교수님 자료 파일명들)을 요약했습니다. 본문도
+        // 없이 파일명만 있는데도요. 목록이 지난 대화보다 훨씬 구체적이고 눈에 띄어서,
+        // 대상이 생략된 질문에서는 모델이 이쪽을 집습니다.
+        //
+        // 폴더를 고른 상태에서는 사용자가 그 주제의 흐름을 이어가려는 것이므로, 교수님을
+        // 함께 고르거나 이름을 직접 언급하지 않는 한 이 목록은 답변의 대상이 아닙니다.
+        const isFolderScopedWithoutProfessor = Boolean(requestedFolderId) && targets.length === 0;
+        const targetGuard = isFolderScopedWithoutProfessor
+          ? '지금 사용자는 주제 폴더를 골라 그 주제의 대화를 이어가는 중입니다. 아래 목록은 "이런 자료를 가지고 있다"는 참고일 뿐, 이번 질문의 대상이 아닙니다. 대상을 밝히지 않은 요청(예: 그냥 "요약해줘")은 아래 자료가 아니라 [[최근 대화 기록]]을 가리키는 것으로 해석하세요.\n'
+          : '';
+
         professorContext =
           '[[교수님별로 등록해둔 자료 목록]]\n' +
           selectionNote +
+          targetGuard +
           '아래는 사용자가 등록해둔 자료의 "목록"입니다(본문은 포함되어 있지 않습니다). 사용자가 특정 자료의 내용을 물어보는데 본문이 아래에 없다면, 지어내지 말고 어느 교수님·어느 자료를 봐야 하는지 되물으세요.\n' +
           truncateForPrompt(indexSections.join('\n\n'), MAX_PROFESSOR_CONTEXT_CHARS) +
           detailSection +

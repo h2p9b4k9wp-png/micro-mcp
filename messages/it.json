@@ -111,7 +111,12 @@
       "title": "Cartella tematica",
       "selectLabel": "Scegli una cartella tematica",
       "emptyHint": "Crea una cartella nella scheda «Chat precedenti» e comparirà qui. (es. Ricerca lavoro, Associazione, Progetto personale)",
-      "chatHint": "Le chat vengono salvate in questa cartella e le risposte usano le chat precedenti della stessa cartella."
+      "chatHint": "Le conversazioni vengono salvate in questa cartella e le risposte tengono conto di quelle precedenti.",
+      "chatHintEmpty": "Le conversazioni verranno salvate in questa cartella. Non ce ne sono ancora, saranno considerate quando se ne accumuleranno."
+    },
+    "logSaveFailed": {
+      "title": "Questa conversazione non è stata salvata",
+      "body": "La risposta è arrivata correttamente, ma questa conversazione non è stata registrata. Sparirà al ricaricamento e non alimenterà il contesto della cartella né del professore."
     }
   },
   "records": {

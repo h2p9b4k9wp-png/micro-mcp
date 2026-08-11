@@ -111,7 +111,12 @@
       "title": "Themenordner",
       "selectLabel": "Themenordner wählen",
       "emptyHint": "Lege im Tab „Frühere Chats\" einen Ordner an, dann erscheint er hier. (z. B. Jobsuche, Verein, Eigenes Projekt)",
-      "chatHint": "Chats werden in diesem Ordner gespeichert, und Antworten greifen auf frühere Chats desselben Ordners zurück."
+      "chatHint": "Gespräche werden in diesem Ordner gespeichert, und Antworten beziehen frühere Gespräche daraus ein.",
+      "chatHintEmpty": "Gespräche werden in diesem Ordner gespeichert. Es gibt noch keine früheren, sie werden einbezogen, sobald welche vorliegen."
+    },
+    "logSaveFailed": {
+      "title": "Dieses Gespräch wurde nicht gespeichert",
+      "body": "Die Antwort kam korrekt an, aber dieses Gespräch wurde nicht aufgezeichnet. Es verschwindet beim Neuladen und fließt nicht in den Ordner- oder Professorenkontext ein."
     }
   },
   "records": {

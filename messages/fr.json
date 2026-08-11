@@ -111,7 +111,12 @@
       "title": "Dossier thématique",
       "selectLabel": "Choisir un dossier thématique",
       "emptyHint": "Créez un dossier dans l'onglet « Conversations passées » et il apparaîtra ici. (ex. Recherche d'emploi, Association, Projet perso)",
-      "chatHint": "Les conversations sont enregistrées dans ce dossier et les réponses s'appuient sur les échanges passés du même dossier."
+      "chatHint": "Les conversations sont enregistrées dans ce dossier, et les réponses s’appuient sur les précédentes du même dossier.",
+      "chatHintEmpty": "Les conversations seront enregistrées dans ce dossier. Il n’y en a pas encore, elles seront prises en compte une fois accumulées."
+    },
+    "logSaveFailed": {
+      "title": "Cette conversation n’a pas été enregistrée",
+      "body": "La réponse s’est bien affichée, mais cette conversation n’a pas été enregistrée. Elle disparaîtra au rechargement et n’alimentera ni le contexte du dossier ni celui du professeur."
     }
   },
   "records": {

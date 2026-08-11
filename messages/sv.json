@@ -111,7 +111,12 @@
       "title": "Ämnesmapp",
       "selectLabel": "Välj ämnesmapp",
       "emptyHint": "Skapa en mapp under fliken \"Tidigare chattar\" så dyker den upp här. (t.ex. Jobbsök, Förening, Eget projekt)",
-      "chatHint": "Chattar sparas i den här mappen och svaren använder tidigare chattar från samma mapp."
+      "chatHint": "Samtal sparas i den här mappen, och svaren utgår från tidigare samtal i den.",
+      "chatHintEmpty": "Samtal sparas i den här mappen. Det finns inga tidigare än, de används när de börjat samlas."
+    },
+    "logSaveFailed": {
+      "title": "Samtalet sparades inte",
+      "body": "Svaret kom fram som det ska, men samtalet registrerades inte. Det försvinner vid omladdning och byggs inte på i mapp- eller professorskontexten."
     }
   },
   "records": {

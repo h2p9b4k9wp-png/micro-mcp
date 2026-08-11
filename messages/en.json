@@ -111,7 +111,12 @@
       "title": "Topic folder",
       "selectLabel": "Choose a topic folder",
       "emptyHint": "Create a folder in the \"Past chats\" tab and it will show up here. (e.g. Job hunting, Club, Side project)",
-      "chatHint": "Chats are saved to this folder, and answers draw on past chats from the same folder."
+      "chatHint": "Chats are saved to this folder, and answers draw on past chats in it.",
+      "chatHintEmpty": "Chats will be saved to this folder. There are no past chats here yet, so answers start drawing on them once some build up."
+    },
+    "logSaveFailed": {
+      "title": "This chat was not saved",
+      "body": "The answer came through fine, but this chat was not recorded. It will disappear on refresh and will not build up folder or professor context."
     }
   },
   "records": {

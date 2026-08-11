@@ -111,7 +111,12 @@
       "title": "Onderwerpmap",
       "selectLabel": "Onderwerpmap kiezen",
       "emptyHint": "Maak een map aan op het tabblad \"Eerdere gesprekken\" en die verschijnt hier. (bijv. Sollicitaties, Vereniging, Eigen project)",
-      "chatHint": "Gesprekken worden in deze map bewaard en antwoorden gebruiken eerdere gesprekken uit dezelfde map."
+      "chatHint": "Gesprekken worden in deze map opgeslagen en antwoorden gebruiken eerdere gesprekken daaruit.",
+      "chatHintEmpty": "Gesprekken worden in deze map opgeslagen. Er zijn nog geen eerdere gesprekken, die worden meegenomen zodra ze er zijn."
+    },
+    "logSaveFailed": {
+      "title": "Dit gesprek is niet opgeslagen",
+      "body": "Het antwoord kwam goed door, maar dit gesprek is niet vastgelegd. Het verdwijnt na verversen en telt niet mee voor map- of professorcontext."
     }
   },
   "records": {
