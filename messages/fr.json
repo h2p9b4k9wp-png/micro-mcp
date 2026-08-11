@@ -109,7 +109,9 @@
       },
       "step1": "1. Choisissez un professeur",
       "step2": "2. Que voulez-vous créer ?",
-      "chatHint": "Tant qu'il est sélectionné, les réponses du chat s'appuieront aussi sur les documents de cet enseignant."
+      "chatHint": "Tant qu'il est sélectionné, les réponses du chat s'appuieront aussi sur les documents de cet enseignant.",
+      "addProfessor": "Ajouter un professeur",
+      "addMaterials": "Ajouter des documents"
     },
     "scrollToBottom": "Aller en bas",
     "chatFolder": {
@@ -117,11 +119,15 @@
       "selectLabel": "Choisir un dossier thématique",
       "emptyHint": "Créez un dossier dans l'onglet « Conversations passées » et il apparaîtra ici. (ex. Recherche d'emploi, Association, Projet perso)",
       "chatHint": "Les conversations sont enregistrées dans ce dossier, et les réponses s’appuient sur les précédentes du même dossier.",
-      "chatHintEmpty": "Les conversations seront enregistrées dans ce dossier. Il n’y en a pas encore, elles seront prises en compte une fois accumulées."
+      "chatHintEmpty": "Les conversations seront enregistrées dans ce dossier. Il n’y en a pas encore, elles seront prises en compte une fois accumulées.",
+      "addFolder": "Nouveau dossier"
     },
     "logSaveFailed": {
       "title": "Cette conversation n’a pas été enregistrée",
       "body": "La réponse s’est bien affichée, mais cette conversation n’a pas été enregistrée. Elle disparaîtra au rechargement et n’alimentera ni le contexte du dossier ni celui du professeur."
+    },
+    "saveToFolder": {
+      "label": "Classer cette conversation dans un dossier"
     }
   },
   "records": {
@@ -273,7 +279,8 @@
       "docButton": "Résumer ce fichier",
       "docHide": "Masquer le résumé",
       "docLoading": "Résumé en cours…"
-    }
+    },
+    "docTypeLabel": "Type de document"
   },
   "monitoring": {
     "title": "Surveillance et fichiers (contexte RAG)",

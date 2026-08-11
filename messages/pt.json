@@ -109,7 +109,9 @@
       },
       "step1": "1. Escolha um professor",
       "step2": "2. O que você quer criar?",
-      "chatHint": "Enquanto estiver selecionado, as respostas do chat também usarão o material deste professor."
+      "chatHint": "Enquanto estiver selecionado, as respostas do chat também usarão o material deste professor.",
+      "addProfessor": "Adicionar professor",
+      "addMaterials": "Adicionar materiais"
     },
     "scrollToBottom": "Ir para o fim",
     "chatFolder": {
@@ -117,11 +119,15 @@
       "selectLabel": "Escolher pasta de tema",
       "emptyHint": "Crie uma pasta na aba \"Conversas anteriores\" e ela aparecerá aqui. (ex.: Busca de emprego, Clube, Projeto pessoal)",
       "chatHint": "As conversas são salvas nesta pasta, e as respostas levam em conta as anteriores dela.",
-      "chatHintEmpty": "As conversas serão salvas nesta pasta. Ainda não há anteriores, então serão consideradas quando se acumularem."
+      "chatHintEmpty": "As conversas serão salvas nesta pasta. Ainda não há anteriores, então serão consideradas quando se acumularem.",
+      "addFolder": "Nova pasta"
     },
     "logSaveFailed": {
       "title": "Esta conversa não foi salva",
       "body": "A resposta saiu normalmente, mas esta conversa não foi registrada. Ela sumirá ao recarregar e não somará ao contexto de pasta ou professor."
+    },
+    "saveToFolder": {
+      "label": "Colocar esta conversa em uma pasta"
     }
   },
   "records": {
@@ -273,7 +279,8 @@
       "docButton": "Resumir este ficheiro",
       "docHide": "Ocultar resumo",
       "docLoading": "A resumir…"
-    }
+    },
+    "docTypeLabel": "Tipo de material"
   },
   "monitoring": {
     "title": "Monitoramento e arquivos (contexto RAG)",

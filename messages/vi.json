@@ -109,7 +109,9 @@
       },
       "step1": "1. Hãy chọn giảng viên",
       "step2": "2. Bạn muốn tạo gì?",
-      "chatHint": "Khi đang chọn, phần trả lời trong khung chat bên dưới cũng sẽ dùng tài liệu của giảng viên này."
+      "chatHint": "Khi đang chọn, phần trả lời trong khung chat bên dưới cũng sẽ dùng tài liệu của giảng viên này.",
+      "addProfessor": "Thêm giáo sư",
+      "addMaterials": "Thêm tài liệu"
     },
     "scrollToBottom": "Xuống cuối",
     "chatFolder": {
@@ -117,11 +119,15 @@
       "selectLabel": "Chọn thư mục chủ đề",
       "emptyHint": "Tạo thư mục ở tab \"Trò chuyện trước\" thì sẽ hiện ở đây. (ví dụ: Tìm việc, CLB, Dự án cá nhân)",
       "chatHint": "Cuộc trò chuyện được lưu vào thư mục này, và câu trả lời sẽ tham khảo các cuộc trò chuyện trước trong đó.",
-      "chatHintEmpty": "Cuộc trò chuyện sẽ được lưu vào thư mục này. Chưa có cuộc trò chuyện nào trước đó, nên sẽ tham khảo khi đã tích lũy."
+      "chatHintEmpty": "Cuộc trò chuyện sẽ được lưu vào thư mục này. Chưa có cuộc trò chuyện nào trước đó, nên sẽ tham khảo khi đã tích lũy.",
+      "addFolder": "Thư mục mới"
     },
     "logSaveFailed": {
       "title": "Cuộc trò chuyện chưa được lưu",
       "body": "Câu trả lời vẫn ổn, nhưng cuộc trò chuyện này chưa được ghi lại. Nó sẽ mất khi tải lại và không tích lũy vào ngữ cảnh thư mục hay giáo sư."
+    },
+    "saveToFolder": {
+      "label": "Đưa cuộc trò chuyện này vào thư mục"
     }
   },
   "records": {
@@ -273,7 +279,8 @@
       "docButton": "Tóm tắt tệp này",
       "docHide": "Ẩn tóm tắt",
       "docLoading": "Đang tóm tắt…"
-    }
+    },
+    "docTypeLabel": "Loại tài liệu"
   },
   "monitoring": {
     "title": "Giám sát & Tệp (Ngữ cảnh RAG)",

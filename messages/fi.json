@@ -109,7 +109,9 @@
       },
       "step1": "1. Valitse luennoitsija",
       "step2": "2. Mitä haluat luoda?",
-      "chatHint": "Valittuna ollessaan myös alla olevan chatin vastaukset hyödyntävät tämän luennoitsijan materiaaleja."
+      "chatHint": "Valittuna ollessaan myös alla olevan chatin vastaukset hyödyntävät tämän luennoitsijan materiaaleja.",
+      "addProfessor": "Lisää professori",
+      "addMaterials": "Lisää aineistoa"
     },
     "scrollToBottom": "Siirry alas",
     "chatFolder": {
@@ -117,11 +119,15 @@
       "selectLabel": "Valitse aihekansio",
       "emptyHint": "Luo kansio \"Aiemmat keskustelut\" -välilehdellä, niin se näkyy täällä. (esim. Työnhaku, Ainejärjestö, Oma projekti)",
       "chatHint": "Keskustelut tallennetaan tähän kansioon, ja vastauksissa hyödynnetään sen aiempia keskusteluja.",
-      "chatHintEmpty": "Keskustelut tallennetaan tähän kansioon. Aiempia ei vielä ole, joten niitä hyödynnetään kun niitä kertyy."
+      "chatHintEmpty": "Keskustelut tallennetaan tähän kansioon. Aiempia ei vielä ole, joten niitä hyödynnetään kun niitä kertyy.",
+      "addFolder": "Uusi kansio"
     },
     "logSaveFailed": {
       "title": "Keskustelua ei tallennettu",
       "body": "Vastaus tuli normaalisti, mutta tätä keskustelua ei tallennettu. Se katoaa päivityksessä eikä kerry kansion tai professorin kontekstiin."
+    },
+    "saveToFolder": {
+      "label": "Siirrä tämä keskustelu kansioon"
     }
   },
   "records": {
@@ -273,7 +279,8 @@
       "docButton": "Tiivistä tämä tiedosto",
       "docHide": "Piilota tiivistelmä",
       "docLoading": "Tiivistetään…"
-    }
+    },
+    "docTypeLabel": "Aineiston tyyppi"
   },
   "monitoring": {
     "title": "Valvonta ja tiedostot (RAG-konteksti)",

@@ -109,7 +109,9 @@
       },
       "step1": "1. Professor auswählen",
       "step2": "2. Was soll erstellt werden?",
-      "chatHint": "Solange ausgewählt, greifen auch die Chat-Antworten unten auf die Unterlagen dieser Lehrkraft zu."
+      "chatHint": "Solange ausgewählt, greifen auch die Chat-Antworten unten auf die Unterlagen dieser Lehrkraft zu.",
+      "addProfessor": "Professor hinzufügen",
+      "addMaterials": "Material hinzufügen"
     },
     "scrollToBottom": "Nach unten",
     "chatFolder": {
@@ -117,11 +119,15 @@
       "selectLabel": "Themenordner wählen",
       "emptyHint": "Lege im Tab „Frühere Chats\" einen Ordner an, dann erscheint er hier. (z. B. Jobsuche, Verein, Eigenes Projekt)",
       "chatHint": "Gespräche werden in diesem Ordner gespeichert, und Antworten beziehen frühere Gespräche daraus ein.",
-      "chatHintEmpty": "Gespräche werden in diesem Ordner gespeichert. Es gibt noch keine früheren, sie werden einbezogen, sobald welche vorliegen."
+      "chatHintEmpty": "Gespräche werden in diesem Ordner gespeichert. Es gibt noch keine früheren, sie werden einbezogen, sobald welche vorliegen.",
+      "addFolder": "Neuer Ordner"
     },
     "logSaveFailed": {
       "title": "Dieses Gespräch wurde nicht gespeichert",
       "body": "Die Antwort kam korrekt an, aber dieses Gespräch wurde nicht aufgezeichnet. Es verschwindet beim Neuladen und fließt nicht in den Ordner- oder Professorenkontext ein."
+    },
+    "saveToFolder": {
+      "label": "Dieses Gespräch in einen Ordner legen"
     }
   },
   "records": {
@@ -273,7 +279,8 @@
       "docButton": "Diese Datei zusammenfassen",
       "docHide": "Zusammenfassung ausblenden",
       "docLoading": "Wird zusammengefasst…"
-    }
+    },
+    "docTypeLabel": "Materialtyp"
   },
   "monitoring": {
     "title": "Überwachung & Dateien (RAG-Kontext)",

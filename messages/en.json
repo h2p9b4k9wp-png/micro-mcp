@@ -109,7 +109,9 @@
       },
       "step1": "1. Pick a professor",
       "step2": "2. What should I make?",
-      "chatHint": "While selected, chat answers below will also draw on this professor's materials."
+      "chatHint": "While selected, chat answers below will also draw on this professor's materials.",
+      "addProfessor": "Add professor",
+      "addMaterials": "Add materials"
     },
     "scrollToBottom": "Scroll to bottom",
     "chatFolder": {
@@ -117,11 +119,15 @@
       "selectLabel": "Choose a topic folder",
       "emptyHint": "Create a folder in the \"Past chats\" tab and it will show up here. (e.g. Job hunting, Club, Side project)",
       "chatHint": "Chats are saved to this folder, and answers draw on past chats in it.",
-      "chatHintEmpty": "Chats will be saved to this folder. There are no past chats here yet, so answers start drawing on them once some build up."
+      "chatHintEmpty": "Chats will be saved to this folder. There are no past chats here yet, so answers start drawing on them once some build up.",
+      "addFolder": "New folder"
     },
     "logSaveFailed": {
       "title": "This chat was not saved",
       "body": "The answer came through fine, but this chat was not recorded. It will disappear on refresh and will not build up folder or professor context."
+    },
+    "saveToFolder": {
+      "label": "Put this chat in a folder"
     }
   },
   "records": {
@@ -273,7 +279,8 @@
       "docButton": "Summarise this file",
       "docHide": "Hide summary",
       "docLoading": "Summarising…"
-    }
+    },
+    "docTypeLabel": "Material type"
   },
   "monitoring": {
     "title": "Monitoring & Files (RAG Context)",

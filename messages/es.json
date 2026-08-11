@@ -109,7 +109,9 @@
       },
       "step1": "1. Elige un profesor",
       "step2": "2. ¿Qué quieres crear?",
-      "chatHint": "Mientras esté seleccionado, las respuestas del chat también usarán el material de este profesor."
+      "chatHint": "Mientras esté seleccionado, las respuestas del chat también usarán el material de este profesor.",
+      "addProfessor": "Añadir profesor",
+      "addMaterials": "Añadir materiales"
     },
     "scrollToBottom": "Ir al final",
     "chatFolder": {
@@ -117,11 +119,15 @@
       "selectLabel": "Elegir carpeta de tema",
       "emptyHint": "Crea una carpeta en la pestaña \"Chats anteriores\" y aparecerá aquí. (p. ej. Búsqueda de empleo, Club, Proyecto personal)",
       "chatHint": "Las conversaciones se guardan en esta carpeta y las respuestas tienen en cuenta las anteriores de la misma.",
-      "chatHintEmpty": "Las conversaciones se guardarán en esta carpeta. Todavía no hay ninguna anterior, así que se tendrán en cuenta cuando se acumulen."
+      "chatHintEmpty": "Las conversaciones se guardarán en esta carpeta. Todavía no hay ninguna anterior, así que se tendrán en cuenta cuando se acumulen.",
+      "addFolder": "Nueva carpeta"
     },
     "logSaveFailed": {
       "title": "Esta conversación no se guardó",
       "body": "La respuesta salió bien, pero esta conversación no quedó registrada. Desaparecerá al recargar y no se acumulará en el contexto de carpeta ni de profesor."
+    },
+    "saveToFolder": {
+      "label": "Guardar esta conversación en una carpeta"
     }
   },
   "records": {
@@ -273,7 +279,8 @@
       "docButton": "Resumir este archivo",
       "docHide": "Ocultar resumen",
       "docLoading": "Resumiendo…"
-    }
+    },
+    "docTypeLabel": "Tipo de material"
   },
   "monitoring": {
     "title": "Monitoreo y archivos (Contexto RAG)",

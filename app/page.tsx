@@ -392,6 +392,15 @@ export default function HomePage() {
   // 표시가 없었습니다(handleExecute의 저장 부분 주석 참고). alert이 아니라 화면 안 배너로
   // 두는 이유는, 답변 자체는 정상적으로 나온 상황이라 흐름을 끊을 일은 아니기 때문입니다.
   const [logSaveError, setLogSaveError] = useState<string | null>(null);
+  // 💡 [신규] "물어보기" 탭 안에서 교수님/폴더를 그 자리에서 만들기 위한 인라인 폼 토글.
+  // 교수님 탭으로 건너갔다 오지 않아도 되게 하려는 것이므로, 기본은 접힌 상태입니다 —
+  // 대부분의 방문에서는 만들 일이 없고, 펼쳐두면 정작 자주 쓰는 선택 칩이 밀립니다.
+  const [showInlineProfessorForm, setShowInlineProfessorForm] = useState(false);
+  const [showInlineFolderForm, setShowInlineFolderForm] = useState(false);
+  // 💡 [신규] 방금 저장된 대화의 id. 답변 직후 "이 대화를 폴더에 넣기"를 띄우는 데 씁니다.
+  // 대화 목록을 통째로 물어보기로 옮기지 않은 이유는 "지난 대화" 탭과 완전히 중복되기
+  // 때문이고, 실제로 폴더를 정하고 싶은 순간은 대화를 막 끝냈을 때라 그 지점만 노출합니다.
+  const [lastSavedLogId, setLastSavedLogId] = useState<string | null>(null);
   // 💡 [신규] "예상 시험 문제"를 다시 뽑을 때 같은 문제가 반복되지 않도록, 이미 낸 문항의
   // 한 줄 요약을 교수님별로 기억합니다. 교수님 id를 키로 쓰기 때문에 다른 교수님으로
   // 넘어가면 그 교수님의 목록이 따로 관리됩니다(요청대로 "교수님이 바뀌면 초기화").
@@ -2005,6 +2014,8 @@ export default function HomePage() {
     // 전송한 그 순간 답변 영역으로 한 번 이동합니다(진행 중인지 바로 보이도록).
     // 다음 프레임에 호출해야 위 setState로 패널이 그려진 뒤의 위치로 이동합니다.
     requestAnimationFrame(() => scrollToResponsePanel('chat'));
+    // 새 질문을 보내는 순간 직전 대화의 "폴더에 넣기"는 대상이 아니게 됩니다.
+    setLastSavedLogId(null);
 
     try {
       const res = await fetch('/api/chat', {
@@ -2119,6 +2130,8 @@ export default function HomePage() {
       } else {
         setLogSaveError(null);
         setLogs(prev => [data, ...prev]);
+        // 답변 직후 폴더에 넣을 수 있도록 방금 저장된 대화 id를 기억합니다.
+        setLastSavedLogId(data.id);
         fetchUsageSummary();
       }
     } catch (dbErr) {
@@ -2931,7 +2944,9 @@ export default function HomePage() {
                     여기로 옮기면서, 예상 질문/예상 시험 문제까지 같은 자리에서 뽑을 수 있게
                     했습니다. 교수님 탭은 자료를 쌓고 성향을 보는 곳, 여기는 쌓인 걸 꺼내
                     쓰는 곳으로 역할을 나눕니다. */}
-                {professors.length > 0 && (
+                {/* 💡 [수정] 예전에는 professors.length > 0일 때만 이 패널이 떴습니다. 이제 교수님을
+                    여기서 직접 만들 수 있으므로, 한 명도 없을 때야말로 이 패널이 필요합니다. */}
+                {(
                   <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-3 mb-3">
                     <div className="flex items-center gap-2 mb-2">
                       <GraduationCap className="w-4 h-4 text-[#F4679B] shrink-0" strokeWidth={2} />
@@ -2983,7 +2998,58 @@ export default function HomePage() {
                           </button>
                         );
                       })}
+
+                      {/* 💡 [신규] 교수님 탭으로 건너가지 않고 여기서 바로 만듭니다. 칩 목록 끝에
+                          두는 이유는, 고르기와 만들기가 같은 줄에 있어야 "없으면 만들면 된다"가
+                          한눈에 보이기 때문입니다. */}
+                      <button
+                        type="button"
+                        aria-expanded={showInlineProfessorForm}
+                        onClick={() => setShowInlineProfessorForm((v) => !v)}
+                        className="text-[11px] font-medium px-2.5 py-1 rounded-full border border-dashed border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-[#F4679B] hover:border-[#F4679B] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                      >
+                        + {t('workspace.professorGen.addProfessor')}
+                      </button>
                     </div>
+
+                    {showInlineProfessorForm && (
+                      <form
+                        className="mt-2 flex flex-wrap gap-1.5 items-center"
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          await handleCreateProfessorOnly();
+                          // 이름이 비어 있으면 handleCreateProfessorOnly가 alert만 띄우고
+                          // state를 그대로 두므로, 성공했을 때만(= 이름이 비워졌을 때) 접습니다.
+                          setShowInlineProfessorForm(false);
+                        }}
+                      >
+                        <input
+                          value={newProfessorName}
+                          onChange={(e) => setNewProfessorName(e.target.value)}
+                          placeholder={t('professors.uploadPanel.namePlaceholder')}
+                          className="flex-1 min-w-[110px] bg-[var(--bg-page)] border border-[var(--border-default)] rounded-lg px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] outline-none focus:border-[#F4679B]"
+                        />
+                        <input
+                          value={newProfessorSchool}
+                          onChange={(e) => setNewProfessorSchool(e.target.value)}
+                          placeholder={t('professors.uploadPanel.schoolPlaceholder')}
+                          className="flex-1 min-w-[90px] bg-[var(--bg-page)] border border-[var(--border-default)] rounded-lg px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] outline-none focus:border-[#F4679B]"
+                        />
+                        <input
+                          value={newProfessorDepartment}
+                          onChange={(e) => setNewProfessorDepartment(e.target.value)}
+                          placeholder={t('professors.uploadPanel.departmentPlaceholder')}
+                          className="flex-1 min-w-[90px] bg-[var(--bg-page)] border border-[var(--border-default)] rounded-lg px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] outline-none focus:border-[#F4679B]"
+                        />
+                        <button
+                          type="submit"
+                          disabled={!newProfessorName.trim() || isCreatingProfessor}
+                          className="bg-[#F4679B] hover:bg-[#D1477F] disabled:opacity-40 disabled:cursor-not-allowed text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
+                        >
+                          {t('professors.uploadPanel.createOnly')}
+                        </button>
+                      </form>
+                    )}
 
                     {/* 💡 [신규] 이 선택이 아래 채팅에도 영향을 준다는 안내 — 선택 상태가
                         /api/chat 요청에 함께 실려가면서 생긴 동작이라, 알려주지 않으면
@@ -2996,6 +3062,42 @@ export default function HomePage() {
 
                     {/* 2단계 — 교수님을 고른 뒤에만 나타납니다. 고르기 전부터 비활성 버튼
                         세 개가 떠 있으면 뭘 먼저 해야 하는지가 흐려집니다. */}
+                    {/* 💡 [신규] 자료 올리기 — 교수님을 고른 뒤 바로 여기서 올립니다. 예전에는
+                        자료가 0개면 "교수님 탭에서 올려주세요"라는 안내만 나오는 막다른 길이었고,
+                        자료가 있어도 추가하려면 탭을 옮겨야 했습니다. 자료 종류(강의자료/시험지/
+                        과제/논문)를 함께 고르는 이유는 분석이 이 값으로 근거를 가리기 때문입니다
+                        (특히 연구 관심사는 '논문'으로 표시된 자료만 봅니다). */}
+                    {professorGenProfessorId && (
+                      <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                        <select
+                          value={uploadDocType}
+                          onChange={(e) => setUploadDocType(e.target.value)}
+                          aria-label={t('professors.docTypeLabel')}
+                          className="bg-[var(--bg-page)] border border-[var(--border-default)] rounded-lg px-2 py-1.5 text-[11px] text-[var(--text-primary)] outline-none focus:border-[#F4679B] cursor-pointer"
+                        >
+                          {DOC_TYPE_KEYS.map((k) => (
+                            <option key={k} value={k}>{t(`professors.docType.${k}`)}</option>
+                          ))}
+                        </select>
+                        <label className="text-[11px] font-medium px-2.5 py-1.5 rounded-lg border border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-[#F4679B] hover:border-[#F4679B] transition-colors cursor-pointer">
+                          {isUploadingProfessorDoc ? <LoadingText /> : t('workspace.professorGen.addMaterials')}
+                          <input
+                            type="file"
+                            multiple
+                            className="hidden"
+                            disabled={isUploadingProfessorDoc}
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files.length > 0) {
+                                handleUploadProfessorFiles(e.target.files, professorGenProfessorId, uploadDocType);
+                              }
+                              e.target.value = '';
+                            }}
+                          />
+                        </label>
+                        <span className="text-[10px] text-[var(--text-faint)]">{uploadLimitHint}</span>
+                      </div>
+                    )}
+
                     {professorGenProfessorId && (
                       professorGenDocCount === 0 ? (
                         <p className="text-[11px] text-[var(--text-muted)] mt-2.5">
@@ -3058,9 +3160,9 @@ export default function HomePage() {
 
                 {/* 💡 [신규] 주제 폴더 고르기 — 위 교수님 선택과 같은 역할을 폴더 축으로 합니다.
                     고른 폴더는 채팅 저장 시 logs.folder_id로 남고, 다음 요청의 "최근 대화 기록"이
-                    그 폴더 대화로 좁혀집니다. 교수님과 동시에 켜지지 않습니다.
-                    폴더 만들기는 "지난 대화" 탭에 이미 있어서 여기서는 고르기만 합니다 —
-                    교수님 등록이 "교수님" 탭에만 있는 것과 같은 구성입니다. */}
+                    그 폴더 대화로 좁혀집니다. 교수님과 함께 켤 수 있습니다(둘 다 켜면 교집합).
+                    💡 [수정] 폴더 만들기도 여기서 합니다 — 예전에는 "지난 대화" 탭에만 있어서,
+                    폴더가 하나도 없는 사용자는 이 패널에서 안내 문구만 보고 탭을 옮겨야 했습니다. */}
                 <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-3 mb-3">
                   <div className="flex items-center gap-2 mb-2">
                     <FolderOpen className="w-4 h-4 text-[#F4679B] shrink-0" strokeWidth={2} />
@@ -3069,11 +3171,12 @@ export default function HomePage() {
                     </h4>
                   </div>
 
-                  {conversationFolders.length === 0 ? (
-                    <p className="text-[11px] text-[var(--text-muted)]">
+                  {conversationFolders.length === 0 && (
+                    <p className="text-[11px] text-[var(--text-muted)] mb-1.5">
                       {t('workspace.chatFolder.emptyHint')}
                     </p>
-                  ) : (
+                  )}
+                  {(
                     <>
                       <div className="flex flex-wrap gap-1.5" role="group" aria-label={t('workspace.chatFolder.selectLabel')}>
                         {conversationFolders.map((folder) => {
@@ -3100,7 +3203,42 @@ export default function HomePage() {
                             </button>
                           );
                         })}
+
+                        {/* 교수님 칩과 같은 방식 — 고르기와 만들기를 같은 줄에 둡니다. */}
+                        <button
+                          type="button"
+                          aria-expanded={showInlineFolderForm}
+                          onClick={() => setShowInlineFolderForm((v) => !v)}
+                          className="text-[11px] font-medium px-2.5 py-1 rounded-full border border-dashed border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-[#F4679B] hover:border-[#F4679B] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                        >
+                          + {t('workspace.chatFolder.addFolder')}
+                        </button>
                       </div>
+
+                      {showInlineFolderForm && (
+                        <form
+                          className="mt-2 flex gap-1.5"
+                          onSubmit={async (e) => {
+                            e.preventDefault();
+                            await handleCreateFolder();
+                            setShowInlineFolderForm(false);
+                          }}
+                        >
+                          <input
+                            value={newFolderName}
+                            onChange={(e) => setNewFolderName(e.target.value)}
+                            placeholder={t('logs.newFolderPlaceholder')}
+                            className="flex-1 bg-[var(--bg-page)] border border-[var(--border-default)] rounded-lg px-2.5 py-1.5 text-[11px] text-[var(--text-primary)] outline-none focus:border-[#F4679B]"
+                          />
+                          <button
+                            type="submit"
+                            disabled={!newFolderName.trim() || isCreatingFolder}
+                            className="bg-[#F4679B] hover:bg-[#D1477F] disabled:opacity-40 disabled:cursor-not-allowed text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
+                          >
+                            {t('common.create')}
+                          </button>
+                        </form>
+                      )}
                       {chatFolderId && (
                         <p className="text-[10px] text-[var(--text-faint)] mt-1.5 leading-relaxed">
                           {/* 💡 [수정] 폴더에 지난 대화가 아직 없으면 "지난 대화를 참고해요"는
@@ -3259,6 +3397,31 @@ export default function HomePage() {
                   )}
                   <div ref={terminalEndRef} />
                 </div>
+
+                {/* 💡 [신규] 방금 나눈 대화를 그 자리에서 폴더로 옮깁니다.
+                    대화 목록 전체를 여기로 옮기지 않은 이유는 "지난 대화" 탭과 완전히 중복되기
+                    때문입니다. 실제로 분류를 정하고 싶은 순간은 대화를 막 끝냈을 때이고,
+                    여러 건을 한꺼번에 정리하는 건 그 탭에 그대로 남겨둡니다.
+                    폴더를 미리 골라두고 대화했다면 이미 그 폴더로 저장돼 있어, 여기서는
+                    "바꾸기"로 동작합니다(선택값이 현재 폴더로 맞춰져 있습니다). */}
+                {lastSavedLogId && conversationFolders.length > 0 && (
+                  <div className="border-t border-[var(--surface-chip)] px-4 py-2.5 flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] text-[var(--text-tertiary)]">
+                      {t('workspace.saveToFolder.label')}
+                    </span>
+                    <select
+                      value={logs.find((l) => l.id === lastSavedLogId)?.folder_id || ''}
+                      onChange={(e) => handleMoveLogToFolder(lastSavedLogId, e.target.value || null)}
+                      aria-label={t('workspace.saveToFolder.label')}
+                      className="bg-[var(--bg-page)] border border-[var(--border-default)] rounded-lg px-2 py-1 text-[11px] text-[var(--text-primary)] outline-none focus:border-[#F4679B] cursor-pointer"
+                    >
+                      <option value="">{t('logs.unfiledOption')}</option>
+                      {conversationFolders.map((f) => (
+                        <option key={f.id} value={f.id}>{f.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
 
               {lensStage !== 'idle' && (
