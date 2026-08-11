@@ -8,9 +8,12 @@
     "workspace": "AIに質問",
     "records": "マイ履歴",
     "deadlines": "締め切り",
-    "professors": "教授",
     "monitoring": "マイファイル",
-    "logs": "過去の会話"
+    "logs": "過去の会話",
+    "professorsMoved": {
+      "title": "「教授」はどこへ?",
+      "body": "「質問する」の中に移動しました。教授の追加も資料のアップロードもそこでできます。"
+    }
   },
   "common": {
     "send": "質問する",
@@ -111,13 +114,14 @@
       "step2": "2. 何を作りますか?",
       "chatHint": "選択中は、下のチャットの回答でもこの先生の資料を参照します。",
       "addProfessor": "教授を追加",
-      "addMaterials": "資料を追加"
+      "addMaterials": "資料を追加",
+      "manage": "資料・分析の管理"
     },
     "scrollToBottom": "最下部へ",
     "chatFolder": {
       "title": "トピックフォルダ",
       "selectLabel": "トピックフォルダを選択",
-      "emptyHint": "「過去の会話」タブでフォルダを作るとここに表示されます。（例：就活、サークル、個人プロジェクト）",
+      "emptyHint": "まだフォルダがありません。「+ フォルダ作成」でテーマを作ると会話がそこに整理されます。(例: 就活、サークル、個人プロジェクト)",
       "chatHint": "この会話はこのフォルダに保存され、回答時に同じフォルダの過去の会話を参考にします。",
       "chatHintEmpty": "この会話はこのフォルダに保存されます。まだ過去の会話がないため、たまってから参考にします。",
       "addFolder": "フォルダ作成"
@@ -280,7 +284,8 @@
       "docHide": "要約を閉じる",
       "docLoading": "要約中…"
     },
-    "docTypeLabel": "資料の種類"
+    "docTypeLabel": "資料の種類",
+    "backToChat": "← 質問する に戻る"
   },
   "monitoring": {
     "title": "モニタリング＆ファイル（RAGコンテキスト）",

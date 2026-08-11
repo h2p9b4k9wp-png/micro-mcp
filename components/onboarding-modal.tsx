@@ -16,11 +16,11 @@ import { GraduationCap, Upload, Sparkles } from 'lucide-react';
 // 표시 여부·기록은 이 컴포넌트가 관여하지 않습니다(app/page.tsx가 판단) — 이 파일은
 // 화면만 그립니다.
 
-export type OnboardingStepTarget = 'professors' | 'workspace';
+export type OnboardingStepTarget = 'workspace';
 
 const STEPS: { key: '1' | '2' | '3'; target: OnboardingStepTarget; icon: typeof GraduationCap }[] = [
-  { key: '1', target: 'professors', icon: GraduationCap },
-  { key: '2', target: 'professors', icon: Upload },
+  { key: '1', target: 'workspace', icon: GraduationCap },
+  { key: '2', target: 'workspace', icon: Upload },
   { key: '3', target: 'workspace', icon: Sparkles },
 ];
 

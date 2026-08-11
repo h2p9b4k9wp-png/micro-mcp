@@ -8,9 +8,12 @@
     "workspace": "Perguntar à IA",
     "records": "Meus registros",
     "deadlines": "Prazos",
-    "professors": "Professores",
     "monitoring": "Meus arquivos",
-    "logs": "Conversas anteriores"
+    "logs": "Conversas anteriores",
+    "professorsMoved": {
+      "title": "Onde foi parar Professores?",
+      "body": "Foi para dentro de Perguntar à IA. Adicionar professores e enviar materiais é tudo por lá."
+    }
   },
   "common": {
     "send": "Perguntar",
@@ -111,13 +114,14 @@
       "step2": "2. O que você quer criar?",
       "chatHint": "Enquanto estiver selecionado, as respostas do chat também usarão o material deste professor.",
       "addProfessor": "Adicionar professor",
-      "addMaterials": "Adicionar materiais"
+      "addMaterials": "Adicionar materiais",
+      "manage": "Gerenciar materiais"
     },
     "scrollToBottom": "Ir para o fim",
     "chatFolder": {
       "title": "Pasta de tema",
       "selectLabel": "Escolher pasta de tema",
-      "emptyHint": "Crie uma pasta na aba \"Conversas anteriores\" e ela aparecerá aqui. (ex.: Busca de emprego, Clube, Projeto pessoal)",
+      "emptyHint": "Ainda sem pastas. Use \"+ Nova pasta\" para criar um tema e as conversas serão arquivadas nela. (ex.: Busca de emprego, Clube, Projeto pessoal)",
       "chatHint": "As conversas são salvas nesta pasta, e as respostas levam em conta as anteriores dela.",
       "chatHintEmpty": "As conversas serão salvas nesta pasta. Ainda não há anteriores, então serão consideradas quando se acumularem.",
       "addFolder": "Nova pasta"
@@ -280,7 +284,8 @@
       "docHide": "Ocultar resumo",
       "docLoading": "A resumir…"
     },
-    "docTypeLabel": "Tipo de material"
+    "docTypeLabel": "Tipo de material",
+    "backToChat": "← Voltar para Perguntar à IA"
   },
   "monitoring": {
     "title": "Monitoramento e arquivos (contexto RAG)",

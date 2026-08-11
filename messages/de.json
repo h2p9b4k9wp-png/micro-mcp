@@ -8,9 +8,12 @@
     "workspace": "KI fragen",
     "records": "Meine Aufzeichnungen",
     "deadlines": "Fristen",
-    "professors": "Professoren",
     "monitoring": "Meine Dateien",
-    "logs": "Frühere Unterhaltungen"
+    "logs": "Frühere Unterhaltungen",
+    "professorsMoved": {
+      "title": "Wo ist „Professoren\"?",
+      "body": "Es ist jetzt in KI fragen. Professoren hinzufügen und Material hochladen passiert dort."
+    }
   },
   "common": {
     "send": "Fragen",
@@ -111,13 +114,14 @@
       "step2": "2. Was soll erstellt werden?",
       "chatHint": "Solange ausgewählt, greifen auch die Chat-Antworten unten auf die Unterlagen dieser Lehrkraft zu.",
       "addProfessor": "Professor hinzufügen",
-      "addMaterials": "Material hinzufügen"
+      "addMaterials": "Material hinzufügen",
+      "manage": "Material verwalten"
     },
     "scrollToBottom": "Nach unten",
     "chatFolder": {
       "title": "Themenordner",
       "selectLabel": "Themenordner wählen",
-      "emptyHint": "Lege im Tab „Frühere Chats\" einen Ordner an, dann erscheint er hier. (z. B. Jobsuche, Verein, Eigenes Projekt)",
+      "emptyHint": "Noch keine Ordner. Mit „+ Neuer Ordner\" ein Thema anlegen — Gespräche werden dort einsortiert. (z. B. Jobsuche, Verein, Nebenprojekt)",
       "chatHint": "Gespräche werden in diesem Ordner gespeichert, und Antworten beziehen frühere Gespräche daraus ein.",
       "chatHintEmpty": "Gespräche werden in diesem Ordner gespeichert. Es gibt noch keine früheren, sie werden einbezogen, sobald welche vorliegen.",
       "addFolder": "Neuer Ordner"
@@ -280,7 +284,8 @@
       "docHide": "Zusammenfassung ausblenden",
       "docLoading": "Wird zusammengefasst…"
     },
-    "docTypeLabel": "Materialtyp"
+    "docTypeLabel": "Materialtyp",
+    "backToChat": "← Zurück zu KI fragen"
   },
   "monitoring": {
     "title": "Überwachung & Dateien (RAG-Kontext)",

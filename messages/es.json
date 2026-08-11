@@ -8,9 +8,12 @@
     "workspace": "Preguntar a la IA",
     "records": "Mis registros",
     "deadlines": "Plazos",
-    "professors": "Profesores",
     "monitoring": "Mis archivos",
-    "logs": "Conversaciones anteriores"
+    "logs": "Conversaciones anteriores",
+    "professorsMoved": {
+      "title": "¿Dónde está Profesores?",
+      "body": "Se movió dentro de Preguntar a la IA. Añadir profesores y subir materiales se hace allí."
+    }
   },
   "common": {
     "send": "Preguntar",
@@ -111,13 +114,14 @@
       "step2": "2. ¿Qué quieres crear?",
       "chatHint": "Mientras esté seleccionado, las respuestas del chat también usarán el material de este profesor.",
       "addProfessor": "Añadir profesor",
-      "addMaterials": "Añadir materiales"
+      "addMaterials": "Añadir materiales",
+      "manage": "Gestionar materiales"
     },
     "scrollToBottom": "Ir al final",
     "chatFolder": {
       "title": "Carpeta de tema",
       "selectLabel": "Elegir carpeta de tema",
-      "emptyHint": "Crea una carpeta en la pestaña \"Chats anteriores\" y aparecerá aquí. (p. ej. Búsqueda de empleo, Club, Proyecto personal)",
+      "emptyHint": "Aún no hay carpetas. Usa \"+ Nueva carpeta\" para crear un tema y las conversaciones se archivarán ahí. (p. ej. Búsqueda de empleo, Club, Proyecto personal)",
       "chatHint": "Las conversaciones se guardan en esta carpeta y las respuestas tienen en cuenta las anteriores de la misma.",
       "chatHintEmpty": "Las conversaciones se guardarán en esta carpeta. Todavía no hay ninguna anterior, así que se tendrán en cuenta cuando se acumulen.",
       "addFolder": "Nueva carpeta"
@@ -280,7 +284,8 @@
       "docHide": "Ocultar resumen",
       "docLoading": "Resumiendo…"
     },
-    "docTypeLabel": "Tipo de material"
+    "docTypeLabel": "Tipo de material",
+    "backToChat": "← Volver a Preguntar a la IA"
   },
   "monitoring": {
     "title": "Monitoreo y archivos (Contexto RAG)",

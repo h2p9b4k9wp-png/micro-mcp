@@ -8,9 +8,12 @@
     "workspace": "Kysy AI:lta",
     "records": "Omat tiedot",
     "deadlines": "Määräajat",
-    "professors": "Luennoitsijat ja professorit",
     "monitoring": "Omat tiedostot",
-    "logs": "Aiemmat keskustelut"
+    "logs": "Aiemmat keskustelut",
+    "professorsMoved": {
+      "title": "Minne Professorit katosivat?",
+      "body": "Se siirtyi Kysy tekoälyltä -osioon. Professorien lisääminen ja aineistojen lataus tapahtuvat siellä."
+    }
   },
   "common": {
     "send": "Kysy",
@@ -111,13 +114,14 @@
       "step2": "2. Mitä haluat luoda?",
       "chatHint": "Valittuna ollessaan myös alla olevan chatin vastaukset hyödyntävät tämän luennoitsijan materiaaleja.",
       "addProfessor": "Lisää professori",
-      "addMaterials": "Lisää aineistoa"
+      "addMaterials": "Lisää aineistoa",
+      "manage": "Hallitse aineistoja"
     },
     "scrollToBottom": "Siirry alas",
     "chatFolder": {
       "title": "Aihekansio",
       "selectLabel": "Valitse aihekansio",
-      "emptyHint": "Luo kansio \"Aiemmat keskustelut\" -välilehdellä, niin se näkyy täällä. (esim. Työnhaku, Ainejärjestö, Oma projekti)",
+      "emptyHint": "Ei vielä kansioita. Luo aihe painikkeella \"+ Uusi kansio\", niin keskustelut järjestyvät sinne. (esim. Työnhaku, Kerho, Sivuprojekti)",
       "chatHint": "Keskustelut tallennetaan tähän kansioon, ja vastauksissa hyödynnetään sen aiempia keskusteluja.",
       "chatHintEmpty": "Keskustelut tallennetaan tähän kansioon. Aiempia ei vielä ole, joten niitä hyödynnetään kun niitä kertyy.",
       "addFolder": "Uusi kansio"
@@ -280,7 +284,8 @@
       "docHide": "Piilota tiivistelmä",
       "docLoading": "Tiivistetään…"
     },
-    "docTypeLabel": "Aineiston tyyppi"
+    "docTypeLabel": "Aineiston tyyppi",
+    "backToChat": "← Takaisin Kysy tekoälyltä"
   },
   "monitoring": {
     "title": "Valvonta ja tiedostot (RAG-konteksti)",

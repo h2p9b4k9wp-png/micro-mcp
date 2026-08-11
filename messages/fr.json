@@ -8,9 +8,12 @@
     "workspace": "Demander à l'IA",
     "records": "Mes historiques",
     "deadlines": "Échéances",
-    "professors": "Professeurs",
     "monitoring": "Mes fichiers",
-    "logs": "Conversations précédentes"
+    "logs": "Conversations précédentes",
+    "professorsMoved": {
+      "title": "Où est passé « Professeurs » ?",
+      "body": "Déplacé dans Poser une question. Ajouter un professeur et envoyer des documents s’y font désormais."
+    }
   },
   "common": {
     "send": "Demander",
@@ -111,13 +114,14 @@
       "step2": "2. Que voulez-vous créer ?",
       "chatHint": "Tant qu'il est sélectionné, les réponses du chat s'appuieront aussi sur les documents de cet enseignant.",
       "addProfessor": "Ajouter un professeur",
-      "addMaterials": "Ajouter des documents"
+      "addMaterials": "Ajouter des documents",
+      "manage": "Gérer les documents"
     },
     "scrollToBottom": "Aller en bas",
     "chatFolder": {
       "title": "Dossier thématique",
       "selectLabel": "Choisir un dossier thématique",
-      "emptyHint": "Créez un dossier dans l'onglet « Conversations passées » et il apparaîtra ici. (ex. Recherche d'emploi, Association, Projet perso)",
+      "emptyHint": "Aucun dossier pour l’instant. Utilisez « + Nouveau dossier » pour créer un thème ; les conversations y seront classées. (ex. Recherche d’emploi, Association, Projet perso)",
       "chatHint": "Les conversations sont enregistrées dans ce dossier, et les réponses s’appuient sur les précédentes du même dossier.",
       "chatHintEmpty": "Les conversations seront enregistrées dans ce dossier. Il n’y en a pas encore, elles seront prises en compte une fois accumulées.",
       "addFolder": "Nouveau dossier"
@@ -280,7 +284,8 @@
       "docHide": "Masquer le résumé",
       "docLoading": "Résumé en cours…"
     },
-    "docTypeLabel": "Type de document"
+    "docTypeLabel": "Type de document",
+    "backToChat": "← Retour à Poser une question"
   },
   "monitoring": {
     "title": "Surveillance et fichiers (contexte RAG)",

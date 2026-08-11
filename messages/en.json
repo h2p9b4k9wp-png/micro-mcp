@@ -8,9 +8,12 @@
     "workspace": "Ask AI",
     "records": "My Records",
     "deadlines": "Deadlines",
-    "professors": "Lecturers & Professors",
     "monitoring": "My Files",
-    "logs": "Past Conversations"
+    "logs": "Past Conversations",
+    "professorsMoved": {
+      "title": "Where did Professors go?",
+      "body": "It moved into Ask AI. Adding professors and uploading materials all happen there now."
+    }
   },
   "common": {
     "send": "Ask",
@@ -111,13 +114,14 @@
       "step2": "2. What should I make?",
       "chatHint": "While selected, chat answers below will also draw on this professor's materials.",
       "addProfessor": "Add professor",
-      "addMaterials": "Add materials"
+      "addMaterials": "Add materials",
+      "manage": "Manage materials"
     },
     "scrollToBottom": "Scroll to bottom",
     "chatFolder": {
       "title": "Topic folder",
       "selectLabel": "Choose a topic folder",
-      "emptyHint": "Create a folder in the \"Past chats\" tab and it will show up here. (e.g. Job hunting, Club, Side project)",
+      "emptyHint": "No folders yet. Use \"+ New folder\" to create a topic and chats will be filed under it. (e.g. Job hunting, Club, Side project)",
       "chatHint": "Chats are saved to this folder, and answers draw on past chats in it.",
       "chatHintEmpty": "Chats will be saved to this folder. There are no past chats here yet, so answers start drawing on them once some build up.",
       "addFolder": "New folder"
@@ -280,7 +284,8 @@
       "docHide": "Hide summary",
       "docLoading": "Summarising…"
     },
-    "docTypeLabel": "Material type"
+    "docTypeLabel": "Material type",
+    "backToChat": "← Back to Ask AI"
   },
   "monitoring": {
     "title": "Monitoring & Files (RAG Context)",

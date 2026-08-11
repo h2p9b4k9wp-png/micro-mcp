@@ -8,9 +8,12 @@
     "workspace": "Chiedi all'IA",
     "records": "I miei archivi",
     "deadlines": "Scadenze",
-    "professors": "Professori",
     "monitoring": "I miei file",
-    "logs": "Conversazioni precedenti"
+    "logs": "Conversazioni precedenti",
+    "professorsMoved": {
+      "title": "Dov’è finito «Professori»?",
+      "body": "È dentro Chiedi all’IA. Aggiungere professori e caricare materiali si fa lì."
+    }
   },
   "common": {
     "send": "Chiedi",
@@ -111,13 +114,14 @@
       "step2": "2. Cosa vuoi creare?",
       "chatHint": "Finché è selezionato, anche le risposte in chat useranno il materiale di questo docente.",
       "addProfessor": "Aggiungi professore",
-      "addMaterials": "Aggiungi materiali"
+      "addMaterials": "Aggiungi materiali",
+      "manage": "Gestisci materiali"
     },
     "scrollToBottom": "Vai in fondo",
     "chatFolder": {
       "title": "Cartella tematica",
       "selectLabel": "Scegli una cartella tematica",
-      "emptyHint": "Crea una cartella nella scheda «Chat precedenti» e comparirà qui. (es. Ricerca lavoro, Associazione, Progetto personale)",
+      "emptyHint": "Nessuna cartella ancora. Usa «+ Nuova cartella» per creare un tema e le conversazioni verranno archiviate lì. (es. Ricerca lavoro, Club, Progetto personale)",
       "chatHint": "Le conversazioni vengono salvate in questa cartella e le risposte tengono conto di quelle precedenti.",
       "chatHintEmpty": "Le conversazioni verranno salvate in questa cartella. Non ce ne sono ancora, saranno considerate quando se ne accumuleranno.",
       "addFolder": "Nuova cartella"
@@ -280,7 +284,8 @@
       "docHide": "Nascondi riassunto",
       "docLoading": "Riassunto in corso…"
     },
-    "docTypeLabel": "Tipo di materiale"
+    "docTypeLabel": "Tipo di materiale",
+    "backToChat": "← Torna a Chiedi all’IA"
   },
   "monitoring": {
     "title": "Monitoraggio e file (contesto RAG)",

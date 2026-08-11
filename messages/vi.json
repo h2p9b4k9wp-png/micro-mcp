@@ -8,9 +8,12 @@
     "workspace": "Hỏi AI",
     "records": "Nhật ký của tôi",
     "deadlines": "Hạn chót",
-    "professors": "Giáo sư",
     "monitoring": "Tệp của tôi",
-    "logs": "Cuộc trò chuyện trước"
+    "logs": "Cuộc trò chuyện trước",
+    "professorsMoved": {
+      "title": "Mục Giáo sư đi đâu rồi?",
+      "body": "Đã chuyển vào Hỏi AI. Thêm giáo sư và tải tài liệu đều làm ở đó."
+    }
   },
   "common": {
     "send": "Hỏi",
@@ -111,13 +114,14 @@
       "step2": "2. Bạn muốn tạo gì?",
       "chatHint": "Khi đang chọn, phần trả lời trong khung chat bên dưới cũng sẽ dùng tài liệu của giảng viên này.",
       "addProfessor": "Thêm giáo sư",
-      "addMaterials": "Thêm tài liệu"
+      "addMaterials": "Thêm tài liệu",
+      "manage": "Quản lý tài liệu"
     },
     "scrollToBottom": "Xuống cuối",
     "chatFolder": {
       "title": "Thư mục chủ đề",
       "selectLabel": "Chọn thư mục chủ đề",
-      "emptyHint": "Tạo thư mục ở tab \"Trò chuyện trước\" thì sẽ hiện ở đây. (ví dụ: Tìm việc, CLB, Dự án cá nhân)",
+      "emptyHint": "Chưa có thư mục nào. Dùng \"+ Thư mục mới\" để tạo chủ đề và các cuộc trò chuyện sẽ được xếp vào đó. (VD: Tìm việc, CLB, Dự án cá nhân)",
       "chatHint": "Cuộc trò chuyện được lưu vào thư mục này, và câu trả lời sẽ tham khảo các cuộc trò chuyện trước trong đó.",
       "chatHintEmpty": "Cuộc trò chuyện sẽ được lưu vào thư mục này. Chưa có cuộc trò chuyện nào trước đó, nên sẽ tham khảo khi đã tích lũy.",
       "addFolder": "Thư mục mới"
@@ -280,7 +284,8 @@
       "docHide": "Ẩn tóm tắt",
       "docLoading": "Đang tóm tắt…"
     },
-    "docTypeLabel": "Loại tài liệu"
+    "docTypeLabel": "Loại tài liệu",
+    "backToChat": "← Quay lại Hỏi AI"
   },
   "monitoring": {
     "title": "Giám sát & Tệp (Ngữ cảnh RAG)",

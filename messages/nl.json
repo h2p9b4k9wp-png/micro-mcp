@@ -8,9 +8,12 @@
     "workspace": "AI vragen",
     "records": "Mijn overzicht",
     "deadlines": "Deadlines",
-    "professors": "Docenten",
     "monitoring": "Mijn bestanden",
-    "logs": "Eerdere gesprekken"
+    "logs": "Eerdere gesprekken",
+    "professorsMoved": {
+      "title": "Waar is Docenten gebleven?",
+      "body": "Het zit nu in AI vragen. Docenten toevoegen en materiaal uploaden doe je daar."
+    }
   },
   "common": {
     "send": "Vragen",
@@ -111,13 +114,14 @@
       "step2": "2. Wat wil je maken?",
       "chatHint": "Zolang deze is geselecteerd, gebruiken ook de chatantwoorden hieronder het materiaal van deze docent.",
       "addProfessor": "Docent toevoegen",
-      "addMaterials": "Materiaal toevoegen"
+      "addMaterials": "Materiaal toevoegen",
+      "manage": "Materiaal beheren"
     },
     "scrollToBottom": "Naar beneden",
     "chatFolder": {
       "title": "Onderwerpmap",
       "selectLabel": "Onderwerpmap kiezen",
-      "emptyHint": "Maak een map aan op het tabblad \"Eerdere gesprekken\" en die verschijnt hier. (bijv. Sollicitaties, Vereniging, Eigen project)",
+      "emptyHint": "Nog geen mappen. Gebruik \"+ Nieuwe map\" om een onderwerp te maken; gesprekken worden daarin opgeborgen. (bijv. Solliciteren, Vereniging, Zijproject)",
       "chatHint": "Gesprekken worden in deze map opgeslagen en antwoorden gebruiken eerdere gesprekken daaruit.",
       "chatHintEmpty": "Gesprekken worden in deze map opgeslagen. Er zijn nog geen eerdere gesprekken, die worden meegenomen zodra ze er zijn.",
       "addFolder": "Nieuwe map"
@@ -280,7 +284,8 @@
       "docHide": "Samenvatting verbergen",
       "docLoading": "Samenvatten…"
     },
-    "docTypeLabel": "Soort materiaal"
+    "docTypeLabel": "Soort materiaal",
+    "backToChat": "← Terug naar AI vragen"
   },
   "monitoring": {
     "title": "Monitoring & bestanden (RAG-context)",

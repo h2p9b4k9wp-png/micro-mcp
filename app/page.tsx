@@ -340,7 +340,6 @@ export default function HomePage() {
   const [selectedProfessorId, setSelectedProfessorId] = useState<string | null>(null);
 
   const [isUploadingProfessorDoc, setIsUploadingProfessorDoc] = useState(false);
-  const [uploadProfessorChoice, setUploadProfessorChoice] = useState('');
   const [newProfessorName, setNewProfessorName] = useState('');
   const [isCreatingProfessor, setIsCreatingProfessor] = useState(false);
   const [newProfessorSchool, setNewProfessorSchool] = useState('');
@@ -401,6 +400,10 @@ export default function HomePage() {
   // 대화 목록을 통째로 물어보기로 옮기지 않은 이유는 "지난 대화" 탭과 완전히 중복되기
   // 때문이고, 실제로 폴더를 정하고 싶은 순간은 대화를 막 끝냈을 때라 그 지점만 노출합니다.
   const [lastSavedLogId, setLastSavedLogId] = useState<string | null>(null);
+  // 💡 [신규] "교수님 메뉴가 물어보기로 옮겨졌다" 안내를 이미 봤는지. 온보딩과 같은 방식으로
+  // 계정별 localStorage에 남깁니다 — 서버에 둘 만한 정보가 아니고, 안 봤을 때 한 번 더 보는
+  // 쪽이 못 보는 것보다 낫기 때문에 기기별로 갈리는 것도 문제가 되지 않습니다.
+  const [professorsMovedNoticeDismissed, setProfessorsMovedNoticeDismissed] = useState(false);
   // 💡 [신규] "예상 시험 문제"를 다시 뽑을 때 같은 문제가 반복되지 않도록, 이미 낸 문항의
   // 한 줄 요약을 교수님별로 기억합니다. 교수님 id를 키로 쓰기 때문에 다른 교수님으로
   // 넘어가면 그 교수님의 목록이 따로 관리됩니다(요청대로 "교수님이 바뀌면 초기화").
@@ -550,6 +553,22 @@ export default function HomePage() {
     setOnboardingDismissed(true);
     if (user) saveUserScopedItem(user.id, 'mcp_onboarding_seen', true);
   };
+
+  // 💡 [신규] "교수님 메뉴가 물어보기로 옮겨졌다" 안내를 띄울지. 온보딩과 같은 판정 방식입니다.
+  //
+  // 이미 쓰던 사람에게만 보여줍니다(교수님이나 대화가 하나라도 있는 경우) — 방금 가입한
+  // 사람은 교수님 탭을 본 적이 없어서 "옮겼다"는 말이 오히려 없던 혼란을 만듭니다. 그쪽은
+  // 온보딩 모달이 따로 안내합니다.
+  const hasSeenProfessorsMoved = useMemo(
+    () => (user ? loadUserScopedItem<boolean>(user.id, 'mcp_professors_moved_seen') === true : true),
+    [user]
+  );
+  const showProfessorsMovedNotice =
+    !professorsMovedNoticeDismissed &&
+    !hasSeenProfessorsMoved &&
+    isProfessorsLoaded &&
+    isLogsLoaded &&
+    (professors.length > 0 || logs.length > 0);
 
   // 💡 [신규] 대화 폴더 — "전체"/"미분류"/각 폴더 이름으로 지난 대화를 걸러 봅니다.
   const [conversationFolders, setConversationFolders] = useState<ConversationFolder[]>([]);
@@ -1906,39 +1925,14 @@ export default function HomePage() {
       const createdId = await handleCreateProfessor(newProfessorName, newProfessorSchool, newProfessorDepartment);
       if (!createdId) return;
       // 만든 교수님을 바로 선택 상태로 둬서, 이어서 자료를 올리려면 그대로 파일만 고르면 됩니다.
-      setUploadProfessorChoice(createdId);
+      // (예전에는 목록 화면 드롭다운을 맞췄지만 그 화면이 없어져, 이제 채팅의 교수님 칩을 켭니다.)
+      setProfessorGenProfessorId(createdId);
       setNewProfessorName('');
       setNewProfessorSchool('');
       setNewProfessorDepartment('');
     } finally {
       setIsCreatingProfessor(false);
     }
-  };
-
-  // 💡 [신규] 교수님 목록 화면의 "자료 올리기" 패널 전용 — 기존 교수님을 고르거나, "새 교수님 등록"을
-  // 고른 뒤 이름을 입력하면 그 자리에서 등록하고 바로 그 교수님에게 파일을 올립니다.
-  const handleProfessorUploadPanelFiles = async (fileList: FileList) => {
-    if (fileList.length === 0) return;
-
-    let professorId = uploadProfessorChoice;
-    if (professorId === '__new__') {
-      if (!newProfessorName.trim()) {
-        alert(t('professors.errors.nameRequired'));
-        return;
-      }
-      const createdId = await handleCreateProfessor(newProfessorName, newProfessorSchool, newProfessorDepartment);
-      if (!createdId) return;
-      professorId = createdId;
-      setUploadProfessorChoice(createdId);
-      setNewProfessorName('');
-      setNewProfessorSchool('');
-      setNewProfessorDepartment('');
-    }
-    if (!professorId) {
-      alert(t('professors.errors.selectProfessorFirst'));
-      return;
-    }
-    await handleUploadProfessorFiles(fileList, professorId, uploadDocType);
   };
 
   // 💡 [신규] 자료 삭제 — documents에서 지우면 doc_chunks는 on delete cascade로 함께 지워집니다.
@@ -2606,7 +2600,6 @@ export default function HomePage() {
     { id: 'workspace', label: t('nav.workspace'), icon: Sparkles },
     { id: 'records', label: t('nav.records'), icon: Archive },
     { id: 'deadlines', label: t('nav.deadlines'), icon: AlarmClock },
-    { id: 'professors', label: t('nav.professors'), icon: GraduationCap },
     { id: 'monitoring', label: t('nav.monitoring'), icon: LineChart },
     { id: 'logs', label: t('nav.logs'), icon: ScrollText },
   ];
@@ -2736,6 +2729,30 @@ export default function HomePage() {
               <span>{item.label}</span>
             </div>
           ))}
+
+          {/* 💡 [신규] "교수님" 메뉴가 사라진 자리 안내 — 기존 사용자는 이 메뉴가 유일한
+              진입점이었기 때문에, 아무 설명 없이 없어지면 기능 자체가 사라진 것으로 읽힙니다.
+              누르면 물어보기로 데려다주고, 한 번 보면 다시 뜨지 않습니다(온보딩과 같은 방식).
+              계정별로 기록하므로 다른 기기에서도 각각 한 번씩 보게 되는데, 그게 오히려
+              맞습니다 — 기기를 옮겨 처음 보는 사람에게도 알려줘야 하니까요. */}
+          {showProfessorsMovedNotice && (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('workspace');
+                setIsMobileMenuOpen(false);
+                setProfessorsMovedNoticeDismissed(true);
+                if (user) saveUserScopedItem(user.id, 'mcp_professors_moved_seen', true);
+              }}
+              className="mt-2 text-left px-3.5 py-2.5 rounded-lg border border-dashed border-[var(--border-default)] text-[11px] leading-relaxed text-[var(--text-tertiary)] hover:border-[#F4679B] hover:text-[var(--text-primary)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+            >
+              <span className="flex items-center gap-1.5 font-semibold text-[var(--text-secondary)] mb-0.5">
+                <GraduationCap className="w-3.5 h-3.5 shrink-0 text-[#F4679B]" strokeWidth={2} />
+                {t('nav.professorsMoved.title')}
+              </span>
+              {t('nav.professorsMoved.body')}
+            </button>
+          )}
         </div>
 
         {/* 💡 [신규] 코드 기반 Pro의 남은 기간 안내 — 무료 사용자의 당근 게이지가 있던
@@ -2891,7 +2908,9 @@ export default function HomePage() {
           답변을 읽는 동안 눈이 덜 튑니다(ChatGPT·Gemini도 이 정도 폭을 씁니다). */}
         <div className="p-4 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
 
-          {activeTab === 'workspace' && (
+          {/* 💡 [수정] 교수님 상세를 보고 있으면 물어보기 본문을 감춥니다 — 상세는 이제
+              별도 탭이 아니라 물어보기 안에서 잠깐 들어갔다 나오는 서브화면입니다. */}
+          {activeTab === 'workspace' && !selectedProfessorId && (
             <>
               <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
@@ -3005,7 +3024,17 @@ export default function HomePage() {
                       <button
                         type="button"
                         aria-expanded={showInlineProfessorForm}
-                        onClick={() => setShowInlineProfessorForm((v) => !v)}
+                        onClick={() => {
+                          const next = !showInlineProfessorForm;
+                          // 💡 폼을 열 때 직전에 등록한 학교·학과를 채워둡니다. 같은 학교 학생이
+                          // 교수님을 여러 명 등록하는 경우가 대부분이라, 매번 다시 치게 하면
+                          // 필수 입력 두 개가 순전히 반복 노동이 됩니다(수정은 그 자리에서 가능).
+                          if (next && professorFormDefaults) {
+                            if (!newProfessorSchool) setNewProfessorSchool(professorFormDefaults.school);
+                            if (!newProfessorDepartment) setNewProfessorDepartment(professorFormDefaults.department);
+                          }
+                          setShowInlineProfessorForm(next);
+                        }}
                         className="text-[11px] font-medium px-2.5 py-1 rounded-full border border-dashed border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-[#F4679B] hover:border-[#F4679B] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
                       >
                         + {t('workspace.professorGen.addProfessor')}
@@ -3094,6 +3123,16 @@ export default function HomePage() {
                             }}
                           />
                         </label>
+                        {/* 💡 [신규] 자료 목록·삭제·분석 결과·회로도처럼 자주 쓰지 않는 관리
+                            기능은 여기 늘어놓지 않고 상세 화면으로 보냅니다. 채팅 입력창이
+                            화면 밖으로 밀리지 않게 하려는 것이고, 돌아오면 이 자리 그대로입니다. */}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedProfessorId(professorGenProfessorId)}
+                          className="text-[11px] font-medium px-2.5 py-1.5 rounded-lg border border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-[#F4679B] hover:border-[#F4679B] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                        >
+                          {t('workspace.professorGen.manage')}
+                        </button>
                         <span className="text-[10px] text-[var(--text-faint)]">{uploadLimitHint}</span>
                       </div>
                     )}
@@ -3770,163 +3809,15 @@ export default function HomePage() {
             </div>
           )}
 
-          {activeTab === 'professors' && !selectedProfessorId && (
-            <div>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  {t('professors.title')}
-                </h1>
-                <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
-                  {t('professors.subtitle')}
-                </p>
-              </div>
+          {/* 💡 [수정] 교수님 "목록" 화면(155줄)을 제거했습니다. 사이드바에서 교수님 메뉴를
+              없애면서 이 화면으로 들어올 길이 사라졌고, 여기 있던 기능(교수님 만들기·자료
+              올리기)은 전부 물어보기 탭 안으로 옮겼습니다. 상세 화면은 아래에 그대로 있고,
+              물어보기의 교수님 칩 옆 "자료·분석 관리" 버튼에서 들어옵니다. */}
 
-              <div className="bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)] p-5 mb-6 shadow-sm">
-                <h3 className="text-sm sm:text-base font-bold text-[var(--text-primary)] mb-4">{t('professors.uploadPanel.title')}</h3>
-
-                <div className="flex flex-col gap-3">
-                  <select
-                    value={uploadProfessorChoice}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setUploadProfessorChoice(value);
-                      if (value === '__new__' && professorFormDefaults) {
-                        setNewProfessorSchool(professorFormDefaults.school);
-                        setNewProfessorDepartment(professorFormDefaults.department);
-                      }
-                    }}
-                    className="bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
-                  >
-                    <option value="">{t('professors.uploadPanel.selectProfessor')}</option>
-                    {professors.map((p) => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                    <option value="__new__">{t('professors.uploadPanel.registerNew')}</option>
-                  </select>
-
-                  {uploadProfessorChoice === '__new__' && (
-                    <div className="flex flex-col gap-2 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-lg p-3.5">
-                      <input
-                        type="text"
-                        placeholder={t('professors.uploadPanel.namePlaceholder')}
-                        value={newProfessorName}
-                        onChange={(e) => setNewProfessorName(e.target.value)}
-                        className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
-                      />
-                      <input
-                        type="text"
-                        placeholder={t('professors.uploadPanel.schoolPlaceholder')}
-                        value={newProfessorSchool}
-                        onChange={(e) => setNewProfessorSchool(e.target.value)}
-                        className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
-                      />
-                      <input
-                        type="text"
-                        placeholder={t('professors.uploadPanel.departmentPlaceholder')}
-                        value={newProfessorDepartment}
-                        onChange={(e) => setNewProfessorDepartment(e.target.value)}
-                        className="bg-[var(--bg-page)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20 placeholder:text-[var(--text-muted)]"
-                      />
-                      <p className="text-[11px] text-[var(--text-muted)]">{t('professors.uploadPanel.schoolDeptHint')}</p>
-                      {/* 💡 [신규] 파일 없이 교수님만 먼저 만드는 버튼. 아래 "파일 선택"은
-                          그대로 두어, 자료가 이미 있으면 한 번에 등록+업로드도 됩니다. */}
-                      <button
-                        type="button"
-                        disabled={isCreatingProfessor || !newProfessorName.trim()}
-                        onClick={handleCreateProfessorOnly}
-                        className="self-start inline-flex items-center gap-2 mt-1 px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-[#F4679B] text-[#F4679B] hover:bg-[var(--bg-accent-subtle)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                      >
-                        {isCreatingProfessor ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : null}
-                        {t('professors.uploadPanel.createOnly')}
-                      </button>
-                      <p className="text-[11px] text-[var(--text-muted)]">{t('professors.uploadPanel.createOnlyHint')}</p>
-                    </div>
-                  )}
-
-                  <select
-                    value={uploadDocType}
-                    onChange={(e) => setUploadDocType(e.target.value)}
-                    className="bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg px-3.5 py-2.5 text-[var(--text-primary)] text-sm outline-none focus:border-[#F4679B] focus:ring-2 focus:ring-[#F4679B]/20"
-                  >
-                    {docTypeDefs.map((def) => (
-                      <option key={def.key} value={def.key}>{def.label}</option>
-                    ))}
-                  </select>
-
-                  <label
-                    className={`inline-flex self-start items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-                      isUploadingProfessorDoc || !uploadProfessorChoice
-                        ? 'bg-[var(--surface-chip)] text-[var(--text-muted)] cursor-wait'
-                        : 'bg-[#F4679B] hover:bg-[#D1477F] text-white cursor-pointer'
-                    }`}
-                  >
-                    {isUploadingProfessorDoc ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                        <LoadingText />
-                      </>
-                    ) : (
-                      <span>{t('professors.uploadPanel.chooseFile')}</span>
-                    )}
-                    <input
-                      type="file"
-                      multiple
-                      className="hidden"
-                      disabled={isUploadingProfessorDoc || !uploadProfessorChoice}
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files.length > 0) {
-                          handleProfessorUploadPanelFiles(e.target.files);
-                        }
-                        e.target.value = '';
-                      }}
-                    />
-                  </label>
-                  <p className="text-xs text-[var(--text-muted)]">{t('professors.uploadPanel.paperHint')}</p>
-                  <p className="text-[11px] text-[var(--text-faint)] mt-1">{uploadLimitHint}</p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2.5">
-                {!isProfessorsLoaded ? (
-                  <div className="text-sm text-[var(--text-muted)] text-center py-8 bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)]">
-                    {t('professors.loading')}
-                  </div>
-                ) : professors.length === 0 ? (
-                  <div className="text-sm text-[var(--text-muted)] text-center py-8 bg-[var(--bg-page)] rounded-2xl border border-[var(--border-default)]">
-                    {t('professors.noneRegistered')}
-                  </div>
-                ) : (
-                  professors.map((p) => {
-                    const count = professorDocuments.filter((d) => d.professor_id === p.id).length;
-                    const subtitle = [p.school, p.department].filter(Boolean).join(' · ');
-                    return (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => setSelectedProfessorId(p.id)}
-                        className="bg-[var(--bg-page)] hover:bg-[var(--surface-chip)] rounded-2xl border border-[var(--border-default)] p-4 flex items-center justify-between gap-3 shadow-sm transition-colors text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <span className="shrink-0 w-9 h-9 rounded-full bg-[var(--bg-accent-subtle)] border border-[var(--border-accent-subtle)] flex items-center justify-center text-[#F4679B]">
-                            <GraduationCap className="w-4 h-4" strokeWidth={2} />
-                          </span>
-                          <div className="min-w-0">
-                            <div className="text-sm font-semibold text-[var(--text-primary)] truncate">{p.name}</div>
-                            {subtitle && <div className="text-xs text-[var(--text-muted)] mt-0.5 truncate">{subtitle}</div>}
-                          </div>
-                        </div>
-                        <span className="shrink-0 text-xs font-semibold text-[var(--text-tertiary)] bg-[var(--bg-surface)] border border-[var(--border-default)] px-2.5 py-1 rounded-full tabular-nums">
-                          {t('professors.documentCount', { count })}
-                        </span>
-                      </button>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'professors' && selectedProfessorId && (() => {
+          {/* 💡 [수정] 진입점만 넓혔습니다. 화면 코드(303줄)는 그대로입니다 — 이 프로젝트에서
+              큰 덩어리를 옮길 때마다 예상 못 한 게 깨졌던 이력이 있어, 옮기지 않는 쪽을 택했습니다.
+              물어보기의 교수님 칩 옆 "관리" 버튼에서도 여기로 들어옵니다. */}
+          {(activeTab === 'professors' || activeTab === 'workspace') && selectedProfessorId && (() => {
             const professor = professors.find((p) => p.id === selectedProfessorId);
             if (!professor) return null;
             const docs = professorDocuments.filter((d) => d.professor_id === selectedProfessorId);
@@ -3983,7 +3874,7 @@ export default function HomePage() {
                     className="inline-flex items-center gap-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] rounded"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
-                    {t('professors.backToList')}
+                    {activeTab === 'workspace' ? t('professors.backToChat') : t('professors.backToList')}
                   </button>
                   <button
                     type="button"
