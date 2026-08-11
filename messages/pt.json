@@ -117,6 +117,11 @@
       "selectLabel": "Escolher pasta de tema",
       "emptyHint": "Crie uma pasta na aba \"Conversas anteriores\" e ela aparecerá aqui. (ex.: Busca de emprego, Clube, Projeto pessoal)",
       "chatHint": "As conversas são salvas nesta pasta e as respostas usam conversas anteriores da mesma pasta."
+    },
+    "chips": {
+      "professor": "Professor",
+      "folder": "Tema",
+      "professorEmpty": "Conectar material de um professor"
     }
   },
   "records": {

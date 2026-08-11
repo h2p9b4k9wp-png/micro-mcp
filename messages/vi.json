@@ -117,6 +117,11 @@
       "selectLabel": "Chọn thư mục chủ đề",
       "emptyHint": "Tạo thư mục ở tab \"Trò chuyện trước\" thì sẽ hiện ở đây. (ví dụ: Tìm việc, CLB, Dự án cá nhân)",
       "chatHint": "Cuộc trò chuyện được lưu vào thư mục này, và câu trả lời sẽ tham khảo các trò chuyện cũ trong cùng thư mục."
+    },
+    "chips": {
+      "professor": "Giảng viên",
+      "folder": "Chủ đề",
+      "professorEmpty": "Kết nối tài liệu giảng viên"
     }
   },
   "records": {

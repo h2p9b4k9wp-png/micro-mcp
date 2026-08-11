@@ -117,6 +117,11 @@
       "selectLabel": "Choisir un dossier thématique",
       "emptyHint": "Créez un dossier dans l'onglet « Conversations passées » et il apparaîtra ici. (ex. Recherche d'emploi, Association, Projet perso)",
       "chatHint": "Les conversations sont enregistrées dans ce dossier et les réponses s'appuient sur les échanges passés du même dossier."
+    },
+    "chips": {
+      "professor": "Enseignant",
+      "folder": "Thème",
+      "professorEmpty": "Connecter les documents d'un enseignant"
     }
   },
   "records": {

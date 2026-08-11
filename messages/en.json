@@ -117,6 +117,11 @@
       "selectLabel": "Choose a topic folder",
       "emptyHint": "Create a folder in the \"Past chats\" tab and it will show up here. (e.g. Job hunting, Club, Side project)",
       "chatHint": "Chats are saved to this folder, and answers draw on past chats from the same folder."
+    },
+    "chips": {
+      "professor": "Professor",
+      "folder": "Topic",
+      "professorEmpty": "Connect a professor's materials"
     }
   },
   "records": {

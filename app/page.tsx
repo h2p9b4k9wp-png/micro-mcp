@@ -386,6 +386,13 @@ export default function HomePage() {
   // "지난 대화" 탭의 폴더 필터(logFolderFilter)와는 별개 상태입니다: 그쪽은 보기 필터,
   // 이쪽은 대화의 맥락 지정이라 서로 영향을 주면 안 됩니다.
   const [chatFolderId, setChatFolderId] = useState<string | null>(null);
+
+  // 💡 [신규] 물어보기 화면 정리(A안) — 교수님/폴더 선택 카드를 평소엔 접어두고, 입력창 위
+  // 한 줄 칩에서 필요할 때만 펼칩니다. 카드가 여러 겹 쌓여 있어 정작 입력창과 답변이
+  // 화면 밖으로 밀려나던 문제를 없애는 게 목적입니다.
+  const [openPicker, setOpenPicker] = useState<'professor' | 'folder' | null>(null);
+  // 교수님 칩을 한 번이라도 열어봤는지(계정별). 아직 안 열어본 사람에게만 점 표시를 답니다.
+  const [professorChipSeen, setProfessorChipSeen] = useState(true);
   // 💡 [신규] "예상 시험 문제"를 다시 뽑을 때 같은 문제가 반복되지 않도록, 이미 낸 문항의
   // 한 줄 요약을 교수님별로 기억합니다. 교수님 id를 키로 쓰기 때문에 다른 교수님으로
   // 넘어가면 그 교수님의 목록이 따로 관리됩니다(요청대로 "교수님이 바뀌면 초기화").
@@ -697,6 +704,7 @@ export default function HomePage() {
     if (!user) return;
     const saved = loadUserScopedItem<Record<string, string[]>>(user.id, 'mcp_exam_question_history');
     if (saved && typeof saved === 'object') setExamQuestionHistory(saved);
+    setProfessorChipSeen(loadUserScopedItem<boolean>(user.id, 'mcp_professor_chip_seen') === true);
   }, [user]);
 
   useEffect(() => {
@@ -2794,15 +2802,6 @@ export default function HomePage() {
 
           {activeTab === 'workspace' && (
             <>
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  Live AI Playground
-                </h1>
-                <p className="text-[var(--text-tertiary)] text-xs sm:text-sm mt-1.5">
-                  {t('workspace.subtitle')}
-                </p>
-              </div>
-
               <div
                 onDragOver={(e) => { e.preventDefault(); setIsDraggingOverChat(true); }}
                 onDragLeave={() => setIsDraggingOverChat(false)}
@@ -2845,7 +2844,68 @@ export default function HomePage() {
                     여기로 옮기면서, 예상 질문/예상 시험 문제까지 같은 자리에서 뽑을 수 있게
                     했습니다. 교수님 탭은 자료를 쌓고 성향을 보는 곳, 여기는 쌓인 걸 꺼내
                     쓰는 곳으로 역할을 나눕니다. */}
-                {professors.length > 0 && (
+                {/* 💡 [A안] 한 줄 칩 바 — 교수님·주제 폴더를 평소엔 여기 접어두고, 누를 때만
+                    아래 카드가 펼쳐집니다. 화면에 항상 보이는 것은 이 한 줄과 입력창, 답변뿐입니다.
+
+                    발견성: "처음 온 사람"을 localStorage 플래그로 판단하지 않습니다. 그건 기기를
+                    바꾸거나 캐시를 지우면 어긋납니다. 대신 실제 데이터 상태로 가릅니다 —
+                    교수님이 한 명도 없으면 칩 대신 눈에 띄는 안내 줄을 보여주고, 등록은 했지만
+                    채팅에서 한 번도 안 열어봤으면 칩에 점을 답니다. */}
+                <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                  {professors.length === 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('professors')}
+                      className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#F4679B] bg-[var(--bg-accent-subtle)] border border-[#F4679B]/40 px-3 py-1.5 rounded-full transition-colors hover:bg-[var(--bg-accent-subtle-hover)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B]"
+                    >
+                      <GraduationCap className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                      {t('workspace.chips.professorEmpty')}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      aria-expanded={openPicker === 'professor'}
+                      onClick={() => {
+                        setOpenPicker((prev) => (prev === 'professor' ? null : 'professor'));
+                        if (!professorChipSeen && user) {
+                          setProfessorChipSeen(true);
+                          saveUserScopedItem(user.id, 'mcp_professor_chip_seen', true);
+                        }
+                      }}
+                      className={`inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                        professorGenProfessorId
+                          ? 'bg-[#F4679B] text-white border-[#F4679B]'
+                          : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
+                      }`}
+                    >
+                      <GraduationCap className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                      {professorGenProfessorId
+                        ? professors.find((p) => p.id === professorGenProfessorId)?.name
+                        : t('workspace.chips.professor')}
+                      {!professorChipSeen && !professorGenProfessorId && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#F4679B] shrink-0" aria-hidden="true" />
+                      )}
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    aria-expanded={openPicker === 'folder'}
+                    onClick={() => setOpenPicker((prev) => (prev === 'folder' ? null : 'folder'))}
+                    className={`inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-full border transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F4679B] ${
+                      chatFolderId
+                        ? 'bg-[#F4679B] text-white border-[#F4679B]'
+                        : 'bg-[var(--bg-surface)] text-[var(--text-tertiary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    <FolderOpen className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                    {chatFolderId
+                      ? conversationFolders.find((f) => f.id === chatFolderId)?.name
+                      : t('workspace.chips.folder')}
+                  </button>
+                </div>
+
+                {professors.length > 0 && openPicker === 'professor' && (
                   <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-3 mb-3">
                     <div className="flex items-center gap-2 mb-2">
                       <GraduationCap className="w-4 h-4 text-[#F4679B] shrink-0" strokeWidth={2} />
@@ -2973,6 +3033,7 @@ export default function HomePage() {
                     그 폴더 대화로 좁혀집니다. 교수님과 동시에 켜지지 않습니다.
                     폴더 만들기는 "지난 대화" 탭에 이미 있어서 여기서는 고르기만 합니다 —
                     교수님 등록이 "교수님" 탭에만 있는 것과 같은 구성입니다. */}
+                {openPicker === 'folder' && (
                 <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-3 mb-3">
                   <div className="flex items-center gap-2 mb-2">
                     <FolderOpen className="w-4 h-4 text-[#F4679B] shrink-0" strokeWidth={2} />
@@ -3027,10 +3088,16 @@ export default function HomePage() {
                     </>
                   )}
                 </div>
+                )}
 
+                {/* 💡 [C안] 미니 회로도는 "이 앱이 뭘 하는지" 보여주는 장치라 첫 사용 때
+                    의미가 큽니다. 파일을 붙인 뒤에는 관점 칩만 있으면 충분해서, 첨부가 없을
+                    때만 회로도를 그리고 첨부 후에는 칩만 남깁니다. */}
                 {chatLensGraph && (
                   <div className="bg-[var(--bg-deep)] rounded-xl border border-[var(--surface-chip)] p-2 mb-3">
-                    <CircuitBoard graph={chatLensGraph} onNodeClick={handleNodeClick} compact />
+                    {!latestTextAttachment && (
+                      <CircuitBoard graph={chatLensGraph} onNodeClick={handleNodeClick} compact />
+                    )}
                     <div className="flex flex-wrap gap-1.5 justify-center mt-1.5">
                       {CHAT_LENS_CHOICE_DEFS.map((choice) => (
                         <button

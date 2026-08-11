@@ -117,6 +117,11 @@
       "selectLabel": "Onderwerpmap kiezen",
       "emptyHint": "Maak een map aan op het tabblad \"Eerdere gesprekken\" en die verschijnt hier. (bijv. Sollicitaties, Vereniging, Eigen project)",
       "chatHint": "Gesprekken worden in deze map bewaard en antwoorden gebruiken eerdere gesprekken uit dezelfde map."
+    },
+    "chips": {
+      "professor": "Docent",
+      "folder": "Onderwerp",
+      "professorEmpty": "Materiaal van een docent koppelen"
     }
   },
   "records": {

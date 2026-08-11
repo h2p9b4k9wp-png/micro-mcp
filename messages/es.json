@@ -117,6 +117,11 @@
       "selectLabel": "Elegir carpeta de tema",
       "emptyHint": "Crea una carpeta en la pestaña \"Chats anteriores\" y aparecerá aquí. (p. ej. Búsqueda de empleo, Club, Proyecto personal)",
       "chatHint": "Los chats se guardan en esta carpeta y las respuestas usan chats anteriores de la misma carpeta."
+    },
+    "chips": {
+      "professor": "Profesor",
+      "folder": "Tema",
+      "professorEmpty": "Conectar material de un profesor"
     }
   },
   "records": {

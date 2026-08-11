@@ -117,6 +117,11 @@
       "selectLabel": "Scegli una cartella tematica",
       "emptyHint": "Crea una cartella nella scheda «Chat precedenti» e comparirà qui. (es. Ricerca lavoro, Associazione, Progetto personale)",
       "chatHint": "Le chat vengono salvate in questa cartella e le risposte usano le chat precedenti della stessa cartella."
+    },
+    "chips": {
+      "professor": "Docente",
+      "folder": "Tema",
+      "professorEmpty": "Collega il materiale di un docente"
     }
   },
   "records": {
