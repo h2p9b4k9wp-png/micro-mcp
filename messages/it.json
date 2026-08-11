@@ -70,7 +70,12 @@
       "hideModelAnswer": "Nascondi risposta modello",
       "showDraftAnswer": "Mostra bozza di risposta",
       "hideDraftAnswer": "Nascondi bozza di risposta",
-      "skipTyping": "Mostra tutto subito"
+      "skipTyping": "Mostra tutto subito",
+      "sourceFrom": "da {where}",
+      "notFromMaterial": "Non nel tuo materiale · conoscenza generale",
+      "confidenceHigh": "Probabile all'esame",
+      "confidenceMedium": "Possibile all'esame",
+      "confidenceLow": "Poco probabile all'esame"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" è troppo grande (oltre 10 MB). Prova con un file più piccolo.",

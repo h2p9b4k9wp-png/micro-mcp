@@ -70,7 +70,12 @@
       "hideModelAnswer": "모범답안 숨기기",
       "showDraftAnswer": "답변 초안 보기",
       "hideDraftAnswer": "답변 초안 숨기기",
-      "skipTyping": "바로 보기"
+      "skipTyping": "바로 보기",
+      "sourceFrom": "{where} 기준",
+      "notFromMaterial": "자료에 없음 · 일반 지식",
+      "confidenceHigh": "출제 가능성 높음",
+      "confidenceMedium": "출제 가능성 보통",
+      "confidenceLow": "출제 가능성 낮음"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\"의 용량이 너무 큽니다 (10MB 초과). 더 작은 파일로 시도해주세요.",

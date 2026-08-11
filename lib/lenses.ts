@@ -41,7 +41,16 @@ export interface QuestionsResult {
   items: QuestionItem[];
 }
 
-export interface DigestKeyPoint {
+export interface SourceAttribution {
+  // 근거가 있는 파일명(파일이 하나뿐이면 빈 문자열일 수 있음)
+  sourceFile: string;
+  // 근거가 있는 위치("12페이지", "슬라이드 3"). 위치 표시가 없는 형식에서는 빈 문자열.
+  sourceLocation: string;
+  // 자료에 근거가 있으면 true, 일반 지식으로 보탠 내용이면 false
+  grounded: boolean;
+}
+
+export interface DigestKeyPoint extends SourceAttribution {
   text: string;
   evidence: string;
 }
@@ -58,11 +67,14 @@ export interface DigestResult {
 // 💡 [신규] "예상 시험 문제" 렌즈의 결과 타입. questions 렌즈(발표 때 받을 질문)와 겹쳐
 // 보이지만 만들어내는 물건이 다릅니다 — 이쪽은 시험지에 실제로 실릴 법한 문항이라
 // 문항 유형(questionType)과 모범답안(modelAnswer)을 함께 냅니다.
-export interface ExamQuestionItem {
+export interface ExamQuestionItem extends SourceAttribution {
   question: string;
   questionType: string;
   modelAnswer: string;
   evidence: string;
+  // 출제 가능성(0~1)과 그렇게 본 이유 — 이유는 자료에서 확인할 수 있는 사실만 씁니다.
+  confidence: number;
+  confidenceReason: string;
 }
 export interface ExamQuestionsResult {
   items: ExamQuestionItem[];
@@ -84,9 +96,36 @@ const COMMON_RULES = `당신은 주어진 문서 내용을 최대한 충실하�
 2) 문서 내용에 근거는 있지만 다소 불확실한 추론이라면 "추측입니다"라고 표시하세요. (문서에 명시된 확실한 사실에는 이 표시를 붙이지 마세요.)
 3) 확실한 사실과 추측을 한 문장에 섞지 말고 나눠서 쓰세요.
 4) evidence나 source_quote처럼 근거 발췌를 담는 필드가 있는 항목은, 그 항목의 근거가 되는 원문 그대로의 짧은 발췌를 그 필드에 넣으세요. 원문에서 발췌를 찾을 수 있는 한 그 항목을 포함하세요 — 발췌가 정말로 없을 때만 그 항목을 제외하세요. (그런 필드가 없는 요약성 필드는 발췌 없이 문서 내용에 충실하게 쓰면 됩니다.)
+   본문 중간에 [[위치: 12페이지]]나 [[위치: 슬라이드 3]] 같은 표시가 보이면, 그건 그 아래 내용이 원문의 어디였는지 알려주는 것입니다. sourceLocation 필드가 있는 항목은 그 발췌가 속한 표시를 그대로 옮겨 적으세요(예: "12페이지"). 옮겨 적기만 하면 되고, 표시가 없는 자료라면 빈 문자열로 두세요 — 페이지 번호를 계산하거나 짐작해서 쓰지는 마세요. 여러 파일이 [파일명] 형태로 함께 주어졌다면 sourceFile에 그 파일명을 옮겨 적으세요.
 5) 만약 사용자가 별도의 질문을 함께 보냈고 그 질문 자체에 틀린 전제가 있다면 그 전제부터 바로잡으세요. (문서만 주어지고 별도 질문이 없다면 해당 없음.)
 
 출력은 다른 설명, 인사말, 마크다운 코드블록 없이 오직 JSON 객체만, 사용자가 지정한 언어를 따르세요.`;
+
+
+// 💡 [신규] 출처·확신도 필드. 예상 시험 문제와 요약의 핵심 항목이 공유합니다.
+//
+// 배경: 지금까지도 모든 항목이 원문 발췌(evidence)를 들고 있었지만, "그 발췌가 어느 파일
+// 어디에서 나왔는지"는 알 수 없었습니다. 이제 추출 단계에서 본문에 위치 표시
+// ([[위치: 12페이지]] / [[위치: 슬라이드 3]])를 심어두므로(lib/file-text-extract.ts),
+// 모델은 그 표시를 "옮겨 적기만" 하면 됩니다 — 페이지 번호를 추론하거나 지어낼 필요가
+// 없다는 점이 핵심입니다. 위치 표시가 없는 형식(워드·한글·엑셀)에서는 빈 문자열이 됩니다.
+const SOURCE_FIELDS = {
+  sourceFile: {
+    type: 'string',
+    description:
+      '이 항목의 근거가 있는 파일명. 본문에 [파일명] 형태로 표시돼 있으면 그대로 옮겨 적고, 파일이 하나뿐이거나 표시가 없으면 빈 문자열.',
+  },
+  sourceLocation: {
+    type: 'string',
+    description:
+      '근거가 있는 위치. 본문의 [[위치: ...]] 표시 중 그 발췌가 속한 것을 그대로 옮겨 적습니다(예: "12페이지", "슬라이드 3"). 표시가 없으면 반드시 빈 문자열 — 추측해서 만들어내지 마세요.',
+  },
+  grounded: {
+    type: 'boolean',
+    description:
+      '이 항목이 자료 본문에 근거가 있으면 true. 자료에는 없고 일반 지식으로 보탠 내용이면 false.',
+  },
+} as const;
 
 const DEADLINES_SCHEMA = {
   type: 'object',
@@ -173,8 +212,9 @@ const DIGEST_SCHEMA = {
         properties: {
           text: { type: 'string', description: '핵심 항목 내용' },
           evidence: { type: 'string', description: '이 항목의 근거가 되는, 원문에서 그대로 발췌한 문구' },
+          ...SOURCE_FIELDS,
         },
-        required: ['text', 'evidence'],
+        required: ['text', 'evidence', 'sourceFile', 'sourceLocation', 'grounded'],
       },
     },
     terms: {
@@ -220,8 +260,21 @@ const EXAM_QUESTIONS_SCHEMA = {
             type: 'string',
             description: '이 문항이 근거로 삼은, 원문에서 그대로 발췌한 30자 이내의 문구',
           },
+          ...SOURCE_FIELDS,
+          confidence: {
+            type: 'number',
+            description: '이 주제가 실제 시험에 나올 가능성 (0~1). 자료에서 얼마나 비중 있게 다뤄졌는지를 기준으로 판단.',
+          },
+          confidenceReason: {
+            type: 'string',
+            description:
+              '그 확신도로 판단한 근거를 자료에 있는 사실로 한 줄로 씁니다(예: "슬라이드 8장에 걸쳐 반복해서 다룸", "한 문장만 스치듯 언급됨"). 자료에서 확인할 수 없는 이유는 쓰지 마세요.',
+          },
         },
-        required: ['question', 'questionType', 'modelAnswer', 'evidence'],
+        required: [
+          'question', 'questionType', 'modelAnswer', 'evidence',
+          'sourceFile', 'sourceLocation', 'grounded', 'confidence', 'confidenceReason',
+        ],
       },
     },
   },
@@ -285,7 +338,9 @@ export const LENSES: Record<LensId, LensDefinition> = {
 - 각 문항은 자료에 실린 내용만으로 풀 수 있어야 합니다. 자료에서 다루지 않은 개념을 묻는 문항은 만들지 마세요.
 - 각 문항마다 문항 유형(questionType, 예: 서술형·약술형·객관식·단답형·계산형)과 모범답안(modelAnswer)을 함께 작성하세요. 모범답안도 자료에 적힌 내용만으로 쓰세요.
 - 각 문항은 반드시 자료의 특정 문장이 근거가 되어야 합니다. evidence에 그 문장을 30자 이내로 그대로 발췌하세요. evidence에 "자료에 없음" 같은 문구를 쓰지 말고, 발췌할 문장이 없으면 애초에 그 문항을 만들지 마세요.
-- 사용자 메시지에 [교수님 성향 참고자료]가 함께 주어졌다면, 문항 유형과 난이도, 무엇을 비중 있게 물을지를 그 성향에 맞추세요. 다만 문항의 내용 자체와 evidence는 반드시 문서 본문에서만 가져와야 합니다 — 성향 참고자료는 출제 방향을 정하는 데에만 쓰고, 거기 적힌 내용을 문제로 만들지 마세요.`,
+- 사용자 메시지에 [교수님 성향 참고자료]가 함께 주어졌다면, 문항 유형과 난이도, 무엇을 비중 있게 물을지를 그 성향에 맞추세요. 다만 문항의 내용 자체와 evidence는 반드시 문서 본문에서만 가져와야 합니다 — 성향 참고자료는 출제 방향을 정하는 데에만 쓰고, 거기 적힌 내용을 문제로 만들지 마세요.
+- 자료에 근거가 있는 문항은 grounded를 true로 두세요. 대부분의 문항이 여기 해당합니다. 자료만으로는 부족해 일반 지식을 보탠 문항이 있다면 그 문항만 grounded를 false로 두면 됩니다 — 학생에게 "이건 자료 밖 내용"이라고 알려주기 위한 구분이지, 그런 문항을 만들지 말라는 뜻이 아닙니다.
+- confidence는 그 주제가 시험에 나올 가능성입니다. 자료에서 얼마나 비중 있게 다뤄졌는지로 판단하세요 — 여러 페이지·슬라이드에 걸쳐 반복되면 높게, 한 번 스치듯 나오면 낮게. confidenceReason에는 그렇게 본 이유를 자료에서 확인할 수 있는 사실로 한 줄만 쓰세요(예: "슬라이드 5~12에 걸쳐 반복해서 다룸").`,
     schema: EXAM_QUESTIONS_SCHEMA,
   },
 };

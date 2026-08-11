@@ -70,7 +70,12 @@
       "hideModelAnswer": "Dölj modellsvar",
       "showDraftAnswer": "Visa svarsutkast",
       "hideDraftAnswer": "Dölj svarsutkast",
-      "skipTyping": "Visa allt direkt"
+      "skipTyping": "Visa allt direkt",
+      "sourceFrom": "från {where}",
+      "notFromMaterial": "Finns inte i ditt material · allmän kunskap",
+      "confidenceHigh": "Trolig på tentan",
+      "confidenceMedium": "Möjlig på tentan",
+      "confidenceLow": "Mindre trolig på tentan"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" är för stor (över 10 MB). Prova en mindre fil.",

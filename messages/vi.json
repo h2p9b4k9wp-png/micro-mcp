@@ -70,7 +70,12 @@
       "hideModelAnswer": "Ẩn đáp án mẫu",
       "showDraftAnswer": "Xem bản nháp trả lời",
       "hideDraftAnswer": "Ẩn bản nháp trả lời",
-      "skipTyping": "Hiện tất cả ngay"
+      "skipTyping": "Hiện tất cả ngay",
+      "sourceFrom": "theo {where}",
+      "notFromMaterial": "Không có trong tài liệu · kiến thức chung",
+      "confidenceHigh": "Khả năng ra thi cao",
+      "confidenceMedium": "Khả năng ra thi vừa",
+      "confidenceLow": "Khả năng ra thi thấp"
     },
     "errors": {
       "fileTooLarge": "\"{fileName}\" quá lớn (vượt quá 10MB). Vui lòng thử tệp nhỏ hơn.",

@@ -70,7 +70,12 @@
       "hideModelAnswer": "Masquer la réponse type",
       "showDraftAnswer": "Voir le brouillon de réponse",
       "hideDraftAnswer": "Masquer le brouillon de réponse",
-      "skipTyping": "Tout afficher"
+      "skipTyping": "Tout afficher",
+      "sourceFrom": "d'après {where}",
+      "notFromMaterial": "Absent de vos documents · connaissance générale",
+      "confidenceHigh": "Probable à l'examen",
+      "confidenceMedium": "Possible à l'examen",
+      "confidenceLow": "Peu probable à l'examen"
     },
     "errors": {
       "fileTooLarge": "« {fileName} » est trop volumineux (plus de 10 Mo). Essayez un fichier plus petit.",
