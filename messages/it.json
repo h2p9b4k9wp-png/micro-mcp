@@ -13,7 +13,7 @@
     "logs": "Conversazioni precedenti"
   },
   "common": {
-    "send": "Invia richiesta",
+    "send": "Chiedi",
     "sending": "Invio in corso...",
     "delete": "Elimina",
     "create": "Crea",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "L'IA genera risposte in base al contesto della conversazione e al contenuto dei documenti allegati.",
-    "promptSectionLabel": "Invia richiesta all'IA",
+    "promptSectionLabel": "Cosa vuoi chiedere?",
     "removeAttachment": "Rimuovi l'allegato {name}",
     "attachFile": "Allega file/foto",
     "webSearchToggle": "Attiva/disattiva la ricerca web",

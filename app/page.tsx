@@ -473,12 +473,35 @@ export default function HomePage() {
     setIsNearBottom(distanceFromBottom <= SCROLL_FOLLOW_THRESHOLD_PX);
   };
 
+  // 💡 [신규] 전송을 누른 그 순간 한 번만 답변 영역으로 이동합니다.
+  //
+  // 문제: 파일을 첨부하고 관점을 고른 뒤 전송하면, 진행 애니메이션이 화면 아래쪽에 있어서
+  // 스크롤하지 않으면 "지금 돌고 있는지"조차 알 수 없었습니다.
+  //
+  // 위쪽의 자동 따라가기(isNearBottom 조건)는 그대로 둡니다 — 이 함수는 streamingLog가
+  // 바뀔 때가 아니라 전송 핸들러에서만 불립니다. 이동한 뒤 사용자가 위로 올리면 그때부터는
+  // 따라가지 않습니다(그 규칙은 건드리지 않았습니다).
+  const scrollToResponsePanel = (target: 'chat' | 'lens' = 'chat') => {
+    const el = (target === 'lens' ? lensResultRef.current : responsePanelRef.current) ?? responsePanelRef.current;
+    if (!el) return;
+    // block:'center'가 아니라 'start' — 답변이 화면 위쪽에서 시작해야 아래로 읽어 내려갑니다.
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 💡 여기서 isNearBottom을 손대지 않습니다. 부드러운 스크롤이 진행되면서 scroll 이벤트가
+    // 발생하고, handleContentScroll이 실제 위치로 값을 갱신합니다 — 억지로 true를 넣으면
+    // "전송 직후 한 번만 이동" 규칙이 깨져서, 답변을 읽으려 위로 올려도 다시 끌려갑니다.
+  };
+
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     const el = scrollContainerRef.current;
     if (!el) return;
     el.scrollTo({ top: el.scrollHeight, behavior });
   };
   const commandInputRef = useRef<HTMLInputElement>(null);
+  // 💡 [신규] 전송 직후 답변 영역으로 딱 한 번 이동하기 위한 ref. 스트리밍 중 강제 스크롤은
+  // 여전히 하지 않습니다 — 아래 scrollToResponsePanel()은 전송 시점에만 호출합니다.
+  const responsePanelRef = useRef<HTMLDivElement>(null);
+  // 관점(렌즈) 분석 결과는 답변 패널 아래 별도 카드에 그려지므로 따로 잡습니다.
+  const lensResultRef = useRef<HTMLDivElement>(null);
 
   // 💡 [신규] 그래프 자체는 저장하지 않지만, 다음 그래프를 빠르게 구성할 때 참고할 최소한의 힌트
   // (마지막에 쓴 렌즈, 선호 action)는 계정별로 저장합니다.
@@ -1907,6 +1930,9 @@ export default function HomePage() {
     setIsNearBottom(true);
     setStreamingLog(header);
     setIsAwaitingChatResponse(true);
+    // 전송한 그 순간 답변 영역으로 한 번 이동합니다(진행 중인지 바로 보이도록).
+    // 다음 프레임에 호출해야 위 setState로 패널이 그려진 뒤의 위치로 이동합니다.
+    requestAnimationFrame(() => scrollToResponsePanel('chat'));
 
     try {
       const res = await fetch('/api/chat', {
@@ -2147,6 +2173,8 @@ export default function HomePage() {
   // 💡 [신규] 채팅에 첨부된 문서(latestTextAttachment)의 글자로 지정한 관점(lens)을 분석합니다.
   // 관점 전환 버튼과 "전송" 버튼(handleExecute)이 공유하는 경로입니다.
   const runLensAnalyze = async (text: string, lens: LensId, fileName?: string) => {
+    // 렌즈 분석도 결과가 화면 아래에 그려지므로 전송 시점에 한 번 이동합니다.
+    requestAnimationFrame(() => scrollToResponsePanel('lens'));
     setLensId(lens);
     setLensStage('analyzing');
     setLensError(null);
@@ -2760,7 +2788,9 @@ export default function HomePage() {
           </button>
         </div>
 
-        <div className="p-4 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
+        {/* 💡 [수정] max-w-4xl(896px) → max-w-5xl(1024px). AI 답변이 한 줄에 더 많이 들어가
+          답변을 읽는 동안 눈이 덜 튑니다(ChatGPT·Gemini도 이 정도 폭을 씁니다). */}
+        <div className="p-4 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
 
           {activeTab === 'workspace' && (
             <>
@@ -3091,7 +3121,13 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                <div className="p-4 sm:p-5 text-[14px] leading-[1.8] font-medium text-[var(--text-ai-response)] whitespace-pre-wrap min-h-[150px]">
+                {/* 💡 [수정] 답변 영역을 넉넉하게: 글자 14px→16(모바일)/17px(데스크톱), 줄간격
+                    1.8→1.95, 최소 높이 150px→320/420px, 안쪽 여백도 함께 키웠습니다.
+                    긴 답변을 읽는 화면인데 카드 하나가 화면의 일부만 차지하고 있었습니다. */}
+                <div
+                  ref={responsePanelRef}
+                  className="px-5 py-5 sm:px-7 sm:py-6 text-[16px] sm:text-[17px] leading-[1.95] font-medium text-[var(--text-ai-response)] whitespace-pre-wrap min-h-[320px] sm:min-h-[420px]"
+                >
                   {streamingLog === IDLE_CONSOLE_SENTINEL ? t('workspace.idleMessage') : streamingLog}
                   {isAwaitingChatResponse && (
                     <span className="text-[var(--text-secondary)] font-normal">
@@ -3124,7 +3160,10 @@ export default function HomePage() {
               </div>
 
               {lensStage !== 'idle' && (
-                <div className="mt-4 bg-[var(--bg-page-alt)] rounded-2xl border border-[var(--border-chip-hover)] p-5 sm:p-6">
+                <div
+                  ref={lensResultRef}
+                  className="mt-4 bg-[var(--bg-page-alt)] rounded-2xl border border-[var(--border-chip-hover)] p-5 sm:p-6"
+                >
                   {lensStage === 'analyzing' && (
                     <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                       <Loader2 className="w-4 h-4 animate-spin text-[#F4679B] shrink-0" strokeWidth={2} />

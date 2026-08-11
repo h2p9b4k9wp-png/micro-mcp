@@ -13,7 +13,7 @@
     "logs": "Conversations précédentes"
   },
   "common": {
-    "send": "Envoyer la requête",
+    "send": "Demander",
     "sending": "Envoi en cours...",
     "delete": "Supprimer",
     "create": "Créer",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "L'IA génère des réponses en fonction du contexte de la conversation et du contenu de tout document joint.",
-    "promptSectionLabel": "Envoyer une requête à l'IA",
+    "promptSectionLabel": "Que voulez-vous demander ?",
     "removeAttachment": "Supprimer la pièce jointe {name}",
     "attachFile": "Joindre un fichier/une photo",
     "webSearchToggle": "Activer/désactiver la recherche web",

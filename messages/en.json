@@ -13,7 +13,7 @@
     "logs": "Past Conversations"
   },
   "common": {
-    "send": "Send Prompt",
+    "send": "Ask",
     "sending": "Sending...",
     "delete": "Delete",
     "create": "Create",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "The AI generates answers based on the conversation context and any attached document content.",
-    "promptSectionLabel": "Send AI Prompt",
+    "promptSectionLabel": "What would you like to ask?",
     "removeAttachment": "Remove attachment {name}",
     "attachFile": "Attach file/photo",
     "webSearchToggle": "Toggle web search",

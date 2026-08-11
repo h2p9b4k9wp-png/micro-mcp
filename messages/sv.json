@@ -13,7 +13,7 @@
     "logs": "Tidigare konversationer"
   },
   "common": {
-    "send": "Skicka fråga",
+    "send": "Fråga",
     "sending": "Skickar...",
     "delete": "Ta bort",
     "create": "Skapa",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "AI:n genererar svar baserat på konversationskontexten och innehållet i bifogade dokument.",
-    "promptSectionLabel": "Skicka fråga till AI",
+    "promptSectionLabel": "Vad vill du fråga?",
     "removeAttachment": "Ta bort bilaga {name}",
     "attachFile": "Bifoga fil/foto",
     "webSearchToggle": "Växla webbsökning",

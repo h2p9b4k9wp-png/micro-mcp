@@ -13,7 +13,7 @@
     "logs": "Conversas anteriores"
   },
   "common": {
-    "send": "Enviar prompt",
+    "send": "Perguntar",
     "sending": "Enviando...",
     "delete": "Excluir",
     "create": "Criar",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "A IA gera respostas com base no contexto da conversa e no conteúdo de qualquer documento anexado.",
-    "promptSectionLabel": "Enviar prompt para a IA",
+    "promptSectionLabel": "O que você quer perguntar?",
     "removeAttachment": "Remover anexo {name}",
     "attachFile": "Anexar arquivo/foto",
     "webSearchToggle": "Ativar/desativar busca na web",
