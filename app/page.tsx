@@ -1542,13 +1542,32 @@ export default function HomePage() {
   // 있으면(예: "기존 분석 결과"에 반영된 자료 수 ≠ 지금 이 자료를 뺀 나머지 자료 수) 그 위에
   // 증분 업데이트를 쌓지 않고 전체 재분석으로 자동 전환합니다 — 사용자가 수동으로 "이 교수님
   // 분석" 버튼을 누르지 않아도 다음 업로드에서 스스로 어긋남이 바로잡힙니다.
-  const recomputeProfessorAnalysisIncremental = async (professorId: string, newDocs: ProfessorDocument[]) => {
+  //
+  // 💡 [수정] 자료 목록을 React state(professorDocuments)에서 읽지 않고 인자로 받습니다.
+  //
+  // 이 함수는 handleUploadProfessorFiles가 **실행 중일 때** 호출되는데, 그 함수는 방금
+  // setProfessorDocuments로 새 문서를 넣어둔 상태입니다. 하지만 setState는 재렌더를 예약할
+  // 뿐이고, 실행 중인 함수가 클로저로 붙잡은 professorDocuments 값은 절대 바뀌지 않습니다.
+  // 그래서 여기서 state를 읽으면 **방금 올린 파일이 빠진 목록**을 보게 됩니다.
+  //
+  // 그 결과 실제로 이런 일이 벌어지고 있었습니다:
+  //   - 첫 업로드: 목록이 비어 있어 아래 Full이 docs.length === 0으로 조용히 반환 → 분석 없음
+  //   - 두 번째 업로드: 첫 파일 1개만으로 분석 → "자료 1개로 본 첫인상"
+  //   - 이후로도 분석이 영원히 한 발짝씩 뒤처짐
+  //   - document_count가 항상 어긋나므로 아래 증분 조건이 한 번도 참이 되지 않음
+  //     (= 비용을 아끼려고 만든 증분 경로가 통째로 죽고 매번 더 비싼 Full이 돌고 있었음)
+  const recomputeProfessorAnalysisIncremental = async (
+    professorId: string,
+    newDocs: ProfessorDocument[],
+    // 이 교수님의 **업로드 후** 전체 자료 목록. 호출부가 방금 insert한 문서까지 포함해
+    // 넘겨줍니다. 생략하면 state에서 읽습니다(회로도 클릭처럼 업로드와 무관한 경로용).
+    allDocsOverride?: ProfessorDocument[]
+  ) => {
     if (newDocs.length === 0) return;
     const existingAnalysis = professorAnalyses.find(a => a.professor_id === professorId);
+    const allDocs = allDocsOverride ?? professorDocuments.filter(d => d.professor_id === professorId);
     const newDocIds = new Set(newDocs.map(d => d.id));
-    const previousDocsCount = professorDocuments.filter(
-      d => d.professor_id === professorId && !newDocIds.has(d.id)
-    ).length;
+    const previousDocsCount = allDocs.filter(d => !newDocIds.has(d.id)).length;
 
     if (existingAnalysis && existingAnalysis.document_count === previousDocsCount) {
       const professor = professors.find(p => p.id === professorId);
@@ -1566,8 +1585,8 @@ export default function HomePage() {
     }
 
     // 분석 결과가 아예 없거나(첫 업로드), 있어도 자료 수가 어긋나 있으면(이전 실패 흔적)
-    // 안전하게 전체 자료로 다시 분석합니다.
-    await recomputeProfessorAnalysisFull(professorId);
+    // 안전하게 전체 자료로 다시 분석합니다. 여기도 state가 아니라 방금 만든 목록을 넘깁니다.
+    await recomputeProfessorAnalysisFull(professorId, allDocs);
   };
 
   // 💡 [수정] 자료를 삭제했을 때, 또는 회로도/버튼에서 수동으로 다시 분석할 때 씁니다. 이
@@ -1578,7 +1597,16 @@ export default function HomePage() {
   // 정확한 자료 목록을 넘기기 위함입니다.
   const recomputeProfessorAnalysisFull = async (professorId: string, docsOverride?: ProfessorDocument[]) => {
     const docs = docsOverride ?? professorDocuments.filter(d => d.professor_id === professorId);
-    if (docs.length === 0) return;
+    // 💡 [수정] 예전에는 여기서 그냥 `return`했습니다. 자료가 0개면 분석할 게 없는 게 맞지만,
+    // 실제로는 클로저가 낡아서 방금 올린 파일이 안 보이던 상황이 이 조용한 반환에 묻혀
+    // "첫 업로드에는 아무 일도 안 일어남"으로 나타났습니다 — 에러도 로그도 없이요.
+    // 자료를 지워서 0개가 된 경우는 호출부가 professor_analysis 행 자체를 지우므로 여기까지
+    // 오지 않습니다. 즉 여기 도달했다는 건 정상 경로가 아니라는 뜻이라, 화면에 남깁니다.
+    if (docs.length === 0) {
+      console.error(`[professor-analysis] 분석할 자료가 없습니다 (professor ${professorId})`);
+      setProfessorAnalysisError(t('professors.errors.noDocumentsToAnalyze'));
+      return;
+    }
     const professor = professors.find(p => p.id === professorId);
 
     await runProfessorAnalysis(
@@ -1736,6 +1764,11 @@ export default function HomePage() {
 
     setIsUploadingProfessorDoc(true);
     const newlyInserted: ProfessorDocument[] = [];
+    // 💡 [신규] 업로드 전 이 교수님의 자료 목록을 여기서 미리 떠둡니다. 아래에서
+    // setProfessorDocuments를 부르더라도 이 함수가 붙잡고 있는 professorDocuments 값은
+    // 바뀌지 않으므로, 재계산에 넘길 "업로드 후 전체 목록"을 직접 만들어야 합니다
+    // (recomputeProfessorAnalysisIncremental 주석 참고).
+    const docsBeforeUpload = professorDocuments.filter(d => d.professor_id === professorId);
     try {
       for (const file of filesToUpload) {
         if (file.size > uploadLimitBytes) {
@@ -1817,7 +1850,12 @@ export default function HomePage() {
     }
 
     if (newlyInserted.length > 0) {
-      await recomputeProfessorAnalysisIncremental(professorId, newlyInserted);
+      // 방금 올린 문서까지 포함한 "업로드 후" 전체 목록을 함께 넘깁니다 — 이게 없으면
+      // 재계산이 방금 올린 파일을 못 보고 한 발짝 뒤처진 결과를 만듭니다.
+      await recomputeProfessorAnalysisIncremental(professorId, newlyInserted, [
+        ...newlyInserted,
+        ...docsBeforeUpload,
+      ]);
     }
   };
 

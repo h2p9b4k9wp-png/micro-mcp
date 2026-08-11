@@ -256,7 +256,8 @@
       "nameRequired": "Vul de naam van de docent in.",
       "selectProfessorFirst": "Selecteer eerst een docent of registreer een nieuwe.",
       "docDeleteFailed": "Kon het document niet verwijderen: {error}",
-      "professorDeleteFailed": "Kon de docent niet verwijderen: {error}"
+      "professorDeleteFailed": "Kon de docent niet verwijderen: {error}",
+      "noDocumentsToAnalyze": "Geen materiaal gevonden om te analyseren. Upload het opnieuw."
     },
     "deleteConfirm": "\"{name}\" en alle geregistreerde materialen verwijderen? Dit kan niet ongedaan worden gemaakt.",
     "upgradeMaxProfessors": "Het gratis abonnement staat maximaal {max} docenten toe. Upgrade to Pro — {price}",

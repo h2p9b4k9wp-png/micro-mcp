@@ -256,7 +256,8 @@
       "nameRequired": "Please enter a name.",
       "selectProfessorFirst": "Please select a lecturer or professor, or register a new one first.",
       "docDeleteFailed": "Could not delete the document: {error}",
-      "professorDeleteFailed": "Could not delete the lecturer or professor: {error}"
+      "professorDeleteFailed": "Could not delete the lecturer or professor: {error}",
+      "noDocumentsToAnalyze": "No materials were found to analyze. Please upload them again."
     },
     "deleteConfirm": "Delete \"{name}\" and all their registered materials? This cannot be undone.",
     "upgradeMaxProfessors": "The free tier allows up to {max} lecturers or professors. Upgrade to Pro — {price}",

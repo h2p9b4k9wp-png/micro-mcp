@@ -256,7 +256,8 @@
       "nameRequired": "Bitte geben Sie den Namen des Professors ein.",
       "selectProfessorFirst": "Bitte wählen Sie zuerst einen Professor aus oder registrieren Sie einen neuen.",
       "docDeleteFailed": "Das Dokument konnte nicht gelöscht werden: {error}",
-      "professorDeleteFailed": "Der Professor konnte nicht gelöscht werden: {error}"
+      "professorDeleteFailed": "Der Professor konnte nicht gelöscht werden: {error}",
+      "noDocumentsToAnalyze": "Es wurden keine Materialien zum Analysieren gefunden. Bitte erneut hochladen."
     },
     "deleteConfirm": "„{name}\" und alle registrierten Materialien löschen? Dies kann nicht rückgängig gemacht werden.",
     "upgradeMaxProfessors": "Die kostenlose Stufe erlaubt bis zu {max} Professoren. Upgrade to Pro — {price}",

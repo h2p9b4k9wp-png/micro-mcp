@@ -256,7 +256,8 @@
       "nameRequired": "교수님 이름을 입력해주세요.",
       "selectProfessorFirst": "먼저 교수님을 선택하거나 새로 등록해주세요.",
       "docDeleteFailed": "자료를 삭제하지 못했어요: {error}",
-      "professorDeleteFailed": "교수님을 삭제하지 못했어요: {error}"
+      "professorDeleteFailed": "교수님을 삭제하지 못했어요: {error}",
+      "noDocumentsToAnalyze": "분석할 자료를 찾지 못했어요. 자료를 다시 올려주세요."
     },
     "deleteConfirm": "\"{name}\" 교수님과 등록된 자료를 모두 삭제할까요? 이 작업은 되돌릴 수 없어요.",
     "upgradeMaxProfessors": "무료 등급은 교수님을 {max}명까지만 등록할 수 있어요. Upgrade to Pro — {price}",

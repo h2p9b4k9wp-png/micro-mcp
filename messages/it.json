@@ -256,7 +256,8 @@
       "nameRequired": "Inserisci il nome del professore.",
       "selectProfessorFirst": "Seleziona prima un professore o registrane uno nuovo.",
       "docDeleteFailed": "Impossibile eliminare il documento: {error}",
-      "professorDeleteFailed": "Impossibile eliminare il professore: {error}"
+      "professorDeleteFailed": "Impossibile eliminare il professore: {error}",
+      "noDocumentsToAnalyze": "Nessun materiale da analizzare. Caricalo di nuovo."
     },
     "deleteConfirm": "Eliminare \"{name}\" e tutti i materiali registrati? Questa azione non può essere annullata.",
     "upgradeMaxProfessors": "Il piano gratuito consente fino a {max} professori. Upgrade to Pro — {price}",

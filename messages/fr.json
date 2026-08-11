@@ -256,7 +256,8 @@
       "nameRequired": "Veuillez saisir le nom du professeur.",
       "selectProfessorFirst": "Veuillez d'abord sélectionner un professeur ou en enregistrer un nouveau.",
       "docDeleteFailed": "Impossible de supprimer le document : {error}",
-      "professorDeleteFailed": "Impossible de supprimer le professeur : {error}"
+      "professorDeleteFailed": "Impossible de supprimer le professeur : {error}",
+      "noDocumentsToAnalyze": "Aucun document à analyser n’a été trouvé. Merci de les renvoyer."
     },
     "deleteConfirm": "Supprimer « {name} » et tous ses documents enregistrés ? Cette action est irréversible.",
     "upgradeMaxProfessors": "L'offre gratuite permet d'enregistrer jusqu'à {max} professeurs. Upgrade to Pro — {price}",

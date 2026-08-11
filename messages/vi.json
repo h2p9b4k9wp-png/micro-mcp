@@ -256,7 +256,8 @@
       "nameRequired": "Vui lòng nhập tên giáo sư.",
       "selectProfessorFirst": "Vui lòng chọn giáo sư hoặc đăng ký mới trước.",
       "docDeleteFailed": "Không thể xóa tài liệu: {error}",
-      "professorDeleteFailed": "Không thể xóa giáo sư: {error}"
+      "professorDeleteFailed": "Không thể xóa giáo sư: {error}",
+      "noDocumentsToAnalyze": "Không tìm thấy tài liệu để phân tích. Vui lòng tải lên lại."
     },
     "deleteConfirm": "Xóa \"{name}\" và toàn bộ tài liệu đã đăng ký? Thao tác này không thể hoàn tác.",
     "upgradeMaxProfessors": "Gói miễn phí chỉ cho phép đăng ký tối đa {max} giáo sư. Upgrade to Pro — {price}",

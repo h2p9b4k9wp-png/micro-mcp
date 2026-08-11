@@ -256,7 +256,8 @@
       "nameRequired": "Informe o nome do professor.",
       "selectProfessorFirst": "Selecione um professor ou registre um novo primeiro.",
       "docDeleteFailed": "Não foi possível excluir o documento: {error}",
-      "professorDeleteFailed": "Não foi possível excluir o professor: {error}"
+      "professorDeleteFailed": "Não foi possível excluir o professor: {error}",
+      "noDocumentsToAnalyze": "Nenhum material encontrado para analisar. Envie novamente."
     },
     "deleteConfirm": "Excluir \"{name}\" e todos os materiais registrados? Isso não pode ser desfeito.",
     "upgradeMaxProfessors": "O plano gratuito permite até {max} professores. Upgrade to Pro — {price}",

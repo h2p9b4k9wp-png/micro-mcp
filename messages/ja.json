@@ -256,7 +256,8 @@
       "nameRequired": "教授の名前を入力してください。",
       "selectProfessorFirst": "まず教授を選択するか、新規登録してください。",
       "docDeleteFailed": "資料を削除できませんでした：{error}",
-      "professorDeleteFailed": "教授を削除できませんでした：{error}"
+      "professorDeleteFailed": "教授を削除できませんでした：{error}",
+      "noDocumentsToAnalyze": "分析する資料が見つかりませんでした。もう一度アップロードしてください。"
     },
     "deleteConfirm": "「{name}」教授と登録済みの資料をすべて削除しますか？この操作は元に戻せません。",
     "upgradeMaxProfessors": "無料プランでは教授を{max}人までしか登録できません。Upgrade to Pro — {price}",

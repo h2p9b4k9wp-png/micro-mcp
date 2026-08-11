@@ -256,7 +256,8 @@
       "nameRequired": "Ange ett namn.",
       "selectProfessorFirst": "Välj en föreläsare eller professor, eller registrera en ny först.",
       "docDeleteFailed": "Kunde inte ta bort dokumentet: {error}",
-      "professorDeleteFailed": "Kunde inte ta bort föreläsaren eller professorn: {error}"
+      "professorDeleteFailed": "Kunde inte ta bort föreläsaren eller professorn: {error}",
+      "noDocumentsToAnalyze": "Inget material hittades att analysera. Ladda upp igen."
     },
     "deleteConfirm": "Ta bort \"{name}\" och allt deras registrerade material? Detta kan inte ångras.",
     "upgradeMaxProfessors": "Gratisversionen tillåter upp till {max} föreläsare eller professorer. Uppgradera till Pro — {price}",

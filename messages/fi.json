@@ -256,7 +256,8 @@
       "nameRequired": "Anna nimi.",
       "selectProfessorFirst": "Valitse luennoitsija tai professori, tai rekisteröi ensin uusi.",
       "docDeleteFailed": "Asiakirjaa ei voitu poistaa: {error}",
-      "professorDeleteFailed": "Luennoitsijaa tai professoria ei voitu poistaa: {error}"
+      "professorDeleteFailed": "Luennoitsijaa tai professoria ei voitu poistaa: {error}",
+      "noDocumentsToAnalyze": "Analysoitavia aineistoja ei löytynyt. Lähetä ne uudelleen."
     },
     "deleteConfirm": "Poistetaanko \"{name}\" ja kaikki heidän rekisteröidyt materiaalinsa? Tätä ei voi peruuttaa.",
     "upgradeMaxProfessors": "Ilmaisversiossa voi olla enintään {max} luennoitsijaa tai professoria. Päivitä Pro-versioon — {price}",
