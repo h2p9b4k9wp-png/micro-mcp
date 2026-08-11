@@ -13,7 +13,7 @@
     "logs": "Aiemmat keskustelut"
   },
   "common": {
-    "send": "Lähetä kehote",
+    "send": "Kysy",
     "sending": "Lähetetään...",
     "delete": "Poista",
     "create": "Luo",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "AI muodostaa vastauksia keskusteluyhteyden ja liitettyjen tiedostojen sisällön perusteella.",
-    "promptSectionLabel": "Lähetä kehote AI:lle",
+    "promptSectionLabel": "Mitä haluat kysyä?",
     "removeAttachment": "Poista liite {name}",
     "attachFile": "Liitä tiedosto/kuva",
     "webSearchToggle": "Vaihda verkkohaku",

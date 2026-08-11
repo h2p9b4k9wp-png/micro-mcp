@@ -13,7 +13,7 @@
     "logs": "Eerdere gesprekken"
   },
   "common": {
-    "send": "Prompt versturen",
+    "send": "Vragen",
     "sending": "Versturen...",
     "delete": "Verwijderen",
     "create": "Aanmaken",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "De AI genereert antwoorden op basis van de gesprekscontext en de inhoud van bijgevoegde documenten.",
-    "promptSectionLabel": "AI-prompt versturen",
+    "promptSectionLabel": "Wat wil je vragen?",
     "removeAttachment": "Bijlage {name} verwijderen",
     "attachFile": "Bestand/foto bijvoegen",
     "webSearchToggle": "Webzoeken aan/uit",

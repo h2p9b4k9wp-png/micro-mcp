@@ -13,7 +13,7 @@
     "logs": "Frühere Unterhaltungen"
   },
   "common": {
-    "send": "Prompt senden",
+    "send": "Fragen",
     "sending": "Wird gesendet...",
     "delete": "Löschen",
     "create": "Erstellen",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "Die KI erstellt Antworten basierend auf dem Gesprächskontext und dem Inhalt angehängter Dokumente.",
-    "promptSectionLabel": "KI-Prompt senden",
+    "promptSectionLabel": "Was möchtest du fragen?",
     "removeAttachment": "Anhang {name} entfernen",
     "attachFile": "Datei/Foto anhängen",
     "webSearchToggle": "Websuche ein-/ausschalten",

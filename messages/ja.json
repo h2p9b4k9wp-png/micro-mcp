@@ -13,7 +13,7 @@
     "logs": "過去の会話"
   },
   "common": {
-    "send": "プロンプト送信",
+    "send": "質問する",
     "sending": "送信中...",
     "delete": "削除",
     "create": "作成",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "添付されたドキュメントの内容と会話の文脈をもとに、AIが実際の回答を導き出します。",
-    "promptSectionLabel": "AIプロンプト送信",
+    "promptSectionLabel": "何を聞きますか？",
     "removeAttachment": "{name} の添付を削除",
     "attachFile": "ファイル/写真を添付",
     "webSearchToggle": "ウェブ検索のオン/オフ",

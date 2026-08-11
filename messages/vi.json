@@ -13,7 +13,7 @@
     "logs": "Cuộc trò chuyện trước"
   },
   "common": {
-    "send": "Gửi lệnh",
+    "send": "Hỏi",
     "sending": "Đang gửi...",
     "delete": "Xóa",
     "create": "Tạo",
@@ -30,7 +30,7 @@
   },
   "workspace": {
     "subtitle": "AI tạo câu trả lời dựa trên ngữ cảnh cuộc trò chuyện và nội dung tài liệu đã đính kèm.",
-    "promptSectionLabel": "Gửi lệnh cho AI",
+    "promptSectionLabel": "Bạn muốn hỏi gì?",
     "removeAttachment": "Xóa tệp đính kèm {name}",
     "attachFile": "Đính kèm tệp/ảnh",
     "webSearchToggle": "Bật/tắt tìm kiếm web",
