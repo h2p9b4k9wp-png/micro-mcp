@@ -787,5 +787,30 @@
         "desc": "Hoe meer materiaal, hoe nauwkeuriger"
       }
     }
+  },
+  "upload": {
+    "hint": "Tot {max} · Ondersteund: {formats}",
+    "errors": {
+      "tooLarge": "\"{fileName}\" is {size}, maar de limiet is {max}.",
+      "tooLargeUpgradeHint": "Met Pro kan het tot 20MB.",
+      "emptyText": "Geen tekst gevonden in \"{fileName}\". Documenten met alleen afbeeldingen kunnen nog niet gelezen worden — upload een bestand met tekst.",
+      "emptyTextWithFormat": "Geen tekst gevonden in deze {format} (\"{fileName}\"). Dia's met alleen afbeeldingen en gescande documenten worden nog niet ondersteund — upload een bestand met tekst.",
+      "quotaExceeded": "Je hebt de bestandslimiet van deze maand ({limit}) opgebruikt. Volgende maand is er weer ruimte, of ga meteen verder met Pro.",
+      "rateLimited": "Te veel verzoeken. Probeer het over een minuut opnieuw.",
+      "parseFailed": "Kon \"{fileName}\" niet lezen. {reason}",
+      "serverError": "Er ging iets mis bij het verwerken van \"{fileName}\". Probeer het zo opnieuw of sla het op in een ander formaat.",
+      "generic": "Kon \"{fileName}\" niet uploaden. {error}",
+      "unknown": "Kon \"{fileName}\" niet uploaden. Probeer het zo opnieuw.",
+      "reasons": {
+        "hwp_too_old": "Deze HWP-versie is te oud. Open het in Hangul en sla het op als HWPX of PDF.",
+        "hwp_encrypted": "Dit HWP-bestand heeft een wachtwoord. Verwijder het wachtwoord en probeer opnieuw.",
+        "legacy_office": "Oud Office-formaat (.doc/.ppt). Open het in Word of PowerPoint en sla het op als .docx/.pptx.",
+        "too_large": "Het bestand is te groot.",
+        "corrupt": "Het bestand is mogelijk beschadigd. Sla het opnieuw op en probeer het nog eens."
+      },
+      "platformTooLarge": "\"{fileName}\" is geweigerd voordat het de server bereikte omdat het te groot is. De limiet is {max} — splits de dia's of verklein de afbeeldingen.",
+      "timeout": "Het verwerken van \"{fileName}\" duurde te lang. Dit gebeurt bij grote of complexe bestanden — splits het op in kleinere delen.",
+      "httpStatus": "Kon \"{fileName}\" niet uploaden (fout {status}). Probeer het zo opnieuw."
+    }
   }
 }

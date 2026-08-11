@@ -787,5 +787,30 @@
         "desc": "교수님 자료가 쌓일수록 정확해져요"
       }
     }
+  },
+  "upload": {
+    "hint": "최대 {max} · 지원 형식: {formats}",
+    "errors": {
+      "tooLarge": "\"{fileName}\"은(는) {size}인데, 최대 {max}까지만 올릴 수 있어요.",
+      "tooLargeUpgradeHint": "Pro로 올리면 20MB까지 가능해요.",
+      "emptyText": "\"{fileName}\"에서 글자를 찾지 못했어요. 이미지로만 된 문서는 아직 글자를 읽지 못해요 — 텍스트가 들어간 파일로 다시 올려주세요.",
+      "emptyTextWithFormat": "{format}에서 글자를 찾지 못했어요(\"{fileName}\"). 이미지로만 된 슬라이드나 스캔 문서는 아직 지원하지 않아요 — 텍스트가 들어간 파일로 다시 올려주세요.",
+      "quotaExceeded": "이번 달 파일 처리 한도({limit}회)를 다 썼어요. 다음 달에 다시 열리고, Pro로 올리면 지금 바로 계속할 수 있어요.",
+      "rateLimited": "요청이 너무 빨라요. 1분 뒤에 다시 시도해주세요.",
+      "parseFailed": "\"{fileName}\"을(를) 읽지 못했어요. {reason}",
+      "serverError": "\"{fileName}\" 처리 중 문제가 생겼어요. 잠시 후 다시 시도해주세요. 계속 안 되면 다른 형식으로 저장해서 올려보세요.",
+      "generic": "\"{fileName}\"을(를) 올리지 못했어요. {error}",
+      "unknown": "\"{fileName}\"을(를) 올리지 못했어요. 잠시 후 다시 시도해주세요.",
+      "reasons": {
+        "hwp_too_old": "너무 옛날 한글 버전이에요. 한글에서 열어 HWPX나 PDF로 저장해 다시 올려주세요.",
+        "hwp_encrypted": "암호가 걸린 한글 파일이에요. 암호를 풀고 다시 올려주세요.",
+        "legacy_office": "옛 오피스 형식(.doc/.ppt)이에요. 워드나 파워포인트에서 열어 .docx/.pptx로 저장해 다시 올려주세요.",
+        "too_large": "파일이 너무 큽니다.",
+        "corrupt": "파일이 손상됐을 수 있어요. 다시 저장한 뒤 올려보세요."
+      },
+      "platformTooLarge": "\"{fileName}\"이(가) 너무 커서 서버가 받기 전에 거절했어요. 최대 {max}까지 올릴 수 있어요 — 슬라이드를 나누거나 이미지를 줄여서 다시 시도해주세요.",
+      "timeout": "\"{fileName}\" 처리 시간이 초과됐어요. 파일이 크거나 복잡할 때 생깁니다 — 더 작게 나눠서 올려주세요.",
+      "httpStatus": "\"{fileName}\"을(를) 올리지 못했어요 (오류 코드 {status}). 잠시 후 다시 시도해주세요."
+    }
   }
 }

@@ -787,5 +787,30 @@
         "desc": "Quanto mais material, mais preciso"
       }
     }
+  },
+  "upload": {
+    "hint": "Até {max} · Formatos: {formats}",
+    "errors": {
+      "tooLarge": "\"{fileName}\" tem {size}, mas o limite é {max}.",
+      "tooLargeUpgradeHint": "O Pro aumenta o limite para 20MB.",
+      "emptyText": "Nenhum texto encontrado em \"{fileName}\". Documentos só com imagens ainda não podem ser lidos — envie um arquivo com texto.",
+      "emptyTextWithFormat": "Nenhum texto encontrado neste {format} (\"{fileName}\"). Slides só de imagem e documentos digitalizados ainda não têm suporte — envie um arquivo com texto.",
+      "quotaExceeded": "Você usou o limite de arquivos deste mês ({limit}). Ele reinicia no próximo mês, ou o Pro permite continuar agora.",
+      "rateLimited": "Muitas solicitações. Tente novamente em um minuto.",
+      "parseFailed": "Não foi possível ler \"{fileName}\". {reason}",
+      "serverError": "Houve um problema ao processar \"{fileName}\". Tente novamente em instantes ou salve em outro formato.",
+      "generic": "Não foi possível enviar \"{fileName}\". {error}",
+      "unknown": "Não foi possível enviar \"{fileName}\". Tente novamente em instantes.",
+      "reasons": {
+        "hwp_too_old": "Esta versão de HWP é antiga demais. Abra no Hangul e salve como HWPX ou PDF.",
+        "hwp_encrypted": "Este arquivo HWP tem senha. Remova a senha e tente novamente.",
+        "legacy_office": "Formato antigo do Office (.doc/.ppt). Abra no Word ou PowerPoint e salve como .docx/.pptx.",
+        "too_large": "O arquivo é grande demais.",
+        "corrupt": "O arquivo pode estar danificado. Salve-o novamente e tente de novo."
+      },
+      "platformTooLarge": "\"{fileName}\" foi recusado antes de chegar ao servidor por ser grande demais. O limite é {max} — tente dividir os slides ou reduzir as imagens.",
+      "timeout": "O processamento de \"{fileName}\" excedeu o tempo. Isso acontece com arquivos grandes ou complexos — divida em partes menores.",
+      "httpStatus": "Não foi possível enviar \"{fileName}\" (erro {status}). Tente novamente em instantes."
+    }
   }
 }

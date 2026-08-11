@@ -7,7 +7,24 @@ import { inflateRaw } from 'pako';
 
 export const MAX_EXTRACT_FILE_BYTES = 20 * 1024 * 1024;
 
-export class FileExtractError extends Error {}
+// 💡 [수정] 실패 사유를 기계가 읽을 수 있는 code로도 함께 실어 보냅니다. message는 예전처럼
+// 한국어 문장이라 서버 로그와 게스트 라우트에서 그대로 쓰이지만, 로그인 사용자 화면은
+// 이 code로 사용자 언어 문구를 조립합니다(lib/upload-failure-message.ts) — 그러지 않으면
+// 어떤 언어로 앱을 쓰든 이 문장만 한국어로 튀어나옵니다.
+export type FileExtractErrorCode =
+  | 'hwp_too_old'
+  | 'hwp_encrypted'
+  | 'legacy_office'
+  | 'too_large'
+  | 'corrupt';
+
+export class FileExtractError extends Error {
+  code: FileExtractErrorCode;
+  constructor(message: string, code: FileExtractErrorCode = 'corrupt') {
+    super(message);
+    this.code = code;
+  }
+}
 
 const FORMAT_LABELS: Record<string, string> = {
   pdf: 'PDF',
@@ -123,12 +140,12 @@ async function extractTextFromHwp(buffer: Buffer): Promise<string> {
     cfb = CFB.parse(buffer);
   } catch {
     // HWP 3.0 등 아주 옛날 버전은 CFBF 구조 자체가 아니라서 여기서 실패합니다.
-    throw new FileExtractError('너무 옛날 버전이에요. 한글에서 열어 HWPX나 PDF로 저장해주세요.');
+    throw new FileExtractError('너무 옛날 버전이에요. 한글에서 열어 HWPX나 PDF로 저장해주세요.', 'hwp_too_old');
   }
 
   const fileHeaderEntry = CFB.find(cfb, '/FileHeader');
   if (!fileHeaderEntry) {
-    throw new FileExtractError('너무 옛날 버전이에요. 한글에서 열어 HWPX나 PDF로 저장해주세요.');
+    throw new FileExtractError('너무 옛날 버전이에요. 한글에서 열어 HWPX나 PDF로 저장해주세요.', 'hwp_too_old');
   }
 
   const fileHeader = Buffer.from(fileHeaderEntry.content as Uint8Array);
@@ -138,7 +155,7 @@ async function extractTextFromHwp(buffer: Buffer): Promise<string> {
   const isEncrypted = (attributes & 0x2) !== 0;
 
   if (isEncrypted) {
-    throw new FileExtractError('암호가 걸린 한글 파일은 읽을 수 없어요. 암호를 풀고 다시 올려주세요');
+    throw new FileExtractError('암호가 걸린 한글 파일은 읽을 수 없어요. 암호를 풀고 다시 올려주세요', 'hwp_encrypted');
   }
 
   const sectionPaths = cfb.FullPaths
@@ -242,12 +259,12 @@ export async function extractFileText(
   // 굳이 전부 디코딩하지 않고 빠르게 거부하기 위함입니다.
   const approxBytes = (base64Content.length * 3) / 4;
   if (approxBytes > MAX_EXTRACT_FILE_BYTES) {
-    throw new FileExtractError('파일이 너무 큽니다 (20MB 초과).');
+    throw new FileExtractError('파일이 너무 큽니다 (20MB 초과).', 'too_large');
   }
 
   const buffer = Buffer.from(base64Content, 'base64');
   if (buffer.length > MAX_EXTRACT_FILE_BYTES) {
-    throw new FileExtractError('파일이 너무 큽니다 (20MB 초과).');
+    throw new FileExtractError('파일이 너무 큽니다 (20MB 초과).', 'too_large');
   }
 
   const ext = resolveFileExtension(fileName, mimeType);
@@ -293,7 +310,7 @@ export async function extractFileText(
     // 완전히 깨진 문자열만 남습니다 — 조용히 넘기지 않고 재저장을 명확히 안내합니다
     // (app/api/chat의 같은 형식 처리와 동일한 판단, CLAUDE.md 참고).
     if (ext === 'doc' || ext === 'ppt') {
-      throw new FileExtractError('이전 버전 파일이에요. 워드/파워포인트에서 열어 .docx/.pptx로 저장해 다시 올려주세요.');
+      throw new FileExtractError('이전 버전 파일이에요. 워드/파워포인트에서 열어 .docx/.pptx로 저장해 다시 올려주세요.', 'legacy_office');
     }
 
     // 💡 [신규] 위에서 처리한 이진 포맷(hwp/xlsx/xls/csv/pdf/docx/pptx/hwpx)이 아니면, 확장자
@@ -308,6 +325,6 @@ export async function extractFileText(
     if (err instanceof FileExtractError) throw err;
     console.error(`파일 텍스트 추출 실패 (${fileName}):`, err);
     const label = FORMAT_LABELS[ext] || `.${ext || '확장자 없음'}`;
-    throw new FileExtractError(`${label} 파일을 읽는 중 오류가 발생했어요. 파일이 손상되지 않았는지 확인해주세요.`);
+    throw new FileExtractError(`${label} 파일을 읽는 중 오류가 발생했어요. 파일이 손상되지 않았는지 확인해주세요.`, 'corrupt');
   }
 }

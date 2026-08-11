@@ -787,5 +787,30 @@
         "desc": "The more materials, the sharper it gets"
       }
     }
+  },
+  "upload": {
+    "hint": "Up to {max} · Supported: {formats}",
+    "errors": {
+      "tooLarge": "\"{fileName}\" is {size}, but the limit is {max}.",
+      "tooLargeUpgradeHint": "Pro raises the limit to 20MB.",
+      "emptyText": "No text was found in \"{fileName}\". Image-only documents can't be read yet — please upload a file that contains text.",
+      "emptyTextWithFormat": "No text was found in this {format} (\"{fileName}\"). Image-only slides and scanned documents aren't supported yet — please upload a file that contains text.",
+      "quotaExceeded": "You've used this month's file limit ({limit}). It resets next month, or Pro lets you keep going now.",
+      "rateLimited": "Too many uploads at once. Please try again in a minute.",
+      "parseFailed": "Couldn't read \"{fileName}\". {reason}",
+      "serverError": "Something went wrong processing \"{fileName}\". Please try again shortly, or re-save it in another format.",
+      "generic": "Couldn't upload \"{fileName}\". {error}",
+      "unknown": "Couldn't upload \"{fileName}\". Please try again shortly.",
+      "reasons": {
+        "hwp_too_old": "This HWP version is too old. Open it in Hangul and save as HWPX or PDF, then try again.",
+        "hwp_encrypted": "This HWP file is password-protected. Remove the password and try again.",
+        "legacy_office": "This is a legacy Office format (.doc/.ppt). Open it in Word or PowerPoint and save as .docx/.pptx, then try again.",
+        "too_large": "The file is too large.",
+        "corrupt": "The file may be damaged. Try re-saving it and uploading again."
+      },
+      "platformTooLarge": "\"{fileName}\" was rejected before it reached the server because it's too large. The limit is {max} — try splitting the slides or shrinking the images.",
+      "timeout": "Processing \"{fileName}\" timed out. This happens with large or complex files — try splitting it into smaller parts.",
+      "httpStatus": "Couldn't upload \"{fileName}\" (error {status}). Please try again shortly."
+    }
   }
 }

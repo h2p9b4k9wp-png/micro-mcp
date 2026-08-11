@@ -787,5 +787,30 @@
         "desc": "資料が増えるほど精度が上がります"
       }
     }
+  },
+  "upload": {
+    "hint": "最大 {max} ・ 対応形式: {formats}",
+    "errors": {
+      "tooLarge": "「{fileName}」は {size} ですが、アップロードは最大 {max} までです。",
+      "tooLargeUpgradeHint": "Proなら20MBまで可能です。",
+      "emptyText": "「{fileName}」から文字が見つかりませんでした。画像だけの文書はまだ読み取れません — テキストが入ったファイルで再度お試しください。",
+      "emptyTextWithFormat": "この{format}（「{fileName}」）から文字が見つかりませんでした。画像だけのスライドやスキャン文書はまだ対応していません — テキストが入ったファイルで再度お試しください。",
+      "quotaExceeded": "今月のファイル処理上限（{limit}回）を使い切りました。来月に戻りますが、Proなら今すぐ続けられます。",
+      "rateLimited": "リクエストが多すぎます。1分後にもう一度お試しください。",
+      "parseFailed": "「{fileName}」を読み取れませんでした。{reason}",
+      "serverError": "「{fileName}」の処理中に問題が発生しました。しばらくして再試行するか、別の形式で保存してお試しください。",
+      "generic": "「{fileName}」をアップロードできませんでした。{error}",
+      "unknown": "「{fileName}」をアップロードできませんでした。しばらくして再試行してください。",
+      "reasons": {
+        "hwp_too_old": "HWPのバージョンが古すぎます。ハングルで開いてHWPXまたはPDFで保存し直してください。",
+        "hwp_encrypted": "パスワード付きのHWPファイルです。パスワードを解除して再度アップロードしてください。",
+        "legacy_office": "旧オフィス形式（.doc/.ppt）です。WordまたはPowerPointで開き、.docx/.pptxで保存し直してください。",
+        "too_large": "ファイルが大きすぎます。",
+        "corrupt": "ファイルが破損している可能性があります。保存し直してからお試しください。"
+      },
+      "platformTooLarge": "「{fileName}」が大きすぎて、サーバーに届く前に拒否されました。上限は {max} です — スライドを分けるか画像を軽くして再度お試しください。",
+      "timeout": "「{fileName}」の処理がタイムアウトしました。大きい・複雑なファイルで起こります — 分割してお試しください。",
+      "httpStatus": "「{fileName}」をアップロードできませんでした（エラー {status}）。しばらくして再試行してください。"
+    }
   }
 }

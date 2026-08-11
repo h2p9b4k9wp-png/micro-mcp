@@ -787,5 +787,30 @@
         "desc": "Plus il y a de documents, plus c'est précis"
       }
     }
+  },
+  "upload": {
+    "hint": "Jusqu'à {max} · Formats : {formats}",
+    "errors": {
+      "tooLarge": "« {fileName} » fait {size}, mais la limite est de {max}.",
+      "tooLargeUpgradeHint": "Pro porte la limite à 20 Mo.",
+      "emptyText": "Aucun texte trouvé dans « {fileName} ». Les documents composés uniquement d'images ne sont pas encore lisibles — envoyez un fichier contenant du texte.",
+      "emptyTextWithFormat": "Aucun texte trouvé dans ce {format} (« {fileName} »). Les diapositives en image seule et les documents scannés ne sont pas encore pris en charge — envoyez un fichier contenant du texte.",
+      "quotaExceeded": "Vous avez atteint la limite de fichiers de ce mois ({limit}). Elle se réinitialise le mois prochain, ou Pro vous permet de continuer tout de suite.",
+      "rateLimited": "Trop de requêtes. Réessayez dans une minute.",
+      "parseFailed": "Impossible de lire « {fileName} ». {reason}",
+      "serverError": "Un problème est survenu lors du traitement de « {fileName} ». Réessayez dans un instant ou enregistrez-le dans un autre format.",
+      "generic": "Impossible d'envoyer « {fileName} ». {error}",
+      "unknown": "Impossible d'envoyer « {fileName} ». Réessayez dans un instant.",
+      "reasons": {
+        "hwp_too_old": "Cette version HWP est trop ancienne. Ouvrez-la dans Hangul et enregistrez-la en HWPX ou PDF.",
+        "hwp_encrypted": "Ce fichier HWP est protégé par mot de passe. Retirez-le puis réessayez.",
+        "legacy_office": "Format Office ancien (.doc/.ppt). Ouvrez-le dans Word ou PowerPoint et enregistrez-le en .docx/.pptx.",
+        "too_large": "Le fichier est trop volumineux.",
+        "corrupt": "Le fichier est peut-être endommagé. Réenregistrez-le puis réessayez."
+      },
+      "platformTooLarge": "« {fileName} » a été refusé avant d'atteindre le serveur car trop volumineux. La limite est de {max} — divisez les diapositives ou allégez les images.",
+      "timeout": "Le traitement de « {fileName} » a expiré. Cela arrive avec des fichiers volumineux ou complexes — découpez-le en parties plus petites.",
+      "httpStatus": "Impossible d'envoyer « {fileName} » (erreur {status}). Réessayez dans un instant."
+    }
   }
 }

@@ -787,5 +787,30 @@
         "desc": "Mitä enemmän aineistoa, sitä tarkempaa"
       }
     }
+  },
+  "upload": {
+    "hint": "Enintään {max} · Tuetut muodot: {formats}",
+    "errors": {
+      "tooLarge": "\"{fileName}\" on {size}, mutta raja on {max}.",
+      "tooLargeUpgradeHint": "Pro nostaa rajan 20 megatavuun.",
+      "emptyText": "Tiedostosta \"{fileName}\" ei löytynyt tekstiä. Pelkistä kuvista koostuvia asiakirjoja ei vielä voi lukea — lataa tiedosto, jossa on tekstiä.",
+      "emptyTextWithFormat": "Tästä {format}-tiedostosta (\"{fileName}\") ei löytynyt tekstiä. Pelkkiä kuvadioja ja skannattuja asiakirjoja ei vielä tueta — lataa tiedosto, jossa on tekstiä.",
+      "quotaExceeded": "Tämän kuukauden tiedostoraja ({limit}) on käytetty. Se nollautuu ensi kuussa, tai Prolla voit jatkaa heti.",
+      "rateLimited": "Liikaa pyyntöjä. Yritä uudelleen minuutin kuluttua.",
+      "parseFailed": "Tiedostoa \"{fileName}\" ei voitu lukea. {reason}",
+      "serverError": "Tiedoston \"{fileName}\" käsittelyssä tapahtui virhe. Yritä hetken kuluttua uudelleen tai tallenna se toiseen muotoon.",
+      "generic": "Tiedostoa \"{fileName}\" ei voitu ladata. {error}",
+      "unknown": "Tiedostoa \"{fileName}\" ei voitu ladata. Yritä hetken kuluttua uudelleen.",
+      "reasons": {
+        "hwp_too_old": "Tämä HWP-versio on liian vanha. Avaa se Hangulissa ja tallenna HWPX- tai PDF-muotoon.",
+        "hwp_encrypted": "Tämä HWP-tiedosto on salasanasuojattu. Poista salasana ja yritä uudelleen.",
+        "legacy_office": "Vanha Office-muoto (.doc/.ppt). Avaa Wordissa tai PowerPointissa ja tallenna .docx/.pptx-muotoon.",
+        "too_large": "Tiedosto on liian suuri.",
+        "corrupt": "Tiedosto voi olla vioittunut. Tallenna se uudelleen ja yritä sitten uudestaan."
+      },
+      "platformTooLarge": "\"{fileName}\" hylättiin jo ennen palvelinta, koska se on liian suuri. Raja on {max} — jaa diat osiin tai pienennä kuvia.",
+      "timeout": "Tiedoston \"{fileName}\" käsittely aikakatkaistiin. Näin käy suurilla tai monimutkaisilla tiedostoilla — jaa se pienempiin osiin.",
+      "httpStatus": "Tiedostoa \"{fileName}\" ei voitu ladata (virhe {status}). Yritä hetken kuluttua uudelleen."
+    }
   }
 }

@@ -787,5 +787,30 @@
         "desc": "Cuanto más material, más preciso"
       }
     }
+  },
+  "upload": {
+    "hint": "Hasta {max} · Formatos: {formats}",
+    "errors": {
+      "tooLarge": "\"{fileName}\" pesa {size}, pero el límite es {max}.",
+      "tooLargeUpgradeHint": "Con Pro el límite sube a 20MB.",
+      "emptyText": "No se encontró texto en \"{fileName}\". Los documentos que solo tienen imágenes aún no se pueden leer: sube un archivo con texto.",
+      "emptyTextWithFormat": "No se encontró texto en este {format} (\"{fileName}\"). Las diapositivas solo de imagen y los documentos escaneados aún no se admiten: sube un archivo con texto.",
+      "quotaExceeded": "Has agotado el límite de archivos de este mes ({limit}). Se renueva el mes que viene, o con Pro puedes seguir ahora.",
+      "rateLimited": "Demasiadas solicitudes. Inténtalo de nuevo en un minuto.",
+      "parseFailed": "No se pudo leer \"{fileName}\". {reason}",
+      "serverError": "Hubo un problema al procesar \"{fileName}\". Inténtalo en un momento o guárdalo en otro formato.",
+      "generic": "No se pudo subir \"{fileName}\". {error}",
+      "unknown": "No se pudo subir \"{fileName}\". Inténtalo de nuevo en un momento.",
+      "reasons": {
+        "hwp_too_old": "Esta versión de HWP es demasiado antigua. Ábrelo en Hangul y guárdalo como HWPX o PDF.",
+        "hwp_encrypted": "Este archivo HWP tiene contraseña. Quítala e inténtalo de nuevo.",
+        "legacy_office": "Es un formato antiguo de Office (.doc/.ppt). Ábrelo en Word o PowerPoint y guárdalo como .docx/.pptx.",
+        "too_large": "El archivo es demasiado grande.",
+        "corrupt": "El archivo puede estar dañado. Vuelve a guardarlo e inténtalo otra vez."
+      },
+      "platformTooLarge": "\"{fileName}\" se rechazó antes de llegar al servidor por ser demasiado grande. El límite es {max}: prueba a dividir las diapositivas o reducir las imágenes.",
+      "timeout": "Se agotó el tiempo al procesar \"{fileName}\". Ocurre con archivos grandes o complejos: divídelo en partes más pequeñas.",
+      "httpStatus": "No se pudo subir \"{fileName}\" (error {status}). Inténtalo de nuevo en un momento."
+    }
   }
 }

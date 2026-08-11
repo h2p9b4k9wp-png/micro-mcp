@@ -31,7 +31,9 @@ import { NODE_REGISTRY } from '@/lib/blocks/defaults';
 import { loadGraphPreferences, saveGraphPreferences, clearLegacyBlockState, type GraphPreferences } from '@/lib/blocks/storage';
 import { loadUserScopedItem, saveUserScopedItem } from '@/lib/storage/user-scoped';
 import { MAX_AVOID_QUESTIONS, MAX_AVOID_QUESTION_CHARS } from '@/lib/truncate-text';
-import { MAX_CHAT_ATTACHMENTS } from '@/lib/upload-limits';
+import { buildUploadFailureMessage, formatBytes, readUploadResponse } from '@/lib/upload-failure-message';
+import { MAX_CHAT_ATTACHMENTS, MAX_REQUEST_FILE_BYTES, getEffectiveUploadLimitBytes } from '@/lib/upload-limits';
+import { PRO_LIMITS } from '@/lib/plan-limits';
 import { SUPPORTED_CHAT_IMAGE_MIME_TYPES, resizeImageDataUrl } from '@/lib/image-constraints';
 import { getPlanLimits, getPolarCheckoutUrl, getPolarCustomerPortalUrl, logProfileLookupFailure, PRO_PRICE_LABEL, type UsageLevel } from '@/lib/plan-limits';
 import { PENDING_TRIAL_RESULT_KEY, type PendingTrialResult } from '@/lib/pending-trial-result';
@@ -928,6 +930,22 @@ export default function HomePage() {
   // 💡 [신규] "교수님 자료로 만들기"에서 지금 고른 교수님의 자료 수와, 성향 블록이 실제로
   // 만들어지는지(= 화면에 "성향 반영" 표시를 띄울지). buildProfessorContext는 confident한
   // 카테고리가 하나도 없으면 빈 문자열을 돌려주므로, 길이만 보면 충분합니다.
+  // 💡 [신규] 등급별 파일 크기 상한(무료 5MB / Pro 20MB) — 서버(/api/extract)가 실제로 쓰는
+  // 값과 같은 소스(lib/plan-limits.ts)에서 가져옵니다. 예전엔 클라이언트가 10MB로 하드코딩돼
+  // 있어서 무료 사용자에게 "여기선 통과, 서버에서 거절"이 생겼습니다.
+  // 💡 [수정] 등급 상한과 플랫폼(Vercel) 요청 본문 상한 중 작은 쪽입니다. 예전엔 등급
+  // 상한(무료 5MB)만 봤는데, base64로 부풀린 요청 본문이 플랫폼 상한(4.5MB)을 넘으면 우리
+  // 코드가 실행되기도 전에 HTML 413이 돌아옵니다 — 3.3~5MB 파일은 안내 한 줄 없이 항상
+  // 실패하고 있었습니다.
+  const uploadLimitBytes = getEffectiveUploadLimitBytes(getPlanLimits(isPro).maxUploadBytes);
+  // Pro로 올렸을 때의 실효 상한 — 업그레이드 안내를 붙일지 판단하는 데만 씁니다.
+  const proUploadLimitBytes = getEffectiveUploadLimitBytes(PRO_LIMITS.maxUploadBytes);
+  // 업로드 화면에 미리 보여줄 안내 문구(올리기 전에 상한과 지원 형식을 알 수 있게).
+  const uploadLimitHint = t('upload.hint', {
+    max: formatBytes(uploadLimitBytes),
+    formats: 'PDF, PPTX, DOCX, XLSX, HWP, TXT',
+  });
+
   const professorGenDocCount = professorGenProfessorId
     ? professorDocuments.filter((d) => d.professor_id === professorGenProfessorId).length
     : 0;
@@ -1093,8 +1111,18 @@ export default function HomePage() {
     setIsAttachingChatFile(true);
     try {
       for (const file of filesToAttach) {
-        if (file.size > 10 * 1024 * 1024) {
-          alert(t('workspace.errors.fileTooLarge', { fileName: file.name }));
+        // 💡 [수정] 예전엔 10MB로 하드코딩돼 있었습니다. 실제 서버 상한은 등급별로
+        // 무료 5MB / Pro 20MB라, 무료 사용자가 7MB 파일을 올리면 여기선 통과하고
+        // 서버에서 거절당했습니다 — 사용자 입장에선 이유 없이 실패한 것처럼 보였습니다.
+        if (file.size > uploadLimitBytes) {
+          alert(
+            buildUploadFailureMessage(t, file.name, {
+              code: 'too_large',
+              sizeBytes: file.size,
+              maxBytes: uploadLimitBytes,
+              isPro,
+            }, MAX_REQUEST_FILE_BYTES, proUploadLimitBytes)
+          );
           continue;
         }
 
@@ -1140,13 +1168,15 @@ export default function HomePage() {
               content: base64Content,
             }),
           });
-          const data = await res.json();
-          if (!res.ok) {
+          // 💡 [수정] 상태·content-type을 먼저 확인합니다. 곧바로 res.json()을 부르면
+          // 플랫폼이 돌려준 HTML 413에서 "Unexpected token 'R'"이 튀어나옵니다.
+          const { ok, payload: data } = await readUploadResponse(res);
+          if (!ok) {
             if (data.limitReached) {
               handleLimitReached(data);
               break;
             }
-            alert(t('workspace.errors.extractFailed', { fileName: file.name, error: data.error }));
+            alert(buildUploadFailureMessage(t, file.name, data, MAX_REQUEST_FILE_BYTES, proUploadLimitBytes));
             continue;
           }
           setChatAttachments(prev => [
@@ -1673,8 +1703,15 @@ export default function HomePage() {
     const newlyInserted: ProfessorDocument[] = [];
     try {
       for (const file of filesToUpload) {
-        if (file.size > 10 * 1024 * 1024) {
-          alert(t('workspace.errors.fileTooLarge', { fileName: file.name }));
+        if (file.size > uploadLimitBytes) {
+          alert(
+            buildUploadFailureMessage(t, file.name, {
+              code: 'too_large',
+              sizeBytes: file.size,
+              maxBytes: uploadLimitBytes,
+              isPro,
+            }, MAX_REQUEST_FILE_BYTES, proUploadLimitBytes)
+          );
           continue;
         }
 
@@ -1697,13 +1734,15 @@ export default function HomePage() {
               content: base64Content,
             }),
           });
-          const data = await res.json();
-          if (!res.ok) {
+          // 💡 [수정] 상태·content-type을 먼저 확인합니다. 곧바로 res.json()을 부르면
+          // 플랫폼이 돌려준 HTML 413에서 "Unexpected token 'R'"이 튀어나옵니다.
+          const { ok, payload: data } = await readUploadResponse(res);
+          if (!ok) {
             if (data.limitReached) {
               handleLimitReached(data);
               break;
             }
-            alert(t('workspace.errors.extractFailed', { fileName: file.name, error: data.error }));
+            alert(buildUploadFailureMessage(t, file.name, data, MAX_REQUEST_FILE_BYTES, proUploadLimitBytes));
             continue;
           }
 
@@ -2065,8 +2104,15 @@ export default function HomePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      alert(t('monitoring.errors.fileTooLarge'));
+    if (file.size > uploadLimitBytes) {
+      alert(
+        buildUploadFailureMessage(t, file.name, {
+          code: 'too_large',
+          sizeBytes: file.size,
+          maxBytes: uploadLimitBytes,
+          isPro,
+        }, MAX_REQUEST_FILE_BYTES, proUploadLimitBytes)
+      );
       e.target.value = '';
       return;
     }
@@ -3032,6 +3078,9 @@ export default function HomePage() {
                 <p className="text-[11px] text-[var(--text-muted)] mt-2">
                   {isAttachingChatFile ? <LoadingText /> : t('workspace.dropHint')}
                 </p>
+                {/* 💡 [신규] 올리기 전에 상한·지원 형식을 미리 알려줍니다 — 실패하고 나서야
+                    한도를 알게 되는 게 가장 나쁜 순서입니다. 등급에 따라 숫자가 바뀝니다. */}
+                <p className="text-[10px] text-[var(--text-faint)] mt-1">{uploadLimitHint}</p>
               </div>
 
               <div className="bg-[var(--bg-deep)] rounded-2xl border border-[var(--surface-chip)] overflow-hidden shadow-sm">
@@ -3529,6 +3578,7 @@ export default function HomePage() {
                     />
                   </label>
                   <p className="text-xs text-[var(--text-muted)]">{t('professors.uploadPanel.paperHint')}</p>
+                  <p className="text-[11px] text-[var(--text-faint)] mt-1">{uploadLimitHint}</p>
                 </div>
               </div>
 
@@ -3684,7 +3734,8 @@ export default function HomePage() {
                       </label>
                     </div>
                   </div>
-                  <p className="text-[11px] text-[var(--text-muted)] mb-4">{t('professors.uploadPanel.paperHint')}</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">{t('professors.uploadPanel.paperHint')}</p>
+                  <p className="text-[11px] text-[var(--text-faint)] mb-4">{uploadLimitHint}</p>
 
                   {docs.length === 0 ? (
                     <p className="text-sm text-[var(--text-muted)] text-center py-4">{t('professors.noDocumentsYet')}</p>
@@ -3898,6 +3949,8 @@ export default function HomePage() {
                     />
                   </label>
                 </div>
+
+                <p className="text-[11px] text-[var(--text-faint)] mb-4">{uploadLimitHint}</p>
 
                 <div className="text-xs text-[var(--text-muted)] mb-5 flex items-center gap-3">
                   <hr className="flex-1 border-[var(--border-default)]" />

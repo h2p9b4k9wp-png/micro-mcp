@@ -787,5 +787,30 @@
         "desc": "Je mehr Material, desto genauer"
       }
     }
+  },
+  "upload": {
+    "hint": "Bis {max} · Unterstützt: {formats}",
+    "errors": {
+      "tooLarge": "„{fileName}\" ist {size} groß, erlaubt sind aber höchstens {max}.",
+      "tooLargeUpgradeHint": "Mit Pro sind bis zu 20 MB möglich.",
+      "emptyText": "In „{fileName}\" wurde kein Text gefunden. Reine Bilddokumente können noch nicht gelesen werden — bitte eine Datei mit Text hochladen.",
+      "emptyTextWithFormat": "In dieser {format}-Datei („{fileName}\") wurde kein Text gefunden. Reine Bildfolien und Scans werden noch nicht unterstützt — bitte eine Datei mit Text hochladen.",
+      "quotaExceeded": "Das Dateikontingent dieses Monats ({limit}) ist aufgebraucht. Nächsten Monat gibt es wieder neues, mit Pro geht es sofort weiter.",
+      "rateLimited": "Zu viele Anfragen. Bitte in einer Minute erneut versuchen.",
+      "parseFailed": "„{fileName}\" konnte nicht gelesen werden. {reason}",
+      "serverError": "Bei der Verarbeitung von „{fileName}\" ist etwas schiefgelaufen. Bitte gleich noch einmal versuchen oder in einem anderen Format speichern.",
+      "generic": "„{fileName}\" konnte nicht hochgeladen werden. {error}",
+      "unknown": "„{fileName}\" konnte nicht hochgeladen werden. Bitte gleich noch einmal versuchen.",
+      "reasons": {
+        "hwp_too_old": "Diese HWP-Version ist zu alt. Öffne sie in Hangul und speichere als HWPX oder PDF.",
+        "hwp_encrypted": "Diese HWP-Datei ist passwortgeschützt. Entferne das Passwort und versuche es erneut.",
+        "legacy_office": "Altes Office-Format (.doc/.ppt). In Word oder PowerPoint öffnen und als .docx/.pptx speichern.",
+        "too_large": "Die Datei ist zu groß.",
+        "corrupt": "Die Datei ist möglicherweise beschädigt. Neu speichern und erneut hochladen."
+      },
+      "platformTooLarge": "„{fileName}\" wurde schon vor dem Server abgelehnt, weil die Datei zu groß ist. Das Limit liegt bei {max} — teile die Folien auf oder verkleinere die Bilder.",
+      "timeout": "Die Verarbeitung von „{fileName}\" hat zu lange gedauert. Das passiert bei großen oder komplexen Dateien — bitte in kleinere Teile aufteilen.",
+      "httpStatus": "„{fileName}\" konnte nicht hochgeladen werden (Fehler {status}). Bitte gleich noch einmal versuchen."
+    }
   }
 }

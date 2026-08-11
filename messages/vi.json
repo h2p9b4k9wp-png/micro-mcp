@@ -787,5 +787,30 @@
         "desc": "Càng nhiều tài liệu càng chính xác"
       }
     }
+  },
+  "upload": {
+    "hint": "Tối đa {max} · Định dạng hỗ trợ: {formats}",
+    "errors": {
+      "tooLarge": "\"{fileName}\" nặng {size}, nhưng giới hạn là {max}.",
+      "tooLargeUpgradeHint": "Bản Pro cho phép tới 20MB.",
+      "emptyText": "Không tìm thấy chữ trong \"{fileName}\". Tài liệu chỉ có hình ảnh chưa đọc được — hãy tải lên tệp có chữ.",
+      "emptyTextWithFormat": "Không tìm thấy chữ trong {format} này (\"{fileName}\"). Slide chỉ có hình hoặc tài liệu scan chưa được hỗ trợ — hãy tải lên tệp có chữ.",
+      "quotaExceeded": "Bạn đã dùng hết hạn mức xử lý tệp tháng này ({limit} lần). Sẽ đặt lại vào tháng sau, hoặc dùng Pro để tiếp tục ngay.",
+      "rateLimited": "Bạn gửi quá nhanh. Vui lòng thử lại sau 1 phút.",
+      "parseFailed": "Không đọc được \"{fileName}\". {reason}",
+      "serverError": "Có lỗi khi xử lý \"{fileName}\". Vui lòng thử lại sau, hoặc lưu lại ở định dạng khác.",
+      "generic": "Không tải lên được \"{fileName}\". {error}",
+      "unknown": "Không tải lên được \"{fileName}\". Vui lòng thử lại sau.",
+      "reasons": {
+        "hwp_too_old": "Phiên bản HWP quá cũ. Hãy mở bằng Hangul và lưu thành HWPX hoặc PDF rồi thử lại.",
+        "hwp_encrypted": "Tệp HWP này có mật khẩu. Hãy gỡ mật khẩu rồi tải lên lại.",
+        "legacy_office": "Đây là định dạng Office cũ (.doc/.ppt). Hãy mở bằng Word hoặc PowerPoint và lưu thành .docx/.pptx rồi thử lại.",
+        "too_large": "Tệp quá lớn.",
+        "corrupt": "Tệp có thể bị hỏng. Hãy lưu lại rồi tải lên lần nữa."
+      },
+      "platformTooLarge": "\"{fileName}\" quá lớn nên bị từ chối trước khi tới máy chủ. Giới hạn là {max} — hãy tách slide hoặc giảm dung lượng ảnh rồi thử lại.",
+      "timeout": "Xử lý \"{fileName}\" đã quá thời gian. Điều này xảy ra với tệp lớn hoặc phức tạp — hãy chia nhỏ tệp.",
+      "httpStatus": "Không tải lên được \"{fileName}\" (lỗi {status}). Vui lòng thử lại sau."
+    }
   }
 }

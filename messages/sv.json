@@ -787,5 +787,30 @@
         "desc": "Ju mer material, desto träffsäkrare"
       }
     }
+  },
+  "upload": {
+    "hint": "Upp till {max} · Format som stöds: {formats}",
+    "errors": {
+      "tooLarge": "\"{fileName}\" är {size}, men gränsen är {max}.",
+      "tooLargeUpgradeHint": "Med Pro går det upp till 20 MB.",
+      "emptyText": "Ingen text hittades i \"{fileName}\". Dokument med enbart bilder kan inte läsas än — ladda upp en fil som innehåller text.",
+      "emptyTextWithFormat": "Ingen text hittades i den här {format}-filen (\"{fileName}\"). Bilder-bara-bilder och skannade dokument stöds inte än — ladda upp en fil som innehåller text.",
+      "quotaExceeded": "Du har använt månadens filgräns ({limit}). Den återställs nästa månad, eller så kan du fortsätta direkt med Pro.",
+      "rateLimited": "För många förfrågningar. Försök igen om en minut.",
+      "parseFailed": "Kunde inte läsa \"{fileName}\". {reason}",
+      "serverError": "Något gick fel när \"{fileName}\" behandlades. Försök igen strax eller spara den i ett annat format.",
+      "generic": "Kunde inte ladda upp \"{fileName}\". {error}",
+      "unknown": "Kunde inte ladda upp \"{fileName}\". Försök igen strax.",
+      "reasons": {
+        "hwp_too_old": "Den här HWP-versionen är för gammal. Öppna den i Hangul och spara som HWPX eller PDF.",
+        "hwp_encrypted": "Den här HWP-filen är lösenordsskyddad. Ta bort lösenordet och försök igen.",
+        "legacy_office": "Gammalt Office-format (.doc/.ppt). Öppna i Word eller PowerPoint och spara som .docx/.pptx.",
+        "too_large": "Filen är för stor.",
+        "corrupt": "Filen kan vara skadad. Spara om den och försök igen."
+      },
+      "platformTooLarge": "\"{fileName}\" avvisades innan den nådde servern eftersom den är för stor. Gränsen är {max} — dela upp bilderna eller minska bildernas storlek.",
+      "timeout": "Bearbetningen av \"{fileName}\" tog för lång tid. Det händer med stora eller komplexa filer — dela upp den i mindre delar.",
+      "httpStatus": "Kunde inte ladda upp \"{fileName}\" (fel {status}). Försök igen strax."
+    }
   }
 }

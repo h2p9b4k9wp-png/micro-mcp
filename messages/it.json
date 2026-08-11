@@ -787,5 +787,30 @@
         "desc": "Più materiali carichi, più è preciso"
       }
     }
+  },
+  "upload": {
+    "hint": "Fino a {max} · Formati: {formats}",
+    "errors": {
+      "tooLarge": "«{fileName}» pesa {size}, ma il limite è {max}.",
+      "tooLargeUpgradeHint": "Con Pro il limite sale a 20MB.",
+      "emptyText": "Nessun testo trovato in «{fileName}». I documenti composti solo da immagini non sono ancora leggibili: carica un file con del testo.",
+      "emptyTextWithFormat": "Nessun testo trovato in questo {format} («{fileName}»). Le slide solo immagine e i documenti scansionati non sono ancora supportati: carica un file con del testo.",
+      "quotaExceeded": "Hai esaurito il limite di file di questo mese ({limit}). Si azzera il mese prossimo, oppure con Pro puoi continuare subito.",
+      "rateLimited": "Troppe richieste. Riprova tra un minuto.",
+      "parseFailed": "Impossibile leggere «{fileName}». {reason}",
+      "serverError": "Si è verificato un problema con «{fileName}». Riprova tra poco o salvalo in un altro formato.",
+      "generic": "Impossibile caricare «{fileName}». {error}",
+      "unknown": "Impossibile caricare «{fileName}». Riprova tra poco.",
+      "reasons": {
+        "hwp_too_old": "Questa versione HWP è troppo vecchia. Aprila in Hangul e salvala come HWPX o PDF.",
+        "hwp_encrypted": "Questo file HWP è protetto da password. Rimuovila e riprova.",
+        "legacy_office": "Formato Office datato (.doc/.ppt). Aprilo in Word o PowerPoint e salvalo come .docx/.pptx.",
+        "too_large": "Il file è troppo grande.",
+        "corrupt": "Il file potrebbe essere danneggiato. Salvalo di nuovo e riprova."
+      },
+      "platformTooLarge": "«{fileName}» è stato rifiutato prima di arrivare al server perché troppo grande. Il limite è {max}: prova a dividere le slide o a ridurre le immagini.",
+      "timeout": "L'elaborazione di «{fileName}» è scaduta. Succede con file grandi o complessi: prova a dividerlo in parti più piccole.",
+      "httpStatus": "Impossibile caricare «{fileName}» (errore {status}). Riprova tra poco."
+    }
   }
 }
